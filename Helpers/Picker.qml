@@ -159,6 +159,7 @@ MouseArea {
 			overlay.visible = border.visible = false;
 			screencopy.visible = false;
 			screencopy.active = true;
+			saveTimer.start();
 		}
 	}
 
@@ -225,14 +226,6 @@ MouseArea {
 		sourceComponent: ScreencopyView {
 			captureSource: root.screen
 			paintCursor: false
-
-			onHasContentChanged: {
-				if (hasContent) {
-					overlay.visible = border.visible = true;
-					if (!root.loader.freeze)
-						root.save();
-				}
-			}
 		}
 	}
 
@@ -244,7 +237,7 @@ MouseArea {
 		layer.enabled: true
 		opacity: 0.3
 		radius: root.realRounding
-		visible: false
+		visible: screencopy.item.hasContent || !root.loader.freeze
 
 		layer.effect: MultiEffect {
 			maskEnabled: true
@@ -282,7 +275,7 @@ MouseArea {
 		implicitHeight: selectionRect.implicitHeight + root.realBorderWidth * 2
 		implicitWidth: selectionRect.implicitWidth + root.realBorderWidth * 2
 		radius: root.realRounding > 0 ? root.realRounding + root.realBorderWidth : 0
-		visible: false
+		visible: screencopy.item.hasContent || !root.loader.freeze
 		x: selectionRect.x - root.realBorderWidth
 		y: selectionRect.y - root.realBorderWidth
 
