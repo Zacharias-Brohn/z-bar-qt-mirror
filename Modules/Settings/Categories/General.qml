@@ -161,7 +161,16 @@ SettingsPage {
 		SettingSpinner {
 			name: "Schedule dark mode"
 			object: Config.general.color
-			settings: ["scheduleDarkStart", "scheduleDarkEnd"]
+			settings: ["scheduleDarkStart", "scheduleDarkEnd", "scheduleDark"]
+		}
+
+		Separator {
+		}
+
+		SettingHyprSpinner {
+			name: "Schedule Hyprsunset"
+			object: Config.general.color
+			settings: ["scheduleHyprsunsetStart", "scheduleHyprsunsetEnd", "scheduleHyprsunset", "hyprsunsetTemp"]
 		}
 	}
 

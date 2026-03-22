@@ -67,6 +67,15 @@ RowLayout {
 			role: "id"
 
 			DelegateChoice {
+				roleValue: "hyprsunset"
+
+				delegate: WrappedLoader {
+					sourceComponent: HyprsunsetWidget {
+					}
+				}
+			}
+
+			DelegateChoice {
 				roleValue: "spacer"
 
 				delegate: WrappedLoader {

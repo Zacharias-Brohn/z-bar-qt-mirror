@@ -19,13 +19,17 @@ JsonObject {
 		property list<string> terminal: ["kitty"]
 	}
 	component Color: JsonObject {
+		property int hyprsunsetTemp: 5000
 		property string mode: "dark"
 		property bool neovimColors: false
+		property bool scheduleDark: false
 		property int scheduleDarkEnd: 0
 		property int scheduleDarkStart: 0
+		property bool scheduleHyprsunset: false
+		property int scheduleHyprsunsetEnd: 0
+		property int scheduleHyprsunsetStart: 0
 		property bool schemeGeneration: true
 		property bool smart: false
-		property bool wallust: false
 	}
 	component Idle: JsonObject {
 		property list<var> timeouts: [
