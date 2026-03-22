@@ -66,7 +66,6 @@ Singleton {
 		triggeredOnStart: true
 
 		onTriggered: {
-			console.log("start");
 			if (!Config.general.color.scheduleHyprsunset)
 				return;
 
