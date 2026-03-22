@@ -51,7 +51,7 @@ In your flake.nix file, add the following in your inputs.
 inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     z-bar-qt = {
-        url = "github:Zacharias-Brohn/z-bar-qt/";
+        url = "git+ssh://git@git.zach-dev.cc/zach/z-bar-qt.git";
         inputs.nixpkgs.follows = "nixpkgs";
     };
 };
