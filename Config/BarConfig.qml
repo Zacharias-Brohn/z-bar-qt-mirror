@@ -41,6 +41,10 @@ JsonObject {
 			enabled: true
 		},
 		{
+			id: "hyprsunset",
+			enabled: true
+		},
+		{
 			id: "tray",
 			enabled: true
 		},

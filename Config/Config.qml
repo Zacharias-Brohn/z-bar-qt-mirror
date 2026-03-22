@@ -177,6 +177,10 @@ Singleton {
 				mode: general.color.mode,
 				smart: general.color.smart,
 				scheduleDark: general.color.scheduleDark,
+				scheduleHyprsunset: general.color.scheduleHyprsunset,
+				scheduleHyprsunsetStart: general.color.scheduleHyprsunsetStart,
+				hyprsunsetTemp: general.color.hyprsunsetTemp,
+				scheduleHyprsunsetEnd: general.color.scheduleHyprsunsetEnd,
 				schemeGeneration: general.color.schemeGeneration,
 				scheduleDarkStart: general.color.scheduleDarkStart,
 				scheduleDarkEnd: general.color.scheduleDarkEnd,
@@ -374,6 +378,7 @@ Singleton {
 		}
 		onLoaded: {
 			ModeScheduler.checkStartup();
+			Hyprsunset.checkStartup();
 			try {
 				JSON.parse(text());
 				const elapsed = timer.elapsedMs();
