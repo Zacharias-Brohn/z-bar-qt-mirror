@@ -129,7 +129,7 @@ Variants {
 			Binding {
 				property: "bar"
 				target: visibilities
-				value: visibilities.sidebar || visibilities.dashboard || visibilities.osd || visibilities.notif || visibilities.resources || visibilities.settings || bar.isHovered
+				value: visibilities.sidebar || visibilities.dashboard || visibilities.osd || (!Config.barConfig.hideWhenNotif && visibilities.notif) || visibilities.resources || visibilities.settings || bar.isHovered
 				when: Config.barConfig.autoHide
 			}
 

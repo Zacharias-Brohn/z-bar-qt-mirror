@@ -66,6 +66,7 @@ JsonObject {
 		},
 	]
 	property int height: 34
+	property bool hideWhenNotif: false
 	property Popouts popouts: Popouts {
 	}
 	property int rounding: 8

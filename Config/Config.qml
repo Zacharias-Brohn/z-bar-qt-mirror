@@ -84,6 +84,7 @@ Singleton {
 	function serializeBar(): var {
 		return {
 			autoHide: barConfig.autoHide,
+			hideWhenNotif: barConfig.hideWhenNotif,
 			rounding: barConfig.rounding,
 			border: barConfig.border,
 			height: barConfig.height,
