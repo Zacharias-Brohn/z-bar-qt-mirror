@@ -64,7 +64,7 @@ Below a full example of what it could look like.
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     z-bar-qt = {
-        url = "github:Zacharias-Brohn/z-bar-qt/";
+        url = "git+ssh://git@git.zach-dev.cc/zach/z-bar-qt.git";
         inputs.nixpkgs.follows = "nixpgks";
     };
   };
@@ -77,7 +77,6 @@ Below a full example of what it could look like.
     }:
     let
       system = "x86_64-linux";
-      pkgs = import nixpkgs { inherit system; };
     in
     {
       nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
