@@ -81,7 +81,7 @@ ColumnLayout {
 			id: pfp
 
 			anchors.fill: parent
-			path: `${Paths.home}/.face`
+			path: root.greeter.userFace
 		}
 	}
 

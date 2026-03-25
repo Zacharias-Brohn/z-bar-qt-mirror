@@ -4,6 +4,7 @@ import Quickshell
 import Quickshell.Services.Greetd
 import Quickshell.Io
 import QtQuick
+import qs.Helpers
 
 Scope {
 	id: root
@@ -17,7 +18,25 @@ Scope {
 	readonly property var selectedSession: sessionIndex >= 0 ? sessions[sessionIndex] : null
 	property int sessionIndex: sessions.length > 0 ? 0 : -1
 	property var sessions: []
-	required property string username
+
+	// User handling - now uses the Users singleton
+	readonly property var users: Users.users
+	readonly property var selectedUser: Users.selectedUser
+	readonly property string username: Users.selectedUsername
+	readonly property string userFace: selectedUser ? selectedUser.face : ""
+
+	// User selection functions (delegate to Users singleton)
+	function selectUser(username: string): bool {
+		return Users.selectUser(username);
+	}
+
+	function selectNextUser(): void {
+		Users.selectNext();
+	}
+
+	function selectPreviousUser(): void {
+		Users.selectPrevious();
+	}
 
 	signal flashMsg
 
@@ -54,6 +73,9 @@ Scope {
 			launching = false;
 			return;
 		}
+
+		// Save the current user as the default for next login
+		Users.saveDefaultUser();
 
 		launching = true;
 		Greetd.launch(selectedSession.command, [], true);

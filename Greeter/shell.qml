@@ -11,8 +11,6 @@ ShellRoot {
 
 	GreeterState {
 		id: greeter
-
-		username: Config.general.username
 	}
 
 	GreeterSurface {

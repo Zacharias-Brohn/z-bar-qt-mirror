@@ -30,17 +30,17 @@ RowLayout {
 			}
 		}
 
-		CustomRect {
-			Layout.fillWidth: true
-			color: DynamicColors.tPalette.m3surfaceContainer
-			implicitHeight: resources.implicitHeight
-			radius: Appearance.rounding.small
-
-			Resources {
-				id: resources
-
-			}
-		}
+		// CustomRect {
+		// 	Layout.fillWidth: true
+		// 	color: DynamicColors.tPalette.m3surfaceContainer
+		// 	implicitHeight: resources.implicitHeight
+		// 	radius: Appearance.rounding.small
+		//
+		// 	Resources {
+		// 		id: resources
+		//
+		// 	}
+		// }
 
 		CustomClippingRect {
 			Layout.fillHeight: true
@@ -48,6 +48,10 @@ RowLayout {
 			bottomLeftRadius: Appearance.rounding.large
 			color: DynamicColors.tPalette.m3surfaceContainer
 			radius: Appearance.rounding.small
+
+			UserDock {
+				greeter: root.greeter
+			}
 		}
 	}
 
