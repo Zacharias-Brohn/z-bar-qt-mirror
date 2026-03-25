@@ -14,7 +14,20 @@ Item {
 
 	required property Item content
 
-	implicitHeight: clayout.contentHeight + Appearance.padding.smaller * 2
+	signal settingSelected(string category, string section, string settingName)
+
+	// Function to select category by key
+	function selectCategory(categoryKey: string) {
+		for (let i = 0; i < listModel.count; i++) {
+			if (listModel.get(i).key === categoryKey) {
+				clayout.currentIndex = i;
+				root.content.currentCategory = categoryKey;
+				return;
+			}
+		}
+	}
+
+	implicitHeight: searchBar.implicitHeight + Appearance.spacing.smaller + clayout.contentHeight + Appearance.padding.smaller * 2
 	implicitWidth: clayout.contentWidth + Appearance.padding.smaller * 2
 
 	ListModel {

@@ -3,6 +3,8 @@ import qs.Config
 
 SettingsPage {
 	SettingsSection {
+		sectionId: "Services"
+
 		SettingsHeader {
 			name: "Services"
 		}
@@ -51,6 +53,8 @@ SettingsPage {
 	}
 
 	SettingsSection {
+		sectionId: "Media"
+
 		SettingsHeader {
 			name: "Media"
 		}

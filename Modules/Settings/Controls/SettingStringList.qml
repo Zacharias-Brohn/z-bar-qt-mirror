@@ -2,17 +2,33 @@ import QtQuick
 import QtQuick.Layouts
 import qs.Components
 import qs.Config
+import qs.Helpers
 
 Item {
 	id: root
 
+	property string addLabel: qsTr("Add entry")
+	readonly property bool highlighted: SettingsHighlight.highlightedSetting === name
 	required property string name
 	required property var object
 	required property string setting
-	property string addLabel: qsTr("Add entry")
 
 	Layout.fillWidth: true
 	Layout.preferredHeight: layout.implicitHeight
+
+	Rectangle {
+		anchors.fill: parent
+		anchors.margins: -Appearance.padding.smaller
+		color: DynamicColors.palette.m3primaryContainer
+		opacity: root.highlighted ? 0.5 : 0
+		radius: Appearance.rounding.small
+
+		Behavior on opacity {
+			Anim {
+				duration: Appearance.anim.durations.normal
+			}
+		}
+	}
 
 	ColumnLayout {
 		id: layout

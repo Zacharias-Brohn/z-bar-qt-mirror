@@ -3,6 +3,8 @@ import qs.Config
 
 SettingsPage {
 	SettingsSection {
+		sectionId: "Utilities"
+
 		SettingsHeader {
 			name: "Utilities"
 		}
@@ -45,6 +47,8 @@ SettingsPage {
 	}
 
 	SettingsSection {
+		sectionId: "Toasts"
+
 		SettingsHeader {
 			name: "Toasts"
 		}
@@ -147,6 +151,8 @@ SettingsPage {
 	}
 
 	SettingsSection {
+		sectionId: "VPN"
+
 		SettingsHeader {
 			name: "VPN"
 		}

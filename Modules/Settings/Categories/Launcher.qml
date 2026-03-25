@@ -3,6 +3,8 @@ import qs.Config
 
 SettingsPage {
 	SettingsSection {
+		sectionId: "Launcher"
+
 		SettingsHeader {
 			name: "Launcher"
 		}
@@ -44,6 +46,8 @@ SettingsPage {
 	}
 
 	SettingsSection {
+		sectionId: "Fuzzy Search"
+
 		SettingsHeader {
 			name: "Fuzzy Search"
 		}
@@ -92,6 +96,8 @@ SettingsPage {
 	}
 
 	SettingsSection {
+		sectionId: "Sizes"
+
 		SettingsHeader {
 			name: "Sizes"
 		}
@@ -135,6 +141,8 @@ SettingsPage {
 	}
 
 	SettingsSection {
+		sectionId: "Actions"
+
 		SettingsHeader {
 			name: "Actions"
 		}

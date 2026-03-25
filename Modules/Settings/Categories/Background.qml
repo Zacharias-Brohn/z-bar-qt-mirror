@@ -5,6 +5,8 @@ SettingsPage {
 	id: root
 
 	SettingsSection {
+		sectionId: "Wallpaper"
+
 		SettingsHeader {
 			name: "Wallpaper"
 		}

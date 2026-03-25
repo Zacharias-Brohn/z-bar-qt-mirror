@@ -5,6 +5,8 @@ SettingsPage {
 	id: root
 
 	SettingsSection {
+		sectionId: "Scale"
+
 		SettingsHeader {
 			name: "Scale"
 		}
@@ -58,6 +60,8 @@ SettingsPage {
 	}
 
 	SettingsSection {
+		sectionId: "Fonts"
+
 		SettingsHeader {
 			name: "Fonts"
 		}
@@ -97,6 +101,8 @@ SettingsPage {
 	}
 
 	SettingsSection {
+		sectionId: "Animation"
+
 		SettingsHeader {
 			name: "Animation"
 		}
@@ -122,6 +128,8 @@ SettingsPage {
 	}
 
 	SettingsSection {
+		sectionId: "Transparency"
+
 		SettingsHeader {
 			name: "Transparency"
 		}

@@ -6,6 +6,7 @@ import QtQuick.Layouts
 import QtQml.Models
 import qs.Components
 import qs.Config
+import qs.Helpers
 
 Item {
 	id: root
@@ -19,6 +20,7 @@ Item {
 	property var draggedModelData: null
 	property string draggedUid: ""
 	property bool dropAnimating: false
+	readonly property bool highlighted: SettingsHighlight.highlightedSetting === name
 	required property string name
 	required property var object
 	property var pendingCommitEntries: []
@@ -230,6 +232,21 @@ Item {
 	implicitHeight: layout.implicitHeight
 
 	Component.onCompleted: root.rebuildVisualEntries()
+
+	Rectangle {
+		anchors.fill: parent
+		anchors.margins: -Appearance.padding.smaller
+		color: DynamicColors.palette.m3primaryContainer
+		opacity: root.highlighted ? 0.5 : 0
+		radius: Appearance.rounding.small
+		z: -1
+
+		Behavior on opacity {
+			Anim {
+				duration: Appearance.anim.durations.normal
+			}
+		}
+	}
 
 	ParallelAnimation {
 		id: settleAnim

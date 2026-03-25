@@ -6,6 +6,8 @@ SettingsPage {
 	id: root
 
 	SettingsSection {
+		sectionId: "Lockscreen"
+
 		SettingsHeader {
 			name: "Lockscreen"
 		}
@@ -84,6 +86,8 @@ SettingsPage {
 	}
 
 	SettingsSection {
+		sectionId: "Idle"
+
 		Idle {
 		}
 	}

@@ -14,11 +14,34 @@ Item {
 	property string currentCategory: "general"
 	readonly property real nonAnimHeight: Math.floor(screen.height / 1.5) + viewWrapper.anchors.margins * 2
 	readonly property real nonAnimWidth: view.implicitWidth + Math.floor(screen.width / 2) + viewWrapper.anchors.margins * 2
+	property string pendingSection: ""
+	property string pendingSetting: ""
 	required property ShellScreen screen
 	required property PersistentProperties visibilities
 
+	function scrollToSetting(section: string, settingName: string) {
+		// Wait for the StackView transition to complete, then scroll
+		root.pendingSection = section;
+		root.pendingSetting = settingName;
+		scrollTimer.restart();
+	}
+
 	implicitHeight: nonAnimHeight
 	implicitWidth: nonAnimWidth
+
+	Timer {
+		id: scrollTimer
+
+		interval: 50
+
+		onTriggered: {
+			if (root.pendingSection && stack.currentItem) {
+				stack.currentItem.scrollToSectionAndHighlight(root.pendingSection, root.pendingSetting);
+				root.pendingSection = "";
+				root.pendingSetting = "";
+			}
+		}
+	}
 
 	Connections {
 		function onCurrentCategoryChanged() {
@@ -59,12 +82,26 @@ Item {
 		anchors.margins: Appearance.padding.smaller
 		radius: Appearance.rounding.large - Appearance.padding.smaller
 
+		SettingsSearch {
+			id: searchBar
+
+			anchors.left: parent.left
+			anchors.right: parent.right
+			anchors.top: parent.top
+
+			onSettingSelected: (category, section, settingName) => {
+				root.selectCategory(category);
+				root.settingSelected(category, section, settingName);
+			}
+		}
+
 		Item {
 			id: view
 
 			anchors.bottom: parent.bottom
 			anchors.left: parent.left
-			anchors.top: parent.top
+			anchors.top: searchBar.bottom
+			anchors.topMargin: Appearance.spacing.smaller
 			implicitWidth: layout.implicitWidth
 
 			Categories {
@@ -72,6 +109,10 @@ Item {
 
 				anchors.fill: parent
 				content: root
+
+				onSettingSelected: (category, section, settingName) => {
+					root.scrollToSetting(section, settingName);
+				}
 			}
 		}
 
@@ -82,7 +123,8 @@ Item {
 			anchors.left: view.right
 			anchors.leftMargin: Appearance.spacing.smaller
 			anchors.right: parent.right
-			anchors.top: parent.top
+			anchors.top: searchBar.bottom
+			anchors.topMargin: Appearance.spacing.smaller
 			color: DynamicColors.tPalette.m3surfaceContainer
 			radius: Appearance.rounding.normal
 

@@ -8,6 +8,7 @@ CustomRect {
 
 	default property alias contentData: layout.data
 	property real contentPadding: Appearance.padding.large
+	property string sectionId: ""
 
 	Layout.fillWidth: true
 	Layout.preferredHeight: layout.implicitHeight + contentPadding * 2

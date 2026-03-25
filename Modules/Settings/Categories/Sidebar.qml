@@ -3,6 +3,8 @@ import qs.Config
 
 SettingsPage {
 	SettingsSection {
+		sectionId: "Sidebar"
+
 		SettingsHeader {
 			name: "Sidebar"
 		}

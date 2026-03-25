@@ -3,6 +3,8 @@ import qs.Config
 
 SettingsPage {
 	SettingsSection {
+		sectionId: "Notifications"
+
 		SettingsHeader {
 			name: "Notifications"
 		}
@@ -78,6 +80,8 @@ SettingsPage {
 	}
 
 	SettingsSection {
+		sectionId: "Sizes"
+
 		SettingsHeader {
 			name: "Sizes"
 		}

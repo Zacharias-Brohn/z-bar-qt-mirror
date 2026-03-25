@@ -16,6 +16,8 @@ SettingsPage {
 	}
 
 	SettingsSection {
+		sectionId: "General"
+
 		SettingsHeader {
 			name: "General"
 		}
@@ -46,6 +48,8 @@ SettingsPage {
 	}
 
 	SettingsSection {
+		sectionId: "Color"
+
 		SettingsHeader {
 			name: "Color"
 		}
@@ -175,6 +179,7 @@ SettingsPage {
 	}
 
 	SettingsSection {
+		sectionId: "Default Apps"
 		z: -1
 
 		SettingsHeader {

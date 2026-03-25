@@ -4,10 +4,12 @@ import QtQuick
 import QtQuick.Layouts
 import qs.Components
 import qs.Config
+import qs.Helpers
 
 ColumnLayout {
 	id: root
 
+	readonly property bool highlighted: SettingsHighlight.highlightedSetting === name
 	required property string name
 	required property var object
 	required property string setting
@@ -40,6 +42,22 @@ ColumnLayout {
 
 	Layout.fillWidth: true
 	spacing: Appearance.spacing.smaller
+
+	Rectangle {
+		Layout.fillWidth: true
+		Layout.preferredHeight: root.implicitHeight
+		Layout.margins: -Appearance.padding.smaller
+		color: DynamicColors.palette.m3primaryContainer
+		opacity: root.highlighted ? 0.5 : 0
+		radius: Appearance.rounding.small
+		z: -1
+
+		Behavior on opacity {
+			Anim {
+				duration: Appearance.anim.durations.normal
+			}
+		}
+	}
 
 	CustomText {
 		Layout.fillWidth: true

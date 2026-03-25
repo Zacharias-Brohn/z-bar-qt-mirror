@@ -3,6 +3,8 @@ import qs.Config
 
 SettingsPage {
 	SettingsSection {
+		sectionId: "Dashboard"
+
 		SettingsHeader {
 			name: "Dashboard"
 		}
@@ -47,6 +49,8 @@ SettingsPage {
 	}
 
 	SettingsSection {
+		sectionId: "Performance"
+
 		SettingsHeader {
 			name: "Performance"
 		}
@@ -104,6 +108,8 @@ SettingsPage {
 	}
 
 	SettingsSection {
+		sectionId: "Layout Sizes"
+
 		SettingsHeader {
 			name: "Layout Sizes"
 		}

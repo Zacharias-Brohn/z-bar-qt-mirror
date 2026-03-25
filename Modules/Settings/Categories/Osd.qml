@@ -3,6 +3,8 @@ import qs.Config
 
 SettingsPage {
 	SettingsSection {
+		sectionId: "On Screen Display"
+
 		SettingsHeader {
 			name: "On Screen Display"
 		}
@@ -53,6 +55,8 @@ SettingsPage {
 	}
 
 	SettingsSection {
+		sectionId: "Sizes"
+
 		SettingsHeader {
 			name: "Sizes"
 		}

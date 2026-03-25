@@ -3,6 +3,8 @@ import qs.Config
 
 SettingsPage {
 	SettingsSection {
+		sectionId: "Bar"
+
 		SettingsHeader {
 			name: "Bar"
 		}
@@ -45,6 +47,8 @@ SettingsPage {
 	}
 
 	SettingsSection {
+		sectionId: "Popouts"
+
 		SettingsHeader {
 			name: "Popouts"
 		}
@@ -111,6 +115,8 @@ SettingsPage {
 	}
 
 	SettingsSection {
+		sectionId: "Entries"
+
 		SettingsHeader {
 			name: "Entries"
 		}
@@ -123,6 +129,8 @@ SettingsPage {
 	}
 
 	SettingsSection {
+		sectionId: "Dock"
+
 		SettingsHeader {
 			name: "Dock"
 		}
