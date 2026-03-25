@@ -259,8 +259,10 @@ Item {
 		ColumnLayout {
 			id: resultLayout
 
-			anchors.fill: parent
+			anchors.left: parent.left
 			anchors.margins: Appearance.padding.small
+			anchors.right: parent.right
+			anchors.verticalCenter: parent.verticalCenter
 			spacing: 2
 
 			// Setting name
