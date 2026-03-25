@@ -146,12 +146,12 @@ Item {
 		id: popup
 
 		closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
-		implicitHeight: Math.min(resultsList.contentHeight + Appearance.padding.small * 2 + 10, (contentItem.view.delegate.implicitHeight + Appearance.spacing.smaller) * 5 - Appearance.spacing.smaller + 10)
+		implicitHeight: Math.min(resultsList.contentHeight + Appearance.padding.small * 2 + 10, (55 + Appearance.spacing.smaller) * 5 - Appearance.spacing.smaller + 10 + Appearance.padding.small * 2)
 		implicitWidth: root.width + Appearance.padding.small * 2
 		modal: false
 		padding: 0
 		x: root.width / 2 - popup.width / 2
-		y: searchContainer.height + Appearance.spacing.small
+		y: searchContainer.height + Appearance.spacing.small - 5
 
 		background: Item {
 		}
@@ -253,7 +253,7 @@ Item {
 
 		signal clicked
 
-		implicitHeight: resultLayout.implicitHeight + Appearance.padding.small * 2
+		implicitHeight: 45 + Appearance.padding.small * 2
 		radius: Appearance.rounding.small
 
 		ColumnLayout {

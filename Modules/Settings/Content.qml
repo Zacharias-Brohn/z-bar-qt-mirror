@@ -26,6 +26,10 @@ Item {
 		scrollTimer.restart();
 	}
 
+	function selectCategory(categoryKey: string) {
+		layout.selectCategory(categoryKey);
+	}
+
 	implicitHeight: nonAnimHeight
 	implicitWidth: nonAnimWidth
 
@@ -91,7 +95,7 @@ Item {
 
 			onSettingSelected: (category, section, settingName) => {
 				root.selectCategory(category);
-				root.settingSelected(category, section, settingName);
+				root.scrollToSetting(section, settingName);
 			}
 		}
 
