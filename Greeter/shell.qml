@@ -1,3 +1,8 @@
+//@ pragma UseQApplication
+//@ pragma Env QSG_RENDER_LOOP=threaded
+//@ pragma Env QSG_RHI_BACKEND=vulkan
+//@ pragma Env QSG_USE_SIMPLE_ANIMATION_DRIVER=0
+//@ pragma Env QS_NO_RELOAD_POPUP=1
 pragma ComponentBehavior: Bound
 
 import Quickshell
@@ -11,6 +16,7 @@ ShellRoot {
 
 	GreeterState {
 		id: greeter
+
 	}
 
 	GreeterSurface {
