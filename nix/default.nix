@@ -119,8 +119,12 @@ stdenv.mkDerivation {
   ++ cmakeVersionFlags;
 
   prePatch = ''
-    substituteInPlace shell.qml \
-      --replace-fail 'ShellRoot {' 'ShellRoot {  settings.watchFiles: false'
+        substituteInPlace shell.qml \
+          --replace-fail 'ShellRoot {' 'ShellRoot {  settings.watchFiles: false'
+    	substituteInPlace Helpers/Hyprsunset.qml \
+    		--replace-fail 'Quickshell.execDetached(["hyprctl", "hyprsunset", "temperature", `${temp}`]);' 'Quickshell.execDetached(["hyprsunset", "-t", `${temp}`]);'
+    	substituteInPlace Helpers/Hyprsunset.qml \
+    		--replace-fail 'Quickshell.execDetached(["hyprctl", "hyprsunset", "identity"]);' 'Quickshell.execDetached(["hyprsunset", "--identity"]);'
   '';
 
   postInstall = ''
