@@ -85,7 +85,7 @@ Singleton {
 	}
 
 	FileView {
-		path: `${Paths.state}/scheme.json`
+		path: "/etc/zshell-greeter/scheme.json"
 		watchChanges: true
 
 		onFileChanged: reload()
