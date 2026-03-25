@@ -10,7 +10,7 @@ CustomFlickable {
 	default property alias contentData: clayout.data
 
 	// Find and scroll to a section by its sectionId, then highlight a specific setting
-	function scrollToSectionAndHighlight(sectionId: string, settingName: string) {
+	function scrollToSectionAndHighlight(sectionId: string, settingName: string): bool {
 		// Find the section with matching sectionId
 		for (let i = 0; i < clayout.children.length; i++) {
 			const section = clayout.children[i];
