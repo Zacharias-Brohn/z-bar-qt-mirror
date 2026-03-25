@@ -15,11 +15,7 @@ Singleton {
 	readonly property bool enabled: Config.general.color.scheduleDark
 
 	function applyDarkMode() {
-		if (Config.general.color.schemeGeneration) {
-			Quickshell.execDetached(["zshell-cli", "scheme", "generate", "--image-path", `${WallpaperPath.currentWallpaperPath}`, "--thumbnail-path", `${Paths.cache}/imagecache/thumbnail.jpg`, "--output", `${Paths.state}/scheme.json`, "--scheme", `${Config.colors.schemeType}`, "--mode", "dark"]);
-		} else {
-			Quickshell.execDetached(["zshell-cli", "scheme", "generate", "--preset", `${DynamicColors.scheme}:${DynamicColors.flavour}`, "--output", `${Paths.state}/scheme.json`, "--mode", "dark"]);
-		}
+		Quickshell.execDetached(["zshell-cli", "scheme", "generate", "--mode", "dark"]);
 
 		Config.general.color.mode = "dark";
 
@@ -31,11 +27,7 @@ Singleton {
 	}
 
 	function applyLightMode() {
-		if (Config.general.color.schemeGeneration) {
-			Quickshell.execDetached(["zshell-cli", "scheme", "generate", "--image-path", `${WallpaperPath.currentWallpaperPath}`, "--thumbnail-path", `${Paths.cache}/imagecache/thumbnail.jpg`, "--output", `${Paths.state}/scheme.json`, "--scheme", `${Config.colors.schemeType}`, "--mode", "light"]);
-		} else {
-			Quickshell.execDetached(["zshell-cli", "scheme", "generate", "--preset", `${DynamicColors.scheme}:${DynamicColors.flavour}`, "--output", `${Paths.state}/scheme.json`, "--mode", "light"]);
-		}
+		Quickshell.execDetached(["zshell-cli", "scheme", "generate", "--mode", "light"]);
 
 		Config.general.color.mode = "light";
 
@@ -70,11 +62,9 @@ Singleton {
 				return;
 			var now = new Date();
 			if (now.getHours() >= root.darkStart || now.getHours() < root.darkEnd) {
-				if (DynamicColors.light)
-					root.applyDarkMode();
+				root.applyDarkMode();
 			} else {
-				if (!DynamicColors.light)
-					root.applyLightMode();
+				root.applyLightMode();
 			}
 		}
 	}
