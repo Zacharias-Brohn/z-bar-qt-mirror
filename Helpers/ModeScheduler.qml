@@ -62,9 +62,11 @@ Singleton {
 				return;
 			var now = new Date();
 			if (now.getHours() >= root.darkStart || now.getHours() < root.darkEnd) {
-				root.applyDarkMode();
+				if (DynamicColors.light)
+					root.applyDarkMode();
 			} else {
-				root.applyLightMode();
+				if (!DynamicColors.light)
+					root.applyLightMode();
 			}
 		}
 	}
