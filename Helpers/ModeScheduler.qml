@@ -40,7 +40,7 @@ Singleton {
 	}
 
 	function checkStartup() {
-		if (darkStart === darkEnd)
+		if (!root.enabled)
 			return;
 		var now = new Date();
 		if (now.getHours() >= darkStart || now.getHours() < darkEnd) {
