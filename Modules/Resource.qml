@@ -12,6 +12,7 @@ RowLayout {
 	readonly property real arcStartAngle: 0.75 * Math.PI
 	readonly property real arcSweep: 1.5 * Math.PI
 	property string icon
+	required property color iconColor
 	required property color mainColor
 	required property double percentage
 	property bool shown: true
@@ -37,7 +38,7 @@ RowLayout {
 	MaterialIcon {
 		id: icon
 
-		color: DynamicColors.palette.m3onSurface
+		color: root.iconColor
 		font.pointSize: Appearance.font.size.larger
 		text: root.icon
 	}

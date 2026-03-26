@@ -14,7 +14,7 @@ CustomRect {
 	required property PersistentProperties visibilities
 
 	clip: true
-	color: DynamicColors.tPalette.m3surfaceContainer
+	color: visibilities.resources ? DynamicColors.palette.m3primary : DynamicColors.tPalette.m3surfaceContainer
 	implicitHeight: Config.barConfig.height + Appearance.padding.smallest * 2
 	implicitWidth: rowLayout.implicitWidth + Appearance.padding.normal * 2
 	radius: height / 2
@@ -38,7 +38,8 @@ CustomRect {
 			Layout.alignment: Qt.AlignVCenter
 			Layout.fillHeight: true
 			icon: "memory"
-			mainColor: DynamicColors.palette.m3primary
+			iconColor: root.visibilities.resources ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3onSurface
+			mainColor: root.visibilities.resources ? DynamicColors.palette.m3primaryContainer : DynamicColors.palette.m3primary
 			percentage: SystemUsage.cpuPerc
 			warningThreshold: 95
 		}
@@ -46,7 +47,8 @@ CustomRect {
 		Resource {
 			Layout.fillHeight: true
 			icon: "memory_alt"
-			mainColor: DynamicColors.palette.m3secondary
+			iconColor: root.visibilities.resources ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3onSurface
+			mainColor: root.visibilities.resources ? DynamicColors.palette.m3secondaryContainer : DynamicColors.palette.m3secondary
 			percentage: SystemUsage.memPerc
 			warningThreshold: 80
 		}
@@ -54,14 +56,16 @@ CustomRect {
 		Resource {
 			Layout.fillHeight: true
 			icon: "gamepad"
-			mainColor: DynamicColors.palette.m3tertiary
+			iconColor: root.visibilities.resources ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3onSurface
+			mainColor: root.visibilities.resources ? DynamicColors.palette.m3tertiaryContainer : DynamicColors.palette.m3tertiary
 			percentage: SystemUsage.gpuPerc
 		}
 
 		Resource {
 			Layout.fillHeight: true
 			icon: "developer_board"
-			mainColor: DynamicColors.palette.m3primary
+			iconColor: root.visibilities.resources ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3onSurface
+			mainColor: root.visibilities.resources ? DynamicColors.palette.m3primaryContainer : DynamicColors.palette.m3primary
 			percentage: SystemUsage.gpuMemUsed
 		}
 	}

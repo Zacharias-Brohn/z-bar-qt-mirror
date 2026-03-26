@@ -13,7 +13,7 @@ CustomRect {
 	required property Wrapper popouts
 	required property PersistentProperties visibilities
 
-	color: DynamicColors.tPalette.m3surfaceContainer
+	color: visibilities.dashboard ? DynamicColors.palette.m3primary : DynamicColors.tPalette.m3surfaceContainer
 	implicitHeight: Config.barConfig.height + Appearance.padding.smallest * 2
 	implicitWidth: timeText.contentWidth + Appearance.padding.normal * 2
 	radius: Appearance.rounding.full
@@ -22,7 +22,7 @@ CustomRect {
 		id: timeText
 
 		anchors.centerIn: parent
-		color: DynamicColors.palette.m3onSurface
+		color: root.visibilities.dashboard ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3onSurface
 		text: Time.dateStr
 
 		Behavior on color {
