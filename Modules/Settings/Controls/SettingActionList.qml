@@ -48,9 +48,8 @@ ColumnLayout {
 	spacing: Appearance.spacing.smaller
 
 	Rectangle {
-		Layout.fillWidth: true
-		Layout.preferredHeight: root.implicitHeight
-		Layout.margins: -Appearance.padding.smaller
+		anchors.fill: parent
+		anchors.margins: -Appearance.padding.smaller
 		color: DynamicColors.palette.m3primaryContainer
 		opacity: root.highlighted ? 0.5 : 0
 		radius: Appearance.rounding.small
