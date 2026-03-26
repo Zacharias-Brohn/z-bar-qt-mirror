@@ -11,7 +11,7 @@ CustomRect {
 	required property Wrapper popouts
 	required property PersistentProperties visibilities
 
-	color: DynamicColors.tPalette.m3surfaceContainer
+	color: visibilities.sidebar ? DynamicColors.palette.m3primary : DynamicColors.tPalette.m3surfaceContainer
 	implicitHeight: Config.barConfig.height + Appearance.padding.smallest * 2
 	implicitWidth: implicitHeight
 	radius: Appearance.rounding.full
@@ -19,10 +19,8 @@ CustomRect {
 	MaterialIcon {
 		id: notificationCenterIcon
 
-		property color iconColor: DynamicColors.palette.m3onSurface
-
 		anchors.centerIn: parent
-		color: iconColor
+		color: root.visibilities.sidebar ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3onSurface
 		font.family: "Material Symbols Rounded"
 		font.pointSize: Appearance.font.size.larger
 		text: HasNotifications.hasNotifications ? "\uf4fe" : "\ue7f4"

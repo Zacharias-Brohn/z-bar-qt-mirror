@@ -9,29 +9,35 @@ import qs.Config
 Item {
 	id: root
 
+	property bool current: popouts.currentName.startsWith(`traymenu${ind}`) && popouts.hasCurrent
 	property bool hasLoaded: false
 	required property int ind
 	required property SystemTrayItem item
 	required property RowLayout loader
 	required property Wrapper popouts
 
-	StateLayer {
-		acceptedButtons: Qt.LeftButton | Qt.RightButton
+	CustomRect {
 		anchors.fill: parent
 		anchors.margins: 3
-		radius: 6
+		color: root.current ? DynamicColors.palette.m3primary : "transparent"
+		radius: Appearance.rounding.full
 
-		onClicked: {
-			if (mouse.button === Qt.LeftButton) {
-				root.item.activate();
-			} else if (mouse.button === Qt.RightButton) {
-				root.popouts.currentName = `traymenu${root.ind}`;
-				root.popouts.currentCenter = Qt.binding(() => root.mapToItem(root.loader, root.implicitWidth / 2, 0).x);
-				root.popouts.hasCurrent = true;
-				if (visibilities.sidebar || visibilities.dashboard || visibilities.settings) {
-					visibilities.sidebar = false;
-					visibilities.dashboard = false;
-					visibilities.settings = false;
+		StateLayer {
+			acceptedButtons: Qt.LeftButton | Qt.RightButton
+			anchors.fill: parent
+
+			onClicked: {
+				if (mouse.button === Qt.LeftButton) {
+					root.item.activate();
+				} else if (mouse.button === Qt.RightButton) {
+					root.popouts.currentName = `traymenu${root.ind}`;
+					root.popouts.currentCenter = Qt.binding(() => root.mapToItem(root.loader, root.implicitWidth / 2, 0).x);
+					root.popouts.hasCurrent = true;
+					if (visibilities.sidebar || visibilities.dashboard || visibilities.settings) {
+						visibilities.sidebar = false;
+						visibilities.dashboard = false;
+						visibilities.settings = false;
+					}
 				}
 			}
 		}
@@ -41,7 +47,7 @@ Item {
 		id: icon
 
 		anchors.centerIn: parent
-		color: DynamicColors.palette.m3onSurface
+		color: root.current ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3onSurface
 		implicitSize: 22
 		layer.enabled: Config.general.color.smart || Config.general.color.scheduleDark
 		source: root.item.icon
