@@ -74,9 +74,11 @@ Singleton {
 
 			var now = new Date();
 			if (now.getHours() >= root.start || now.getHours() < root.end) {
-				root.startNightLight(root.temp);
+				if (!root.enabled)
+					root.startNightLight(root.temp);
 			} else {
-				root.stopNightLight();
+				if (root.enabled)
+					root.stopNightLight();
 			}
 		}
 	}
