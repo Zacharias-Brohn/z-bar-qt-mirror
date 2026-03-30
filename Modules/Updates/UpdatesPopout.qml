@@ -103,17 +103,18 @@ CustomClippingRect {
 					Layout.fillHeight: true
 					Layout.preferredWidth: 300
 
-					CustomText {
+					MarqueeText {
 						id: versionFrom
 
 						Layout.fillHeight: true
 						Layout.preferredWidth: 125
+						animate: true
 						color: DynamicColors.palette.m3tertiary
-						elide: Text.ElideRight
 						font.pointSize: Appearance.font.size.large
-						horizontalAlignment: Text.AlignHCenter
+						marqueeEnabled: true
+						pauseMs: 4000
 						text: update.sections[1]
-						verticalAlignment: Text.AlignVCenter
+						width: 125
 					}
 
 					MaterialIcon {
@@ -125,17 +126,18 @@ CustomClippingRect {
 						verticalAlignment: Text.AlignVCenter
 					}
 
-					CustomText {
+					MarqueeText {
 						id: versionTo
 
 						Layout.fillHeight: true
 						Layout.preferredWidth: 120
+						animate: true
 						color: DynamicColors.palette.m3primary
-						elide: Text.ElideRight
 						font.pointSize: Appearance.font.size.large
-						horizontalAlignment: Text.AlignHCenter
+						marqueeEnabled: true
+						pauseMs: 4000
 						text: update.sections[3]
-						verticalAlignment: Text.AlignVCenter
+						width: 125
 					}
 				}
 			}

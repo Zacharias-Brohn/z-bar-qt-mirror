@@ -5,6 +5,7 @@ qml_module(ZShell-internal
         hyprdevices.hpp hyprdevices.cpp
         cachingimagemanager.hpp cachingimagemanager.cpp
 		circularindicatormanager.hpp circularindicatormanager.cpp
+		circularbuffer.hpp circularbuffer.cpp
     LIBRARIES
         Qt::Gui
         Qt::Quick

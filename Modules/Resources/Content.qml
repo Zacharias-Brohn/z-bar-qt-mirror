@@ -1,75 +1,30 @@
-import Quickshell
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import Quickshell.Services.UPower
+import ZShell.Internal
 import qs.Components
-import qs.Config
 import qs.Helpers
+import qs.Config
 
 Item {
 	id: root
 
 	readonly property int minWidth: 400 + 400 + Appearance.spacing.normal + 120 + Appearance.padding.large * 2
-	readonly property real nonAnimHeight: (placeholder.visible ? placeholder.height : content.implicitHeight) + Appearance.padding.normal * 2
-	readonly property real nonAnimWidth: Math.max(minWidth, content.implicitWidth) + Appearance.padding.normal * 2
-	required property real padding
-	required property PersistentProperties visibilities
 
 	function displayTemp(temp: real): string {
 		return `${Math.ceil(temp)}°C`;
 	}
 
-	implicitHeight: nonAnimHeight
-	implicitWidth: nonAnimWidth
-
-	CustomRect {
-		id: placeholder
-
-		anchors.centerIn: parent
-		color: DynamicColors.tPalette.m3surfaceContainer
-		height: 350
-		radius: Appearance.rounding.large - 10
-		visible: false
-		width: 400
-
-		ColumnLayout {
-			anchors.centerIn: parent
-			spacing: Appearance.spacing.normal
-
-			MaterialIcon {
-				Layout.alignment: Qt.AlignHCenter
-				color: DynamicColors.palette.m3onSurfaceVariant
-				font.pointSize: Appearance.font.size.extraLarge * 2
-				text: "tune"
-			}
-
-			CustomText {
-				Layout.alignment: Qt.AlignHCenter
-				color: DynamicColors.palette.m3onSurface
-				font.pointSize: Appearance.font.size.large
-				text: qsTr("No widgets enabled")
-			}
-
-			CustomText {
-				Layout.alignment: Qt.AlignHCenter
-				color: DynamicColors.palette.m3onSurfaceVariant
-				font.pointSize: Appearance.font.size.small
-				text: qsTr("Enable widgets in dashboard settings")
-			}
-		}
-	}
+	implicitHeight: content.implicitHeight
+	implicitWidth: Math.max(minWidth, content.implicitWidth)
 
 	RowLayout {
 		id: content
 
 		anchors.left: parent.left
-		anchors.leftMargin: root.padding
 		anchors.right: parent.right
-		anchors.rightMargin: root.padding
-		anchors.verticalCenter: parent.verticalCenter
 		spacing: Appearance.spacing.normal
-		visible: !placeholder.visible
 
 		Ref {
 			service: SystemUsage
@@ -84,7 +39,7 @@ Item {
 			RowLayout {
 				Layout.fillWidth: true
 				spacing: Appearance.spacing.normal
-				visible: true
+				visible: Config.dashboard.performance.showCpu || (Config.dashboard.performance.showGpu && SystemUsage.gpuType !== "NONE")
 
 				HeroCard {
 					Layout.fillWidth: true
@@ -172,7 +127,7 @@ Item {
 		property real percentage: UPower.displayDevice.percentage
 
 		color: DynamicColors.tPalette.m3surfaceContainer
-		radius: Appearance.rounding.large - 10
+		radius: Appearance.rounding.large
 
 		Behavior on animatedPercentage {
 			Anim {
@@ -318,7 +273,7 @@ Item {
 
 		clip: true
 		color: DynamicColors.tPalette.m3surfaceContainer
-		radius: Appearance.rounding.large - 10
+		radius: Appearance.rounding.large
 
 		Behavior on animatedPercentage {
 			Anim {
@@ -344,52 +299,15 @@ Item {
 				Layout.fillHeight: true
 				Layout.fillWidth: true
 
-				Canvas {
-					id: gaugeCanvas
-
+				ArcGauge {
+					accentColor: gaugeCard.accentColor
 					anchors.centerIn: parent
 					height: width
+					percentage: gaugeCard.animatedPercentage
+					startAngle: gaugeCard.arcStartAngle
+					sweepAngle: gaugeCard.arcSweep
+					trackColor: DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHigh, 2)
 					width: Math.min(parent.width, parent.height)
-
-					Component.onCompleted: requestPaint()
-					onPaint: {
-						const ctx = getContext("2d");
-						ctx.reset();
-						const cx = width / 2;
-						const cy = height / 2;
-						const radius = (Math.min(width, height) - 12) / 2;
-						const lineWidth = 10;
-						ctx.beginPath();
-						ctx.arc(cx, cy, radius, gaugeCard.arcStartAngle, gaugeCard.arcStartAngle + gaugeCard.arcSweep);
-						ctx.lineWidth = lineWidth;
-						ctx.lineCap = "round";
-						ctx.strokeStyle = DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHigh, 2);
-						ctx.stroke();
-						if (gaugeCard.animatedPercentage > 0) {
-							ctx.beginPath();
-							ctx.arc(cx, cy, radius, gaugeCard.arcStartAngle, gaugeCard.arcStartAngle + gaugeCard.arcSweep * gaugeCard.animatedPercentage);
-							ctx.lineWidth = lineWidth;
-							ctx.lineCap = "round";
-							ctx.strokeStyle = gaugeCard.accentColor;
-							ctx.stroke();
-						}
-					}
-
-					Connections {
-						function onAnimatedPercentageChanged() {
-							gaugeCanvas.requestPaint();
-						}
-
-						target: gaugeCard
-					}
-
-					Connections {
-						function onPaletteChanged() {
-							gaugeCanvas.requestPaint();
-						}
-
-						target: DynamicColors
-					}
 				}
 
 				CustomText {
@@ -427,7 +345,7 @@ Item {
 		property real usage: 0
 
 		color: DynamicColors.tPalette.m3surfaceContainer
-		radius: Appearance.rounding.large - 10
+		radius: Appearance.rounding.large
 
 		Behavior on animatedTemp {
 			Anim {
@@ -452,66 +370,57 @@ Item {
 			anchors.left: parent.left
 			anchors.top: parent.top
 			color: Qt.alpha(heroCard.accentColor, 0.15)
-			width: parent.width * heroCard.animatedUsage
+			implicitWidth: parent.width * heroCard.animatedUsage
 		}
 
-		ColumnLayout {
-			anchors.bottomMargin: Appearance.padding.normal
-			anchors.fill: parent
+		CardHeader {
+			accentColor: heroCard.accentColor
+			anchors.left: parent.left
 			anchors.leftMargin: Appearance.padding.large
-			anchors.rightMargin: Appearance.padding.large
-			anchors.topMargin: Appearance.padding.normal
+			anchors.top: parent.top
+			anchors.topMargin: Math.round(Appearance.padding.large * 1.2)
+			icon: heroCard.icon
+			title: heroCard.title
+			width: parent.width - anchors.leftMargin - usageColumn.anchors.rightMargin - usageLabel.width - Appearance.spacing.normal
+		}
+
+		Column {
+			anchors.bottom: parent.bottom
+			anchors.bottomMargin: Math.round(Appearance.padding.large * 1.3)
+			anchors.left: parent.left
+			anchors.margins: Math.round(Appearance.padding.large * 1.2)
+			anchors.right: parent.right
 			spacing: Appearance.spacing.small
 
-			CardHeader {
-				accentColor: heroCard.accentColor
-				icon: heroCard.icon
-				title: heroCard.title
+			Row {
+				spacing: Appearance.spacing.small
+
+				CustomText {
+					font.pointSize: Appearance.font.size.normal
+					font.weight: Font.Medium
+					text: heroCard.secondaryValue
+				}
+
+				CustomText {
+					anchors.baseline: parent.children[0].baseline
+					color: DynamicColors.palette.m3onSurfaceVariant
+					font.pointSize: Appearance.font.size.small
+					text: heroCard.secondaryLabel
+				}
 			}
 
-			RowLayout {
-				Layout.fillHeight: true
-				Layout.fillWidth: true
-				spacing: Appearance.spacing.normal
-
-				Column {
-					Layout.alignment: Qt.AlignBottom
-					Layout.fillWidth: true
-					spacing: Appearance.spacing.small
-
-					Row {
-						spacing: Appearance.spacing.small
-
-						CustomText {
-							font.pointSize: Appearance.font.size.normal
-							font.weight: Font.Medium
-							text: heroCard.secondaryValue
-						}
-
-						CustomText {
-							anchors.baseline: parent.children[0].baseline
-							color: DynamicColors.palette.m3onSurfaceVariant
-							font.pointSize: Appearance.font.size.small
-							text: heroCard.secondaryLabel
-						}
-					}
-
-					ProgressBar {
-						bgColor: Qt.alpha(heroCard.accentColor, 0.2)
-						fgColor: heroCard.accentColor
-						height: 6
-						value: heroCard.tempProgress
-						width: parent.width * 0.5
-					}
-				}
-
-				Item {
-					Layout.fillWidth: true
-				}
+			ProgressBar {
+				bgColor: Qt.alpha(heroCard.accentColor, 0.2)
+				fgColor: heroCard.accentColor
+				implicitHeight: 6
+				implicitWidth: parent.width * 0.5
+				value: heroCard.tempProgress
 			}
 		}
 
 		Column {
+			id: usageColumn
+
 			anchors.margins: Appearance.padding.large
 			anchors.right: parent.right
 			anchors.rightMargin: 32
@@ -519,6 +428,8 @@ Item {
 			spacing: 0
 
 			CustomText {
+				id: usageLabel
+
 				anchors.right: parent.right
 				color: DynamicColors.palette.m3onSurfaceVariant
 				font.pointSize: Appearance.font.size.normal
@@ -541,7 +452,7 @@ Item {
 
 		clip: true
 		color: DynamicColors.tPalette.m3surfaceContainer
-		radius: Appearance.rounding.large - 10
+		radius: Appearance.rounding.large
 
 		Ref {
 			service: NetworkUsage
@@ -563,109 +474,45 @@ Item {
 				Layout.fillHeight: true
 				Layout.fillWidth: true
 
-				Canvas {
-					id: sparklineCanvas
+				SparklineItem {
+					id: sparkline
 
-					property int _lastTickCount: -1
-					property int _tickCount: 0
-					property var downHistory: NetworkUsage.downloadHistory
-					property real slideProgress: 0
 					property real smoothMax: targetMax
 					property real targetMax: 1024
-					property var upHistory: NetworkUsage.uploadHistory
-
-					function checkAndAnimate(): void {
-						const currentLength = (downHistory || []).length;
-						if (currentLength > 0 && _tickCount !== _lastTickCount) {
-							_lastTickCount = _tickCount;
-							updateMax();
-						}
-					}
-
-					function updateMax(): void {
-						const downHist = downHistory || [];
-						const upHist = upHistory || [];
-						const allValues = downHist.concat(upHist);
-						targetMax = Math.max(...allValues, 1024);
-						requestPaint();
-					}
 
 					anchors.fill: parent
+					historyLength: NetworkUsage.historyLength
+					line1: NetworkUsage.uploadBuffer // qmllint disable missing-type
+					line1Color: DynamicColors.palette.m3secondary
+					line1FillAlpha: 0.15
+					line2: NetworkUsage.downloadBuffer // qmllint disable missing-type
+					line2Color: DynamicColors.palette.m3tertiary
+					line2FillAlpha: 0.2
+					maxValue: smoothMax
 
-					NumberAnimation on slideProgress {
-						duration: Config.dashboard.resourceUpdateInterval
-						from: 0
-						loops: Animation.Infinite
-						running: true
-						to: 1
-					}
 					Behavior on smoothMax {
 						Anim {
 							duration: Appearance.anim.durations.large
 						}
 					}
 
-					Component.onCompleted: updateMax()
-					onDownHistoryChanged: checkAndAnimate()
-					onPaint: {
-						const ctx = getContext("2d");
-						ctx.reset();
-						const w = width;
-						const h = height;
-						const downHist = downHistory || [];
-						const upHist = upHistory || [];
-						if (downHist.length < 2 && upHist.length < 2)
-							return;
-
-						const maxVal = smoothMax;
-
-						const drawLine = (history, color, fillAlpha) => {
-							if (history.length < 2)
-								return;
-
-							const len = history.length;
-							const stepX = w / (NetworkUsage.historyLength - 1);
-							const startX = w - (len - 1) * stepX - stepX * slideProgress + stepX;
-							ctx.beginPath();
-							ctx.moveTo(startX, h - (history[0] / maxVal) * h);
-							for (let i = 1; i < len; i++) {
-								const x = startX + i * stepX;
-								const y = h - (history[i] / maxVal) * h;
-								ctx.lineTo(x, y);
-							}
-							ctx.strokeStyle = color;
-							ctx.lineWidth = 2;
-							ctx.lineCap = "round";
-							ctx.lineJoin = "round";
-							ctx.stroke();
-							ctx.lineTo(startX + (len - 1) * stepX, h);
-							ctx.lineTo(startX, h);
-							ctx.closePath();
-							ctx.fillStyle = Qt.rgba(Qt.color(color).r, Qt.color(color).g, Qt.color(color).b, fillAlpha);
-							ctx.fill();
-						};
-
-						drawLine(upHist, DynamicColors.palette.m3secondary.toString(), 0.15);
-						drawLine(downHist, DynamicColors.palette.m3tertiary.toString(), 0.2);
-					}
-					onSlideProgressChanged: requestPaint()
-					onSmoothMaxChanged: requestPaint()
-					onUpHistoryChanged: checkAndAnimate()
-
 					Connections {
-						function onPaletteChanged() {
-							sparklineCanvas.requestPaint();
+						function onValuesChanged(): void {
+							sparkline.targetMax = Math.max(NetworkUsage.downloadBuffer.maximum, NetworkUsage.uploadBuffer.maximum, 1024);
+							slideAnim.restart();
 						}
 
-						target: DynamicColors
+						target: NetworkUsage.downloadBuffer
 					}
 
-					Timer {
-						interval: Config.dashboard.resourceUpdateInterval
-						repeat: true
-						running: true
+					NumberAnimation {
+						id: slideAnim
 
-						onTriggered: sparklineCanvas._tickCount++
+						duration: Config.dashboard.resourceUpdateInterval
+						from: 0
+						property: "slideProgress"
+						target: sparkline
+						to: 1
 					}
 				}
 
@@ -676,7 +523,7 @@ Item {
 					font.pointSize: Appearance.font.size.small
 					opacity: 0.6
 					text: qsTr("Collecting data...")
-					visible: NetworkUsage.downloadHistory.length < 2
+					visible: NetworkUsage.downloadBuffer.count < 2
 				}
 			}
 
@@ -819,7 +666,7 @@ Item {
 
 		clip: true
 		color: DynamicColors.tPalette.m3surfaceContainer
-		radius: Appearance.rounding.large - 10
+		radius: Appearance.rounding.large
 
 		Behavior on animatedPercentage {
 			Anim {
@@ -891,7 +738,6 @@ Item {
 
 					HoverHandler {
 						id: hintHover
-
 					}
 				}
 			}
@@ -900,52 +746,15 @@ Item {
 				Layout.fillHeight: true
 				Layout.fillWidth: true
 
-				Canvas {
-					id: storageGaugeCanvas
-
+				ArcGauge {
+					accentColor: storageGaugeCard.accentColor
 					anchors.centerIn: parent
 					height: width
+					percentage: storageGaugeCard.animatedPercentage
+					startAngle: storageGaugeCard.arcStartAngle
+					sweepAngle: storageGaugeCard.arcSweep
+					trackColor: DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHigh, 2)
 					width: Math.min(parent.width, parent.height)
-
-					Component.onCompleted: requestPaint()
-					onPaint: {
-						const ctx = getContext("2d");
-						ctx.reset();
-						const cx = width / 2;
-						const cy = height / 2;
-						const radius = (Math.min(width, height) - 12) / 2;
-						const lineWidth = 10;
-						ctx.beginPath();
-						ctx.arc(cx, cy, radius, storageGaugeCard.arcStartAngle, storageGaugeCard.arcStartAngle + storageGaugeCard.arcSweep);
-						ctx.lineWidth = lineWidth;
-						ctx.lineCap = "round";
-						ctx.strokeStyle = DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHigh, 2);
-						ctx.stroke();
-						if (storageGaugeCard.animatedPercentage > 0) {
-							ctx.beginPath();
-							ctx.arc(cx, cy, radius, storageGaugeCard.arcStartAngle, storageGaugeCard.arcStartAngle + storageGaugeCard.arcSweep * storageGaugeCard.animatedPercentage);
-							ctx.lineWidth = lineWidth;
-							ctx.lineCap = "round";
-							ctx.strokeStyle = storageGaugeCard.accentColor;
-							ctx.stroke();
-						}
-					}
-
-					Connections {
-						function onAnimatedPercentageChanged() {
-							storageGaugeCanvas.requestPaint();
-						}
-
-						target: storageGaugeCard
-					}
-
-					Connections {
-						function onPaletteChanged() {
-							storageGaugeCanvas.requestPaint();
-						}
-
-						target: DynamicColors
-					}
 				}
 
 				CustomText {
