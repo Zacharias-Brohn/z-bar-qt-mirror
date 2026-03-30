@@ -6,6 +6,7 @@ qml_module(ZShell-internal
         cachingimagemanager.hpp cachingimagemanager.cpp
 		circularindicatormanager.hpp circularindicatormanager.cpp
 		circularbuffer.hpp circularbuffer.cpp
+		sparklineitem.hpp sparklineitem.cpp
     LIBRARIES
         Qt::Gui
         Qt::Quick
