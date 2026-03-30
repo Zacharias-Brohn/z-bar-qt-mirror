@@ -1,3 +1,4 @@
+import Quickshell
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -11,19 +12,26 @@ Item {
 	id: root
 
 	readonly property int minWidth: 400 + 400 + Appearance.spacing.normal + 120 + Appearance.padding.large * 2
+	readonly property real nonAnimHeight: content.implicitHeight + Appearance.padding.normal * 2
+	readonly property real nonAnimWidth: Math.max(minWidth, content.implicitWidth) + Appearance.padding.normal * 2
+	required property real padding
+	required property PersistentProperties visibilities
 
 	function displayTemp(temp: real): string {
 		return `${Math.ceil(temp)}°C`;
 	}
 
-	implicitHeight: content.implicitHeight
-	implicitWidth: Math.max(minWidth, content.implicitWidth)
+	implicitHeight: nonAnimHeight
+	implicitWidth: nonAnimWidth
 
 	RowLayout {
 		id: content
 
 		anchors.left: parent.left
+		anchors.leftMargin: root.padding
 		anchors.right: parent.right
+		anchors.rightMargin: root.padding
+		anchors.verticalCenter: parent.verticalCenter
 		spacing: Appearance.spacing.normal
 
 		Ref {
@@ -127,7 +135,7 @@ Item {
 		property real percentage: UPower.displayDevice.percentage
 
 		color: DynamicColors.tPalette.m3surfaceContainer
-		radius: Appearance.rounding.large
+		radius: Appearance.rounding.large - Appearance.padding.normal
 
 		Behavior on animatedPercentage {
 			Anim {
@@ -273,7 +281,7 @@ Item {
 
 		clip: true
 		color: DynamicColors.tPalette.m3surfaceContainer
-		radius: Appearance.rounding.large
+		radius: Appearance.rounding.large - Appearance.padding.normal
 
 		Behavior on animatedPercentage {
 			Anim {
@@ -345,7 +353,7 @@ Item {
 		property real usage: 0
 
 		color: DynamicColors.tPalette.m3surfaceContainer
-		radius: Appearance.rounding.large
+		radius: Appearance.rounding.large - Appearance.padding.normal
 
 		Behavior on animatedTemp {
 			Anim {
@@ -452,7 +460,7 @@ Item {
 
 		clip: true
 		color: DynamicColors.tPalette.m3surfaceContainer
-		radius: Appearance.rounding.large
+		radius: Appearance.rounding.large - Appearance.padding.normal
 
 		Ref {
 			service: NetworkUsage
@@ -666,7 +674,7 @@ Item {
 
 		clip: true
 		color: DynamicColors.tPalette.m3surfaceContainer
-		radius: Appearance.rounding.large
+		radius: Appearance.rounding.large - Appearance.padding.normal
 
 		Behavior on animatedPercentage {
 			Anim {
