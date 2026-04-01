@@ -1,14 +1,4 @@
 #!/usr/bin/env python3
-"""
-Get users that are allowed to log in graphically.
-
-Criteria for a user to be considered a "graphical login" user:
-1. UID >= 1000 (regular user, not a system account)
-2. Has a valid login shell (not /sbin/nologin, /bin/false, etc.)
-3. Has a home directory that exists
-
-Output: JSON array of user objects with username, uid, home, shell, and face (avatar path)
-"""
 import json
 import os
 import pwd
@@ -37,11 +27,11 @@ def get_face_path(home: str, username: str) -> str:
         os.path.join(home, ".face.icon"),
         f"/var/lib/AccountsService/icons/{username}",
     ]
-    
+
     for path in candidates:
         if os.path.isfile(path):
             return path
-    
+
     return ""
 
 
@@ -50,37 +40,37 @@ def is_graphical_user(pw: pwd.struct_passwd) -> bool:
     # Must be a regular user (UID >= 1000)
     if pw.pw_uid < MIN_UID:
         return False
-    
+
     # Must have a valid login shell
     if pw.pw_shell in INVALID_SHELLS:
         return False
-    
+
     # Home directory should exist
     if not os.path.isdir(pw.pw_dir):
         return False
-    
+
     return True
 
 
 def main():
     users = []
-    
+
     for pw in pwd.getpwall():
         if not is_graphical_user(pw):
             continue
-        
+
         users.append({
             "username": pw.pw_name,
             "uid": pw.pw_uid,
             "home": pw.pw_dir,
             "shell": pw.pw_shell,
-            "gecos": pw.pw_gecos.split(",")[0] if pw.pw_gecos else "",  # Full name from GECOS field
+            "gecos": pw.pw_gecos.split(",")[0] if pw.pw_gecos else "",
             "face": get_face_path(pw.pw_dir, pw.pw_name),
         })
-    
+
     # Sort by username for consistent ordering
     users.sort(key=lambda u: u["username"])
-    
+
     print(json.dumps(users))
 
 
