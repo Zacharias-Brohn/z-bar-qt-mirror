@@ -111,6 +111,7 @@ CustomClippingRect {
 						animate: true
 						color: DynamicColors.palette.m3tertiary
 						font.pointSize: Appearance.font.size.large
+						horizontalAlignment: Text.AlignHCenter
 						marqueeEnabled: true
 						pauseMs: 4000
 						text: update.sections[1]
@@ -134,6 +135,7 @@ CustomClippingRect {
 						animate: true
 						color: DynamicColors.palette.m3primary
 						font.pointSize: Appearance.font.size.large
+						horizontalAlignment: Text.AlignHCenter
 						marqueeEnabled: true
 						pauseMs: 4000
 						text: update.sections[3]
