@@ -31,7 +31,9 @@ A feature-rich desktop shell for [Hyprland](https://hypr.land/) built with [Quic
 
 ### Arch Linux
 
-For arch-based distros, there is a pkgbuild available at
+For arch-based distros, there is a pkgbuild available [here](https://git.zach-dev.cc/zach/zshell-PKGBUILD)
+
+### Manual install
 
 ```bash
 cmake -B build -G Ninja
