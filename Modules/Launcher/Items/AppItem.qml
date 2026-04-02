@@ -23,7 +23,7 @@ Item {
 			root.visibilities.launcher = false;
 		}
 
-		radius: 8
+		radius: Appearance.rounding.smallest
 	}
 
 	Item {

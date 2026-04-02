@@ -16,7 +16,7 @@ CustomRect {
 	Layout.fillWidth: true
 	color: DynamicColors.tPalette.m3surfaceContainer
 	implicitHeight: layout.implicitHeight + 18 * 2
-	radius: 8
+	radius: Appearance.rounding.smallest
 
 	ColumnLayout {
 		id: layout

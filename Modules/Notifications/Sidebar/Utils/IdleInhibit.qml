@@ -11,7 +11,7 @@ CustomRect {
 	clip: true
 	color: DynamicColors.tPalette.m3surfaceContainer
 	implicitHeight: layout.implicitHeight + (IdleInhibitor.enabled ? activeChip.implicitHeight + activeChip.anchors.topMargin : 0) + 18 * 2
-	radius: 8
+	radius: Appearance.rounding.smallest
 
 	Behavior on implicitHeight {
 		Anim {
@@ -33,7 +33,7 @@ CustomRect {
 			color: IdleInhibitor.enabled ? DynamicColors.palette.m3secondary : DynamicColors.palette.m3secondaryContainer
 			implicitHeight: icon.implicitHeight + 7 * 2
 			implicitWidth: implicitHeight
-			radius: 1000
+			radius: Appearance.rounding.full
 
 			MaterialIcon {
 				id: icon
@@ -102,7 +102,7 @@ CustomRect {
 			color: DynamicColors.palette.m3primary
 			implicitHeight: activeText.implicitHeight + 10 * 2
 			implicitWidth: activeText.implicitWidth + 10 * 2
-			radius: 1000
+			radius: Appearance.rounding.full
 
 			CustomText {
 				id: activeText

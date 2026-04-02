@@ -37,7 +37,7 @@ Item {
 			id: indicator
 
 			color: DynamicColors.palette.m3primary
-			radius: 1000
+			radius: Appearance.rounding.full
 			state: profiles.current
 
 			states: [
@@ -158,7 +158,7 @@ Item {
 			}
 
 			color: profiles.current === parent.icon ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3onSurface
-			radius: 1000
+			radius: Appearance.rounding.full
 		}
 
 		MaterialIcon {

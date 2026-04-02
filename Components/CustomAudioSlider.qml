@@ -19,7 +19,7 @@ Slider {
 			bottomRightRadius: root.implicitHeight / 15
 			color: root.nonPeakColor
 			implicitWidth: root.handle.x - root.implicitHeight
-			radius: 1000
+			radius: Appearance.rounding.full
 			topRightRadius: root.implicitHeight / 15
 
 			CustomRect {
@@ -29,7 +29,7 @@ Slider {
 				bottomRightRadius: root.implicitHeight / 15
 				color: root.peakColor
 				implicitWidth: parent.width * root.peak
-				radius: 1000
+				radius: Appearance.rounding.full
 				topRightRadius: root.implicitHeight / 15
 
 				Behavior on implicitWidth {
@@ -49,7 +49,7 @@ Slider {
 			bottomLeftRadius: root.implicitHeight / 15
 			color: DynamicColors.tPalette.m3surfaceContainer
 			implicitWidth: root.implicitWidth - root.handle.x - root.handle.implicitWidth - root.implicitHeight
-			radius: 1000
+			radius: Appearance.rounding.full
 			topLeftRadius: root.implicitHeight / 15
 		}
 	}
@@ -58,7 +58,7 @@ Slider {
 		color: DynamicColors.palette.m3primary
 		implicitHeight: 15
 		implicitWidth: 5
-		radius: 1000
+		radius: Appearance.rounding.full
 		x: root.visualPosition * root.availableWidth - implicitWidth / 2
 
 		MouseArea {

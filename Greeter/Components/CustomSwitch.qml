@@ -15,7 +15,7 @@ Switch {
 		color: root.checked ? DynamicColors.palette.m3primary : DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHighest, root.cLayer)
 		implicitHeight: 13 + 7 * 2
 		implicitWidth: implicitHeight * 1.7
-		radius: 1000
+		radius: Appearance.rounding.full
 
 		CustomRect {
 			readonly property real nonAnimWidth: root.pressed ? implicitHeight * 1.3 : implicitHeight
@@ -24,7 +24,7 @@ Switch {
 			color: root.checked ? DynamicColors.palette.m3onPrimary : DynamicColors.layer(DynamicColors.palette.m3outline, root.cLayer + 1)
 			implicitHeight: parent.implicitHeight - 10
 			implicitWidth: nonAnimWidth
-			radius: 1000
+			radius: Appearance.rounding.full
 			x: root.checked ? parent.implicitWidth - nonAnimWidth - 10 / 2 : 10 / 2
 
 			Behavior on implicitWidth {

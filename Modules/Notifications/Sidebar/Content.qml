@@ -19,7 +19,7 @@ Item {
 			Layout.fillHeight: true
 			Layout.fillWidth: true
 			color: DynamicColors.tPalette.m3surfaceContainerLow
-			radius: 8
+			radius: Appearance.rounding.smallest
 
 			NotifDock {
 				props: root.props

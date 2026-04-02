@@ -115,7 +115,7 @@ CustomRect {
 				sourceComponent: ClippingRectangle {
 					implicitHeight: Config.notifs.sizes.image
 					implicitWidth: Config.notifs.sizes.image
-					radius: 1000
+					radius: Appearance.rounding.full
 
 					Image {
 						anchors.fill: parent
@@ -142,7 +142,7 @@ CustomRect {
 					color: root.modelData.urgency === NotificationUrgency.Critical ? DynamicColors.palette.m3error : root.modelData.urgency === NotificationUrgency.Low ? DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHighest, 2) : DynamicColors.palette.m3secondaryContainer
 					implicitHeight: root.hasImage ? Config.notifs.sizes.badge : Config.notifs.sizes.image
 					implicitWidth: root.hasImage ? Config.notifs.sizes.badge : Config.notifs.sizes.image
-					radius: 1000
+					radius: Appearance.rounding.full
 
 					Loader {
 						id: icon
@@ -312,7 +312,7 @@ CustomRect {
 					}
 
 					color: root.modelData.urgency === NotificationUrgency.Critical ? DynamicColors.palette.m3onSecondaryContainer : DynamicColors.palette.m3onSurface
-					radius: 1000
+					radius: Appearance.rounding.full
 				}
 
 				MaterialIcon {
@@ -431,7 +431,7 @@ CustomRect {
 		color: root.modelData.urgency === NotificationUrgency.Critical ? DynamicColors.palette.m3secondary : DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHigh, 2)
 		implicitHeight: actionText.height + 4 * 2
 		implicitWidth: actionText.width + 8 * 2
-		radius: 1000
+		radius: Appearance.rounding.full
 
 		StateLayer {
 			function onClicked(): void {
@@ -439,7 +439,7 @@ CustomRect {
 			}
 
 			color: root.modelData.urgency === NotificationUrgency.Critical ? DynamicColors.palette.m3onSecondary : DynamicColors.palette.m3onSurface
-			radius: 1000
+			radius: Appearance.rounding.full
 		}
 
 		CustomText {

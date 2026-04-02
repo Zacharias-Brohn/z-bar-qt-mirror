@@ -50,7 +50,7 @@ Item {
 		anchors.right: parent.right
 		color: DynamicColors.layer(DynamicColors.palette.m3surfaceContainer, 2)
 		implicitHeight: Math.max(searchIcon.implicitHeight, search.implicitHeight, clearIcon.implicitHeight)
-		radius: 8
+		radius: Appearance.rounding.smallest
 
 		MaterialIcon {
 			id: searchIcon

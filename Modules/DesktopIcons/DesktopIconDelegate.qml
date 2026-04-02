@@ -202,7 +202,7 @@ Item {
 			anchors.margins: 4
 			color: "white"
 			opacity: root.selectedIcons.includes(filePath) ? 0.2 : 0.0
-			radius: 8
+			radius: Appearance.rounding.smallest
 
 			Behavior on opacity {
 				Anim {
@@ -262,7 +262,7 @@ Item {
 				anchors.margins: 4
 				color: "white"
 				opacity: parent.containsMouse ? 0.1 : 0.0
-				radius: 8
+				radius: Appearance.rounding.smallest
 
 				Behavior on opacity {
 					Anim {

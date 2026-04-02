@@ -7,7 +7,7 @@ Item {
 
 	ClippingRectangle {
 		anchors.fill: parent
-		radius: 1000
+		radius: Appearance.rounding.full
 
 		Image {
 			id: userImage

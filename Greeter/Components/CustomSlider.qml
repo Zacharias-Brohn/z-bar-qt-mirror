@@ -13,7 +13,7 @@ Slider {
 			bottomRightRadius: root.implicitHeight / 6
 			color: DynamicColors.palette.m3primary
 			implicitWidth: root.handle.x - root.implicitHeight / 2
-			radius: 1000
+			radius: Appearance.rounding.full
 			topRightRadius: root.implicitHeight / 6
 		}
 
@@ -24,7 +24,7 @@ Slider {
 			bottomLeftRadius: root.implicitHeight / 6
 			color: DynamicColors.tPalette.m3surfaceContainer
 			implicitWidth: parent.width - root.handle.x - root.handle.implicitWidth - root.implicitHeight / 2
-			radius: 1000
+			radius: Appearance.rounding.full
 			topLeftRadius: root.implicitHeight / 6
 		}
 	}
@@ -33,7 +33,7 @@ Slider {
 		color: DynamicColors.palette.m3primary
 		implicitHeight: 15
 		implicitWidth: 5
-		radius: 1000
+		radius: Appearance.rounding.full
 		x: root.visualPosition * root.availableWidth - implicitWidth / 2
 
 		MouseArea {

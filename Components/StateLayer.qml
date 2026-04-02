@@ -85,7 +85,7 @@ MouseArea {
 			border.pixelAligned: false
 			color: root.color
 			opacity: 0
-			radius: 1000
+			radius: Appearance.rounding.full
 
 			transform: Translate {
 				x: -ripple.width / 2

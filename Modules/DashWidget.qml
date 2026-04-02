@@ -15,7 +15,7 @@ CustomRect {
 	anchors.topMargin: 6
 	color: DynamicColors.tPalette.m3surfaceContainer
 	implicitWidth: 40
-	radius: 1000
+	radius: Appearance.rounding.full
 
 	StateLayer {
 		onClicked: {

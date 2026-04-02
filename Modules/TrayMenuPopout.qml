@@ -86,7 +86,7 @@ StackView {
 				color: modelData.isSeparator ? DynamicColors.palette.m3outlineVariant : "transparent"
 				implicitHeight: modelData.isSeparator ? 1 : children.implicitHeight
 				implicitWidth: root.biggestWidth
-				radius: 4
+				radius: Appearance.rounding.smallest / 2
 
 				Loader {
 					id: children
@@ -211,7 +211,7 @@ StackView {
 					CustomRect {
 						anchors.fill: parent
 						color: DynamicColors.palette.m3secondaryContainer
-						radius: 4
+						radius: Appearance.rounding.smallest / 2
 
 						StateLayer {
 							function onClicked(): void {

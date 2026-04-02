@@ -124,12 +124,10 @@ Item {
 
 			VolumesTab {
 				id: vol
-
 			}
 
 			DevicesTab {
 				id: dev
-
 			}
 		}
 	}
@@ -139,12 +137,10 @@ Item {
 
 		ButtonGroup {
 			id: sinks
-
 		}
 
 		ButtonGroup {
 			id: sources
-
 		}
 
 		CustomText {
@@ -210,7 +206,7 @@ Item {
 					Layout.preferredHeight: 40
 					Layout.preferredWidth: 40
 					color: DynamicColors.palette.m3primary
-					radius: 1000
+					radius: Appearance.rounding.full
 
 					MaterialIcon {
 						anchors.alignWhenCentered: false
@@ -284,7 +280,7 @@ Item {
 					Layout.preferredHeight: 40
 					Layout.preferredWidth: 40
 					color: DynamicColors.palette.m3primary
-					radius: 1000
+					radius: Appearance.rounding.full
 
 					MaterialIcon {
 						anchors.alignWhenCentered: false
@@ -372,7 +368,7 @@ Item {
 						Layout.preferredHeight: 40
 						Layout.preferredWidth: 40
 						color: DynamicColors.palette.m3primary
-						radius: 1000
+						radius: Appearance.rounding.full
 
 						MaterialIcon {
 							id: icon
@@ -383,7 +379,7 @@ Item {
 							text: "volume_up"
 
 							StateLayer {
-								radius: 1000
+								radius: Appearance.rounding.full
 
 								onClicked: {
 									appBox.modelData.audio.muted = !appBox.modelData.audio.muted;

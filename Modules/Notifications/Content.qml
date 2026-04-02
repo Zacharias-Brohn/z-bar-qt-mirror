@@ -51,7 +51,7 @@ Item {
 		anchors.fill: parent
 		anchors.margins: root.padding
 		color: "transparent"
-		radius: 4
+		radius: Appearance.rounding.smallest / 2
 
 		CustomListView {
 			id: list
@@ -126,7 +126,7 @@ Item {
 					color: "transparent"
 					implicitHeight: notif.implicitHeight
 					implicitWidth: notif.implicitWidth
-					radius: 4
+					radius: Appearance.rounding.smallest / 2
 
 					Notification {
 						id: notif

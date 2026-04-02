@@ -171,7 +171,7 @@ Item {
 			font.pointSize: Math.round(18 * 1.2)
 			icon: "clear_all"
 			padding: 8
-			radius: 8
+			radius: Appearance.rounding.smallest
 
 			onClicked: clearTimer.start()
 

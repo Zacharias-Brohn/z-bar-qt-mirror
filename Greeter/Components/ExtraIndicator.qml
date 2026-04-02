@@ -10,7 +10,7 @@ CustomRect {
 	implicitHeight: count.implicitHeight + 4 * 2
 	implicitWidth: count.implicitWidth + 8 * 2
 	opacity: extra > 0 ? 1 : 0
-	radius: 8
+	radius: Appearance.rounding.smallest
 	scale: extra > 0 ? 1 : 0.5
 
 	Behavior on opacity {

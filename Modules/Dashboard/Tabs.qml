@@ -83,7 +83,7 @@ Item {
 			anchors.top: parent.top
 			color: DynamicColors.palette.m3primary
 			implicitHeight: parent.implicitHeight * 2
-			radius: 1000
+			radius: Appearance.rounding.full
 		}
 	}
 
@@ -184,7 +184,7 @@ Item {
 				anchors.verticalCenter: parent.verticalCenter
 				color: "transparent"
 				implicitHeight: parent.height + 8 * 2
-				radius: 8
+				radius: Appearance.rounding.smallest
 
 				CustomRect {
 					id: stateLayer
@@ -204,7 +204,7 @@ Item {
 
 					color: tab.current ? DynamicColors.palette.m3primary : DynamicColors.palette.m3onSurface
 					opacity: 0
-					radius: 1000
+					radius: Appearance.rounding.full
 
 					transform: Translate {
 						x: -ripple.width / 2

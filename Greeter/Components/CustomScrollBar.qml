@@ -29,7 +29,7 @@ ScrollBar {
 				return 0.6;
 			return 0;
 		}
-		radius: 1000
+		radius: Appearance.rounding.full
 
 		Behavior on opacity {
 			Anim {

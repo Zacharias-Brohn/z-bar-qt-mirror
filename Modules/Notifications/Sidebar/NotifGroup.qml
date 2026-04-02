@@ -43,7 +43,7 @@ CustomRect {
 	clip: true
 	color: DynamicColors.layer(DynamicColors.palette.m3surfaceContainer, 2)
 	implicitHeight: content.implicitHeight + 10 * 2
-	radius: 8
+	radius: Appearance.rounding.smallest
 
 	Component.onDestruction: {
 		if (notifCount === 0 && expanded)
@@ -100,7 +100,7 @@ CustomRect {
 			CustomClippingRect {
 				anchors.fill: parent
 				color: root.urgency === NotificationUrgency.Critical ? DynamicColors.palette.m3error : root.urgency === NotificationUrgency.Low ? DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHigh, 3) : DynamicColors.palette.m3secondaryContainer
-				radius: 1000
+				radius: Appearance.rounding.full
 
 				Loader {
 					anchors.centerIn: parent
@@ -117,7 +117,7 @@ CustomRect {
 					color: root.urgency === NotificationUrgency.Critical ? DynamicColors.palette.m3error : root.urgency === NotificationUrgency.Low ? DynamicColors.palette.m3surfaceContainerHigh : DynamicColors.palette.m3secondaryContainer
 					implicitHeight: Config.notifs.sizes.badge
 					implicitWidth: Config.notifs.sizes.badge
-					radius: 1000
+					radius: Appearance.rounding.full
 
 					CustomIcon {
 						anchors.centerIn: parent
@@ -168,7 +168,7 @@ CustomRect {
 					color: root.urgency === NotificationUrgency.Critical ? DynamicColors.palette.m3error : DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHigh, 3)
 					implicitHeight: groupCount.implicitHeight + 10
 					implicitWidth: expandBtn.implicitWidth + 7 * 2
-					radius: 1000
+					radius: Appearance.rounding.full
 
 					StateLayer {
 						function onClicked(): void {

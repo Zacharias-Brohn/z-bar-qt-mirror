@@ -82,7 +82,7 @@ Scope {
 			implicitHeight: layout.childrenRect.height + 28
 			implicitWidth: layout.childrenRect.width + 32
 			opacity: 0
-			radius: 24
+			radius: Appearance.rounding.small * 2
 
 			ColumnLayout {
 				id: layout
@@ -159,7 +159,7 @@ Scope {
 							background: CustomRect {
 								color: (polkitAgent.flow?.failed && passInput.text === "") ? DynamicColors.palette.m3error : DynamicColors.tPalette.m3surfaceVariant
 								implicitHeight: 40
-								radius: 8
+								radius: Appearance.rounding.smallest
 							}
 
 							onAccepted: okButton.clicked()
@@ -251,7 +251,7 @@ Scope {
 						Layout.preferredWidth: 92
 						bgColor: DynamicColors.palette.m3surfaceContainer
 						enabled: true
-						radius: 1000
+						radius: Appearance.rounding.full
 						text: "Details"
 						textColor: DynamicColors.palette.m3onSurface
 
@@ -274,7 +274,7 @@ Scope {
 						Layout.preferredWidth: 76
 						bgColor: DynamicColors.palette.m3primary
 						enabled: passInput.text.length > 0 || !!polkitAgent.flow?.isResponseRequired
-						radius: 1000
+						radius: Appearance.rounding.full
 						text: "OK"
 						textColor: DynamicColors.palette.m3onPrimary
 
@@ -293,7 +293,7 @@ Scope {
 						Layout.preferredWidth: 76
 						bgColor: DynamicColors.palette.m3surfaceContainer
 						enabled: passInput.text.length > 0 || !!polkitAgent.flow?.isResponseRequired
-						radius: 1000
+						radius: Appearance.rounding.full
 						text: "Cancel"
 						textColor: DynamicColors.palette.m3onSurface
 
@@ -327,7 +327,6 @@ Scope {
 
 	PolkitAgent {
 		id: polkitAgent
-
 	}
 
 	Variants {

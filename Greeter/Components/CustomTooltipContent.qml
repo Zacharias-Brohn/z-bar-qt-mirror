@@ -22,7 +22,7 @@ Item {
 		implicitHeight: shown ? (tooltipTextObject.implicitHeight + 2 * root.verticalPadding) : 0
 		implicitWidth: shown ? (tooltipTextObject.implicitWidth + 2 * root.horizontalPadding) : 0
 		opacity: shown ? 1 : 0
-		radius: 8
+		radius: Appearance.rounding.smallest
 
 		Behavior on implicitHeight {
 			Anim {

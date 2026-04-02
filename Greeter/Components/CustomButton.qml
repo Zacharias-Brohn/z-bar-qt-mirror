@@ -6,7 +6,7 @@ Button {
 	id: control
 
 	property color bgColor: DynamicColors.palette.m3primary
-	property int radius: 4
+	property int radius: Appearance.rounding.smallest / 2
 	property color textColor: DynamicColors.palette.m3onPrimary
 
 	background: CustomRect {

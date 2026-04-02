@@ -18,7 +18,7 @@ Row {
 		color: DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHigh, 2)
 		implicitHeight: info.implicitHeight
 		implicitWidth: info.implicitHeight
-		radius: 8
+		radius: Appearance.rounding.smallest
 
 		MaterialIcon {
 			anchors.centerIn: parent

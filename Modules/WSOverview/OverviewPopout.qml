@@ -36,7 +36,7 @@ Item {
 				Layout.preferredWidth: 320 + 10
 				border.color: "white"
 				border.width: 1
-				radius: 8
+				radius: Appearance.rounding.smallest
 
 				Repeater {
 					model: workspacePreview.modelData.toplevels
@@ -65,7 +65,7 @@ Item {
 							border.width: 1
 							implicitHeight: preview.appPosition.height
 							implicitWidth: preview.appPosition.width
-							radius: 4
+							radius: Appearance.rounding.smallest / 2
 							x: preview.appPosition.x
 							y: preview.appPosition.y - 3.4
 

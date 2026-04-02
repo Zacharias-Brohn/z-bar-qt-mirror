@@ -22,7 +22,7 @@ CheckBox {
 		color: DynamicColors.palette.m3surfaceVariant
 		implicitHeight: control.checkHeight
 		implicitWidth: control.checkWidth
-		radius: 4
+		radius: Appearance.rounding.smallest / 2
 
 		CustomRect {
 			color: DynamicColors.palette.m3primary

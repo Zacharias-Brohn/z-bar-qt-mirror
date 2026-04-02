@@ -25,7 +25,7 @@ RadioButton {
 		color: "transparent"
 		implicitHeight: 16
 		implicitWidth: 16
-		radius: 1000
+		radius: Appearance.rounding.full
 
 		Behavior on border.color {
 			CAnim {
@@ -47,7 +47,7 @@ RadioButton {
 			color: Qt.alpha(DynamicColors.palette.m3primary, root.checked ? 1 : 0)
 			implicitHeight: 8
 			implicitWidth: 8
-			radius: 1000
+			radius: Appearance.rounding.full
 		}
 	}
 }
