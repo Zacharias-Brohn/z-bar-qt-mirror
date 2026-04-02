@@ -15,6 +15,8 @@ Item {
 			max -= panels.resources.nonAnimHeight;
 		if (visibilities.dashboard && panels.dashboard.x < root.x + root.implicitWidth)
 			max -= panels.dashboard.nonAnimHeight;
+		if (panels.popouts.currentName.startsWith("updates"))
+			max -= panels.popouts.nonAnimHeight;
 		return max;
 	}
 	required property var panels

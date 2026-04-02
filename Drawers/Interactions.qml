@@ -168,7 +168,7 @@ CustomMouseArea {
 		}
 
 		function onResourcesChanged() {
-			if (root.visibilities.resources && root.popouts.currentName.startsWith("audio")) {
+			if (root.visibilities.resources && (root.popouts.currentName.startsWith("audio") || root.popouts.currentName.startsWith("updates"))) {
 				root.popouts.hasCurrent = false;
 			}
 

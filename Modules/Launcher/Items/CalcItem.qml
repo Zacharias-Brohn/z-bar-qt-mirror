@@ -27,7 +27,7 @@ Item {
 			root.onClicked();
 		}
 
-		radius: Appearance.rounding.normal
+		radius: Appearance.rounding.smallest
 	}
 
 	RowLayout {

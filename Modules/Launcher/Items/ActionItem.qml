@@ -19,7 +19,7 @@ Item {
 			root.modelData?.onClicked(root.list);
 		}
 
-		radius: Appearance.rounding.normal
+		radius: Appearance.rounding.smallest
 	}
 
 	Item {

@@ -73,7 +73,7 @@ CustomListView {
 		implicitHeight: root.currentItem?.implicitHeight ?? 0
 		implicitWidth: root.width
 		opacity: 0.08
-		radius: 8
+		radius: Appearance.rounding.smallest
 		y: root.currentItem?.y ?? 0
 
 		Behavior on y {
