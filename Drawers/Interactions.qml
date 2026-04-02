@@ -125,7 +125,8 @@ CustomMouseArea {
 
 				root.visibilities.settings = false;
 				root.visibilities.sidebar = false;
-				root.popouts.hasCurrent = false;
+				if (!root.popouts.currentName.startsWith("updates"))
+					root.popouts.hasCurrent = false;
 			} else {
 				root.dashboardShortcutActive = false;
 			}

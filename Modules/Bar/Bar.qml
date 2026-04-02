@@ -28,7 +28,7 @@ RowLayout {
 			return;
 		}
 
-		if (visibilities.sidebar || visibilities.dashboard || visibilities.resources || visibilities.settings)
+		if (visibilities.sidebar || visibilities.resources || visibilities.settings)
 			return;
 
 		const id = ch.id;
