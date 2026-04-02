@@ -1,39 +1,61 @@
 <div align="center">
-    <img src="/images/shell.png">
+    <img src="/images/shell.png" alt="ZShell screenshot">
 </div>
 
 # ZShell
 
-A feature-rich desktop shell for [Hyprland](https://hypr.land/) built with [Quickshell](https://quickshell.outfoxxed.me/) and Qt6/QML. Provides a modern, Material Design 3 inspired status bar, application launcher, notification center, wallpaper manager with dynamic color theming, and lock screen.
+ZShell is a Hyprland-focused desktop shell built with Quickshell + Qt6/QML.
 
-## Features
+It includes a configurable top bar, launcher, notifications daemon + sidebar, wallpaper and dynamic color pipeline, lock screen, OSD widgets, dashboard, dock, desktop icons, and a separate greetd-compatible greeter.
 
-- **Status Bar** - Configurable top panel with workspace indicators, audio controls, system resource monitors (CPU/RAM/GPU), system tray, clock with calendar, and notification bell
-- **Application Launcher** - Fuzzy search with app frequency tracking, special search prefixes for filtering by category, description, keywords, etc.
-- **Notification Center** - Full notification daemon with grouped notifications, popups, persistent storage, and Do Not Disturb mode
-- **Wallpaper Manager** - Browse and select wallpapers with live preview carousel
-- **Dynamic Color Theming** - Automatic Material Design 3 color palette generation from wallpapers
-- **Lock Screen** - Secure session lock with PAM authentication
-- **Hyprland Integration** - Deep integration with Hyprland for workspaces, window focus, keyboard state, and more
+## Highlights
 
-## Dependencies
+- Multi-window shell layout driven by `Drawers/Windows.qml` and panel/interactions wrappers
+- Configurable bar entries and popouts (audio, tray, network, power, resources, clock, active window)
+- Launcher with app DB frequency tracking, action commands, fuzzy search modes, and wallpaper/scheme flows
+- Notification server with persistence (`~/.local/state/zshell/notifs.json`) and sidebar UI
+- Dynamic Material 3 palette generation from wallpaper, optional template rendering, terminal sequence application
+- Lock module with PAM support, idle monitors, optional fingerprint integration, and blur background generation
+- Additional modules: dock, desktop icons, dashboard, OSD, polkit agent, area picker/screenshot flow
 
-- Qt 6.9+
-- [Quickshell](https://quickshell.outfoxxed.me/)
-- [Hyprland](https://hyprland.org/)
-- Python 3 with `materialyoucolor` and `Pillow` (for dynamic color generation)
-- PipeWire (for audio)
-- Aubio
-- DDCUtil
-- Mpris
+## Project Layout
 
-## Installation
+```text
+.
+├── shell.qml              # Main shell entry point (qs config: zshell)
+├── Drawers/               # Window, panel, interaction composition
+├── Modules/               # UI/feature modules (bar, launcher, lock, notifs, settings, etc.)
+├── Config/                # JSON-backed config schema + serializers
+├── Daemons/               # Notification/audio/network daemons
+├── Helpers/               # Shared runtime helpers and integration glue
+├── Paths/                 # Runtime paths (XDG + state/cache/data locations)
+├── Plugins/ZShell/        # Native Qt/QML plugin (C++)
+├── Greeter/               # Separate Quickshell greeter app and scripts
+├── cli/                   # Python CLI (`zshell-cli`)
+└── scripts/               # Utility scripts (greeter prep, updates, fuzzy helpers)
+```
 
-### Arch Linux
+## Runtime Requirements
 
-For arch-based distros, there is a pkgbuild available [here](https://git.zach-dev.cc/zach/zshell-PKGBUILD)
+Core requirements:
 
-### Manual install
+- Qt6 + Quickshell
+- Hyprland (Wayland session integration)
+- Python 3 for scheme/wallpaper tooling
+
+Used by major features (install as needed for your setup):
+
+- `app2unit` (launcher app execution)
+- `nmcli` (network integration)
+- `brightnessctl`, `ddcutil` (brightness controls)
+- `wl-copy`, `swappy` (picker/screenshot flow)
+- `libqalculate` (launcher calculator)
+- `PipeWire` + audio stack + `aubio`/`cava` paths for media visualization
+- `gsettings` (optional GTK dark/light mode sync)
+
+## Build and Install
+
+### CMake (manual)
 
 ```bash
 cmake -B build -G Ninja
@@ -41,129 +63,190 @@ ninja -C build
 sudo ninja -C build install
 ```
 
-This installs the QML plugin to `/usr/lib/qt6/qml`.
+Defaults from `CMakeLists.txt`:
 
-### NixOS
+- `ENABLE_MODULES="plugin;shell"`
+- QML plugin install dir: `usr/lib/qt6/qml`
+- shell config install dir: `etc/xdg/quickshell/zshell`
+- greeter install dir: `etc/xdg/quickshell/zshell-greeter`
 
-**Note that not all features work well. This is due to limited testing on NixOS.**
+### Nix Flake
 
-In your flake.nix file, add the following in your inputs.
+The flake exposes:
 
-```nix
-inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    z-bar-qt = {
-        url = "git+ssh://git@git.zach-dev.cc/zach/z-bar-qt.git";
-        inputs.nixpkgs.follows = "nixpkgs";
-    };
-};
-```
+- `packages.<system>.zshell`
+- `packages.<system>.zshell-cli`
 
-Below a full example of what it could look like.
+Add it as an input in your system flake:
 
 ```nix
 {
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     z-bar-qt = {
-        url = "git+ssh://git@git.zach-dev.cc/zach/z-bar-qt.git";
-        inputs.nixpkgs.follows = "nixpgks";
+      # or: git+ssh://git@git.zach-dev.cc/zach/z-bar-qt.git
+      url = "github:Zacharias-Brohn/z-bar-qt";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+  };
+}
+```
+
+Full `flake.nix` example (`nixosConfigurations`):
+
+```nix
+{
+  inputs = {
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    z-bar-qt = {
+      # or: git+ssh://git@git.zach-dev.cc/zach/z-bar-qt.git
+      url = "github:Zacharias-Brohn/z-bar-qt";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
-  outputs =
-    inputs@{
-      nixpkgs,
-      self,
-      ...
-    }:
-    let
-      system = "x86_64-linux";
-    in
-    {
-      nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
-        specialArgs = {
-          inherit inputs;
-          inherit system;
-        };
-        modules = [
-          ./configuration.nix
-        ];
-      };
+  outputs = inputs@{ nixpkgs, ... }:
+  let
+    system = "x86_64-linux";
+  in {
+    nixosConfigurations.my-host = nixpkgs.lib.nixosSystem {
+      inherit system;
+      specialArgs = { inherit inputs; };
+      modules = [
+        ({ ... }: {
+          environment.systemPackages = [
+            inputs.z-bar-qt.packages.${system}.zshell
+            inputs.z-bar-qt.packages.${system}.zshell-cli
+          ];
+        })
+        ./configuration.nix
+      ];
     };
+  };
 }
 ```
 
-Now you can add z-bar-qt as a nixpkg in environment.systemPackages (or optionally in your homePackages). It is named zshell and for cli options; zshell-cli.
+Then install shell + CLI from the flake packages:
 
 ```nix
 { pkgs, inputs, ... }:
-
-{
-    environment.systemPackages = with pkgs; [
+let
+  system = pkgs.stdenv.hostPlatform.system;
+in {
+  environment.systemPackages = [
     inputs.z-bar-qt.packages.${system}.zshell
     inputs.z-bar-qt.packages.${system}.zshell-cli
-    ];
+  ];
 }
 ```
 
-You can now run `zshell` to run the bar. `zshell-cli` can be used for additional options.
+If you use Home Manager, the same packages can be added to `home.packages`.
+
+Quick test without adding it permanently:
+
+```bash
+nix run github:Zacharias-Brohn/z-bar-qt#zshell
+```
+
+Run shell via wrapper binary:
+
+```bash
+zshell
+```
+
+CLI entrypoint:
+
+```bash
+zshell-cli
+```
+
+## Running
+
+- Start shell directly with Quickshell config name: `qs -c zshell`
+- Start through CLI helper: `zshell-cli shell start`
+- Lock through IPC helper: `zshell-cli shell lock`
 
 ## Configuration
 
-Configuration is stored in `~/.config/zshell/config.json`. Options include:
+Primary config file:
 
-|              Option               |                         Description                         |
-| :-------------------------------: | :---------------------------------------------------------: |
-|            `appCount`             |                 Max apps shown in launcher                  |
-|          `wallpaperPath`          |               Directory containing wallpapers               |
-| `baseBgColor` / `baseBorderColor` |        Fallback colors when dynamic colors disabled         |
-|           `accentColor`           |                Custom accent color override                 |
-|        `useDynamicColors`         |       Enable Material Design 3 theming from wallpaper       |
-|            `barConfig`            |        Enable/disable widgets and configure popouts         |
-|          `transparency`           |                   UI transparency levels                    |
-|            `baseFont`             |                         System font                         |
-|            `animScale`            |                 Animation speed multiplier                  |
-|             `gpuType`             | GPU type for resource monitoring (`amd`, `nvidia`, `intel`) |
+- `~/.config/zshell/config.json`
 
-## Launcher Search Prefixes
+Important state/cache files:
 
-| Prefix        | Filter              |
-| ------------- | ------------------- |
-| `>i`          | App ID              |
-| `>c`          | Categories          |
-| `>d`          | Description/comment |
-| `>e`          | Exec command        |
-| `>w`          | WM class            |
-| `>g`          | Generic name        |
-| `>k`          | Keywords            |
-| `>t`          | Terminal apps only  |
-| `>wallpaper ` | Wallpaper picker    |
+- `~/.local/state/zshell/scheme.json`
+- `~/.local/state/zshell/wallpaper_path.json`
+- `~/.local/state/zshell/notifs.json`
+- `~/.local/state/zshell/apps.sqlite`
+- `~/.cache/zshell/`
 
-## Project Structure
+Config is hot-reloaded and saved through `Config/Config.qml` serializers. Top-level sections include:
 
-```
-├── shell.qml          # Main entry point
-├── Bar.qml            # Status bar
-├── Wallpaper.qml      # Wallpaper display layer
-├── Components/        # Reusable UI components
-├── Config/            # Configuration singletons
-├── Modules/           # Main functional modules (Launcher, NotificationCenter, etc.)
-├── Daemons/           # Background services (notifications, audio)
-├── Helpers/           # Utility singletons
-├── Plugins/ZShell/    # Native C++ plugins
-└── scripts/           # Helper scripts (color generation, fuzzy search)
-```
+- `general`
+- `appearance`
+- `background`
+- `barConfig`
+- `launcher`
+- `services`
+- `notifs`
+- `sidebar`
+- `utilities`
+- `dashboard`
+- `osd`
+- `colors`
+- `dock`
 
-## Inspiration and Acknowledgements
+## Launcher Prefixes
 
-This project was inspired by the following repositories and resources, which helped me learn both Quickshell and QML:
+Default prefixes are defined in `Config/Launcher.qml`:
+
+- `actionPrefix`: `>`
+- `specialPrefix`: `@`
+
+Special app-search filters (`@` prefix by default):
+
+- `@i ` app id/name
+- `@c ` categories
+- `@d ` description/comment
+- `@e ` exec string
+- `@w ` WM class
+- `@g ` generic name
+- `@k ` keywords
+- `@t ` terminal-only apps
+
+Action-driven flows (`>` prefix by default) include calculator, wallpaper picker, and scheme variant selection.
+
+## CLI Commands
+
+`zshell-cli` provides these subcommands:
+
+- `shell` - start/kill/log/IPC calls
+- `screenshot` - open area picker (`start`, `start-freeze`)
+- `wallpaper` - set wallpaper + generate lockscreen blur image
+- `scheme` - generate and apply dynamic/preset color schemes
+
+Note: `cli/src/zshell/subcommands/scheme.py` uses Jinja2 templating for `~/.config/zshell/templates` rendering.
+
+## Greeter
+
+The repository ships a separate greeter shell under `Greeter/` designed for greetd + Hyprland.
+
+- Greeter shell entry: `Greeter/shell.qml`
+- Default greeter config path: `/etc/zshell-greeter/config.json`
+- Startup script: `Greeter/scripts/start-zshell-greeter`
+- Helper installer script: `scripts/prepare-greeter.sh`
+
+## Known Caveats
+
+- `Modules/Launcher/Services/Apps.qml` references `assets/wrap_term_launch.sh`; ensure this script exists in your deployment.
+- `cli/pyproject.toml` currently does not list `jinja2`, but `scheme.py` imports it.
+- Some scheme variant naming paths may differ between UI values and CLI expectations (`tonalSpot` vs `tonal-spot`, etc.).
+
+## Inspiration
 
 - [Caelestia](https://github.com/caelestia-dots/shell)
 - [end-4 dots-hyprland](https://github.com/end-4/dots-hyprland)
 
-Thank you to the maintainers and contributors of these projects for sharing their work.
-
 ## License
 
-See repository for license information.
+See `LICENSE`.
