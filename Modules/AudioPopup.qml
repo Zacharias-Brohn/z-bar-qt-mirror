@@ -133,53 +133,61 @@ CustomRect {
 		}
 	}
 
-	component DevicesTab: ColumnLayout {
-		spacing: 12
+	component DevicesTab: Item {
+		implicitHeight: deviceColumn.height + Appearance.padding.normal
+		implicitWidth: deviceColumn.width + Appearance.padding.normal
 
-		ButtonGroup {
-			id: sinks
-		}
+		ColumnLayout {
+			id: deviceColumn
 
-		ButtonGroup {
-			id: sources
-		}
+			anchors.centerIn: parent
+			spacing: 12
 
-		CustomText {
-			font.weight: 500
-			text: qsTr("Output device")
-		}
-
-		Repeater {
-			model: Audio.sinks
-
-			CustomRadioButton {
-				required property PwNode modelData
-
-				ButtonGroup.group: sinks
-				checked: Audio.sink?.id === modelData.id
-				text: modelData.description
-
-				onClicked: Audio.setAudioSink(modelData)
+			ButtonGroup {
+				id: sinks
 			}
-		}
 
-		CustomText {
-			Layout.topMargin: 10
-			font.weight: 500
-			text: qsTr("Input device")
-		}
+			ButtonGroup {
+				id: sources
+			}
 
-		Repeater {
-			model: Audio.sources
+			CustomText {
+				font.weight: 500
+				text: qsTr("Output device")
+			}
 
-			CustomRadioButton {
-				required property PwNode modelData
+			Repeater {
+				model: Audio.sinks
 
-				ButtonGroup.group: sources
-				checked: Audio.source?.id === modelData.id
-				text: modelData.description
+				CustomRadioButton {
+					required property PwNode modelData
 
-				onClicked: Audio.setAudioSource(modelData)
+					ButtonGroup.group: sinks
+					checked: Audio.sink?.id === modelData.id
+					text: modelData.description
+
+					onClicked: Audio.setAudioSink(modelData)
+				}
+			}
+
+			CustomText {
+				Layout.topMargin: 10
+				font.weight: 500
+				text: qsTr("Input device")
+			}
+
+			Repeater {
+				model: Audio.sources
+
+				CustomRadioButton {
+					required property PwNode modelData
+
+					ButtonGroup.group: sources
+					checked: Audio.source?.id === modelData.id
+					text: modelData.description
+
+					onClicked: Audio.setAudioSource(modelData)
+				}
 			}
 		}
 	}
@@ -366,6 +374,22 @@ CustomRect {
 					node: appBox.modelData
 				}
 
+				CustomRect {
+					id: peakFill
+
+					anchors.bottom: parent.bottom
+					anchors.left: parent.left
+					anchors.top: parent.top
+					color: Qt.alpha(DynamicColors.palette.m3primary, 0.15)
+					implicitWidth: parent.width * peak.peak
+
+					Behavior on implicitWidth {
+						Anim {
+							duration: MaterialEasing.expressiveEffectsTime
+						}
+					}
+				}
+
 				RowLayout {
 					id: layoutVolume
 
@@ -446,22 +470,6 @@ CustomRect {
 									Audio.setStreamVolume(appBox.modelData, value);
 								}
 							}
-						}
-					}
-				}
-
-				CustomRect {
-					id: peakFill
-
-					anchors.bottom: parent.bottom
-					anchors.left: parent.left
-					anchors.top: parent.top
-					color: Qt.alpha(DynamicColors.palette.m3primary, 0.15)
-					implicitWidth: parent.width * peak.peak
-
-					Behavior on implicitWidth {
-						Anim {
-							duration: MaterialEasing.expressiveEffectsTime
 						}
 					}
 				}
