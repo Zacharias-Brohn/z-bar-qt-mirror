@@ -11,21 +11,22 @@ import qs.Components
 import qs.Daemons
 import qs.Helpers
 
-Item {
+CustomRect {
 	id: root
 
-	readonly property int rounding: 6
+	readonly property int rounding: Appearance.rounding.small - Appearance.padding.small
 	readonly property int topMargin: 0
 	required property var wrapper
 
-	implicitHeight: layout.implicitHeight + 5 * 2
-	implicitWidth: layout.implicitWidth + 5 * 2
+	color: DynamicColors.tPalette.m3surfaceContainer
+	implicitHeight: layout.implicitHeight + Appearance.padding.small * 2
+	implicitWidth: layout.implicitWidth + Appearance.padding.small * 2
+	radius: Appearance.rounding.small
 
 	ColumnLayout {
 		id: layout
 
-		anchors.horizontalCenter: parent.horizontalCenter
-		anchors.top: parent.top
+		anchors.centerIn: parent
 		implicitWidth: stack.currentItem ? stack.currentItem.childrenRect.height : 0
 		spacing: 12
 
@@ -41,7 +42,7 @@ Item {
 				Layout.fillWidth: true
 				Layout.preferredHeight: tabBar.tabHeight
 				color: stack.currentIndex === 0 ? DynamicColors.palette.m3primary : DynamicColors.tPalette.m3surfaceContainer
-				radius: 6
+				radius: root.rounding
 
 				StateLayer {
 					function onClicked(): void {
@@ -60,7 +61,7 @@ Item {
 				Layout.fillWidth: true
 				Layout.preferredHeight: tabBar.tabHeight
 				color: stack.currentIndex === 1 ? DynamicColors.palette.m3primary : DynamicColors.tPalette.m3surfaceContainer
-				radius: 6
+				radius: root.rounding
 
 				StateLayer {
 					function onClicked(): void {
@@ -339,12 +340,15 @@ Item {
 			Layout.preferredHeight: 1
 			Layout.topMargin: root.topMargin
 			color: DynamicColors.tPalette.m3outline
+			visible: appTracks.model.length > 0
 		}
 
 		Repeater {
+			id: appTracks
+
 			model: Audio.streams.filter(s => s.isSink)
 
-			CustomRect {
+			CustomClippingRect {
 				id: appBox
 
 				required property int index
@@ -355,6 +359,12 @@ Item {
 				Layout.topMargin: root.topMargin
 				color: DynamicColors.tPalette.m3surfaceContainer
 				radius: root.rounding
+
+				PwNodePeakMonitor {
+					id: peak
+
+					node: appBox.modelData
+				}
 
 				RowLayout {
 					id: layoutVolume
@@ -436,6 +446,22 @@ Item {
 									Audio.setStreamVolume(appBox.modelData, value);
 								}
 							}
+						}
+					}
+				}
+
+				CustomRect {
+					id: peakFill
+
+					anchors.bottom: parent.bottom
+					anchors.left: parent.left
+					anchors.top: parent.top
+					color: Qt.alpha(DynamicColors.palette.m3primary, 0.15)
+					implicitWidth: parent.width * peak.peak
+
+					Behavior on implicitWidth {
+						Anim {
+							duration: MaterialEasing.expressiveEffectsTime
 						}
 					}
 				}

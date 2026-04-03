@@ -48,7 +48,7 @@ Shape {
 
 	Modules.Background {
 		invertBottomRounding: wrapper.x <= 0
-		rounding: root.panels.popouts.currentName.startsWith("updates") ? Appearance.rounding.normal : Appearance.rounding.smallest
+		rounding: root.panels.popouts.currentName.startsWith("updates") || root.panels.popouts.currentName.startsWith("audio") ? Appearance.rounding.normal : Appearance.rounding.smallest
 		startX: wrapper.x - rounding
 		startY: wrapper.y
 		wrapper: root.panels.popouts
