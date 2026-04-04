@@ -5,13 +5,15 @@ import qs.Config
 Slider {
 	id: root
 
+	property color color: DynamicColors.palette.m3primary
+
 	background: Item {
 		CustomRect {
 			anchors.bottom: parent.bottom
 			anchors.left: parent.left
 			anchors.top: parent.top
 			bottomRightRadius: root.implicitHeight / 6
-			color: DynamicColors.palette.m3primary
+			color: root.color
 			implicitWidth: root.handle.x - root.implicitHeight / 2
 			radius: Appearance.rounding.full
 			topRightRadius: root.implicitHeight / 6
@@ -30,7 +32,7 @@ Slider {
 	}
 	handle: CustomRect {
 		anchors.verticalCenter: parent.verticalCenter
-		color: DynamicColors.palette.m3primary
+		color: root.color
 		implicitHeight: 15
 		implicitWidth: 5
 		radius: Appearance.rounding.full

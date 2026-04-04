@@ -401,23 +401,25 @@ CustomRect {
 						Layout.alignment: Qt.AlignVCenter
 						Layout.preferredHeight: 40
 						Layout.preferredWidth: 40
-						color: DynamicColors.palette.m3primary
+						color: appBox.modelData.audio.muted ? DynamicColors.palette.m3error : DynamicColors.palette.m3primary
 						radius: Appearance.rounding.full
 
 						MaterialIcon {
 							id: icon
 
 							anchors.centerIn: parent
-							color: DynamicColors.palette.m3onPrimary
+							animate: true
+							color: appBox.modelData.audio.muted ? DynamicColors.palette.m3onError : DynamicColors.palette.m3onPrimary
 							font.pointSize: 22
-							text: "volume_up"
+							text: appBox.modelData.audio.muted ? "volume_off" : "volume_up"
+						}
 
-							StateLayer {
-								radius: Appearance.rounding.full
+						StateLayer {
+							color: appBox.modelData.audio.muted ? DynamicColors.palette.m3onError : DynamicColors.palette.m3onPrimary
+							radius: Appearance.rounding.full
 
-								onClicked: {
-									appBox.modelData.audio.muted = !appBox.modelData.audio.muted;
-								}
+							onClicked: {
+								appBox.modelData.audio.muted = !appBox.modelData.audio.muted;
 							}
 						}
 					}
@@ -463,6 +465,7 @@ CustomRect {
 							CustomSlider {
 								anchors.left: parent.left
 								anchors.right: parent.right
+								color: appBox.modelData.audio.muted ? DynamicColors.palette.m3error : DynamicColors.palette.m3primary
 								implicitHeight: 10
 								value: appBox.modelData.audio.volume
 

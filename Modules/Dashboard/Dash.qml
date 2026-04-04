@@ -11,22 +11,12 @@ GridLayout {
 	id: root
 
 	readonly property bool dashboardVisible: visibilities.dashboard
-	property int radius: 6
+	property int radius: Appearance.rounding.smallest
 	required property PersistentProperties state
 	required property PersistentProperties visibilities
 
 	columnSpacing: Appearance.spacing.smaller
-	opacity: 0
 	rowSpacing: Appearance.spacing.smaller
-	scale: 0.9
-
-	onDashboardVisibleChanged: {
-		if (dashboardVisible) {
-			openAnim.start();
-		} else {
-			closeAnim.start();
-		}
-	}
 
 	ParallelAnimation {
 		id: openAnim
@@ -110,7 +100,6 @@ GridLayout {
 
 		Resources {
 			id: resources
-
 		}
 	}
 
@@ -124,7 +113,6 @@ GridLayout {
 
 		Media {
 			id: media
-
 		}
 	}
 
