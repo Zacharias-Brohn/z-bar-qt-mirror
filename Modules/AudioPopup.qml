@@ -11,17 +11,31 @@ import qs.Components
 import qs.Daemons
 import qs.Helpers
 
-CustomRect {
+Item {
 	id: root
 
 	readonly property int rounding: Appearance.rounding.small - Appearance.padding.small
 	readonly property int topMargin: 0
 	required property var wrapper
 
-	color: DynamicColors.tPalette.m3surfaceContainer
 	implicitHeight: layout.implicitHeight + Appearance.padding.small * 2
 	implicitWidth: layout.implicitWidth + Appearance.padding.small * 2
-	radius: Appearance.rounding.small
+
+	CustomRect {
+		anchors.left: parent.left
+		anchors.right: parent.right
+		color: DynamicColors.tPalette.m3surfaceContainer
+		implicitHeight: parent.implicitHeight
+		radius: Appearance.rounding.small
+		y: parent.y
+
+		Behavior on implicitHeight {
+			Anim {
+				duration: MaterialEasing.emphasizedDecelTime
+				easing.bezierCurve: MaterialEasing.emphasized
+			}
+		}
+	}
 
 	ColumnLayout {
 		id: layout
