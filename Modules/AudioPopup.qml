@@ -214,15 +214,26 @@ CustomRect {
 					Layout.alignment: Qt.AlignVCenter
 					Layout.preferredHeight: 40
 					Layout.preferredWidth: 40
-					color: DynamicColors.palette.m3primary
+					color: Audio.muted ? DynamicColors.palette.m3error : DynamicColors.palette.m3primary
 					radius: Appearance.rounding.full
 
 					MaterialIcon {
 						anchors.alignWhenCentered: false
 						anchors.centerIn: parent
-						color: DynamicColors.palette.m3onPrimary
+						animate: true
+						color: Audio.muted ? DynamicColors.palette.m3onError : DynamicColors.palette.m3onPrimary
 						font.pointSize: 22
-						text: "speaker"
+						text: Audio.muted ? "volume_off" : "volume_up"
+					}
+
+					StateLayer {
+						color: Audio.muted ? DynamicColors.palette.m3onError : DynamicColors.palette.m3onPrimary
+
+						onClicked: {
+							const audio = Audio.sink?.audio;
+							if (audio)
+								audio.muted = !audio.muted;
+						}
 					}
 				}
 
@@ -253,6 +264,7 @@ CustomRect {
 						CustomSlider {
 							anchors.left: parent.left
 							anchors.right: parent.right
+							color: Audio.muted ? DynamicColors.palette.m3error : DynamicColors.palette.m3primary
 							implicitHeight: 10
 							value: Audio.volume
 
@@ -284,19 +296,30 @@ CustomRect {
 				anchors.verticalCenter: parent.verticalCenter
 				spacing: 15
 
-				Rectangle {
+				CustomRect {
 					Layout.alignment: Qt.AlignVCenter
 					Layout.preferredHeight: 40
 					Layout.preferredWidth: 40
-					color: DynamicColors.palette.m3primary
+					color: Audio.sourceMuted ? DynamicColors.palette.m3error : DynamicColors.palette.m3primary
 					radius: Appearance.rounding.full
 
 					MaterialIcon {
 						anchors.alignWhenCentered: false
 						anchors.centerIn: parent
-						color: DynamicColors.palette.m3onPrimary
+						animate: true
+						color: Audio.sourceMuted ? DynamicColors.palette.m3onError : DynamicColors.palette.m3onPrimary
 						font.pointSize: 22
-						text: "mic"
+						text: Audio.sourceMuted ? "mic_off" : "mic"
+					}
+
+					StateLayer {
+						color: Audio.sourceMuted ? DynamicColors.palette.m3onError : DynamicColors.palette.m3onPrimary
+
+						onClicked: {
+							const audio = Audio.source?.audio;
+							if (audio)
+								audio.muted = !audio.muted;
+						}
 					}
 				}
 
@@ -328,6 +351,7 @@ CustomRect {
 						CustomSlider {
 							anchors.left: parent.left
 							anchors.right: parent.right
+							color: Audio.sourceMuted ? DynamicColors.palette.m3error : DynamicColors.palette.m3primary
 							implicitHeight: 10
 							value: Audio.sourceVolume
 
