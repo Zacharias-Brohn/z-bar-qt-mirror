@@ -10,6 +10,7 @@ Singleton {
 	id: root
 
 	property int availableUpdates: 0
+	property bool commandReady
 	property bool loaded
 	property double now: Date.now()
 	property var updates: ({})
@@ -46,7 +47,7 @@ Singleton {
 		running: true
 
 		onTriggered: {
-			if (!root.loaded)
+			if (!root.loaded || !root.commandReady)
 				return;
 
 			updatesProc.running = true;
@@ -63,9 +64,32 @@ Singleton {
 	}
 
 	Process {
+		id: cmdDetect
+
+		command: ["sh", "-c", "command -v yay || command -v paru"]
+		running: true
+
+		stdout: StdioCollector {
+			onStreamFinished: {
+				const cmd = this.text.trim();
+				let helper;
+
+				if (cmd.length > 0) {
+					helper = cmd.split("/").pop();
+				} else {
+					helper = "pacman";
+				}
+
+				updatesProc.command = [helper, "-Qu"];
+				root.commandReady = true;
+			}
+		}
+	}
+
+	Process {
 		id: updatesProc
 
-		command: ["checkupdates"]
+		command: []
 		running: false
 
 		stdout: StdioCollector {
