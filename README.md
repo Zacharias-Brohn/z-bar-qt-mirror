@@ -84,8 +84,7 @@ Add it as an input in your system flake:
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     z-bar-qt = {
-      # or: git+ssh://git@git.zach-dev.cc/zach/z-bar-qt.git
-      url = "github:Zacharias-Brohn/z-bar-qt";
+      url = git+https://git.zach-dev.cc/zach/z-bar-qt.git
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
@@ -99,8 +98,7 @@ Full `flake.nix` example (`nixosConfigurations`):
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     z-bar-qt = {
-      # or: git+ssh://git@git.zach-dev.cc/zach/z-bar-qt.git
-      url = "github:Zacharias-Brohn/z-bar-qt";
+      url = git+https://git.zach-dev.cc/zach/z-bar-qt.git
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
@@ -141,12 +139,6 @@ in {
 ```
 
 If you use Home Manager, the same packages can be added to `home.packages`.
-
-Quick test without adding it permanently:
-
-```bash
-nix run github:Zacharias-Brohn/z-bar-qt#zshell
-```
 
 Run shell via wrapper binary:
 
