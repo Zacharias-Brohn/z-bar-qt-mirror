@@ -95,11 +95,23 @@ ColumnLayout {
 					anchors.margins: Appearance.padding.normal
 					spacing: Appearance.spacing.normal
 
-					MaterialIcon {
-						color: user.index === users.currentIndex ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3onSurfaceVariant
-						fill: 1
-						font.pointSize: Appearance.font.size.extraLarge
-						text: modelData.kind === "x11" ? "tv" : "account_circle"
+					CustomClippingRect {
+						Layout.preferredHeight: 50
+						Layout.preferredWidth: 50
+						radius: Appearance.rounding.full
+
+						MaterialIcon {
+							anchors.centerIn: parent
+							color: user.index === users.currentIndex ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3onSurfaceVariant
+							fill: 1
+							font.pointSize: Appearance.font.size.extraLarge
+							text: modelData.kind === "x11" ? "tv" : "account_circle"
+						}
+
+						CachingImage {
+							anchors.fill: parent
+							path: modelData.face
+						}
 					}
 
 					ColumnLayout {

@@ -52,16 +52,11 @@ RowLayout {
 		CustomRect {
 			id: fill
 
-			anchors.fill: parent
-			antialiasing: false
+			anchors.bottom: parent.bottom
+			anchors.left: parent.left
+			anchors.right: parent.right
 			color: root.mainColor
 			implicitHeight: Math.ceil(root.percentage * parent.height)
-			radius: Appearance.rounding.full
-
-			transform: Scale {
-				origin.y: fill.height
-				yScale: Math.max(0.001, root.animatedPercentage)
-			}
 		}
 	}
 }
