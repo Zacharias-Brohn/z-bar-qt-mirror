@@ -7,7 +7,7 @@ import qs.Config
 import qs.Components
 import qs.Modules.WSOverview
 import qs.Modules.Network
-import qs.Modules.UPower
+import qs.Modules.SysTray.Popouts
 import qs.Modules.Updates
 
 Item {

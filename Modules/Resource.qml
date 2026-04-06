@@ -57,6 +57,11 @@ RowLayout {
 			anchors.right: parent.right
 			color: root.mainColor
 			implicitHeight: Math.ceil(root.percentage * parent.height)
+
+			Behavior on implicitHeight {
+				Anim {
+				}
+			}
 		}
 	}
 }
