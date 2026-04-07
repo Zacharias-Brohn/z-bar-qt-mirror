@@ -67,6 +67,7 @@ ColumnLayout {
 
 			anchors.fill: parent
 			clip: true
+			currentIndex: root.greeter.selectedUser ? root.greeter.users.indexOf(root.greeter.selectedUser) : -1
 			highlightFollowsCurrentItem: false
 			model: root.greeter.users
 			spacing: Appearance.spacing.small
@@ -84,7 +85,7 @@ ColumnLayout {
 
 				StateLayer {
 					function onClicked(): void {
-						users.currentIndex = index;
+						root.greeter.selectUser(modelData.username);
 					}
 				}
 
