@@ -17,6 +17,7 @@ RowLayout {
 		Layout.alignment: Qt.AlignVCenter
 		animate: true
 		color: (Audio.sourceMuted ?? false) ? DynamicColors.palette.m3error : root.textColor
+		fill: 1
 		font.pointSize: Appearance.font.size.larger
 		text: Audio.sourceMuted ? "mic_off" : "mic"
 	}
@@ -25,6 +26,7 @@ RowLayout {
 		Layout.alignment: Qt.AlignVCenter
 		animate: true
 		color: Audio.muted ? DynamicColors.palette.m3error : root.textColor
+		fill: 1
 		font.pointSize: Appearance.font.size.larger
 		text: Audio.muted ? "volume_off" : "volume_up"
 	}
