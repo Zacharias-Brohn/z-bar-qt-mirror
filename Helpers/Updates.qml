@@ -66,7 +66,7 @@ Singleton {
 	Process {
 		id: cmdDetect
 
-		command: ["sh", "-c", "command -v yay || command -v paru"]
+		command: ["sh", "-c", "command -v checkupdates || command -v yay || command -v paru"]
 		running: true
 
 		stdout: StdioCollector {
@@ -80,7 +80,11 @@ Singleton {
 					helper = "pacman";
 				}
 
-				updatesProc.command = [helper, "-Qu"];
+				if (helper === "checkupdates") {
+					updatesProc.command = [helper];
+				} else {
+					updatesProc.command = [helper, "-Qu"];
+				}
 				root.commandReady = true;
 			}
 		}
