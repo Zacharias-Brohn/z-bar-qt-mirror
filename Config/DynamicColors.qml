@@ -78,10 +78,27 @@ Singleton {
 		return Qt.hsla(c.hslHue, c.hslSaturation, 0.1, 1);
 	}
 
+	function reloadHyprRules(): void {
+		const barStr = "keyword layerrule %1 %2, match:namespace ZShell-Bar";
+		const authStr = "keyword layerrule %1 %2, match:namespace ZShell-Auth";
+		Hypr.extras.batchMessage([barStr.arg("blur").arg(transparency.enabled ? 1 : 0), barStr.arg("ignore_alpha").arg(transparency.base - 0.03)]);
+		Hypr.extras.batchMessage([authStr.arg("blur").arg(transparency.enabled ? 1 : 0), authStr.arg("ignore_alpha").arg(transparency.base - 0.03)]);
+	}
+
 	function setMode(mode: string): void {
 		Quickshell.execDetached(["zshell-cli", "scheme", "generate", "--mode", mode]);
 		Config.general.color.mode = mode;
 		Config.save();
+	}
+
+	Component.onCompleted: debounceTimer.triggered()
+
+	Connections {
+		function onConfigReloaded(): void {
+			root.reloadHyprRules();
+		}
+
+		target: Hypr
 	}
 
 	FileView {
@@ -92,72 +109,20 @@ Singleton {
 		onLoaded: root.load(text(), false)
 	}
 
+	Timer {
+		id: debounceTimer
+
+		interval: 300
+
+		onTriggered: root.reloadHyprRules()
+	}
+
 	ImageAnalyser {
 		id: analyser
 
 		source: WallpaperPath.currentWallpaperPath
 	}
 
-	component M3MaccchiatoPalette: QtObject {
-		property color m3background: "#131317"
-		property color m3error: "#ffb4ab"
-		property color m3errorContainer: "#93000a"
-		property color m3inverseOnSurface: "#303034"
-		property color m3inversePrimary: "#525b92"
-		property color m3inverseSurface: "#e4e1e7"
-		property color m3neutral_paletteKeyColor: "#77767b"
-		property color m3neutral_variant_paletteKeyColor: "#767680"
-		property color m3onBackground: "#e4e1e7"
-		property color m3onError: "#690005"
-		property color m3onErrorContainer: "#ffdad6"
-		property color m3onPrimary: "#232c60"
-		property color m3onPrimaryContainer: "#ffffff"
-		property color m3onPrimaryFixed: "#0b154b"
-		property color m3onPrimaryFixedVariant: "#3a4378"
-		property color m3onSecondary: "#2c2f44"
-		property color m3onSecondaryContainer: "#b1b3ce"
-		property color m3onSecondaryFixed: "#171a2e"
-		property color m3onSecondaryFixedVariant: "#42455c"
-		property color m3onSuccess: "#213528"
-		property color m3onSuccessContainer: "#D1E9D6"
-		property color m3onSurface: "#e4e1e7"
-		property color m3onSurfaceVariant: "#c6c5d1"
-		property color m3onTertiary: "#4c1f48"
-		property color m3onTertiaryContainer: "#000000"
-		property color m3onTertiaryFixed: "#340831"
-		property color m3onTertiaryFixedVariant: "#66365f"
-		property color m3outline: "#90909a"
-		property color m3outlineVariant: "#46464f"
-		property color m3primary: "#bac3ff"
-		property color m3primaryContainer: "#6a73ac"
-		property color m3primaryFixed: "#dee0ff"
-		property color m3primaryFixedDim: "#bac3ff"
-		property color m3primary_paletteKeyColor: "#6a73ac"
-		property color m3scrim: "#000000"
-		property color m3secondary: "#c3c5e0"
-		property color m3secondaryContainer: "#42455c"
-		property color m3secondaryFixed: "#dfe1fd"
-		property color m3secondaryFixedDim: "#c3c5e0"
-		property color m3secondary_paletteKeyColor: "#72758e"
-		property color m3shadow: "#000000"
-		property color m3success: "#B5CCBA"
-		property color m3successContainer: "#374B3E"
-		property color m3surface: "#131317"
-		property color m3surfaceBright: "#39393d"
-		property color m3surfaceContainer: "#1f1f23"
-		property color m3surfaceContainerHigh: "#2a2a2e"
-		property color m3surfaceContainerHighest: "#353438"
-		property color m3surfaceContainerLow: "#1b1b1f"
-		property color m3surfaceContainerLowest: "#0e0e12"
-		property color m3surfaceDim: "#131317"
-		property color m3surfaceTint: "#bac3ff"
-		property color m3surfaceVariant: "#46464f"
-		property color m3tertiary: "#f1b3e5"
-		property color m3tertiaryContainer: "#b77ead"
-		property color m3tertiaryFixed: "#ffd7f4"
-		property color m3tertiaryFixedDim: "#f1b3e5"
-		property color m3tertiary_paletteKeyColor: "#9b6592"
-	}
 	component M3Palette: QtObject {
 		property color m3background: "#191114"
 		property color m3error: "#ffb4ab"
@@ -279,8 +244,11 @@ Singleton {
 		readonly property color m3tertiary_paletteKeyColor: root.layer(root.palette.m3tertiary_paletteKeyColor)
 	}
 	component Transparency: QtObject {
-		readonly property real base: Appearance.transparency.base - (root.light ? 0.1 : 0)
+		readonly property real base: Math.max(0, Math.min(1, Appearance.transparency.base - (root.light ? 0.1 : 0)))
 		readonly property bool enabled: Appearance.transparency.enabled
 		readonly property real layers: Appearance.transparency.layers
+
+		onBaseChanged: debounceTimer.restart()
+		onEnabledChanged: debounceTimer.restart()
 	}
 }

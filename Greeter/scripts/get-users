@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import glob
 import json
 import os
 import pwd
@@ -17,18 +18,56 @@ INVALID_SHELLS = {
 
 # Minimum UID for regular users (typically 1000 on most Linux distributions)
 MIN_UID = 1000
+GREETER_IMAGES_DIR = "/etc/zshell-greeter/images"
 
 
 def get_face_path(home: str, username: str) -> str:
     """Get the path to the user's face/avatar image if it exists."""
+    greeter_candidates = [
+        os.path.join(GREETER_IMAGES_DIR, f"{username}.face"),
+        os.path.join(GREETER_IMAGES_DIR, f"{username}.face.icon"),
+    ]
+
+    for path in greeter_candidates:
+        if os.path.isfile(path):
+            return path
+
+    for path in sorted(glob.glob(os.path.join(GREETER_IMAGES_DIR, f"{username}.*"))):
+        if os.path.isfile(path):
+            return path
+
+    direct_path = os.path.join(GREETER_IMAGES_DIR, username)
+    if os.path.isfile(direct_path):
+        return direct_path
+
+    accountsservice_user = f"/var/lib/AccountsService/users/{username}"
+    if os.path.isfile(accountsservice_user):
+        try:
+            with open(accountsservice_user, "r", encoding="utf-8") as handle:
+                for line in handle:
+                    if line.startswith("Icon="):
+                        icon_path = line.split("=", 1)[1].strip()
+                        if icon_path:
+                            if not os.path.isabs(icon_path):
+                                icon_path = os.path.join("/var/lib/AccountsService/icons", icon_path)
+                            if os.path.isfile(icon_path):
+                                return icon_path
+        except OSError:
+            pass
+
     # Check common locations for user avatars
     candidates = [
         os.path.join(home, ".face"),
         os.path.join(home, ".face.icon"),
         f"/var/lib/AccountsService/icons/{username}",
+        f"/usr/share/pixmaps/faces/{username}",
     ]
 
     for path in candidates:
+        if os.path.isfile(path):
+            return path
+
+    for path in sorted(glob.glob(f"/var/lib/AccountsService/icons/{username}.*")):
         if os.path.isfile(path):
             return path
 

@@ -7,7 +7,8 @@ import qs.Components
 import qs.Modules
 import qs.Config
 import qs.Helpers
-import qs.Modules.UPower
+import qs.Modules.SysTray
+import qs.Modules.SysTray.Widgets
 import qs.Modules.Network
 import qs.Modules.Updates
 
@@ -30,6 +31,24 @@ RowLayout {
 
 		if (visibilities.sidebar || visibilities.dashboard || visibilities.resources || visibilities.settings)
 			return;
+
+		if (ch.id === "tray") {
+			const tray = ch.item;
+			const localPos = tray.mapFromItem(root, x, height / 2);
+			const sub = tray.getHoveredSubItem(localPos.x, localPos.y);
+			if (sub) {
+				popouts.currentName = sub.id;
+				popouts.currentCenter = Qt.binding(() => {
+					const centerX = sub.item.mapToItem(root, sub.item.width / 2, 0).x;
+					return centerX;
+				});
+				popouts.hasCurrent = true;
+				return;
+			}
+
+			if (!popouts.currentName.startsWith("traymenu"))
+				popouts.hasCurrent = false;
+		}
 
 		const id = ch.id;
 		const top = ch.x;
@@ -94,15 +113,6 @@ RowLayout {
 			}
 
 			DelegateChoice {
-				roleValue: "audio"
-
-				delegate: WrappedLoader {
-					sourceComponent: AudioWidget {
-					}
-				}
-			}
-
-			DelegateChoice {
 				roleValue: "tray"
 
 				delegate: WrappedLoader {
@@ -161,15 +171,6 @@ RowLayout {
 				delegate: WrappedLoader {
 					sourceComponent: WindowTitle {
 						bar: root
-					}
-				}
-			}
-
-			DelegateChoice {
-				roleValue: "upower"
-
-				delegate: WrappedLoader {
-					sourceComponent: UPowerWidget {
 					}
 				}
 			}

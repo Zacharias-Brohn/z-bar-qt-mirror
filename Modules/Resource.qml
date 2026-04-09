@@ -21,6 +21,7 @@ RowLayout {
 	property int warningThreshold: 80
 
 	percentage: 0
+	spacing: Appearance.spacing.smaller
 
 	Behavior on animatedPercentage {
 		Anim {
@@ -38,6 +39,7 @@ RowLayout {
 	MaterialIcon {
 		id: icon
 
+		Layout.preferredWidth: 16
 		color: root.iconColor
 		font.pointSize: Appearance.font.size.larger
 		text: root.icon
@@ -57,6 +59,11 @@ RowLayout {
 			anchors.right: parent.right
 			color: root.mainColor
 			implicitHeight: Math.ceil(root.percentage * parent.height)
+
+			Behavior on implicitHeight {
+				Anim {
+				}
+			}
 		}
 	}
 }

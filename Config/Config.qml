@@ -270,6 +270,7 @@ Singleton {
 	function serializeServices(): var {
 		return {
 			weatherLocation: services.weatherLocation,
+			updates: services.updates,
 			useFahrenheit: services.useFahrenheit,
 			ddcutilService: services.ddcutilService,
 			useTwelveHourClock: services.useTwelveHourClock,
@@ -322,7 +323,6 @@ Singleton {
 
 	ElapsedTimer {
 		id: timer
-
 	}
 
 	Timer {

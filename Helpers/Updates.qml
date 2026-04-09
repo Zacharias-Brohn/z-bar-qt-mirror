@@ -5,6 +5,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import qs.Paths
+import qs.Config
 
 Singleton {
 	id: root
@@ -44,13 +45,14 @@ Singleton {
 	Timer {
 		interval: 1
 		repeat: true
-		running: true
+		running: Config.services.updates
 
 		onTriggered: {
 			if (!root.loaded || !root.commandReady)
 				return;
 
-			updatesProc.running = true;
+			if (Config.services.updates)
+				updatesProc.running = true;
 			interval = 5000;
 		}
 	}
@@ -66,7 +68,7 @@ Singleton {
 	Process {
 		id: cmdDetect
 
-		command: ["sh", "-c", "command -v yay || command -v paru"]
+		command: ["sh", "-c", "command -v checkupdates || command -v yay || command -v paru"]
 		running: true
 
 		stdout: StdioCollector {
@@ -80,7 +82,11 @@ Singleton {
 					helper = "pacman";
 				}
 
-				updatesProc.command = [helper, "-Qu"];
+				if (helper === "checkupdates") {
+					updatesProc.command = [helper];
+				} else {
+					updatesProc.command = [helper, "-Qu"];
+				}
 				root.commandReady = true;
 			}
 		}
