@@ -5,6 +5,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import qs.Paths
+import qs.Config
 
 Singleton {
 	id: root
@@ -44,13 +45,14 @@ Singleton {
 	Timer {
 		interval: 1
 		repeat: true
-		running: true
+		running: Config.services.updates
 
 		onTriggered: {
 			if (!root.loaded || !root.commandReady)
 				return;
 
-			updatesProc.running = true;
+			if (Config.services.updates)
+				updatesProc.running = true;
 			interval = 5000;
 		}
 	}

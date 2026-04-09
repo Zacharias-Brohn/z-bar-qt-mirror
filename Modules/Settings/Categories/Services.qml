@@ -19,6 +19,15 @@ SettingsPage {
 		}
 
 		SettingSwitch {
+			name: "Check for updates"
+			object: Config.services
+			setting: "updates"
+		}
+
+		Separator {
+		}
+
+		SettingSwitch {
 			name: "Use Fahrenheit"
 			object: Config.services
 			setting: "useFahrenheit"
@@ -60,9 +69,9 @@ SettingsPage {
 		}
 
 		SettingSpinBox {
-			name: "Audio increment"
 			max: 1
 			min: 0
+			name: "Audio increment"
 			object: Config.services
 			setting: "audioIncrement"
 			step: 0.05
@@ -72,9 +81,9 @@ SettingsPage {
 		}
 
 		SettingSpinBox {
-			name: "Brightness increment"
 			max: 1
 			min: 0
+			name: "Brightness increment"
 			object: Config.services
 			setting: "brightnessIncrement"
 			step: 0.05
@@ -84,9 +93,9 @@ SettingsPage {
 		}
 
 		SettingSpinBox {
-			name: "Max volume"
 			max: 5
 			min: 0
+			name: "Max volume"
 			object: Config.services
 			setting: "maxVolume"
 			step: 0.05
@@ -105,8 +114,8 @@ SettingsPage {
 		}
 
 		SettingSpinBox {
-			name: "Visualizer bars"
 			min: 1
+			name: "Visualizer bars"
 			object: Config.services
 			setting: "visualizerBars"
 			step: 1
