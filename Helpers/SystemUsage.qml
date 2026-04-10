@@ -81,6 +81,9 @@ Singleton {
 			meminfo.reload();
 			if (root.gpuType === "GENERIC")
 				gpuUsage.running = true;
+
+			if (root.gpuType === "GENERIC" && root.gpuMemTotal === 0)
+				oneshotMemAmd.running = true;
 		}
 	}
 
@@ -304,6 +307,26 @@ Singleton {
 	}
 
 	Process {
+		id: oneshotMemAmd
+
+		command: ["sh", "-c", "cat /sys/class/drm/card*/device/mem_info_vram_total"]
+		running: root.gpuType === "GENERIC" && root.gpuMemTotal === 0
+
+		stdout: StdioCollector {
+			onStreamFinished: {
+				const values = text.trim().split("\n").map(v => parseInt(v, 10)).filter(v => Number.isFinite(v));
+
+				if (values.length > 0) {
+					const totalBytes = values.reduce((a, b) => a + b, 0);
+					root.gpuMemTotal = totalBytes / (1024 * 1024);
+				}
+
+				oneshotMemAmd.running = false;
+			}
+		}
+	}
+
+	Process {
 		id: gpuUsageNvidia
 
 		command: ["/usr/bin/nvidia-smi", "--query-gpu=utilization.gpu,temperature.gpu,memory.used", "--format=csv,noheader,nounits", "-lms", "1000"]
@@ -342,15 +365,45 @@ Singleton {
 	Process {
 		id: gpuUsage
 
-		command: root.gpuType === "GENERIC" ? ["sh", "-c", "cat /sys/class/drm/card*/device/gpu_busy_percent"] : ["echo"]
+		command: root.gpuType === "GENERIC" ? ["sh", "-c", "paste -d ' ' /sys/class/drm/card*/device/gpu_busy_percent /sys/class/drm/card*/device/mem_info_vram_used"] : ["echo"]
 
 		stdout: StdioCollector {
 			onStreamFinished: {
-				console.log("this is running");
 				if (root.gpuType === "GENERIC") {
-					const percs = text.trim().split("\n");
-					const sum = percs.reduce((acc, d) => acc + parseInt(d, 10), 0);
-					root.gpuPerc = sum / percs.length / 100;
+					const lines = text.trim().split("\n");
+
+					let percSum = 0;
+					let memSum = 0;
+					let count = 0;
+
+					for (const line of lines) {
+						const parts = line.trim().split(/\s+/);
+						if (parts.length < 2)
+							continue;
+
+						const gpuBusy = parseInt(parts[0], 10);
+						const memUsed = parseInt(parts[1], 10);
+
+						if (!Number.isFinite(gpuBusy) || !Number.isFinite(memUsed))
+							continue;
+
+						percSum += gpuBusy;
+						memSum += memUsed;
+						count++;
+					}
+
+					if (count > 0) {
+						// GPU usage %
+						root.gpuPerc = (percSum / count) / 100;
+
+						// VRAM usage (bytes → MiB → normalized)
+						const memUsedMiB = memSum / (1024 * 1024);
+
+						const newGpuMemUsed = root.gpuMemTotal > 0 ? Math.max(0, Math.min(1, memUsedMiB / root.gpuMemTotal)) : 0;
+
+						if (Math.abs(root.gpuMemUsed - newGpuMemUsed) >= 0.01)
+							root.gpuMemUsed = newGpuMemUsed;
+					}
 				} else {
 					root.gpuPerc = 0;
 					root.gpuTemp = 0;
