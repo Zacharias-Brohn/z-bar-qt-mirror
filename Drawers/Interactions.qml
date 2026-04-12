@@ -189,6 +189,7 @@ CustomMouseArea {
 			if (root.visibilities.settings) {
 				root.visibilities.resources = false;
 				root.visibilities.dashboard = false;
+				root.visibilities.sidebar = false;
 				root.panels.popouts.hasCurrent = false;
 				root.visibilities.launcher = false;
 			}
@@ -197,6 +198,7 @@ CustomMouseArea {
 		function onSidebarChanged() {
 			if (root.visibilities.sidebar) {
 				root.visibilities.dashboard = false;
+				root.visibilities.settings = false;
 				root.popouts.hasCurrent = false;
 			}
 		}

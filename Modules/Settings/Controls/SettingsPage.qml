@@ -4,7 +4,7 @@ import qs.Components
 import qs.Config
 import qs.Helpers
 
-CustomFlickable {
+CustomClippingRect {
 	id: root
 
 	default property alias contentData: clayout.data
@@ -17,7 +17,7 @@ CustomFlickable {
 			if (section.sectionId === sectionId) {
 				// Scroll to the section with some padding
 				const targetY = section.y - Appearance.padding.normal;
-				contentY = Math.max(0, Math.min(targetY, contentHeight - height));
+				flickable.contentY = Math.max(0, Math.min(targetY, flickable.contentHeight - flickable.height));
 
 				// Use the singleton to highlight the setting
 				SettingsHighlight.highlight(settingName);
@@ -27,33 +27,41 @@ CustomFlickable {
 		return false;
 	}
 
-	contentHeight: clayout.implicitHeight
+	radius: Appearance.rounding.normal - Appearance.padding.smaller
 
-	TapHandler {
-		acceptedButtons: Qt.LeftButton
+	CustomFlickable {
+		id: flickable
 
-		onTapped: function (eventPoint) {
-			const menu = SettingsDropdowns.activeMenu;
-			if (!menu)
-				return;
+		anchors.fill: parent
+		clip: true
+		contentHeight: clayout.implicitHeight
 
-			const p = eventPoint.scenePosition;
+		TapHandler {
+			acceptedButtons: Qt.LeftButton
 
-			if (SettingsDropdowns.hit(SettingsDropdowns.activeTrigger, p))
-				return;
+			onTapped: function (eventPoint) {
+				const menu = SettingsDropdowns.activeMenu;
+				if (!menu)
+					return;
 
-			if (SettingsDropdowns.hit(menu, p))
-				return;
+				const p = eventPoint.scenePosition;
 
-			SettingsDropdowns.closeActive();
+				if (SettingsDropdowns.hit(SettingsDropdowns.activeTrigger, p))
+					return;
+
+				if (SettingsDropdowns.hit(menu, p))
+					return;
+
+				SettingsDropdowns.closeActive();
+			}
 		}
-	}
 
-	ColumnLayout {
-		id: clayout
+		ColumnLayout {
+			id: clayout
 
-		anchors.left: parent.left
-		anchors.right: parent.right
-		spacing: Appearance.spacing.small
+			anchors.left: parent.left
+			anchors.right: parent.right
+			spacing: Appearance.spacing.small
+		}
 	}
 }

@@ -27,6 +27,8 @@ Searcher {
 		actualCurrent = path;
 		WallpaperPath.currentWallpaperPath = path;
 		Quickshell.execDetached(["zshell-cli", "wallpaper", "lockscreen", "--input-image", `${root.actualCurrent}`, "--output-path", `${Paths.state}/lockscreen_bg.png`, "--blur-amount", `${Config.lock.blurAmount}`]);
+		if (Config.general.color.schemeGeneration)
+			Quickshell.execDetached(["zshell-cli", "scheme", "generate", "--image-path", `${root.actualCurrent}`, "--scheme", `${Config.colors.schemeType}`, "--mode", `${Config.general.color.mode}`]);
 	}
 
 	function stopPreview(): void {

@@ -1,3 +1,4 @@
+import QtQuick.Layouts
 import qs.Modules.Settings.Controls
 import qs.Config
 
@@ -21,11 +22,19 @@ SettingsPage {
 		}
 
 		SettingSpinBox {
-			name: "Fade duration"
 			min: 0
+			name: "Fade duration"
 			object: Config.background
 			setting: "wallFadeDuration"
 			step: 50
+		}
+	}
+
+	SettingsSection {
+		sectionId: "Wallpapers"
+
+		WallpaperGrid {
+			Layout.fillWidth: true
 		}
 	}
 }
