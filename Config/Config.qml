@@ -77,7 +77,10 @@ Singleton {
 	function serializeBackground(): var {
 		return {
 			wallFadeDuration: background.wallFadeDuration,
-			enabled: background.enabled
+			enabled: background.enabled,
+			alignX: background.alignX,
+			alignY: background.alignY,
+			zoom: background.zoom
 		};
 	}
 

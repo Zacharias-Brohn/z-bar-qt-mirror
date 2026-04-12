@@ -28,6 +28,14 @@ SettingsPage {
 			setting: "wallFadeDuration"
 			step: 50
 		}
+
+		// Separator {
+		// }
+		//
+		// WallpaperCropper {
+		// 	Layout.fillWidth: true
+		// 	Layout.preferredHeight: 300
+		// }
 	}
 
 	SettingsSection {
