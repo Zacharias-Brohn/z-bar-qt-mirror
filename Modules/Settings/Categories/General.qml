@@ -1,6 +1,8 @@
+import Quickshell
 import qs.Modules.Settings.Controls
 import qs.Config
 import qs.Components
+import qs.Helpers
 
 SettingsPage {
 	id: root
@@ -74,6 +76,11 @@ SettingsPage {
 			onSelected: item => {
 				Config.general.color.mode = item.value;
 				Config.save();
+
+				if (item.value === "light")
+					ModeScheduler.applyLightMode();
+				else if (item.value === "dark")
+					ModeScheduler.applyDarkMode();
 			}
 		}
 
@@ -138,6 +145,13 @@ SettingsPage {
 			onSelected: item => {
 				Config.colors.schemeType = item.value;
 				Config.save();
+
+				if (item.value === "tonalSpot")
+					Quickshell.execDetached(["zshell-cli", "scheme", "generate", "--scheme", "tonal-spot"]);
+				else if (item.value === "fruitSalad")
+					Quickshell.execDetached(["zshell-cli", "scheme", "generate", "--scheme", "fruit-salad"]);
+				else
+					Quickshell.execDetached(["zshell-cli", "scheme", "generate", "--scheme", item.value]);
 			}
 		}
 
