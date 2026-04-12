@@ -13,7 +13,7 @@ LazyListView {
 
 	required property Flickable container
 	required property Props props
-	required property DrawerVisibilities visibilities
+	required property PersistentProperties visibilities
 
 	anchors.left: parent?.left
 	anchors.right: parent?.right
@@ -107,7 +107,7 @@ LazyListView {
 				triggeredOnStart: true
 
 				onTriggered: {
-					const notifs = Notifs.notClosed.filter(n => n.appName === notif.modelData);
+					const notifs = NotifServer.notClosed.filter(n => n.appName === notif.modelData);
 					if (notifs.length === 0) {
 						stop();
 						return;
@@ -131,9 +131,9 @@ LazyListView {
 	model: ScriptModel {
 		values: {
 			const map = new Map();
-			for (const n of Notifs.notClosed)
+			for (const n of NotifServer.notClosed)
 				map.set(n.appName, null);
-			for (const n of Notifs.list)
+			for (const n of NotifServer.list)
 				map.set(n.appName, null);
 			return [...map.keys()];
 		}

@@ -1,12 +1,13 @@
 pragma ComponentBehavior: Bound
 
+import Quickshell
+import QtQuick
+import QtQuick.Layouts
+import ZShell.Components
 import qs.Components
 import qs.Config
 import qs.Modules
 import qs.Daemons
-import Quickshell
-import QtQuick
-import QtQuick.Layouts
 
 LazyListView {
 	id: root
@@ -15,7 +16,7 @@ LazyListView {
 	required property bool expanded
 	required property list<var> notifs
 	required property Props props
-	required property DrawerVisibilities visibilities
+	required property PersistentProperties visibilities
 
 	signal requestToggleExpand(expand: bool)
 
@@ -37,7 +38,7 @@ LazyListView {
 			id: notif
 
 			required property int index
-			required property NotifData modelData
+			required property NotifServer.Notif modelData
 			property int startY
 
 			LazyListView.preferredHeight: modelData?.closed || LazyListView.removing ? 0 : notifInner.nonAnimHeight
