@@ -20,7 +20,7 @@ CustomRect {
 	required property string modelData
 	readonly property int nonAnimHeight: {
 		const headerHeight = header.implicitHeight + (root.expanded ? Math.round(7 / 2) : 0);
-		const columnHeight = headerHeight + notifList.nonAnimHeight + column.Layout.topMargin + column.Layout.bottomMargin;
+		const columnHeight = headerHeight + notifList.layoutHeight + column.Layout.topMargin + column.Layout.bottomMargin;
 		return Math.round(Math.max(Config.notifs.sizes.image, columnHeight) + 10 * 2);
 	}
 	readonly property int notifCount: notifs.reduce((acc, n) => n.closed ? acc : acc + 1, 0)

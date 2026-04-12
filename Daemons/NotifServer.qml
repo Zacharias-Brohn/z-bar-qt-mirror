@@ -113,11 +113,12 @@ Singleton {
 		id: storage
 
 		path: `${Paths.state}/notifs.json`
+		printErrors: false
 
 		onLoadFailed: err => {
 			if (err === FileViewError.FileNotFound) {
 				root.loaded = true;
-				setText("[]");
+				Qt.callLater(() => setText("[]"));
 			}
 		}
 		onLoaded: {

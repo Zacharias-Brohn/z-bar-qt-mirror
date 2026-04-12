@@ -13,7 +13,7 @@ CustomRect {
 
 	color: DynamicColors.tPalette.m3surfaceContainer
 	implicitHeight: Config.barConfig.height + Appearance.padding.smallest * 2
-	implicitWidth: contentRow.implicitWidth + Appearance.spacing.smaller
+	implicitWidth: contentRow.implicitWidth + Appearance.spacing.small * 2
 	radius: height / 2
 
 	RowLayout {

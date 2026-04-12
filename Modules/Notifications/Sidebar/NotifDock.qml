@@ -129,20 +129,27 @@ Item {
 	Timer {
 		id: clearTimer
 
-		interval: 50
+		interval: Math.max(15, Math.min(80, 69.8 - 12.3 * Math.log(NotifServer.notClosed.length)))
 		repeat: true
+		triggeredOnStart: true
 
 		onTriggered: {
-			let next = null;
-			for (let i = 0; i < notifList.repeater.count; i++) {
-				next = notifList.repeater.itemAt(i);
-				if (!next?.closed)
-					break;
-			}
-			if (next)
-				next.closeAll();
-			else
+			const first = NotifServer.notClosed[0];
+			if (!first) {
 				stop();
+				return;
+			}
+
+			const appName = first.appName;
+			let cleared = 0;
+			for (const n of NotifServer.notClosed.filter(n => n.appName === appName)) {
+				n.close();
+				cleared++;
+				if (cleared > 30) {
+					interval = 5;
+					return;
+				}
+			}
 		}
 	}
 

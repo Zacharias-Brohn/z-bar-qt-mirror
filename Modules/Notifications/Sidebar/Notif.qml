@@ -19,11 +19,12 @@ CustomRect {
 	required property var visibilities
 
 	color: {
-		const c = root.modelData.urgency === "critical" ? DynamicColors.palette.m3secondaryContainer : DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHigh, 2);
+		const c = root.modelData?.urgency === "critical" ? DynamicColors.palette.m3secondaryContainer : DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHigh, 2);
 		return expanded ? c : Qt.alpha(c, 0);
 	}
 	implicitHeight: nonAnimHeight
 	radius: 6
+	state: expanded ? "expanded" : ""
 
 	Behavior on implicitHeight {
 		Anim {
@@ -33,7 +34,6 @@ CustomRect {
 	}
 	states: State {
 		name: "expanded"
-		when: root.expanded
 
 		PropertyChanges {
 			compactBody.anchors.margins: 10
@@ -63,10 +63,10 @@ CustomRect {
 
 		anchors.left: parent.left
 		anchors.top: parent.top
-		color: root.modelData.urgency === "critical" ? DynamicColors.palette.m3onSecondaryContainer : DynamicColors.palette.m3onSurface
+		color: root.modelData?.urgency === "critical" ? DynamicColors.palette.m3onSecondaryContainer : DynamicColors.palette.m3onSurface
 		elide: Text.ElideRight
 		maximumLineCount: 1
-		text: root.modelData.summary
+		text: root.modelData?.summary ?? ""
 		width: parent.width
 		wrapMode: Text.WordWrap
 	}
@@ -76,7 +76,7 @@ CustomRect {
 
 		anchors.left: parent.left
 		anchors.top: parent.top
-		text: root.modelData.summary
+		text: root.modelData?.summary ?? ""
 		visible: false
 	}
 
@@ -90,9 +90,9 @@ CustomRect {
 		shouldBeActive: !root.expanded
 
 		sourceComponent: CustomText {
-			color: root.modelData.urgency === "critical" ? DynamicColors.palette.m3secondary : DynamicColors.palette.m3outline
+			color: root.modelData?.urgency === "critical" ? DynamicColors.palette.m3secondary : DynamicColors.palette.m3outline
 			elide: Text.ElideRight
-			text: root.modelData.body.replace(/\n/g, " ")
+			text: String(root.modelData?.body ?? "").replace(/\n/g, " ")
 			textFormat: Text.StyledText
 		}
 	}
@@ -108,7 +108,7 @@ CustomRect {
 			animate: true
 			color: DynamicColors.palette.m3outline
 			font.pointSize: 11
-			text: root.modelData.timeStr
+			text: root.modelData?.timeStr ?? ""
 		}
 	}
 
@@ -130,8 +130,8 @@ CustomRect {
 				id: body
 
 				Layout.fillWidth: true
-				color: root.modelData.urgency === "critical" ? DynamicColors.palette.m3secondary : DynamicColors.palette.m3onSurface
-				text: root.modelData.body.replace(/(.)\n(?!\n)/g, "$1\n\n") || qsTr("No body given")
+				color: root.modelData?.urgency === "critical" ? DynamicColors.palette.m3secondary : DynamicColors.palette.m3onSurface
+				text: String(root.modelData?.body ?? "").replace(/(.)\n(?!\n)/g, "$1\n\n") || qsTr("No body given")
 				textFormat: Text.MarkdownText
 				wrapMode: Text.WordWrap
 
@@ -148,14 +148,51 @@ CustomRect {
 	}
 
 	component WrappedLoader: Loader {
+		id: comp
+
 		required property bool shouldBeActive
 
-		active: opacity > 0
-		opacity: shouldBeActive ? 1 : 0
+		active: false
+		opacity: 0
 
-		Behavior on opacity {
-			Anim {
+		states: State {
+			name: "active"
+			when: comp.shouldBeActive
+
+			PropertyChanges {
+				comp.active: true
+				comp.opacity: 1
 			}
 		}
+		transitions: [
+			Transition {
+				from: ""
+				to: "active"
+
+				SequentialAnimation {
+					PropertyAction {
+						property: "active"
+					}
+
+					Anim {
+						property: "opacity"
+					}
+				}
+			},
+			Transition {
+				from: "active"
+				to: ""
+
+				SequentialAnimation {
+					Anim {
+						property: "opacity"
+					}
+
+					PropertyAction {
+						property: "active"
+					}
+				}
+			}
+		]
 	}
 }
