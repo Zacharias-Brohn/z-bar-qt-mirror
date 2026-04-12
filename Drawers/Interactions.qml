@@ -52,6 +52,7 @@ CustomMouseArea {
 	}
 
 	anchors.fill: parent
+	cursorShape: (pressed && dragStart.y < bar.implicitHeight) ? Qt.ClosedHandCursor : undefined
 	hoverEnabled: true
 	propagateComposedEvents: true
 
@@ -87,6 +88,13 @@ CustomMouseArea {
 		if (!visibilities.bar && Config.barConfig.autoHide && y < bar.implicitHeight)
 			bar.isHovered = true;
 
+		if (pressed && dragStart.y < bar.implicitHeight) {
+			if (dragY > 20)
+				visibilities.settings = true;
+			else if (dragY < -20)
+				visibilities.settings = false;
+		}
+
 		if (panels.sidebar.width === 0) {
 			const showOsd = inRightPanel(panels.osd, x, y);
 
@@ -114,6 +122,7 @@ CustomMouseArea {
 			root.bar.checkPopout(x);
 		}
 	}
+	onPressed: event => dragStart = Qt.point(event.x, event.y)
 
 	Connections {
 		function onDashboardChanged() {
