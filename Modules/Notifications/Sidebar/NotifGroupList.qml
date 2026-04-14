@@ -64,16 +64,16 @@ LazyListView {
 			}
 			Behavior on x {
 				Anim {
-					duration: Appearance.anim.durations.expressiveDefaultSpatial
-					easing.bezierCurve: Appearance.anim.curves.expressiveDefaultSpatial
+					duration: MaterialEasing.expressiveEffectsTime
+					easing.bezierCurve: MaterialEasing.expressiveEffects
 				}
 			}
 			Behavior on y {
 				enabled: notif.LazyListView.ready
 
 				Anim {
-					duration: Appearance.anim.durations.expressiveDefaultSpatial
-					easing.bezierCurve: Appearance.anim.curves.expressiveDefaultSpatial
+					duration: MaterialEasing.expressiveEffectsTime
+					easing.bezierCurve: MaterialEasing.expressiveEffects
 				}
 			}
 

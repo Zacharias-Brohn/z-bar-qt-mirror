@@ -166,7 +166,7 @@ CustomRect {
 
 				CustomRect {
 					color: root.urgency === NotificationUrgency.Critical ? DynamicColors.palette.m3error : DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHigh, 3)
-					implicitHeight: groupCount.implicitHeight + 10
+					implicitHeight: groupCount.implicitHeight + Appearance.padding.small
 					implicitWidth: expandBtn.implicitWidth + 7 * 2
 					radius: Appearance.rounding.full
 
@@ -196,7 +196,7 @@ CustomRect {
 
 						MaterialIcon {
 							Layout.rightMargin: -10 / 2
-							Layout.topMargin: root.expanded ? -Math.floor(7 / 2) : 0
+							// Layout.topMargin: root.expanded ? -Math.floor(7 / 2) : 0
 							color: root.urgency === NotificationUrgency.Critical ? DynamicColors.palette.m3onError : DynamicColors.palette.m3onSurface
 							rotation: root.expanded ? 180 : 0
 							text: "expand_more"
