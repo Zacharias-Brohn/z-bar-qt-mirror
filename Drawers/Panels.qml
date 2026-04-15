@@ -68,7 +68,7 @@ Item {
 		visibilities: root.visibilities
 	}
 
-	Modules.Wrapper {
+	Modules.ClipWrapper {
 		id: popouts
 
 		anchors.top: parent.top

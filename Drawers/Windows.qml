@@ -144,16 +144,80 @@ Variants {
 					shadowEnabled: true
 				}
 
-				Border {
-					bar: bar
-					visibilities: visibilities
+				BlobGroup {
+					id: blobGroup
+
+					color: DynamicColors.palette.m3surface
+
+					Behavior on color {
+						CAnim {
+						}
+					}
 				}
 
-				Backgrounds {
-					bar: bar
-					panels: panels
-					visibilities: visibilities
-					z: 1
+				BlobInvertedRect {
+					anchors.fill: parent
+					anchors.margins: -50
+					borderBottom: Config.barConfig.border - anchors.margins
+					borderLeft: Config.barConfig.border - anchors.margins
+					borderRight: Config.barConfig.border - anchors.margins
+					borderTop: Config.barConfig.border - anchors.margins
+					group: blobGroup
+					radius: Config.barConfig.rounding
+				}
+
+				PanelBg {
+					id: dashBg
+
+					deformAmount: 0.1
+					panel: panels.dashboard
+				}
+
+				PanelBg {
+					id: launcherBg
+
+					deformAmount: 0.1
+					panel: panels.launcher
+				}
+
+				PanelBg {
+					id: sidebarBg
+
+					bottomLeftRadius: Math.max(0, Math.min(1, panels.sidebar.offsetScale / 0.3)) * radius
+					deformAmount: 0.03
+					exclude: panels.sidebar.offsetscale > 0.08 ? [] : [utilsBg]
+					implicitHeight: panel.height * (1 / rawDeformMatrix.m22) + 2
+					panel: panels.sidebar
+				}
+
+				PanelBg {
+					id: osdBg
+
+					deformAmount: 0.25
+					panel: panels.osd
+				}
+
+				PanelBg {
+					id: notifsBg
+
+					panel: panels.notifications
+				}
+
+				PanelBg {
+					id: utilsBg
+
+					deformAmount: panels.sidebar.visible ? 0.1 : 0.15
+					exclude: panels.sidebar.offsetScale > 0.08 ? [] : [sidebarBg]
+					panel: panels.utilities
+					topLeftRadius: Math.max(0, Math.min(1, panels.sidebar.offsetScale / 0.3)) * radius
+				}
+
+				PanelBg {
+					id: popoutBg
+
+					deformAmount: 0.15
+					implicitWidth: panels.popouts.width
+					panel: panels.popouts
 				}
 			}
 
@@ -195,6 +259,28 @@ Variants {
 					drawingItem: drawing
 					screen: scope.modelData
 					visibilities: visibilities
+
+					dashboard.transform: Matrix4x4 {
+						matrix: dashBg.deformMatrix
+					}
+					launcher.transform: Matrix4x4 {
+						matrix: launcherBg.deformMatrix
+					}
+					notifications.transform: Matrix4x4 {
+						matrix: notifsBg.deformMatrix
+					}
+					osd.transform: Matrix4x4 {
+						matrix: osdBg.deformMatrix
+					}
+					popouts.transform: Matrix4x4 {
+						matrix: popoutBg.deformMatrix
+					}
+					sidebar.transform: Matrix4x4 {
+						matrix: sidebarBg.deformMatrix
+					}
+					utilities.transform: Matrix4x4 {
+						matrix: utilsBg.deformMatrix
+					}
 				}
 
 				BarLoader {
@@ -208,5 +294,18 @@ Variants {
 				}
 			}
 		}
+	}
+
+	component PanelBg: BlobRect {
+		property real deformAmount: 0.15
+		required property Item panel
+
+		deformScale: deformAmount / 10000
+		group: panel.width > 0 && panel.height > 0 ? blobGroup : null
+		implicitHeight: panel.height
+		implicitWidth: panel.width
+		radius: Appearance.rounding.smallest
+		x: panel.x + Config.barConfig.border
+		y: panel.y + bar.implicitHeight
 	}
 }
