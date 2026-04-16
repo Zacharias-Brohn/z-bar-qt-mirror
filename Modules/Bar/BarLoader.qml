@@ -20,6 +20,7 @@ Item {
 	property bool isHovered
 	readonly property int padding: Math.max(Appearance.padding.smaller, Config.barConfig.border)
 	required property Wrapper popouts
+	required property ClipWrapper popoutsWrapper
 	required property ShellScreen screen
 	readonly property bool shouldBeVisible: (!Config.barConfig.autoHide || visibilities.bar || isHovered)
 	readonly property int vPadding: 6
@@ -76,6 +77,7 @@ Item {
 		sourceComponent: Bar {
 			height: root.contentHeight
 			popouts: root.popouts
+			popoutsWrapper: root.popoutsWrapper
 			screen: root.screen
 			visibilities: root.visibilities
 		}

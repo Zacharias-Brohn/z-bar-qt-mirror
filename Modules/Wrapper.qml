@@ -11,19 +11,16 @@ Item {
 	property list<real> animCurve: Appearance.anim.curves.expressiveDefaultSpatial
 	property int animLength: Appearance.anim.durations.expressiveDefaultSpatial
 	readonly property alias content: content
-	readonly property alias controlCenter: controlCenter
 	readonly property Item current: (content.item as Content)?.current ?? null
 	property real currentCenter
 	property alias currentName: popoutState.currentName
 	property string detachedMode
 	property alias hasCurrent: popoutState.hasCurrent
-	readonly property bool isDetached: detachedMode.length > 0
 	readonly property real nonAnimHeight: children.find(c => c.shouldBeActive)?.implicitHeight ?? content.implicitHeight
 	readonly property real nonAnimWidth: children.find(c => c.shouldBeActive)?.implicitWidth ?? content.implicitWidth
 	required property real offsetScale
 	property string queuedMode
 	required property ShellScreen screen
-	readonly property alias winfo: winfo
 
 	function close(): void {
 		hasCurrent = false;
@@ -67,49 +64,14 @@ Item {
 		}
 	}
 
-	Keys.onEscapePressed: {
-		// Forward escape to password popout if active, otherwise close
-		if (currentName === "wirelesspassword" && content.item) {
-			const passwordPopout = (content.item as Content)?.children.find(c => c.name === "wirelesspassword");
-			if (passwordPopout && passwordPopout.item) {
-				passwordPopout.item.closeDialog();
-				return;
-			}
-		}
-		close();
-	}
-	Keys.onPressed: event => {
-		// Don't intercept keys when password popout is active - let it handle them
-		if (currentName === "wirelesspassword") {
-			event.accepted = false;
-		}
-	}
-
 	PopoutState {
 		id: popoutState
-
-		onDetachRequested: mode => root.detach(mode)
-	}
-
-	HyprlandFocusGrab {
-		active: root.isDetached
-		windows: [QsWindow.window]
-
-		onCleared: root.close()
-	}
-
-	Binding {
-		property: "WlrLayershell.keyboardFocus"
-		target: QsWindow.window
-		value: WlrKeyboardFocus.OnDemand
-		when: root.isDetached || (root.hasCurrent && root.currentName === "wirelesspassword")
 	}
 
 	Comp {
 		id: content
 
-		anchors.right: parent.right
-		anchors.verticalCenter: parent.verticalCenter
+		anchors.centerIn: parent
 		shouldBeActive: root.hasCurrent && !root.detachedMode
 
 		sourceComponent: Content {
@@ -117,31 +79,31 @@ Item {
 		}
 	}
 
-	Comp {
-		id: winfo
-
-		anchors.centerIn: parent
-		shouldBeActive: root.detachedMode === "winfo"
-
-		sourceComponent: WindowInfo {
-			client: Hypr.activeToplevel
-			screen: root.screen
-		}
-	}
-
-	Comp {
-		id: controlCenter
-
-		anchors.centerIn: parent
-		shouldBeActive: root.detachedMode === "any"
-
-		sourceComponent: ControlCenter {
-			active: root.queuedMode
-			screen: root.screen
-
-			onClose: root.close()
-		}
-	}
+	// Comp {
+	// 	id: winfo
+	//
+	// 	anchors.centerIn: parent
+	// 	shouldBeActive: root.detachedMode === "winfo"
+	//
+	// 	sourceComponent: WindowInfo {
+	// 		client: Hypr.activeToplevel
+	// 		screen: root.screen
+	// 	}
+	// }
+	//
+	// Comp {
+	// 	id: controlCenter
+	//
+	// 	anchors.centerIn: parent
+	// 	shouldBeActive: root.detachedMode === "any"
+	//
+	// 	sourceComponent: ControlCenter {
+	// 		active: root.queuedMode
+	// 		screen: root.screen
+	//
+	// 		onClose: root.close()
+	// 	}
+	// }
 
 	component Comp: Loader {
 		id: comp

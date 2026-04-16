@@ -16,6 +16,7 @@ RowLayout {
 	id: root
 
 	required property Wrapper popouts
+	required property ClipWrapper popoutsWrapper
 	required property ShellScreen screen
 	readonly property int vPadding: 6
 	required property PersistentProperties visibilities

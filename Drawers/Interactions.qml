@@ -72,9 +72,6 @@ CustomMouseArea {
 		}
 	}
 	onPositionChanged: event => {
-		if (popouts.isDetached)
-			return;
-
 		const x = event.x;
 		const y = event.y;
 		const dragX = x - dragStart.x;

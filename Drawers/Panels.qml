@@ -26,7 +26,8 @@ Item {
 	readonly property alias launcher: launcher
 	readonly property alias notifications: notifications
 	readonly property alias osd: osd
-	readonly property alias popouts: popouts
+	readonly property alias popouts: popouts.content
+	readonly property alias popoutsWrapper: popouts
 	readonly property alias resources: resources
 	required property ShellScreen screen
 	readonly property alias settings: settings
@@ -73,13 +74,6 @@ Item {
 
 		anchors.top: parent.top
 		screen: root.screen
-		x: {
-			const off = currentCenter - nonAnimWidth / 2;
-			const diff = root.width - Math.floor(off + nonAnimWidth);
-			if (diff < 0)
-				return off + diff;
-			return Math.floor(Math.max(off, 0));
-		}
 	}
 
 	Toasts.Toasts {

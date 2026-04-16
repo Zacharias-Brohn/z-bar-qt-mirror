@@ -15,7 +15,7 @@ Item {
 
 	readonly property Item current: currentPopout?.item ?? null
 	readonly property Popout currentPopout: content.children.find(c => c.shouldBeActive) ?? null
-	required property Item wrapper
+	required property PopoutState popouts
 
 	implicitHeight: (currentPopout?.implicitHeight ?? 0) + 5 * 2
 	implicitWidth: (currentPopout?.implicitWidth ?? 0) + 5 * 2
@@ -49,20 +49,20 @@ Item {
 
 				Connections {
 					function onHasCurrentChanged(): void {
-						if (root.wrapper.hasCurrent && trayMenu.shouldBeActive) {
+						if (root.popouts.hasCurrent && trayMenu.shouldBeActive) {
 							trayMenu.sourceComponent = null;
 							trayMenu.sourceComponent = trayMenuComponent;
 						}
 					}
 
-					target: root.wrapper
+					target: root.popouts
 				}
 
 				Component {
 					id: trayMenuComponent
 
 					TrayMenuPopout {
-						popouts: root.wrapper
+						popouts: root.popouts
 						trayItem: trayMenu.modelData.menu
 					}
 				}
@@ -70,19 +70,10 @@ Item {
 		}
 
 		Popout {
-			name: "overview"
-
-			sourceComponent: OverviewPopout {
-				screen: root.wrapper.screen
-				wrapper: root.wrapper
-			}
-		}
-
-		Popout {
 			name: "upower"
 
 			sourceComponent: UPowerPopout {
-				wrapper: root.wrapper
+				wrapper: root.popouts
 			}
 		}
 
@@ -90,7 +81,7 @@ Item {
 			name: "network"
 
 			sourceComponent: NetworkPopout {
-				wrapper: root.wrapper
+				wrapper: root.popouts
 			}
 		}
 
@@ -98,7 +89,7 @@ Item {
 			name: "updates"
 
 			sourceComponent: UpdatesPopout {
-				wrapper: root.wrapper
+				wrapper: root.popouts
 			}
 		}
 	}
@@ -107,7 +98,7 @@ Item {
 		id: popout
 
 		required property string name
-		readonly property bool shouldBeActive: root.wrapper.currentName === name
+		readonly property bool shouldBeActive: root.popouts.currentName === name
 
 		active: false
 		anchors.centerIn: parent

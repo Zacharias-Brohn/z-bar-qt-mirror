@@ -5,6 +5,7 @@ import QtQuick.Effects
 import Quickshell
 import Quickshell.Wayland
 import Quickshell.Hyprland
+import ZShell.Blobs
 import qs.Daemons
 import qs.Components
 import qs.Modules
@@ -161,7 +162,7 @@ Variants {
 					borderBottom: Config.barConfig.border - anchors.margins
 					borderLeft: Config.barConfig.border - anchors.margins
 					borderRight: Config.barConfig.border - anchors.margins
-					borderTop: Config.barConfig.border - anchors.margins
+					borderTop: bar.implicitHeight - anchors.margins
 					group: blobGroup
 					radius: Config.barConfig.rounding
 				}
@@ -171,6 +172,7 @@ Variants {
 
 					deformAmount: 0.1
 					panel: panels.dashboard
+					radius: Appearance.rounding.normal
 				}
 
 				PanelBg {
@@ -178,12 +180,13 @@ Variants {
 
 					deformAmount: 0.1
 					panel: panels.launcher
+					radius: Appearance.rounding.smallest + 5
 				}
 
 				PanelBg {
 					id: sidebarBg
 
-					bottomLeftRadius: Math.max(0, Math.min(1, panels.sidebar.offsetScale / 0.3)) * radius
+					bottomLeftRadius: 0
 					deformAmount: 0.03
 					exclude: panels.sidebar.offsetscale > 0.08 ? [] : [utilsBg]
 					implicitHeight: panel.height * (1 / rawDeformMatrix.m22) + 2
@@ -195,6 +198,7 @@ Variants {
 
 					deformAmount: 0.25
 					panel: panels.osd
+					radius: 20
 				}
 
 				PanelBg {
@@ -209,7 +213,7 @@ Variants {
 					deformAmount: panels.sidebar.visible ? 0.1 : 0.15
 					exclude: panels.sidebar.offsetScale > 0.08 ? [] : [sidebarBg]
 					panel: panels.utilities
-					topLeftRadius: Math.max(0, Math.min(1, panels.sidebar.offsetScale / 0.3)) * radius
+					topLeftRadius: 0
 				}
 
 				PanelBg {
@@ -217,7 +221,15 @@ Variants {
 
 					deformAmount: 0.15
 					implicitWidth: panels.popouts.width
-					panel: panels.popouts
+					panel: panels.popoutsWrapper
+				}
+
+				PanelBg {
+					id: resourcesBg
+
+					deformAmount: 0.15
+					panel: panels.resources
+					radius: Appearance.rounding.normal
 				}
 			}
 
@@ -275,6 +287,9 @@ Variants {
 					popouts.transform: Matrix4x4 {
 						matrix: popoutBg.deformMatrix
 					}
+					resources.transform: Matrix4x4 {
+						matrix: resourcesBg.deformMatrix
+					}
 					sidebar.transform: Matrix4x4 {
 						matrix: sidebarBg.deformMatrix
 					}
@@ -289,6 +304,7 @@ Variants {
 					anchors.left: parent.left
 					anchors.right: parent.right
 					popouts: panels.popouts
+					popoutsWrapper: panels.popoutsWrapper
 					screen: scope.modelData
 					visibilities: visibilities
 				}

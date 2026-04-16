@@ -1,18 +1,19 @@
 pragma ComponentBehavior: Bound
 
-import qs.Components
-import qs.Config
 import Quickshell
 import Quickshell.Widgets
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Effects
+import qs.Components
+import qs.Modules
+import qs.Config
 
 StackView {
 	id: root
 
 	property int biggestWidth: 0
-	required property Item popouts
+	required property PopoutState popouts
 	property int rootWidth: 0
 	required property QsMenuHandle trayItem
 
