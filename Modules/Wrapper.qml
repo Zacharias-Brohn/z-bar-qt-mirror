@@ -58,6 +58,8 @@ Item {
 		}
 	}
 	Behavior on implicitWidth {
+		enabled: root.offsetScale < 1
+
 		Anim {
 			duration: root.animLength
 			easing.bezierCurve: root.animCurve

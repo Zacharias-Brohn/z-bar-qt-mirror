@@ -31,14 +31,14 @@ Item {
 		}
 	}
 	Behavior on x {
+		enabled: root.offsetScale < 1
+
 		Anim {
 			duration: content.animLength
 			easing.bezierCurve: content.animCurve
 		}
 	}
 	Behavior on y {
-		enabled: root.offsetScale < 1
-
 		Anim {
 			duration: content.animLength
 			easing.bezierCurve: content.animCurve
