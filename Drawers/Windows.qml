@@ -231,6 +231,22 @@ Variants {
 					panel: panels.resources
 					radius: Appearance.rounding.normal
 				}
+
+				PanelBg {
+					id: settingsBg
+
+					deformAmount: 0.15
+					panel: panels.settings
+					radius: Appearance.rounding.large
+				}
+
+				PanelBg {
+					id: dockBg
+
+					deformAmount: 0.1
+					panel: panels.dock
+					radius: Appearance.rounding.normal
+				}
 			}
 
 			Drawing {
@@ -275,6 +291,9 @@ Variants {
 					dashboard.transform: Matrix4x4 {
 						matrix: dashBg.deformMatrix
 					}
+					dock.transform: Matrix4x4 {
+						matrix: dockBg.deformMatrix
+					}
 					launcher.transform: Matrix4x4 {
 						matrix: launcherBg.deformMatrix
 					}
@@ -289,6 +308,9 @@ Variants {
 					}
 					resources.transform: Matrix4x4 {
 						matrix: resourcesBg.deformMatrix
+					}
+					settings.transform: Matrix4x4 {
+						matrix: settingsBg.deformMatrix
 					}
 					sidebar.transform: Matrix4x4 {
 						matrix: sidebarBg.deformMatrix
