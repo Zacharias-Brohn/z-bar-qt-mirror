@@ -206,6 +206,7 @@ Singleton {
 		return {
 			maxAppsShown: launcher.maxAppsShown,
 			maxWallpapers: launcher.maxWallpapers,
+			uwsm: launcher.uwsm,
 			actionPrefix: launcher.actionPrefix,
 			specialPrefix: launcher.specialPrefix,
 			useFuzzy: {
