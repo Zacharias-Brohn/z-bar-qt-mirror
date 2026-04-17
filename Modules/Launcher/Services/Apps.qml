@@ -9,17 +9,20 @@ import qs.Paths
 Searcher {
 	id: root
 
+	readonly property list<string> command: Config.launcher.uwsm ? ["app2unit", "--"] : []
+
 	function launch(entry: DesktopEntry): void {
 		appDb.incrementFrequency(entry.id);
+		console.log(root.command);
 
 		if (entry.runInTerminal)
 			Quickshell.execDetached({
-				command: ["app2unit", "--", ...Config.general.apps.terminal, `${Quickshell.shellDir}/assets/wrap_term_launch.sh`, ...entry.command],
+				command: [...root.command, ...Config.general.apps.terminal, `${Quickshell.shellDir}/assets/wrap_term_launch.sh`, ...entry.command],
 				workingDirectory: entry.workingDirectory
 			});
 		else
 			Quickshell.execDetached({
-				command: ["app2unit", "--", ...entry.command],
+				command: [...root.command, ...entry.command],
 				workingDirectory: entry.workingDirectory
 			});
 	}

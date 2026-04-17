@@ -10,8 +10,8 @@ SettingsPage {
 		}
 
 		SettingSpinBox {
-			name: "Max apps shown"
 			min: 1
+			name: "Max apps shown"
 			object: Config.launcher
 			setting: "maxAppsShown"
 		}
@@ -20,8 +20,8 @@ SettingsPage {
 		}
 
 		SettingSpinBox {
-			name: "Max wallpapers shown"
 			min: 1
+			name: "Max wallpapers shown"
 			object: Config.launcher
 			setting: "maxWallpapers"
 		}
@@ -42,6 +42,15 @@ SettingsPage {
 			name: "Special prefix"
 			object: Config.launcher
 			setting: "specialPrefix"
+		}
+
+		Separator {
+		}
+
+		SettingSwitch {
+			name: "Use UWSM launch command"
+			object: Config.launcher
+			setting: "uwsm"
 		}
 	}
 
@@ -103,8 +112,8 @@ SettingsPage {
 		}
 
 		SettingSpinBox {
-			name: "Item width"
 			min: 1
+			name: "Item width"
 			object: Config.launcher.sizes
 			setting: "itemWidth"
 		}
@@ -113,8 +122,8 @@ SettingsPage {
 		}
 
 		SettingSpinBox {
-			name: "Item height"
 			min: 1
+			name: "Item height"
 			object: Config.launcher.sizes
 			setting: "itemHeight"
 		}
@@ -123,8 +132,8 @@ SettingsPage {
 		}
 
 		SettingSpinBox {
-			name: "Wallpaper width"
 			min: 1
+			name: "Wallpaper width"
 			object: Config.launcher.sizes
 			setting: "wallpaperWidth"
 		}
@@ -133,8 +142,8 @@ SettingsPage {
 		}
 
 		SettingSpinBox {
-			name: "Wallpaper height"
 			min: 1
+			name: "Wallpaper height"
 			object: Config.launcher.sizes
 			setting: "wallpaperHeight"
 		}
