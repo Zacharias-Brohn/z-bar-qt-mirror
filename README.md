@@ -43,6 +43,8 @@ Core requirements:
 - Hyprland (Wayland session integration)
 - Python 3 for scheme/wallpaper tooling
 
+Make sure to have the newest Quickshell version! As of writing, version `0.2.0.r136.gfb08ece-1`.
+
 Used by major features (install as needed for your setup):
 
 - `app2unit` (launcher app execution)
