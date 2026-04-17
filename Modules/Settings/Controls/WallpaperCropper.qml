@@ -9,15 +9,16 @@ import qs.Helpers
 ColumnLayout {
 	id: root
 
-	width: Math.min(parent ? parent.width : 600, 600)
 	spacing: 15
+	width: Math.min(parent ? parent.width : 600, 600)
 
 	Rectangle {
 		id: previewContainer
-		Layout.fillWidth: true
-		Layout.preferredHeight: width * (Quickshell.screens.length > 0 ? (Quickshell.screens[0].height / Math.max(1, Quickshell.screens[0].width)) : 9/16)
+
+		Layout.fillHeight: true
+		Layout.preferredWidth: height * (Quickshell.screens.length > 0 ? (Quickshell.screens[0].height / Math.max(1, Quickshell.screens[0].width)) : 16 / 9)
 		clip: true
-		color: DynamicColors.surfaceContainer
+		color: DynamicColors.palette.m3surfaceContainer
 		radius: Config.appearance.rounding.scale * 10
 
 		Image {
@@ -30,51 +31,50 @@ ColumnLayout {
 
 			Rectangle {
 				id: cropRect
-				
-				property real paintedWidth: img.paintedWidth > 0 ? img.paintedWidth : img.width
+
+				property real cropHeight: (imageAspect > screenAspect ? paintedHeight : paintedWidth / screenAspect) / Config.background.zoom
+				property real cropWidth: (imageAspect > screenAspect ? paintedHeight * screenAspect : paintedWidth) / Config.background.zoom
+				property real imageAspect: Math.max(1, paintedWidth) / Math.max(1, paintedHeight)
 				property real paintedHeight: img.paintedHeight > 0 ? img.paintedHeight : img.height
+				property real paintedWidth: img.paintedWidth > 0 ? img.paintedWidth : img.width
 				property real paintedX: (img.width - paintedWidth) / 2
 				property real paintedY: (img.height - paintedHeight) / 2
-				
-				property real screenAspect: Quickshell.screens.length > 0 ? (Quickshell.screens[0].width / Math.max(1, Quickshell.screens[0].height)) : 16/9
-				property real imageAspect: Math.max(1, paintedWidth) / Math.max(1, paintedHeight)
-				
-				property real cropWidth: (imageAspect > screenAspect ? paintedHeight * screenAspect : paintedWidth) / Config.background.zoom
-				property real cropHeight: (imageAspect > screenAspect ? paintedHeight : paintedWidth / screenAspect) / Config.background.zoom
-				
-				border.color: DynamicColors.primary
+				property real screenAspect: Quickshell.screens.length > 0 ? (Quickshell.screens[0].width / Math.max(1, Quickshell.screens[0].height)) : 16 / 9
+
+				border.color: DynamicColors.palette.m3primary
 				border.width: 2
-				color: DynamicColors.primaryContainer.withAlpha(0.3)
-				
-				width: cropWidth
+				color: Qt.alpha(DynamicColors.palette.m3primaryContainer, 0.3)
 				height: cropHeight
-				
+				width: cropWidth
 				x: paintedX + (paintedWidth - width) * Config.background.alignX
 				y: paintedY + (paintedHeight - height) * Config.background.alignY
-				
+
 				DragHandler {
 					target: null
+
 					onActiveTranslationChanged: {
 						if (active) {
 							let newX = cropRect.x - cropRect.paintedX + translation.x;
 							let newY = cropRect.y - cropRect.paintedY + translation.y;
-							
+
 							let rangeX = cropRect.paintedWidth - cropRect.width;
 							let rangeY = cropRect.paintedHeight - cropRect.height;
-							
+
 							if (rangeX > 0) {
 								let valX = newX / rangeX;
 								Config.background.alignX = Math.max(0.0, Math.min(1.0, valX));
+								Config.save();
 							}
-							
+
 							if (rangeY > 0) {
 								let valY = newY / rangeY;
 								Config.background.alignY = Math.max(0.0, Math.min(1.0, valY));
+								Config.save();
 							}
 						}
 					}
 				}
-				
+
 				PinchHandler {
 					maximumScale: 5.0
 					minimumScale: 1.0
@@ -90,13 +90,13 @@ ColumnLayout {
 			}
 		}
 	}
-	
+
 	SettingSpinBox {
+		max: 5.0
+		min: 1.0
 		name: "Zoom"
 		object: Config.background
 		setting: "zoom"
-		min: 1.0
-		max: 5.0
 		step: 0.1
 	}
 }

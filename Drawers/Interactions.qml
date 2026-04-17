@@ -54,7 +54,7 @@ CustomMouseArea {
 	anchors.fill: parent
 	cursorShape: (pressed && dragStart.y < bar.implicitHeight) ? Qt.ClosedHandCursor : undefined
 	hoverEnabled: true
-	propagateComposedEvents: true
+	propagateComposedEvents: false
 
 	onContainsMouseChanged: {
 		if (!containsMouse) {
@@ -92,6 +92,10 @@ CustomMouseArea {
 				visibilities.settings = false;
 		}
 
+		if (Config.dock.hoverToReveal && pressed && dragStart.y > root.screen.height - root.bar.implicitHeight)
+			if (dragY < -10)
+				visibilities.dock = true;
+
 		if (panels.sidebar.width === 0) {
 			const showOsd = inRightPanel(panels.osd, x, y);
 
@@ -112,7 +116,7 @@ CustomMouseArea {
 			}
 		}
 
-		if (!visibilities.dock && !visibilities.launcher && inBottomPanel(panels.dock, x, y))
+		if (Config.dock.enable && !Config.dock.hoverToReveal && !visibilities.dock && !visibilities.launcher && inBottomPanel(panels.dock, x, y))
 			visibilities.dock = true;
 
 		if (y < root.bar.implicitHeight) {
