@@ -967,6 +967,13 @@ export const settingsIndex = [
     section: "Launcher",
     keywords: ["command", "prefix", "special"],
   },
+  {
+    name: "Use UWSM launch command",
+    category: "launcher",
+    categoryName: "Launcher",
+    section: "Launcher",
+    keywords: ["command", "uwsm", "systemd"],
+  },
   // Fuzzy Search section
   {
     name: "Apps",
