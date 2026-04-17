@@ -235,7 +235,7 @@ Variants {
 				PanelBg {
 					id: settingsBg
 
-					deformAmount: 0.15
+					deformAmount: 0.05
 					panel: panels.settings
 					radius: Appearance.rounding.large
 				}
