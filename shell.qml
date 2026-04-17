@@ -4,7 +4,7 @@
 //@ pragma Env QSG_USE_SIMPLE_ANIMATION_DRIVER=0
 //@ pragma Env QS_NO_RELOAD_POPUP=1
 //@ pragma Env QT_SCALE_FACTOR_ROUNDING_POLICY=Round
-// @ pragma DropExpensiveFonts
+//@ pragma DropExpensiveFonts
 import Quickshell
 import qs.Modules
 import qs.Modules.Wallpaper
