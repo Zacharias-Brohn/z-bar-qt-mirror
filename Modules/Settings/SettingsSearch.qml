@@ -51,6 +51,11 @@ Item {
 	implicitHeight: searchContainer.implicitHeight
 	implicitWidth: 200
 
+	Shortcut {
+		sequence: "/"
+		onActivated: searchField.forceActiveFocus()
+	}
+
 	Component.onCompleted: console.log(root.height)
 
 	ListModel {
