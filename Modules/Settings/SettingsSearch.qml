@@ -51,9 +51,10 @@ Item {
 	implicitHeight: searchContainer.implicitHeight
 	implicitWidth: 200
 
+	Component.onCompleted: console.log(root.height)
+
 	ListModel {
 		id: resultsModel
-
 	}
 
 	CustomRect {

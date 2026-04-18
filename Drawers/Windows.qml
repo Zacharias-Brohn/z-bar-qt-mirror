@@ -238,6 +238,8 @@ Variants {
 					deformAmount: 0.05
 					panel: panels.settings
 					radius: Appearance.rounding.large
+					topLeftRadius: Appearance.rounding.large + Appearance.padding.smaller
+					topRightRadius: Appearance.rounding.large + Appearance.padding.smaller
 				}
 
 				PanelBg {
