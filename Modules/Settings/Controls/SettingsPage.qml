@@ -36,6 +36,10 @@ CustomClippingRect {
 		clip: true
 		contentHeight: clayout.implicitHeight
 
+		CustomScrollBar.vertical: CustomScrollBar {
+			flickable: flickable
+		}
+
 		TapHandler {
 			acceptedButtons: Qt.LeftButton
 
