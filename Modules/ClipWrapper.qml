@@ -26,8 +26,8 @@ Item {
 
 	Behavior on offsetScale {
 		Anim {
-			duration: Appearance.anim.durations.expressiveDefaultSpatial
-			easing.bezierCurve: Appearance.anim.curves.expressiveDefaultSpatial
+			duration: MaterialEasing.expressiveEffectsTime
+			easing.bezierCurve: MaterialEasing.expressiveEffects
 		}
 	}
 	Behavior on x {

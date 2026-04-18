@@ -101,7 +101,9 @@ Item {
 		readonly property bool shouldBeActive: root.popouts.currentName === name
 
 		active: false
-		anchors.centerIn: parent
+		anchors.horizontalCenter: parent.horizontalCenter
+		anchors.top: parent.top
+		anchors.topMargin: 5
 		opacity: 0
 		scale: 0.8
 

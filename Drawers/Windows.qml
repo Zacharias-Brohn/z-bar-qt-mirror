@@ -170,7 +170,7 @@ Variants {
 				PanelBg {
 					id: dashBg
 
-					deformAmount: 0.1
+					deformAmount: 0
 					panel: panels.dashboard
 					radius: Appearance.rounding.normal
 				}
@@ -178,7 +178,7 @@ Variants {
 				PanelBg {
 					id: launcherBg
 
-					deformAmount: 0.1
+					deformAmount: 0
 					panel: panels.launcher
 					radius: Appearance.rounding.smallest + 5
 				}
@@ -187,7 +187,7 @@ Variants {
 					id: sidebarBg
 
 					bottomLeftRadius: 0
-					deformAmount: 0.03
+					deformAmount: 0
 					exclude: panels.sidebar.offsetscale > 0.08 ? [] : [utilsBg]
 					implicitHeight: panel.height * (1 / rawDeformMatrix.m22) + 2
 					panel: panels.sidebar
@@ -196,7 +196,7 @@ Variants {
 				PanelBg {
 					id: osdBg
 
-					deformAmount: 0.25
+					deformAmount: 0
 					panel: panels.osd
 					radius: 20
 				}
@@ -210,7 +210,7 @@ Variants {
 				PanelBg {
 					id: utilsBg
 
-					deformAmount: panels.sidebar.visible ? 0.1 : 0.15
+					deformAmount: panels.sidebar.visible ? 0 : 0
 					exclude: panels.sidebar.offsetScale > 0.08 ? [] : [sidebarBg]
 					panel: panels.utilities
 					topLeftRadius: 0
@@ -219,7 +219,7 @@ Variants {
 				PanelBg {
 					id: popoutBg
 
-					deformAmount: 0.15
+					deformAmount: 0
 					implicitWidth: panels.popouts.width
 					panel: panels.popoutsWrapper
 				}
@@ -227,7 +227,7 @@ Variants {
 				PanelBg {
 					id: resourcesBg
 
-					deformAmount: 0.15
+					deformAmount: 0
 					panel: panels.resources
 					radius: Appearance.rounding.normal
 				}
@@ -235,7 +235,7 @@ Variants {
 				PanelBg {
 					id: settingsBg
 
-					deformAmount: 0.05
+					deformAmount: 0
 					panel: panels.settings
 					radius: Appearance.rounding.large
 					topLeftRadius: Appearance.rounding.large + Appearance.padding.smaller
@@ -245,7 +245,7 @@ Variants {
 				PanelBg {
 					id: dockBg
 
-					deformAmount: 0.1
+					deformAmount: 0
 					panel: panels.dock
 					radius: Appearance.rounding.normal
 				}

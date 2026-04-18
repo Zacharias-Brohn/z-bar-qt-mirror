@@ -8,8 +8,8 @@ import qs.Config
 Item {
 	id: root
 
-	property list<real> animCurve: Appearance.anim.curves.expressiveDefaultSpatial
-	property int animLength: Appearance.anim.durations.expressiveDefaultSpatial
+	property list<real> animCurve: MaterialEasing.expressiveEffects
+	property int animLength: MaterialEasing.expressiveEffectsTime
 	readonly property alias content: content
 	readonly property Item current: (content.item as Content)?.current ?? null
 	property real currentCenter
@@ -73,7 +73,9 @@ Item {
 	Comp {
 		id: content
 
-		anchors.centerIn: parent
+		anchors.horizontalCenter: parent.horizontalCenter
+		anchors.top: parent.top
+		// anchors.centerIn: parent
 		shouldBeActive: root.hasCurrent && !root.detachedMode
 
 		sourceComponent: Content {
