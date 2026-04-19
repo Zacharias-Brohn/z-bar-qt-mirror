@@ -6,10 +6,11 @@ Item {
 	id: root
 
 	required property Item panels
+	required property Item sidebarPanel
 	required property var visibilities
 
 	implicitHeight: content.implicitHeight
-	implicitWidth: Math.max(panels.sidebar.width, content.implicitWidth)
+	implicitWidth: content.implicitWidth
 	visible: height > 0
 
 	states: State {

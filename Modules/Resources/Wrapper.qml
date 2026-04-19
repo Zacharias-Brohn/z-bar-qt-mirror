@@ -9,16 +9,16 @@ Item {
 	id: root
 
 	readonly property real nonAnimHeight: state === "visible" ? (content.item?.nonAnimHeight ?? 0) : 0
+	property real offsetScale: shouldBeActive ? 0 : 1
+	readonly property bool shouldBeActive: root.visibilities.resources
 	required property PersistentProperties visibilities
 
-	readonly property bool shouldBeActive: root.visibilities.resources
-	property real offsetScale: shouldBeActive ? 0 : 1
-
-	visible: offsetScale < 1
 	anchors.topMargin: (-implicitHeight - 5) * offsetScale
+	clip: true
 	implicitHeight: content.implicitHeight
 	implicitWidth: content.implicitWidth || 854 // Hard coded fallback for first open
 	opacity: 1 - offsetScale
+	visible: offsetScale < 1
 
 	Behavior on offsetScale {
 		Anim {
@@ -30,10 +30,9 @@ Item {
 	Loader {
 		id: content
 
+		active: root.shouldBeActive || root.visible
 		anchors.bottom: parent.bottom
 		anchors.horizontalCenter: parent.horizontalCenter
-
-		active: root.shouldBeActive || root.visible
 
 		sourceComponent: Content {
 			padding: Appearance.padding.normal

@@ -221,7 +221,6 @@ Variants {
 				PanelBg {
 					id: popoutBg
 
-					// Extra height to prevent vertical movement deformation partially detaching panel from bar
 					property real extraHeight: panels.popouts.isDetached ? 0 : 0.2
 
 					deformAmount: panels.popouts.isDetached ? 0.05 * Config.appearance.deform.scale : panels.popouts.hasCurrent ? 0.15 * Config.appearance.deform.scale : 0.1 * Config.appearance.deform.scale

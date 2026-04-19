@@ -56,7 +56,6 @@ Item {
 		anchors.rightMargin: sidebar.width * (1 - sidebar.offsetScale)
 		anchors.verticalCenter: parent.verticalCenter
 		clip: sidebar.visible
-
 		implicitHeight: osd.implicitHeight
 		implicitWidth: osd.implicitWidth * (1 - osd.offsetScale)
 
@@ -102,6 +101,7 @@ Item {
 		anchors.right: parent.right
 		anchors.top: parent.top
 		panels: root
+		sidebarPanel: sidebar
 		visibilities: root.visibilities
 	}
 
