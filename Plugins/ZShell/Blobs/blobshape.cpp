@@ -68,8 +68,21 @@ void BlobShape::componentComplete() {
 void BlobShape::geometryChange(const QRectF& newGeometry, const QRectF& oldGeometry) {
 	QQuickItem::geometryChange(newGeometry, oldGeometry);
 	updateCenteredDeformMatrix();
-	if (m_group && newGeometry != oldGeometry) {
-		m_group->markShapeDirty(this);
+	if (m_group) {
+		// Accumulate sub-pixel drift so slow movements don't desync the shader
+		m_pendingDx += static_cast<float>(newGeometry.x() - oldGeometry.x());
+		m_pendingDy += static_cast<float>(newGeometry.y() - oldGeometry.y());
+		m_pendingDw += static_cast<float>(newGeometry.width() - oldGeometry.width());
+		m_pendingDh += static_cast<float>(newGeometry.height() - oldGeometry.height());
+		
+		if (std::abs(m_pendingDx) > 0.5f || std::abs(m_pendingDy) > 0.5f || 
+		    std::abs(m_pendingDw) > 0.5f || std::abs(m_pendingDh) > 0.5f) {
+			m_pendingDx = 0;
+			m_pendingDy = 0;
+			m_pendingDw = 0;
+			m_pendingDh = 0;
+			m_group->markShapeDirty(this);
+		}
 	}
 }
 
