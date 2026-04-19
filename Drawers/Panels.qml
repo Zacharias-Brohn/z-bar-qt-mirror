@@ -26,6 +26,7 @@ Item {
 	readonly property alias launcher: launcher
 	readonly property alias notifications: notifications
 	readonly property alias osd: osd
+	readonly property alias osdWrapper: osdWrapper
 	readonly property alias popouts: popouts.content
 	readonly property alias popoutsWrapper: popouts
 	readonly property alias resources: resources
@@ -48,23 +49,34 @@ Item {
 		visibilities: root.visibilities
 	}
 
+	Item {
+		id: osdWrapper
+
+		anchors.right: parent.right
+		anchors.rightMargin: sidebar.width * (1 - sidebar.offsetScale)
+		anchors.verticalCenter: parent.verticalCenter
+		clip: sidebar.visible
+
+		implicitHeight: osd.implicitHeight
+		implicitWidth: osd.implicitWidth * (1 - osd.offsetScale)
+
+		Osd.Wrapper {
+			id: osd
+
+			anchors.right: parent.right
+			anchors.verticalCenter: parent.verticalCenter
+			screen: root.screen
+			sidebarOrSessionVisible: sidebar.visible
+			visibilities: root.visibilities
+		}
+	}
+
 	Drawing.Wrapper {
 		id: drawing
 
 		anchors.left: parent.left
 		anchors.verticalCenter: parent.verticalCenter
 		drawing: root.drawingItem
-		screen: root.screen
-		visibilities: root.visibilities
-	}
-
-	Osd.Wrapper {
-		id: osd
-
-		anchors.right: parent.right
-		anchors.rightMargin: sidebar.width
-		anchors.verticalCenter: parent.verticalCenter
-		clip: sidebar.width > 0
 		screen: root.screen
 		visibilities: root.visibilities
 	}

@@ -11,97 +11,36 @@ Item {
 	property int contentHeight
 	required property var panels
 	required property ShellScreen screen
-	readonly property bool shouldBeActive: visibilities.dock
 	required property PersistentProperties visibilities
 
-	implicitHeight: 0
-	implicitWidth: content.implicitWidth
-	visible: height > 0
+	readonly property bool shouldBeActive: visibilities.dock
+	property real offsetScale: shouldBeActive ? 0 : 1
 
-	Behavior on implicitWidth {
+	visible: offsetScale < 1
+	anchors.bottomMargin: (-implicitHeight - 5) * offsetScale
+	implicitHeight: content.implicitHeight
+	implicitWidth: content.implicitWidth || 400
+	opacity: 1 - offsetScale
+
+	Behavior on offsetScale {
 		Anim {
-			duration: Appearance.anim.durations.small
-		}
-	}
-
-	onShouldBeActiveChanged: {
-		if (shouldBeActive) {
-			timer.stop();
-			hideAnim.stop();
-			showAnim.start();
-		} else {
-			showAnim.stop();
-			hideAnim.start();
-		}
-	}
-
-	SequentialAnimation {
-		id: showAnim
-
-		Anim {
-			duration: Appearance.anim.durations.small
-			easing.bezierCurve: Appearance.anim.curves.expressiveEffects
-			property: "implicitHeight"
-			target: root
-			to: root.contentHeight
-		}
-
-		ScriptAction {
-			script: root.implicitHeight = Qt.binding(() => content.implicitHeight)
-		}
-	}
-
-	SequentialAnimation {
-		id: hideAnim
-
-		ScriptAction {
-			script: root.implicitHeight = root.implicitHeight
-		}
-
-		Anim {
-			easing.bezierCurve: Appearance.anim.curves.expressiveEffects
-			property: "implicitHeight"
-			target: root
-			to: 0
-		}
-	}
-
-	Timer {
-		id: timer
-
-		interval: Appearance.anim.durations.small
-
-		onRunningChanged: {
-			if (running && !root.shouldBeActive) {
-				content.visible = false;
-				content.active = true;
-			} else {
-				content.active = Qt.binding(() => root.shouldBeActive || root.visible);
-				content.visible = true;
-				if (showAnim.running) {
-					showAnim.stop();
-					showAnim.start();
-				}
-			}
+			duration: Appearance.anim.durations.expressiveDefaultSpatial
+			easing.bezierCurve: Appearance.anim.curves.expressiveDefaultSpatial
 		}
 	}
 
 	Loader {
 		id: content
 
-		active: false
 		anchors.left: parent.left
 		anchors.top: parent.top
-		visible: false
+
+		active: root.shouldBeActive || root.visible
 
 		sourceComponent: Content {
 			panels: root.panels
 			screen: root.screen
 			visibilities: root.visibilities
-
-			Component.onCompleted: root.contentHeight = implicitHeight
 		}
-
-		Component.onCompleted: timer.start()
 	}
 }

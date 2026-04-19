@@ -26,40 +26,22 @@ Item {
 		timer.restart();
 	}
 
+	property real offsetScale: shouldBeActive ? 0 : 1
+	required property bool sidebarOrSessionVisible
+	property real sidebarOffset: sidebarOrSessionVisible ? 12 : 0
+
+	visible: offsetScale < 1
+	anchors.rightMargin: (-implicitWidth - 5 - sidebarOffset) * offsetScale
+	implicitWidth: content.implicitWidth
 	implicitHeight: content.implicitHeight
-	implicitWidth: 0
-	visible: width > 0
+	opacity: 1 - offsetScale
 
-	states: State {
-		name: "visible"
-		when: root.shouldBeActive
-
-		PropertyChanges {
-			root.implicitWidth: content.implicitWidth
+	Behavior on offsetScale {
+		Anim {
+			duration: Appearance.anim.durations.expressiveDefaultSpatial
+			easing.bezierCurve: Appearance.anim.curves.expressiveDefaultSpatial
 		}
 	}
-	transitions: [
-		Transition {
-			from: ""
-			to: "visible"
-
-			Anim {
-				easing.bezierCurve: MaterialEasing.expressiveEffects
-				property: "implicitWidth"
-				target: root
-			}
-		},
-		Transition {
-			from: "visible"
-			to: ""
-
-			Anim {
-				easing.bezierCurve: MaterialEasing.expressiveEffects
-				property: "implicitWidth"
-				target: root
-			}
-		}
-	]
 
 	Component.onCompleted: {
 		volume = Audio.volume;
@@ -113,26 +95,22 @@ Item {
 		}
 	}
 
-	CustomClippingRect {
-		anchors.fill: parent
+	Loader {
+		id: content
 
-		Loader {
-			id: content
+		anchors.left: parent.left
+		anchors.verticalCenter: parent.verticalCenter
 
-			anchors.left: parent.left
-			anchors.verticalCenter: parent.verticalCenter
+		active: root.shouldBeActive || root.visible
 
-			sourceComponent: Content {
-				brightness: root.brightness
-				monitor: root.monitor
-				muted: root.muted
-				sourceMuted: root.sourceMuted
-				sourceVolume: root.sourceVolume
-				visibilities: root.visibilities
-				volume: root.volume
-			}
-
-			Component.onCompleted: active = Qt.binding(() => root.shouldBeActive || root.visible)
+		sourceComponent: Content {
+			brightness: root.brightness
+			monitor: root.monitor
+			muted: root.muted
+			sourceMuted: root.sourceMuted
+			sourceVolume: root.sourceVolume
+			visibilities: root.visibilities
+			volume: root.volume
 		}
 	}
 }

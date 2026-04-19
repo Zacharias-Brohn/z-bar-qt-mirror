@@ -22,8 +22,8 @@ Item {
 	}
 	transitions: Transition {
 		Anim {
-			duration: MaterialEasing.expressiveEffectsTime
-			easing.bezierCurve: MaterialEasing.expressiveEffects
+			duration: Appearance.anim.durations.expressiveDefaultSpatial
+			easing.bezierCurve: Appearance.anim.curves.expressiveDefaultSpatial
 			property: "implicitHeight"
 			target: root
 		}

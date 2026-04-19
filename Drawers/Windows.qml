@@ -188,7 +188,7 @@ Variants {
 
 					bottomLeftRadius: 0
 					deformAmount: 0.1 * Config.appearance.deform.scale
-					exclude: panels.sidebar.offsetscale > 0.08 ? [] : [utilsBg]
+					exclude: panels.sidebar.offsetScale > 0.08 ? [] : [utilsBg]
 					implicitHeight: panel.height * (1 / rawDeformMatrix.m22) + 2
 					panel: panels.sidebar
 				}
@@ -197,8 +197,10 @@ Variants {
 					id: osdBg
 
 					deformAmount: 0.1 * Config.appearance.deform.scale
-					panel: panels.osd
+					implicitWidth: panels.osd.width
+					panel: panels.osdWrapper
 					radius: 20
+					x: panels.osdWrapper.x + panels.osd.x + Config.barConfig.border
 				}
 
 				PanelBg {

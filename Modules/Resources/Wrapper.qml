@@ -11,76 +11,33 @@ Item {
 	readonly property real nonAnimHeight: state === "visible" ? (content.item?.nonAnimHeight ?? 0) : 0
 	required property PersistentProperties visibilities
 
-	implicitHeight: 0
-	implicitWidth: content.implicitWidth
-	visible: height > 0
+	readonly property bool shouldBeActive: root.visibilities.resources
+	property real offsetScale: shouldBeActive ? 0 : 1
 
-	states: State {
-		name: "visible"
-		when: root.visibilities.resources
+	visible: offsetScale < 1
+	anchors.topMargin: (-implicitHeight - 5) * offsetScale
+	implicitHeight: content.implicitHeight
+	implicitWidth: content.implicitWidth || 854 // Hard coded fallback for first open
+	opacity: 1 - offsetScale
 
-		PropertyChanges {
-			root.implicitHeight: content.implicitHeight
-		}
-	}
-	transitions: [
-		Transition {
-			from: ""
-			to: "visible"
-
-			Anim {
-				duration: MaterialEasing.expressiveEffectsTime
-				easing.bezierCurve: MaterialEasing.expressiveEffects
-				property: "implicitHeight"
-				target: root
-			}
-		},
-		Transition {
-			from: "visible"
-			to: ""
-
-			Anim {
-				easing.bezierCurve: MaterialEasing.expressiveEffects
-				property: "implicitHeight"
-				target: root
-			}
-		}
-	]
-
-	onStateChanged: {
-		if (state === "visible" && timer.running) {
-			timer.triggered();
-			timer.stop();
+	Behavior on offsetScale {
+		Anim {
+			duration: Appearance.anim.durations.expressiveDefaultSpatial
+			easing.bezierCurve: Appearance.anim.curves.expressiveDefaultSpatial
 		}
 	}
 
-	Timer {
-		id: timer
+	Loader {
+		id: content
 
-		interval: Appearance.anim.durations.extraLarge
-		running: true
+		anchors.bottom: parent.bottom
+		anchors.horizontalCenter: parent.horizontalCenter
 
-		onTriggered: {
-			content.active = Qt.binding(() => (root.visibilities.resources) || root.visible);
-			content.visible = true;
-		}
-	}
+		active: root.shouldBeActive || root.visible
 
-	CustomClippingRect {
-		anchors.fill: parent
-
-		Loader {
-			id: content
-
-			active: true
-			anchors.bottom: parent.bottom
-			anchors.horizontalCenter: parent.horizontalCenter
-			visible: false
-
-			sourceComponent: Content {
-				padding: Appearance.padding.normal
-				visibilities: root.visibilities
-			}
+		sourceComponent: Content {
+			padding: Appearance.padding.normal
+			visibilities: root.visibilities
 		}
 	}
 }
