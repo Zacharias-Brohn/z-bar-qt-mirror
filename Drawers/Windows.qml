@@ -219,10 +219,20 @@ Variants {
 				PanelBg {
 					id: popoutBg
 
-					deformAmount: 0.15 * Config.appearance.deform.scale
-					implicitWidth: panels.popouts.width
+					// Extra height to prevent vertical movement deformation partially detaching panel from bar
+					property real extraHeight: panels.popouts.isDetached ? 0 : 0.2
+
+					deformAmount: panels.popouts.isDetached ? 0.05 * Config.appearance.deform.scale : panels.popouts.hasCurrent ? 0.15 * Config.appearance.deform.scale : 0.1 * Config.appearance.deform.scale
+					implicitHeight: panels.popouts.height * (1 + extraHeight)
+					implicitWidth: panels.popoutsWrapper.width
 					panel: panels.popoutsWrapper
 					radius: (panels.popouts.currentName.startsWith("audio") || panels.popouts.currentName.startsWith("updates")) ? Appearance.rounding.normal : Appearance.rounding.smallest
+					y: panels.popoutsWrapper.y + panels.popouts.y + bar.implicitHeight - panels.popouts.height * extraHeight
+
+					Behavior on extraHeight {
+						Anim {
+						}
+					}
 				}
 
 				PanelBg {
@@ -342,7 +352,7 @@ Variants {
 		required property Item panel
 
 		deformScale: deformAmount / 10000
-		group: panel.width > 0 && panel.height > 0 ? blobGroup : null
+		group: blobGroup
 		implicitHeight: panel.height
 		implicitWidth: panel.width
 		radius: Appearance.rounding.smallest

@@ -14,8 +14,6 @@ BlobRect::~BlobRect() {
 }
 
 void BlobRect::updatePolish() {
-	BlobShape::updatePolish();
-
 	if (m_physicsActive) {
 		// Check if deformation is visually imperceptible
 		float totalDelta = std::abs(m_dm00 - 1.0f) + std::abs(m_dm01) + std::abs(m_dm11 - 1.0f);
@@ -41,6 +39,8 @@ void BlobRect::updatePolish() {
 				Qt::QueuedConnection);
 		}
 	}
+
+	BlobShape::updatePolish();
 }
 
 void BlobRect::updatePhysics() {
