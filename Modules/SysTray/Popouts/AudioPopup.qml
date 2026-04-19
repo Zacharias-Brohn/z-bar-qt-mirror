@@ -24,6 +24,7 @@ Item {
 	CustomRect {
 		anchors.left: parent.left
 		anchors.right: parent.right
+		anchors.top: parent.top
 		color: DynamicColors.tPalette.m3surfaceContainer
 		implicitHeight: parent.implicitHeight
 		radius: Appearance.rounding.small
@@ -31,8 +32,8 @@ Item {
 
 		Behavior on implicitHeight {
 			Anim {
-				duration: MaterialEasing.emphasizedDecelTime
-				easing.bezierCurve: MaterialEasing.emphasized
+				duration: MaterialEasing.expressiveEffectsTime
+				easing.bezierCurve: MaterialEasing.expressiveEffects
 			}
 		}
 	}
@@ -40,7 +41,11 @@ Item {
 	ColumnLayout {
 		id: layout
 
-		anchors.centerIn: parent
+		// anchors.centerIn: parent
+		anchors.left: parent.left
+		anchors.margins: Appearance.padding.small
+		anchors.right: parent.right
+		anchors.top: parent.top
 		implicitWidth: stack.currentItem ? stack.currentItem.childrenRect.height : 0
 		spacing: 12
 
@@ -98,6 +103,12 @@ Item {
 			Layout.preferredHeight: currentIndex === 0 ? vol.childrenRect.height : dev.childrenRect.height
 			currentIndex: 0
 
+			// Behavior on Layout.preferredHeight {
+			// 	Anim {
+			// 		duration: MaterialEasing.expressiveEffectsTime
+			// 		easing.bezierCurve: MaterialEasing.expressiveEffects
+			// 	}
+			// }
 			Behavior on currentIndex {
 				SequentialAnimation {
 					ParallelAnimation {

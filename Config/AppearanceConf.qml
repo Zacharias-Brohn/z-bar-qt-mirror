@@ -3,6 +3,8 @@ import Quickshell.Io
 JsonObject {
 	property Anim anim: Anim {
 	}
+	property Deform deform: Deform {
+	}
 	property FontStuff font: FontStuff {
 	}
 	property Padding padding: Padding {
@@ -42,6 +44,9 @@ JsonObject {
 		property int normal: 400 * scale
 		property real scale: 1
 		property int small: 200 * scale
+	}
+	component Deform: JsonObject {
+		property real scale: 1
 	}
 	component FontFamily: JsonObject {
 		property string clock: "Rubik"

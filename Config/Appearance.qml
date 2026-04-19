@@ -4,6 +4,7 @@ import Quickshell
 
 Singleton {
 	readonly property AppearanceConf.Anim anim: Config.appearance.anim
+	readonly property AppearanceConf.Deform deform: Config.appearance.deform
 	readonly property AppearanceConf.FontStuff font: Config.appearance.font
 	readonly property AppearanceConf.Padding padding: Config.appearance.padding
 	// Literally just here to shorten accessing stuff :woe:

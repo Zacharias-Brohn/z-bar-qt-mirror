@@ -815,7 +815,14 @@ export const settingsIndex = [
     category: "appearance",
     categoryName: "Appearance",
     section: "Scale",
-    keywords: ["animation", "speed", "duration"],
+    keywords: ["animation", "speed", "duration", "scale"],
+  },
+  {
+    name: "Deform animation scale",
+    category: "appearance",
+    categoryName: "Appearance",
+    section: "Scale",
+    keywords: ["animation", "deform", "scale"],
   },
   // Fonts section
   {

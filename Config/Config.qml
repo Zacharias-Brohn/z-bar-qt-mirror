@@ -48,6 +48,9 @@ Singleton {
 			padding: {
 				scale: appearance.padding.scale
 			},
+			deform: {
+				scale: appearance.deform.scale
+			},
 			font: {
 				family: {
 					sans: appearance.font.family.sans,

@@ -57,6 +57,16 @@ SettingsPage {
 			setting: "scale"
 			step: 0.1
 		}
+
+		Separator {
+		}
+
+		SettingSpinBox {
+			name: "Deform animation scale"
+			object: Config.appearance.deform
+			setting: "scale"
+			step: 0.1
+		}
 	}
 
 	SettingsSection {
@@ -118,9 +128,9 @@ SettingsPage {
 		}
 
 		SettingSpinBox {
-			name: "Session GIF speed"
 			max: 5
 			min: 0
+			name: "Session GIF speed"
 			object: Config.appearance.anim
 			setting: "sessionGifSpeed"
 			step: 0.1
@@ -144,9 +154,9 @@ SettingsPage {
 		}
 
 		SettingSpinBox {
-			name: "Base opacity"
 			max: 1
 			min: 0
+			name: "Base opacity"
 			object: Config.appearance.transparency
 			setting: "base"
 			step: 0.05
@@ -156,9 +166,9 @@ SettingsPage {
 		}
 
 		SettingSpinBox {
-			name: "Layer opacity"
 			max: 1
 			min: 0
+			name: "Layer opacity"
 			object: Config.appearance.transparency
 			setting: "layers"
 			step: 0.05
