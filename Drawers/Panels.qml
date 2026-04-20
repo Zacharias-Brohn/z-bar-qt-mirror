@@ -146,7 +146,9 @@ Item {
 	Settings.Wrapper {
 		id: settings
 
-		anchors.centerIn: parent
+		anchors.horizontalCenter: parent.horizontalCenter
+		anchors.top: parent.top
+		// anchors.centerIn: parent
 		panels: root
 		screen: root.screen
 		visibilities: root.visibilities
