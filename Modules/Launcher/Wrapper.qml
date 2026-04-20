@@ -25,9 +25,18 @@ Item {
 	readonly property bool shouldBeActive: visibilities.launcher
 	property real offsetScale: shouldBeActive ? 0 : 1
 
+	onShouldBeActiveChanged: {
+		if (shouldBeActive) {
+			implicitHeight = Qt.binding(() => content.implicitHeight);
+			timer.stop();
+		} else {
+			implicitHeight = implicitHeight;
+		}
+	}
+
 	visible: offsetScale < 1
 	anchors.bottomMargin: (-implicitHeight - 5) * offsetScale
-	implicitHeight: contentHeight
+	implicitHeight: content.implicitHeight
 	implicitWidth: content.implicitWidth || 400
 	opacity: 1 - offsetScale
 
@@ -39,11 +48,6 @@ Item {
 	}
 
 	onMaxHeightChanged: timer.start()
-	onShouldBeActiveChanged: {
-		if (shouldBeActive) {
-			timer.stop();
-		}
-	}
 
 	Connections {
 		function onEnabledChanged(): void {
