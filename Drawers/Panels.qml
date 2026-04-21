@@ -20,15 +20,18 @@ Item {
 
 	required property Item bar
 	readonly property alias dashboard: dashboard
+	readonly property alias dashboardWrapper: dashboardWrapper
 	readonly property alias dock: dock
 	readonly property alias drawing: drawing
 	required property Canvas drawingItem
 	readonly property alias launcher: launcher
 	readonly property alias notifications: notifications
 	readonly property alias osd: osd
+	readonly property alias osdWrapper: osdWrapper
 	readonly property alias popouts: popouts.content
 	readonly property alias popoutsWrapper: popouts
 	readonly property alias resources: resources
+	readonly property alias resourcesWrapper: resourcesWrapper
 	required property ShellScreen screen
 	readonly property alias settings: settings
 	readonly property alias sidebar: sidebar
@@ -40,12 +43,43 @@ Item {
 	anchors.margins: Config.barConfig.border
 	anchors.topMargin: bar.implicitHeight
 
-	Resources.Wrapper {
-		id: resources
+	Item {
+		id: resourcesWrapper
 
 		anchors.left: parent.left
 		anchors.top: parent.top
-		visibilities: root.visibilities
+		clip: true
+		implicitHeight: resources.implicitHeight * (1 - resources.offsetScale)
+		implicitWidth: resources.implicitWidth
+
+		Resources.Wrapper {
+			id: resources
+
+			anchors.left: parent.left
+			anchors.top: parent.top
+			visibilities: root.visibilities
+		}
+	}
+
+	Item {
+		id: osdWrapper
+
+		anchors.right: parent.right
+		anchors.rightMargin: sidebar.width * (1 - sidebar.offsetScale)
+		anchors.verticalCenter: parent.verticalCenter
+		clip: sidebar.visible
+		implicitHeight: osd.implicitHeight
+		implicitWidth: osd.implicitWidth * (1 - osd.offsetScale)
+
+		Osd.Wrapper {
+			id: osd
+
+			anchors.right: parent.right
+			anchors.verticalCenter: parent.verticalCenter
+			screen: root.screen
+			sidebarOrSessionVisible: sidebar.visible
+			visibilities: root.visibilities
+		}
 	}
 
 	Drawing.Wrapper {
@@ -54,17 +88,6 @@ Item {
 		anchors.left: parent.left
 		anchors.verticalCenter: parent.verticalCenter
 		drawing: root.drawingItem
-		screen: root.screen
-		visibilities: root.visibilities
-	}
-
-	Osd.Wrapper {
-		id: osd
-
-		anchors.right: parent.right
-		anchors.rightMargin: sidebar.width
-		anchors.verticalCenter: parent.verticalCenter
-		clip: sidebar.width > 0
 		screen: root.screen
 		visibilities: root.visibilities
 	}
@@ -90,6 +113,7 @@ Item {
 		anchors.right: parent.right
 		anchors.top: parent.top
 		panels: root
+		sidebarPanel: sidebar
 		visibilities: root.visibilities
 	}
 
@@ -113,12 +137,33 @@ Item {
 		visibilities: root.visibilities
 	}
 
-	Dashboard.Wrapper {
-		id: dashboard
+	Item {
+		id: dashboardWrapper
+
+		property real offsetScale: dashboard.shouldBeActive ? 0 : 1
 
 		anchors.right: parent.right
 		anchors.top: parent.top
-		visibilities: root.visibilities
+		clip: true
+		implicitHeight: dashboard.implicitHeight * (1 - offsetScale)
+		implicitWidth: dashboard.implicitWidth
+
+		Behavior on offsetScale {
+			Anim {
+				duration: Appearance.anim.durations.expressiveDefaultSpatial
+				easing.bezierCurve: Appearance.anim.curves.expressiveDefaultSpatial
+			}
+		}
+
+		Dashboard.Wrapper {
+			id: dashboard
+
+			anchors.right: parent.right
+			anchors.top: parent.top
+			anchors.topMargin: (-implicitHeight - 5) * offsetScale
+			offsetScale: dashboardWrapper.offsetScale
+			visibilities: root.visibilities
+		}
 	}
 
 	Sidebar.Wrapper {
@@ -134,7 +179,9 @@ Item {
 	Settings.Wrapper {
 		id: settings
 
-		anchors.centerIn: parent
+		anchors.horizontalCenter: parent.horizontalCenter
+		anchors.top: parent.top
+		// anchors.centerIn: parent
 		panels: root
 		screen: root.screen
 		visibilities: root.visibilities

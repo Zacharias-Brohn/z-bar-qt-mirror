@@ -15,78 +15,26 @@ Item {
 		reloadableId: "dashboardState"
 	}
 	readonly property real nonAnimHeight: state === "visible" ? (content.item?.nonAnimHeight ?? 0) : 0
+	required property real offsetScale
+	readonly property bool shouldBeActive: root.visibilities.dashboard && Config.dashboard.enabled
 	required property PersistentProperties visibilities
 
-	implicitHeight: 0
-	implicitWidth: content.implicitWidth
-	visible: height > 0
+	implicitHeight: content.implicitHeight
+	implicitWidth: content.implicitWidth || 854 // Hard coded fallback for first open
+	opacity: 1 - offsetScale
 
-	states: State {
-		name: "visible"
-		when: root.visibilities.dashboard && Config.dashboard.enabled
+	// visible: offsetScale < 1
 
-		PropertyChanges {
-			root.implicitHeight: content.implicitHeight
-		}
-	}
-	transitions: [
-		Transition {
-			from: ""
-			to: "visible"
+	Loader {
+		id: content
 
-			Anim {
-				duration: MaterialEasing.expressiveEffectsTime
-				easing.bezierCurve: MaterialEasing.expressiveEffects
-				property: "implicitHeight"
-				target: root
-			}
-		},
-		Transition {
-			from: "visible"
-			to: ""
+		active: root.shouldBeActive || root.visible
+		anchors.bottom: parent.bottom
+		anchors.horizontalCenter: parent.horizontalCenter
 
-			Anim {
-				easing.bezierCurve: MaterialEasing.expressiveEffects
-				property: "implicitHeight"
-				target: root
-			}
-		}
-	]
-
-	onStateChanged: {
-		if (state === "visible" && timer.running) {
-			timer.triggered();
-			timer.stop();
-		}
-	}
-
-	Timer {
-		id: timer
-
-		interval: Appearance.anim.durations.extraLarge
-		running: true
-
-		onTriggered: {
-			content.active = Qt.binding(() => (root.visibilities.dashboard && Config.dashboard.enabled) || root.visible);
-			content.visible = true;
-		}
-	}
-
-	CustomClippingRect {
-		anchors.fill: parent
-
-		Loader {
-			id: content
-
-			active: true
-			anchors.bottom: parent.bottom
-			anchors.horizontalCenter: parent.horizontalCenter
-			visible: false
-
-			sourceComponent: Content {
-				state: root.dashState
-				visibilities: root.visibilities
-			}
+		sourceComponent: Content {
+			state: root.dashState
+			visibilities: root.visibilities
 		}
 	}
 }

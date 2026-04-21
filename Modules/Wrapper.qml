@@ -15,6 +15,7 @@ Item {
 	property real currentCenter
 	property alias currentName: popoutState.currentName
 	property string detachedMode
+	readonly property bool isDetached: detachedMode.length > 0
 	property alias hasCurrent: popoutState.hasCurrent
 	readonly property real nonAnimHeight: children.find(c => c.shouldBeActive)?.implicitHeight ?? content.implicitHeight
 	readonly property real nonAnimWidth: children.find(c => c.shouldBeActive)?.implicitWidth ?? content.implicitWidth
@@ -50,8 +51,6 @@ Item {
 	implicitWidth: nonAnimWidth
 
 	Behavior on implicitHeight {
-		enabled: root.offsetScale < 1
-
 		Anim {
 			duration: root.animLength
 			easing.bezierCurve: root.animCurve

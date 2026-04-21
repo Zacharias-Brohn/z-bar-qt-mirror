@@ -25,7 +25,7 @@ CustomClippingRect {
 		anchors.centerIn: parent
 		height: 200
 		visible: script.values.length === 0
-		width: 300
+		width: 600
 
 		MaterialIcon {
 			id: noUpdatesIcon

@@ -6,10 +6,11 @@ Item {
 	id: root
 
 	required property Item panels
+	required property Item sidebarPanel
 	required property var visibilities
 
 	implicitHeight: content.implicitHeight
-	implicitWidth: Math.max(panels.sidebar.width, content.implicitWidth)
+	implicitWidth: content.implicitWidth
 	visible: height > 0
 
 	states: State {
@@ -22,8 +23,8 @@ Item {
 	}
 	transitions: Transition {
 		Anim {
-			duration: MaterialEasing.expressiveEffectsTime
-			easing.bezierCurve: MaterialEasing.expressiveEffects
+			duration: Appearance.anim.durations.expressiveDefaultSpatial
+			easing.bezierCurve: Appearance.anim.curves.expressiveDefaultSpatial
 			property: "implicitHeight"
 			target: root
 		}

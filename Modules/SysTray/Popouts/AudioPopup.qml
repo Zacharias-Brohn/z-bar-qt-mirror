@@ -18,8 +18,8 @@ Item {
 	readonly property int topMargin: 0
 	required property var wrapper
 
-	implicitHeight: layout.implicitHeight + Appearance.padding.small * 2
-	implicitWidth: layout.implicitWidth + Appearance.padding.small * 2
+	implicitHeight: vol.implicitHeight + Appearance.padding.small * 2
+	implicitWidth: 400 + Appearance.padding.small * 2
 
 	CustomRect {
 		anchors.left: parent.left
@@ -38,184 +38,15 @@ Item {
 		}
 	}
 
-	ColumnLayout {
-		id: layout
+	VolumesTab {
+		id: vol
 
-		// anchors.centerIn: parent
 		anchors.left: parent.left
 		anchors.margins: Appearance.padding.small
 		anchors.right: parent.right
-		anchors.top: parent.top
-		implicitWidth: stack.currentItem ? stack.currentItem.childrenRect.height : 0
-		spacing: 12
-
-		RowLayout {
-			id: tabBar
-
-			property int tabHeight: 36
-
-			Layout.fillWidth: true
-			spacing: 6
-
-			CustomClippingRect {
-				Layout.fillWidth: true
-				Layout.preferredHeight: tabBar.tabHeight
-				color: stack.currentIndex === 0 ? DynamicColors.palette.m3primary : DynamicColors.tPalette.m3surfaceContainer
-				radius: root.rounding
-
-				StateLayer {
-					function onClicked(): void {
-						stack.currentIndex = 0;
-					}
-
-					CustomText {
-						anchors.centerIn: parent
-						color: stack.currentIndex === 0 ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3primary
-						text: qsTr("Volumes")
-					}
-				}
-			}
-
-			CustomClippingRect {
-				Layout.fillWidth: true
-				Layout.preferredHeight: tabBar.tabHeight
-				color: stack.currentIndex === 1 ? DynamicColors.palette.m3primary : DynamicColors.tPalette.m3surfaceContainer
-				radius: root.rounding
-
-				StateLayer {
-					function onClicked(): void {
-						stack.currentIndex = 1;
-					}
-
-					CustomText {
-						anchors.centerIn: parent
-						color: stack.currentIndex === 1 ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3primary
-						text: qsTr("Devices")
-					}
-				}
-			}
-		}
-
-		StackLayout {
-			id: stack
-
-			Layout.fillWidth: true
-			Layout.preferredHeight: currentIndex === 0 ? vol.childrenRect.height : dev.childrenRect.height
-			currentIndex: 0
-
-			// Behavior on Layout.preferredHeight {
-			// 	Anim {
-			// 		duration: MaterialEasing.expressiveEffectsTime
-			// 		easing.bezierCurve: MaterialEasing.expressiveEffects
-			// 	}
-			// }
-			Behavior on currentIndex {
-				SequentialAnimation {
-					ParallelAnimation {
-						Anim {
-							duration: MaterialEasing.expressiveEffectsTime
-							property: "opacity"
-							target: stack
-							to: 0
-						}
-
-						Anim {
-							duration: MaterialEasing.expressiveEffectsTime
-							property: "scale"
-							target: stack
-							to: 0.9
-						}
-					}
-
-					PropertyAction {
-					}
-
-					ParallelAnimation {
-						Anim {
-							duration: MaterialEasing.expressiveEffectsTime
-							property: "opacity"
-							target: stack
-							to: 1
-						}
-
-						Anim {
-							duration: MaterialEasing.expressiveEffectsTime
-							property: "scale"
-							target: stack
-							to: 1
-						}
-					}
-				}
-			}
-
-			VolumesTab {
-				id: vol
-			}
-
-			DevicesTab {
-				id: dev
-			}
-		}
+		anchors.verticalCenter: parent.verticalCenter
 	}
 
-	component DevicesTab: Item {
-		implicitHeight: deviceColumn.height + Appearance.padding.normal
-		implicitWidth: deviceColumn.width + Appearance.padding.normal
-
-		ColumnLayout {
-			id: deviceColumn
-
-			anchors.centerIn: parent
-			spacing: 12
-
-			ButtonGroup {
-				id: sinks
-			}
-
-			ButtonGroup {
-				id: sources
-			}
-
-			CustomText {
-				font.weight: 500
-				text: qsTr("Output device")
-			}
-
-			Repeater {
-				model: Audio.sinks
-
-				CustomRadioButton {
-					required property PwNode modelData
-
-					ButtonGroup.group: sinks
-					checked: Audio.sink?.id === modelData.id
-					text: modelData.description
-
-					onClicked: Audio.setAudioSink(modelData)
-				}
-			}
-
-			CustomText {
-				Layout.topMargin: 10
-				font.weight: 500
-				text: qsTr("Input device")
-			}
-
-			Repeater {
-				model: Audio.sources
-
-				CustomRadioButton {
-					required property PwNode modelData
-
-					ButtonGroup.group: sources
-					checked: Audio.source?.id === modelData.id
-					text: modelData.description
-
-					onClicked: Audio.setAudioSource(modelData)
-				}
-			}
-		}
-	}
 	component VolumesTab: ColumnLayout {
 		spacing: 12
 
