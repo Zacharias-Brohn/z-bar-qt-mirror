@@ -20,6 +20,7 @@ Item {
 
 	required property Item bar
 	readonly property alias dashboard: dashboard
+	readonly property alias dashboardWrapper: dashboardWrapper
 	readonly property alias dock: dock
 	readonly property alias drawing: drawing
 	required property Canvas drawingItem
@@ -30,6 +31,7 @@ Item {
 	readonly property alias popouts: popouts.content
 	readonly property alias popoutsWrapper: popouts
 	readonly property alias resources: resources
+	readonly property alias resourcesWrapper: resourcesWrapper
 	required property ShellScreen screen
 	readonly property alias settings: settings
 	readonly property alias sidebar: sidebar
@@ -41,12 +43,22 @@ Item {
 	anchors.margins: Config.barConfig.border
 	anchors.topMargin: bar.implicitHeight
 
-	Resources.Wrapper {
-		id: resources
+	Item {
+		id: resourcesWrapper
 
 		anchors.left: parent.left
 		anchors.top: parent.top
-		visibilities: root.visibilities
+		clip: true
+		implicitHeight: resources.implicitHeight
+		implicitWidth: resources.implicitWidth
+
+		Resources.Wrapper {
+			id: resources
+
+			anchors.left: parent.left
+			anchors.top: parent.top
+			visibilities: root.visibilities
+		}
 	}
 
 	Item {
@@ -125,12 +137,33 @@ Item {
 		visibilities: root.visibilities
 	}
 
-	Dashboard.Wrapper {
-		id: dashboard
+	Item {
+		id: dashboardWrapper
+
+		property real offsetScale: dashboard.shouldBeActive ? 0 : 1
 
 		anchors.right: parent.right
 		anchors.top: parent.top
-		visibilities: root.visibilities
+		clip: true
+		implicitHeight: dashboard.implicitHeight * (1 - offsetScale)
+		implicitWidth: dashboard.implicitWidth
+
+		Behavior on offsetScale {
+			Anim {
+				duration: Appearance.anim.durations.expressiveDefaultSpatial
+				easing.bezierCurve: Appearance.anim.curves.expressiveDefaultSpatial
+			}
+		}
+
+		Dashboard.Wrapper {
+			id: dashboard
+
+			anchors.right: parent.right
+			anchors.top: parent.top
+			anchors.topMargin: (-implicitHeight - 5) * offsetScale
+			offsetScale: dashboardWrapper.offsetScale
+			visibilities: root.visibilities
+		}
 	}
 
 	Sidebar.Wrapper {

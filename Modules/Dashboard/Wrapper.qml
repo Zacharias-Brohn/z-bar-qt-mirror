@@ -15,31 +15,22 @@ Item {
 		reloadableId: "dashboardState"
 	}
 	readonly property real nonAnimHeight: state === "visible" ? (content.item?.nonAnimHeight ?? 0) : 0
+	required property real offsetScale
+	readonly property bool shouldBeActive: root.visibilities.dashboard && Config.dashboard.enabled
 	required property PersistentProperties visibilities
 
-	readonly property bool shouldBeActive: root.visibilities.dashboard && Config.dashboard.enabled
-	property real offsetScale: shouldBeActive ? 0 : 1
-
-	visible: offsetScale < 1
-	anchors.topMargin: (-implicitHeight - 5) * offsetScale
 	implicitHeight: content.implicitHeight
 	implicitWidth: content.implicitWidth || 854 // Hard coded fallback for first open
 	opacity: 1 - offsetScale
 
-	Behavior on offsetScale {
-		Anim {
-			duration: Appearance.anim.durations.expressiveDefaultSpatial
-			easing.bezierCurve: Appearance.anim.curves.expressiveDefaultSpatial
-		}
-	}
+	// visible: offsetScale < 1
 
 	Loader {
 		id: content
 
+		active: root.shouldBeActive || root.visible
 		anchors.bottom: parent.bottom
 		anchors.horizontalCenter: parent.horizontalCenter
-
-		active: root.shouldBeActive || root.visible
 
 		sourceComponent: Content {
 			state: root.dashState

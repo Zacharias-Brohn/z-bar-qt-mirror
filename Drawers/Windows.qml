@@ -170,15 +170,19 @@ Variants {
 				PanelBg {
 					id: dashBg
 
-					deformAmount: 0.15 * Config.appearance.deform.scale
+					deformAmount: 0.08 * Config.appearance.deform.scale
+					implicitHeight: panels.dashboard.height
+					implicitWidth: panels.dashboard.width
 					panel: panels.dashboard
 					radius: Appearance.rounding.normal
+					x: panels.dashboardWrapper.x + panels.dashboard.x + Config.barConfig.border
+					y: panels.dashboardWrapper.y + panels.dashboard.y + bar.implicitHeight
 				}
 
 				PanelBg {
 					id: launcherBg
 
-					deformAmount: 0.15 * Config.appearance.deform.scale
+					deformAmount: 0.08 * Config.appearance.deform.scale
 					panel: panels.launcher
 					radius: Appearance.rounding.smallest + 5
 				}
@@ -187,7 +191,7 @@ Variants {
 					id: sidebarBg
 
 					bottomLeftRadius: 0
-					deformAmount: 0.1 * Config.appearance.deform.scale
+					deformAmount: 0.08 * Config.appearance.deform.scale
 					exclude: panels.sidebar.offsetScale > 0.08 ? [] : [utilsBg]
 					implicitHeight: panel.height * (1 / rawDeformMatrix.m22) + 2
 					panel: panels.sidebar
@@ -197,10 +201,12 @@ Variants {
 					id: osdBg
 
 					deformAmount: 0.1 * Config.appearance.deform.scale
+					implicitHeight: panels.osd.height
 					implicitWidth: panels.osd.width
-					panel: panels.osdWrapper
+					panel: panels.osd
 					radius: 20
 					x: panels.osdWrapper.x + panels.osd.x + Config.barConfig.border
+					y: panels.osdWrapper.y + panels.osd.y + bar.implicitHeight
 				}
 
 				PanelBg {
@@ -225,9 +231,10 @@ Variants {
 
 					deformAmount: panels.popouts.isDetached ? 0.05 * Config.appearance.deform.scale : panels.popouts.hasCurrent ? 0.15 * Config.appearance.deform.scale : 0.1 * Config.appearance.deform.scale
 					implicitHeight: panels.popouts.height * (1 + extraHeight)
-					implicitWidth: panels.popoutsWrapper.width
-					panel: panels.popoutsWrapper
+					implicitWidth: panels.popouts.width
+					panel: panels.popouts
 					radius: (panels.popouts.currentName.startsWith("audio") || panels.popouts.currentName.startsWith("updates")) ? Appearance.rounding.normal : Appearance.rounding.smallest
+					x: panels.popoutsWrapper.x + panels.popouts.x + Config.barConfig.border
 					y: panels.popoutsWrapper.y + panels.popouts.y + bar.implicitHeight - panels.popouts.height * extraHeight
 
 					Behavior on extraHeight {
@@ -239,15 +246,19 @@ Variants {
 				PanelBg {
 					id: resourcesBg
 
-					deformAmount: 0.15 * Config.appearance.deform.scale
+					deformAmount: 0.08 * Config.appearance.deform.scale
+					implicitHeight: panels.resources.height
+					implicitWidth: panels.resources.width
 					panel: panels.resources
 					radius: Appearance.rounding.normal
+					x: panels.resourcesWrapper.x + panels.resources.x + Config.barConfig.border
+					y: panels.resourcesWrapper.y + panels.resources.y + bar.implicitHeight
 				}
 
 				PanelBg {
 					id: settingsBg
 
-					deformAmount: 0.1 * Config.appearance.deform.scale
+					deformAmount: 0.08 * Config.appearance.deform.scale
 					panel: panels.settings
 					radius: Appearance.rounding.large
 					topLeftRadius: Appearance.rounding.large + Appearance.padding.smaller
@@ -257,7 +268,7 @@ Variants {
 				PanelBg {
 					id: dockBg
 
-					deformAmount: 0.15 * Config.appearance.deform.scale
+					deformAmount: 0.08 * Config.appearance.deform.scale
 					panel: panels.dock
 					radius: Appearance.rounding.normal
 				}
