@@ -49,7 +49,7 @@ Item {
 		anchors.left: parent.left
 		anchors.top: parent.top
 		clip: true
-		implicitHeight: resources.implicitHeight
+		implicitHeight: resources.implicitHeight * (1 - resources.offsetScale)
 		implicitWidth: resources.implicitWidth
 
 		Resources.Wrapper {
