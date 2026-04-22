@@ -7,7 +7,7 @@ Singleton {
 	id: root
 
 	readonly property date date: clock.date
-	readonly property string dateStr: format("ddd d MMM - hh:mm:ss")
+	readonly property string dateStr: format("ddd d MMM - hh:mm")
 	property alias enabled: clock.enabled
 	readonly property string hourStr: timeComponents[0] ?? ""
 	readonly property int hours: clock.hours

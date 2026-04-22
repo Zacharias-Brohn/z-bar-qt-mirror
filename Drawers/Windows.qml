@@ -321,36 +321,36 @@ Variants {
 					screen: scope.modelData
 					visibilities: visibilities
 
-					dashboard.transform: Matrix4x4 {
-						matrix: dashBg.deformMatrix
-					}
-					dock.transform: Matrix4x4 {
-						matrix: dockBg.deformMatrix
-					}
-					launcher.transform: Matrix4x4 {
-						matrix: launcherBg.deformMatrix
-					}
-					notifications.transform: Matrix4x4 {
-						matrix: notifsBg.deformMatrix
-					}
-					osd.transform: Matrix4x4 {
-						matrix: osdBg.deformMatrix
-					}
-					popouts.transform: Matrix4x4 {
-						matrix: popoutBg.deformMatrix
-					}
-					resources.transform: Matrix4x4 {
-						matrix: resourcesBg.deformMatrix
-					}
-					settings.transform: Matrix4x4 {
-						matrix: settingsBg.deformMatrix
-					}
-					sidebar.transform: Matrix4x4 {
-						matrix: sidebarBg.deformMatrix
-					}
-					utilities.transform: Matrix4x4 {
-						matrix: utilsBg.deformMatrix
-					}
+					// dashboard.transform: Matrix4x4 {
+					// 	matrix: dashBg.deformMatrix
+					// }
+					// dock.transform: Matrix4x4 {
+					// 	matrix: dockBg.deformMatrix
+					// }
+					// launcher.transform: Matrix4x4 {
+					// 	matrix: launcherBg.deformMatrix
+					// }
+					// notifications.transform: Matrix4x4 {
+					// 	matrix: notifsBg.deformMatrix
+					// }
+					// osd.transform: Matrix4x4 {
+					// 	matrix: osdBg.deformMatrix
+					// }
+					// popouts.transform: Matrix4x4 {
+					// 	matrix: popoutBg.deformMatrix
+					// }
+					// resources.transform: Matrix4x4 {
+					// 	matrix: resourcesBg.deformMatrix
+					// }
+					// settings.transform: Matrix4x4 {
+					// 	matrix: settingsBg.deformMatrix
+					// }
+					// sidebar.transform: Matrix4x4 {
+					// 	matrix: sidebarBg.deformMatrix
+					// }
+					// utilities.transform: Matrix4x4 {
+					// 	matrix: utilsBg.deformMatrix
+					// }
 				}
 
 				BarLoader {
