@@ -136,12 +136,34 @@ Item {
 			}
 		}
 
-		CustomRect {
+		CustomClippingRect {
 			Layout.fillWidth: true
 			Layout.preferredHeight: 42 + Appearance.spacing.smaller * 2
 			Layout.topMargin: root.topMargin
 			color: DynamicColors.tPalette.m3surfaceContainer
 			radius: root.rounding
+
+			PwNodePeakMonitor {
+				id: sourcePeak
+
+				node: Audio.source
+			}
+
+			CustomRect {
+				id: sourcePeakFill
+
+				anchors.bottom: parent.bottom
+				anchors.left: parent.left
+				anchors.top: parent.top
+				color: Qt.alpha(DynamicColors.palette.m3primary, 0.15)
+				implicitWidth: parent.width * sourcePeak.peak
+
+				Behavior on implicitWidth {
+					Anim {
+						duration: MaterialEasing.expressiveEffectsTime
+					}
+				}
+			}
 
 			RowLayout {
 				id: inputVolume
