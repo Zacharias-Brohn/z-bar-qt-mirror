@@ -72,15 +72,11 @@ void BlobShape::geometryChange(const QRectF& newGeometry, const QRectF& oldGeome
 		// Accumulate sub-pixel drift so slow movements don't desync the shader
 		m_pendingDx += static_cast<float>(newGeometry.x() - oldGeometry.x());
 		m_pendingDy += static_cast<float>(newGeometry.y() - oldGeometry.y());
-		m_pendingDw += static_cast<float>(newGeometry.width() - oldGeometry.width());
-		m_pendingDh += static_cast<float>(newGeometry.height() - oldGeometry.height());
-		
-		if (std::abs(m_pendingDx) > 0.5f || std::abs(m_pendingDy) > 0.5f || 
-		    std::abs(m_pendingDw) > 0.5f || std::abs(m_pendingDh) > 0.5f) {
+		const auto dw = std::abs(newGeometry.width() - oldGeometry.width());
+		const auto dh = std::abs(newGeometry.height() - oldGeometry.height());
+		if (std::abs(m_pendingDx) > 0.5f || std::abs(m_pendingDy) > 0.5f || dw > 0.5 || dh > 0.5) {
 			m_pendingDx = 0;
 			m_pendingDy = 0;
-			m_pendingDw = 0;
-			m_pendingDh = 0;
 			m_group->markShapeDirty(this);
 		}
 	}
@@ -100,7 +96,8 @@ void BlobShape::updateCenteredDeformMatrix() {
 }
 
 void BlobShape::cornerRadii(float out[4]) const {
-	const auto r = static_cast<float>(m_radius);
+	const auto maxR = static_cast<float>(std::min(width(), height())) * 0.5f;
+	const auto r = std::min(static_cast<float>(m_radius), maxR);
 	out[0] = r;
 	out[1] = r;
 	out[2] = r;
