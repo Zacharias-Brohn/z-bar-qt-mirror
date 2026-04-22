@@ -22,8 +22,7 @@ Item {
 	implicitHeight: content.implicitHeight
 	implicitWidth: content.implicitWidth || 854 // Hard coded fallback for first open
 	opacity: 1 - offsetScale
-
-	// visible: offsetScale < 1
+	visible: offsetScale < 1
 
 	Loader {
 		id: content

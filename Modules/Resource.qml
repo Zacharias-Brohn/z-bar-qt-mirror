@@ -60,10 +60,10 @@ RowLayout {
 			color: root.mainColor
 			implicitHeight: Math.ceil(root.percentage * parent.height)
 
-			Behavior on implicitHeight {
-				Anim {
-				}
-			}
+			// Behavior on implicitHeight {
+			// 	Anim {
+			// 	}
+			// }
 		}
 	}
 }
