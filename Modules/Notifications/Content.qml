@@ -25,6 +25,9 @@ Item {
 			height += list.itemAtIndex(i)?.nonAnimHeight ?? 0;
 
 		if (visibilities && panels) {
+			if (panels.popouts.hasCurrent && (panels.popouts.currentCenter + (panels.popouts.current?.width / 2)) > panels.notifications.x || visibilities.dashboard)
+				return 0;
+
 			if (visibilities.osd) {
 				const h = panels.osd.y - 8 * 2 - padding * 2;
 				if (height > h)
