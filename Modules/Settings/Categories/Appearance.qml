@@ -76,7 +76,7 @@ SettingsPage {
 			name: "Fonts"
 		}
 
-		SettingInput {
+		SettingListView {
 			name: "Sans family"
 			object: Config.appearance.font.family
 			setting: "sans"
@@ -85,28 +85,10 @@ SettingsPage {
 		Separator {
 		}
 
-		SettingInput {
+		SettingListView {
 			name: "Monospace family"
 			object: Config.appearance.font.family
 			setting: "mono"
-		}
-
-		Separator {
-		}
-
-		SettingInput {
-			name: "Material family"
-			object: Config.appearance.font.family
-			setting: "material"
-		}
-
-		Separator {
-		}
-
-		SettingInput {
-			name: "Clock family"
-			object: Config.appearance.font.family
-			setting: "clock"
 		}
 	}
 

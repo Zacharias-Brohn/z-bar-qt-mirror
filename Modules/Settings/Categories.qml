@@ -153,7 +153,7 @@ Item {
 		required property string name
 
 		implicitHeight: 42
-		implicitWidth: 200
+		implicitWidth: 250
 		radius: Appearance.rounding.normal - Appearance.padding.smaller
 
 		RowLayout {

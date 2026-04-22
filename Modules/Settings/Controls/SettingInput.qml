@@ -59,7 +59,7 @@ Item {
 			id: rect
 
 			Layout.preferredHeight: 33
-			Layout.preferredWidth: Math.max(Math.min(textField.contentWidth + Appearance.padding.normal * 2, 550), 50)
+			Layout.preferredWidth: Math.max(Math.min(textField.contentWidth + Appearance.padding.large * 2, 550), 50)
 			color: DynamicColors.tPalette.m3surfaceContainerHigh
 			radius: Appearance.rounding.full
 
@@ -68,7 +68,7 @@ Item {
 
 				anchors.centerIn: parent
 				horizontalAlignment: Text.AlignHCenter
-				implicitWidth: Math.min(contentWidth, 550)
+				implicitWidth: Math.min(contentWidth + Appearance.padding.normal * 2, 550)
 				text: root.formattedValue()
 
 				onEditingFinished: {
