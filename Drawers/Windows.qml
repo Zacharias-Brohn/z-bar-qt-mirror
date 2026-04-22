@@ -272,6 +272,14 @@ Variants {
 					panel: panels.dock
 					radius: Appearance.rounding.normal
 				}
+
+				PanelBg {
+					id: drawingBg
+
+					deformAmount: 0.08 * Config.appearance.deform.scale
+					panel: panels.drawing
+					radius: Appearance.rounding.normal
+				}
 			}
 
 			Drawing {
