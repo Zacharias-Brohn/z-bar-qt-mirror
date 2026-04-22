@@ -194,8 +194,7 @@ Item {
 	}
 
 	component Anim: NumberAnimation {
-		duration: MaterialEasing.expressiveEffectsTime
-		easing.bezierCurve: MaterialEasing.expressiveEffects
-		easing.type: Easing.BezierSpline
+		duration: Appearance.anim.durations.expressiveDefaultSpatial
+		easing.bezierCurve: Appearance.anim.curves.expressiveDefaultSpatial
 	}
 }
