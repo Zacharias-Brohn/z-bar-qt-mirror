@@ -29,16 +29,18 @@ Item {
 
 	Img {
 		id: one
-
 	}
 
 	Img {
 		id: two
-
 	}
 
 	component Img: CachingImage {
 		id: img
+
+		property real imageRatio: Math.max(1, sourceSize.width) / Math.max(1, sourceSize.height)
+		property bool isValid: sourceSize.width > 0 && sourceSize.height > 0 && root.width > 0 && root.height > 0
+		property real windowRatio: root.width / Math.max(1, root.height)
 
 		function update(): void {
 			if (path === root.source) {
@@ -50,21 +52,13 @@ Item {
 
 		anchors.fill: undefined
 		asynchronous: true
-		opacity: 0
-		fillMode: Image.Stretch
-		
-		property real windowRatio: root.width / Math.max(1, root.height)
-		property real imageRatio: Math.max(1, sourceSize.width) / Math.max(1, sourceSize.height)
-		
-		property bool isValid: sourceSize.width > 0 && sourceSize.height > 0 && root.width > 0 && root.height > 0
-
-		width: isValid ? (imageRatio > windowRatio ? root.height * imageRatio : root.width) * Config.background.zoom : root.width
+		fillMode: Image.PreserveAspectCrop
 		height: isValid ? (imageRatio > windowRatio ? root.height : root.width / imageRatio) * Config.background.zoom : root.height
-
+		opacity: 0
+		scale: Wallpapers.showPreview ? 1 : 0.8
+		width: isValid ? (imageRatio > windowRatio ? root.height * imageRatio : root.width) * Config.background.zoom : root.width
 		x: isValid ? (root.width - width) * Config.background.alignX : 0
 		y: isValid ? (root.height - height) * Config.background.alignY : 0
-
-		scale: Wallpapers.showPreview ? 1 : 0.8
 
 		states: State {
 			name: "visible"
