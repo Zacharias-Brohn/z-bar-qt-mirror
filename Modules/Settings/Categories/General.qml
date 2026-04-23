@@ -118,7 +118,7 @@ SettingsPage {
 				MenuItem {
 					icon: "gradient"
 					text: qsTr("Tonal spot")
-					value: "tonalSpot"
+					value: "tonal-spot"
 				},
 				MenuItem {
 					icon: "target"
@@ -138,7 +138,7 @@ SettingsPage {
 				MenuItem {
 					icon: "nutrition"
 					text: qsTr("Fruit salad")
-					value: "fruitSalad"
+					value: "fruit-salad"
 				}
 			]
 
@@ -146,12 +146,7 @@ SettingsPage {
 				Config.colors.schemeType = item.value;
 				Config.save();
 
-				if (item.value === "tonalSpot")
-					Quickshell.execDetached(["zshell-cli", "scheme", "generate", "--scheme", "tonal-spot"]);
-				else if (item.value === "fruitSalad")
-					Quickshell.execDetached(["zshell-cli", "scheme", "generate", "--scheme", "fruit-salad"]);
-				else
-					Quickshell.execDetached(["zshell-cli", "scheme", "generate", "--scheme", item.value]);
+				Quickshell.execDetached(["zshell-cli", "scheme", "generate", "--scheme", item.value]);
 			}
 		}
 

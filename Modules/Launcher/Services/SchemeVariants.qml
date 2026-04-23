@@ -26,7 +26,7 @@ Searcher {
 			description: qsTr("Pastel palette with a low chroma.")
 			icon: "android"
 			name: qsTr("Tonal Spot")
-			variant: "tonalspot"
+			variant: "tonal-spot"
 		},
 		Variant {
 			description: qsTr("Hue-shifted, artistic or playful colors.")
