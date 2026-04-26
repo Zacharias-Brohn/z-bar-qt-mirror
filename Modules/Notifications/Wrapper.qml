@@ -10,7 +10,7 @@ Item {
 	required property var visibilities
 
 	implicitHeight: content.implicitHeight
-	implicitWidth: content.implicitWidth
+	implicitWidth: Math.max(sidebarPanel.width, content.implicitWidth)
 	visible: height > 0
 
 	Content {
