@@ -150,6 +150,7 @@ WlSessionLockSurface {
 		id: background
 
 		anchors.fill: parent
+		fillMode: Image.PreserveAspectCrop
 		source: WallpaperPath.lockscreenBg
 	}
 

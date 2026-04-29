@@ -10,13 +10,14 @@ Item {
 	required property var visibilities
 
 	implicitHeight: content.implicitHeight
-	implicitWidth: content.implicitWidth
+	implicitWidth: Math.max(sidebarPanel.width * (1 - sidebarPanel.offsetScale), content.implicitWidth)
 	visible: height > 0
 
 	Content {
 		id: content
 
 		panels: root.panels
+		sidebarPanel: root.sidebarPanel
 		visibilities: root.visibilities
 	}
 }

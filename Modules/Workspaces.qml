@@ -21,7 +21,7 @@ Item {
 	readonly property int workspacesShown: workspaces.length
 
 	height: implicitHeight
-	implicitHeight: Config.barConfig.height + Math.max(Appearance.padding.smaller, Config.barConfig.border) * 2
+	implicitHeight: Config.barConfig.height + Appearance.padding.smaller * 2
 	implicitWidth: (root.workspaceButtonWidth * root.workspacesShown) + root.activeWorkspaceMargin * 2
 
 	Behavior on implicitWidth {
@@ -39,36 +39,15 @@ Item {
 		implicitHeight: root.implicitHeight - ((Appearance.padding.small - 1) * 2)
 		radius: height / 2
 
-		CustomRect {
-			id: indicator
-
-			property real indicatorLength: (Math.abs(idxPair.idx1 - idxPair.idx2) + 1) * root.workspaceButtonWidth
-			property real indicatorPosition: Math.min(idxPair.idx1, idxPair.idx2) * root.workspaceButtonWidth + root.activeWorkspaceMargin
-			property real indicatorThickness: root.workspaceButtonWidth
-
-			anchors.verticalCenter: parent.verticalCenter
-			color: DynamicColors.palette.m3primary
-			implicitHeight: indicatorThickness
-			implicitWidth: indicatorLength
-			radius: Appearance.rounding.full
-			x: indicatorPosition
-			z: 2
-
-			AnimatedTabIndexPair {
-				id: idxPair
-
-				index: root.workspaces.findIndex(w => w.active)
-			}
-		}
-
 		Grid {
+			id: grid
+
 			anchors.fill: parent
 			anchors.margins: root.activeWorkspaceMargin
 			columnSpacing: 0
 			columns: root.workspacesShown
 			rowSpacing: 0
 			rows: 1
-			z: 3
 
 			Repeater {
 				model: root.workspaces
@@ -91,12 +70,11 @@ Item {
 
 						CustomText {
 							anchors.centerIn: parent
-							color: button.modelData.active ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3onSecondaryContainer
+							color: DynamicColors.palette.m3onSecondaryContainer
 							elide: Text.ElideRight
 							horizontalAlignment: Text.AlignHCenter
 							text: button.modelData.name
 							verticalAlignment: Text.AlignVCenter
-							z: 3
 						}
 					}
 
@@ -107,72 +85,35 @@ Item {
 			}
 		}
 
-		Item {
-			id: activeTextSource
+		CustomRect {
+			id: indicator
 
-			anchors.fill: parent
-			anchors.margins: root.activeWorkspaceMargin
-			layer.enabled: true
-			visible: false
-			z: 4
+			property real indicatorLength: (Math.abs(idxPair.idx1 - idxPair.idx2) + 1) * root.workspaceButtonWidth
+			property real indicatorPosition: Math.min(idxPair.idx1, idxPair.idx2) * root.workspaceButtonWidth + root.activeWorkspaceMargin
+			property real indicatorThickness: root.workspaceButtonWidth
 
-			Grid {
-				anchors.fill: parent
-				columnSpacing: 0
-				columns: root.workspacesShown
-				rowSpacing: 0
-				rows: 1
+			anchors.verticalCenter: parent.verticalCenter
+			clip: true
+			color: DynamicColors.palette.m3primary
+			implicitHeight: indicatorThickness
+			implicitWidth: indicatorLength
+			radius: Appearance.rounding.full
+			x: indicatorPosition
 
-				Repeater {
-					model: root.workspaces
+			AnimatedTabIndexPair {
+				id: idxPair
 
-					Item {
-						id: activeWorkspace
-
-						required property int index
-						required property HyprlandWorkspace modelData
-
-						implicitHeight: indicator.indicatorThickness
-						implicitWidth: indicator.indicatorThickness
-						width: root.workspaceButtonWidth
-
-						CustomText {
-							anchors.centerIn: parent
-							color: DynamicColors.palette.m3onPrimary
-							elide: Text.ElideRight
-							horizontalAlignment: Text.AlignHCenter
-							text: activeWorkspace.modelData.name
-							verticalAlignment: Text.AlignVCenter
-						}
-					}
-				}
+				index: root.workspaces.findIndex(w => w.active)
 			}
-		}
 
-		Item {
-			id: indicatorMask
-
-			anchors.fill: bgRect
-			layer.enabled: true
-			visible: false
-
-			CustomRect {
-				color: "white"
-				height: indicator.height
-				radius: indicator.radius
-				width: indicator.width
-				x: indicator.x
-				y: indicator.y
+			Coloriser {
+				colorizationColor: DynamicColors.palette.m3onPrimary
+				implicitHeight: grid.height
+				implicitWidth: grid.width
+				source: grid
+				sourceColor: DynamicColors.palette.m3onSurface
+				x: -indicator.x + 3
 			}
-		}
-
-		MultiEffect {
-			anchors.fill: activeTextSource
-			maskEnabled: true
-			maskInverted: false
-			maskSource: indicatorMask
-			source: activeTextSource
-			z: 5
 		}
 	}
 }

@@ -20,9 +20,9 @@ CustomRect {
 	required property NotifServer.Notif modelData
 	readonly property int nonAnimHeight: summary.implicitHeight + (root.expanded ? appName.height + body.height + actions.height + actions.anchors.topMargin : bodyPreview.height) + inner.anchors.margins * 2
 
+	// implicitWidth: Config.notifs.sizes.width
 	color: root.modelData.urgency === NotificationUrgency.Critical ? DynamicColors.palette.m3secondaryContainer : DynamicColors.tPalette.m3surfaceContainer
 	implicitHeight: inner.implicitHeight
-	implicitWidth: Config.notifs.sizes.width
 	radius: 6
 	x: Config.notifs.sizes.width
 
