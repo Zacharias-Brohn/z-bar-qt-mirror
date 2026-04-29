@@ -78,6 +78,10 @@ LazyListView {
 				}
 			}
 
+			onDoubleClicked: event => {
+				if (event.button === Qt.LeftButton)
+					notifInner.toggleExpand(!notifInner.expanded);
+			}
 			onPositionChanged: event => {
 				if (pressed) {
 					const diffY = event.y - startY;

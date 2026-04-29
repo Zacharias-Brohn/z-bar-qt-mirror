@@ -79,6 +79,10 @@ LazyListView {
 
 			Component.onCompleted: modelData?.lock(this)
 			Component.onDestruction: modelData?.unlock(this)
+			onDoubleClicked: event => {
+				if (event.button === Qt.LeftButton)
+					root.requestToggleExpand(!root.expanded);
+			}
 			onPositionChanged: event => {
 				if (pressed && !root.expanded) {
 					const diffY = event.y - startY;
