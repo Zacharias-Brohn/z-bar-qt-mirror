@@ -74,6 +74,8 @@ Defaults from `CMakeLists.txt`:
 
 ### Nix Flake
 
+_Note that Nix is not actively developed at this point. Things may be broken. Feel free to suggest fixes in a PR_
+
 The flake exposes:
 
 - `packages.<system>.zshell`
