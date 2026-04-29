@@ -1,6 +1,6 @@
 from __future__ import annotations
 import typer
-from zshell.subcommands import shell, scheme, screenshot, wallpaper, preset
+from zshell.subcommands import shell, scheme, screenshot, wallpaper
 
 app = typer.Typer()
 
