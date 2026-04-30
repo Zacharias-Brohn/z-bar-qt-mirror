@@ -54,6 +54,8 @@ CustomClippingRect {
 		anchors.centerIn: parent
 		contentHeight: childrenRect.height
 		contentWidth: 600
+		displayMarginBeginning: root.itemHeight
+		displayMarginEnd: root.itemHeight
 		implicitHeight: Math.min(contentHeight, (root.itemHeight + spacing) * 5 - spacing)
 		implicitWidth: contentWidth
 		spacing: Appearance.spacing.normal
@@ -65,10 +67,11 @@ CustomClippingRect {
 			required property var modelData
 			readonly property list<string> sections: modelData.update.split(" ")
 
-			anchors.left: parent.left
-			anchors.right: parent.right
+			// anchors.left: parent.left
+			// anchors.right: parent.right
 			color: DynamicColors.tPalette.m3surfaceContainer
 			implicitHeight: root.itemHeight
+			implicitWidth: 600
 			radius: Appearance.rounding.small - Appearance.padding.small
 
 			RowLayout {
