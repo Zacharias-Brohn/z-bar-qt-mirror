@@ -17,7 +17,6 @@ Item {
 		id: content
 
 		panels: root.panels
-		sidebarPanel: root.sidebarPanel
 		visibilities: root.visibilities
 	}
 }

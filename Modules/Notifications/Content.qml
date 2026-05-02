@@ -10,7 +10,6 @@ Item {
 
 	readonly property int padding: 6
 	required property Item panels
-	required property Item sidebarPanel
 	required property PersistentProperties visibilities
 
 	anchors.bottom: parent.bottom
@@ -44,7 +43,7 @@ Item {
 
 		return Math.min((QsWindow.window?.screen?.height ?? 0) - 1 * 2, height + padding * 2);
 	}
-	implicitWidth: Math.max(sidebarPanel.width * (1 - sidebarPanel.offsetScale), Config.notifs.sizes.width + padding * 2)
+	implicitWidth: Config.notifs.sizes.width + padding * 2
 
 	Behavior on implicitHeight {
 		Anim {
@@ -73,9 +72,8 @@ Item {
 				required property NotifServer.Notif modelData
 				readonly property alias nonAnimHeight: notif.nonAnimHeight
 
-				anchors.left: parent.left
-				anchors.right: parent.right
 				implicitHeight: notif.implicitHeight + (idx === 0 ? 0 : 8)
+				implicitWidth: notif.implicitWidth
 
 				ListView.onRemove: removeAnim.start()
 				onIndexChanged: {
@@ -126,20 +124,16 @@ Item {
 				}
 
 				ClippingRectangle {
-					// implicitWidth: notif.implicitWidth
-					anchors.left: parent.left
-					anchors.right: parent.right
 					anchors.top: parent.top
 					anchors.topMargin: wrapper.idx === 0 ? 0 : 8
 					color: "transparent"
 					implicitHeight: notif.implicitHeight
+					implicitWidth: notif.implicitWidth
 					radius: Appearance.rounding.smallest / 2
 
 					Notification {
 						id: notif
 
-						anchors.left: parent.left
-						anchors.right: parent.right
 						modelData: wrapper.modelData
 					}
 				}
