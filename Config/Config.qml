@@ -180,6 +180,7 @@ Singleton {
 			logo: general.logo,
 			wallpaperPath: general.wallpaperPath,
 			desktopIcons: general.desktopIcons,
+			dateFormat: general.dateFormat,
 			color: {
 				mode: general.color.mode,
 				smart: general.color.smart,

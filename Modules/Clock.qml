@@ -3,7 +3,7 @@ import QtQuick
 import QtQuick.Layouts
 import qs.Config
 import qs.Modules
-import qs.Helpers as Helpers
+import qs.Helpers
 import qs.Components
 
 CustomRect {

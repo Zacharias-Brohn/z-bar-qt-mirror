@@ -6,6 +6,7 @@ JsonObject {
 	}
 	property Color color: Color {
 	}
+	property string dateFormat: "ddd d MMM - hh:mm:ss"
 	property bool desktopIcons: false
 	property Idle idle: Idle {
 	}

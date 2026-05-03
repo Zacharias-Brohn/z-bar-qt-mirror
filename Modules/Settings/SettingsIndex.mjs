@@ -30,6 +30,13 @@ export const settingsIndex = [
     section: "General",
     keywords: ["icons", "desktop", "show"],
   },
+  {
+    name: "Date format",
+    category: "general",
+    categoryName: "General",
+    section: "General",
+    keywords: ["date", "time", "format"],
+  },
   // Color section
   {
     name: "Scheme mode",

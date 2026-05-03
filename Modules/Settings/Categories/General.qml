@@ -47,6 +47,15 @@ SettingsPage {
 			object: Config.general
 			setting: "desktopIcons"
 		}
+
+		Separator {
+		}
+
+		SettingInput {
+			name: "Date format"
+			object: Config.general
+			setting: "dateFormat"
+		}
 	}
 
 	SettingsSection {
