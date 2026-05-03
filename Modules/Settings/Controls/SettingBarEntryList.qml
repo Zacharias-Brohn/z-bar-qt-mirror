@@ -11,87 +11,129 @@ import qs.Helpers
 Item {
 	id: root
 
+	property var boxEntries: [[], [], []]
 	property bool dragActive: false
 	property real dragHeight: 0
+	property real dragPointerStartX: 0
+	property real dragPointerStartY: 0
 	property real dragStartX: 0
 	property real dragStartY: 0
 	property real dragX: 0
 	property real dragY: 0
-	property var draggedModelData: null
-	property string draggedUid: ""
+	property int draggedBox: -1
+	property int draggedIndex: -1
+	property var draggedItemData: null
 	property bool dropAnimating: false
 	readonly property bool highlighted: SettingsHighlight.highlightedSetting === name
 	required property string name
 	required property var object
-	property var pendingCommitEntries: []
+	property var pendingCommitBoxes: []
 	required property string setting
-	property int uidCounter: 0
-	property var visualEntries: []
+	property var spacerEntries: []
 
-	function beginVisualDrag(uid, modelData, item) {
+	function beginVisualDrag(wrapper, item, pointerX, pointerY) {
 		const pos = item.mapToItem(root, 0, 0);
+		const loc = root.locateEntry(wrapper.entry);
 
-		root.draggedUid = uid;
-		root.draggedModelData = modelData;
+		root.draggedItemData = wrapper;
+
+		if (loc) {
+			root.draggedBox = loc.box;
+			root.draggedIndex = loc.index;
+		} else {
+			root.draggedBox = -1;
+			root.draggedIndex = -1;
+		}
+
 		root.dragHeight = item.height;
 		root.dragStartX = pos.x;
 		root.dragStartY = pos.y;
+		root.dragPointerStartX = pointerX;
+		root.dragPointerStartY = pointerY;
 		root.dragX = pos.x;
 		root.dragY = pos.y;
 		root.dragActive = true;
 		root.dropAnimating = false;
-		root.pendingCommitEntries = [];
+		root.pendingCommitBoxes = [];
 	}
 
-	function commitVisualOrder(entries) {
-		const list = [];
+	function cloneAndUpdateEnabled(entry, value) {
+		const list = root.object[root.setting].slice();
 
-		for (let i = 0; i < entries.length; i++)
-			list.push(entries[i].entry);
+		for (let i = 0; i < list.length; i++) {
+			if (list[i] === entry) {
+				list[i] = {
+					id: list[i].id,
+					enabled: value
+				};
+				break;
+			}
+		}
 
 		root.object[root.setting] = list;
 		Config.save();
-		root.rebuildVisualEntries();
+		root.rebuildBoxEntries();
+	}
+
+	function commitBoxEntries(boxes) {
+		const spacers = root.spacerEntries.length === 2 ? root.spacerEntries : (root.object[root.setting] ?? []).filter(e => root.isSpacer(e));
+
+		const next = [];
+		next.push(...boxes[0].map(w => w.entry));
+		next.push(spacers[0]);
+		next.push(...boxes[1].map(w => w.entry));
+		next.push(spacers[1]);
+		next.push(...boxes[2].map(w => w.entry));
+
+		root.object[root.setting] = next;
+		Config.save();
+		root.rebuildBoxEntries();
 	}
 
 	function endVisualDrag() {
-		const entries = root.visualEntries.slice();
-		const finalIndex = root.indexForUid(root.draggedUid);
-		const finalItem = listView.itemAtIndex(finalIndex);
+		if (!root.draggedItemData)
+			return;
+
+		const boxes = root.boxEntries.map(box => box.slice());
+		const loc = root.locateEntry(root.draggedItemData.entry);
 
 		root.dragActive = false;
 
-		if (!finalItem) {
-			root.pendingCommitEntries = entries;
+		if (!loc) {
+			root.pendingCommitBoxes = boxes;
 			root.finishVisualDrag();
 			return;
 		}
 
-		const pos = finalItem.mapToItem(root, 0, 0);
+		const view = [boxView0, boxView1, boxView2][loc.box];
+		const item = view ? view.itemAtIndex(loc.index) : null;
 
-		root.pendingCommitEntries = entries;
+		root.pendingCommitBoxes = boxes;
+
+		if (!item) {
+			root.finishVisualDrag();
+			return;
+		}
+
+		const pos = item.mapToItem(root, 0, 0);
 		root.dropAnimating = true;
 		settleX.to = pos.x;
 		settleY.to = pos.y;
 		settleAnim.start();
 	}
 
-	function ensureVisualEntries() {
-		if (!root.dragActive && !root.dropAnimating)
-			root.rebuildVisualEntries();
-	}
-
 	function finishVisualDrag() {
-		const entries = root.pendingCommitEntries.slice();
+		const boxes = root.pendingCommitBoxes.slice();
 
 		root.dragActive = false;
 		root.dropAnimating = false;
-		root.draggedUid = "";
-		root.draggedModelData = null;
-		root.pendingCommitEntries = [];
+		root.draggedItemData = null;
+		root.draggedBox = -1;
+		root.draggedIndex = -1;
+		root.pendingCommitBoxes = [];
 		root.dragHeight = 0;
 
-		root.commitVisualOrder(entries);
+		root.commitBoxEntries(boxes);
 	}
 
 	function iconForId(id) {
@@ -122,18 +164,15 @@ Item {
 			return "schedule";
 		case "notifBell":
 			return "notifications";
+		case "hyprsunset":
+			return "wb_twilight";
 		default:
 			return "drag_indicator";
 		}
 	}
 
-	function indexForUid(uid) {
-		for (let i = 0; i < root.visualEntries.length; i++) {
-			if (root.visualEntries[i].uid === uid)
-				return i;
-		}
-
-		return -1;
+	function isSpacer(entry) {
+		return entry && entry.id === "spacer";
 	}
 
 	function labelForId(id) {
@@ -164,74 +203,101 @@ Item {
 			return qsTr("Clock");
 		case "notifBell":
 			return qsTr("Notification bell");
+		case "hyprsunset":
+			return qsTr("Sunset");
 		default:
 			return id;
 		}
 	}
 
+	function locateEntry(entry) {
+		for (let b = 0; b < root.boxEntries.length; b++) {
+			for (let i = 0; i < root.boxEntries[b].length; i++) {
+				if (root.boxEntries[b][i].entry === entry) {
+					return {
+						box: b,
+						index: i
+					};
+				}
+			}
+		}
+
+		return null;
+	}
+
 	function moveArrayItem(list, from, to) {
 		const next = list.slice();
-		const [item] = next.splice(from, 1);
+		const item = next.splice(from, 1)[0];
 		next.splice(to, 0, item);
 		return next;
 	}
 
-	function previewVisualMove(from, hovered, before) {
-		let to = hovered + (before ? 0 : 1);
+	function previewMoveToBox(sourceEntry, targetBox, targetIndex, before) {
+		const current = root.boxEntries.map(box => box.slice());
+		const loc = root.locateEntry(sourceEntry);
 
-		if (to > from)
-			to -= 1;
-
-		to = Math.max(0, Math.min(visualModel.items.count - 1, to));
-
-		if (from === to)
+		if (!loc)
 			return;
 
-		visualModel.items.move(from, to);
-		root.visualEntries = root.moveArrayItem(root.visualEntries, from, to);
+		const moved = current[loc.box].splice(loc.index, 1)[0];
+
+		let insertAt = targetIndex + (before ? 0 : 1);
+
+		if (loc.box === targetBox && insertAt > loc.index)
+			insertAt -= 1;
+
+		insertAt = Math.max(0, Math.min(current[targetBox].length, insertAt));
+		current[targetBox].splice(insertAt, 0, moved);
+
+		root.boxEntries = current;
 	}
 
-	function rebuildVisualEntries() {
-		const entries = root.object[root.setting] ?? [];
-		const next = [];
+	function rebuildBoxEntries() {
+		const list = root.object[root.setting] ?? [];
+		const next = [[], [], []];
+		const spacers = [];
+		let box = 0;
 
-		for (let i = 0; i < entries.length; i++) {
-			const entry = entries[i];
-			let existing = null;
+		for (let i = 0; i < list.length; i++) {
+			const entry = list[i];
 
-			for (let j = 0; j < root.visualEntries.length; j++) {
-				if (root.visualEntries[j].entry === entry) {
-					existing = root.visualEntries[j];
-					break;
-				}
+			if (root.isSpacer(entry)) {
+				spacers.push(entry);
+				box = Math.min(2, box + 1);
+				continue;
 			}
 
-			if (existing)
-				next.push(existing);
-			else
-				next.push({
-					uid: `entry-${root.uidCounter++}`,
-					entry
-				});
+			next[box].push({
+				entry: entry
+			});
 		}
 
-		root.visualEntries = next;
+		root.spacerEntries = spacers;
+		root.boxEntries = next;
 	}
 
-	function updateEntry(index, value) {
-		const list = [...root.object[root.setting]];
-		const entry = list[index];
-		entry.enabled = value;
-		list[index] = entry;
+	function updateEntry(entry, value) {
+		const list = root.object[root.setting].slice();
+
+		for (let i = 0; i < list.length; i++) {
+			if (list[i] === entry) {
+				list[i] = {
+					id: list[i].id,
+					enabled: value
+				};
+				break;
+			}
+		}
+
 		root.object[root.setting] = list;
 		Config.save();
-		root.ensureVisualEntries();
+		root.rebuildBoxEntries();
 	}
 
 	Layout.fillWidth: true
-	implicitHeight: layout.implicitHeight
+	implicitHeight: mainLayout.implicitHeight
 
-	Component.onCompleted: root.rebuildVisualEntries()
+	Component.onCompleted: root.rebuildBoxEntries()
 
 	Rectangle {
 		anchors.fill: parent
@@ -271,7 +337,7 @@ Item {
 	}
 
 	ColumnLayout {
-		id: layout
+		id: mainLayout
 
 		anchors.fill: parent
 		spacing: Appearance.spacing.smaller
@@ -282,58 +348,64 @@ Item {
 			text: root.name
 		}
 
-		DelegateModel {
-			id: visualModel
-
-			delegate: entryDelegate
-
-			model: ScriptModel {
-				objectProp: "uid"
-				values: root.visualEntries
-			}
-		}
-
-		ListView {
-			id: listView
-
+		RowLayout {
 			Layout.fillWidth: true
-			Layout.preferredHeight: contentHeight
-			boundsBehavior: Flickable.StopAtBounds
-			clip: false
-			implicitHeight: contentHeight
-			implicitWidth: width
-			interactive: !(root.dragActive || root.dropAnimating)
-			model: visualModel
-			spacing: Appearance.spacing.small
+			spacing: Appearance.spacing.normal
 
-			add: Transition {
-				Anim {
-					properties: "opacity,scale"
-					to: 1
+			CustomRect {
+				Layout.fillWidth: true
+				Layout.preferredHeight: 260
+				color: DynamicColors.tPalette.m3surface
+				radius: Appearance.rounding.normal
+
+				ListView {
+					id: boxView0
+
+					anchors.fill: parent
+					anchors.margins: Appearance.padding.small
+					clip: false
+					delegate: entryDelegate
+					interactive: false
+					model: root.boxEntries[0]
+					spacing: Appearance.spacing.small
 				}
 			}
-			addDisplaced: Transition {
-				Anim {
-					duration: Appearance.anim.durations.normal
-					property: "y"
+
+			CustomRect {
+				Layout.fillWidth: true
+				Layout.preferredHeight: 260
+				color: DynamicColors.tPalette.m3surface
+				radius: Appearance.rounding.normal
+
+				ListView {
+					id: boxView1
+
+					anchors.fill: parent
+					anchors.margins: Appearance.padding.small
+					clip: false
+					delegate: entryDelegate
+					interactive: false
+					model: root.boxEntries[1]
+					spacing: Appearance.spacing.small
 				}
 			}
-			displaced: Transition {
-				Anim {
-					duration: Appearance.anim.durations.normal
-					property: "y"
-				}
-			}
-			move: Transition {
-				Anim {
-					duration: Appearance.anim.durations.normal
-					property: "y"
-				}
-			}
-			removeDisplaced: Transition {
-				Anim {
-					duration: Appearance.anim.durations.normal
-					property: "y"
+
+			CustomRect {
+				Layout.fillWidth: true
+				Layout.preferredHeight: 260
+				color: DynamicColors.tPalette.m3surface
+				radius: Appearance.rounding.normal
+
+				ListView {
+					id: boxView2
+
+					anchors.fill: parent
+					anchors.margins: Appearance.padding.small
+					clip: false
+					delegate: entryDelegate
+					interactive: false
+					model: root.boxEntries[2]
+					spacing: Appearance.spacing.small
 				}
 			}
 		}
@@ -344,21 +416,19 @@ Item {
 		asynchronous: false
 
 		sourceComponent: Item {
+			property real listWidth: boxView0.width
+
 			Drag.active: root.dragActive
 			Drag.hotSpot.x: width / 2
 			Drag.hotSpot.y: height / 2
 			height: proxyRect.implicitHeight
-			implicitHeight: proxyRect.implicitHeight
-			implicitWidth: listView.width
-			visible: root.draggedModelData !== null
-			width: listView.width
+			width: listWidth
 			x: root.dragX
 			y: root.dragY
 			z: 100
 
 			Drag.source: QtObject {
-				property string uid: root.draggedUid
-				property int visualIndex: root.indexForUid(root.draggedUid)
+				property var entry: root.draggedItemData ? root.draggedItemData.entry : null
 			}
 
 			CustomRect {
@@ -393,17 +463,17 @@ Item {
 
 					MaterialIcon {
 						color: DynamicColors.palette.m3onSurfaceVariant
-						text: root.iconForId(root.draggedModelData?.entry?.id ?? "")
+						text: root.iconForId(root.draggedItemData?.entry?.id ?? "")
 					}
 
 					CustomText {
 						Layout.fillWidth: true
 						font.pointSize: Appearance.font.size.larger
-						text: root.labelForId(root.draggedModelData?.entry?.id ?? "")
+						text: root.labelForId(root.draggedItemData?.entry?.id ?? "")
 					}
 
 					CustomSwitch {
-						checked: root.draggedModelData?.entry?.enabled ?? true
+						checked: root.draggedItemData?.entry?.enabled ?? true
 						enabled: false
 					}
 				}
@@ -417,28 +487,23 @@ Item {
 		DropArea {
 			id: slot
 
+			readonly property int boxIndex: ListView.view === boxView0 ? 0 : ListView.view === boxView1 ? 1 : 2
 			readonly property var entryData: modelData.entry
+			required property int index
 			required property var modelData
-			readonly property string uid: modelData.uid
 
 			function previewReorder(drag) {
 				const source = drag.source;
-				if (!source || !source.uid || source.uid === slot.uid)
+				if (!source || !source.entry || source.entry === slot.entryData)
 					return;
 
-				const from = source.visualIndex;
-				const hovered = slot.DelegateModel.itemsIndex;
-
-				if (from < 0 || hovered < 0)
-					return;
-
-				root.previewVisualMove(from, hovered, drag.y < height / 2);
+				root.previewMoveToBox(source.entry, slot.boxIndex, slot.index, drag.y < height / 2);
 			}
 
 			height: entryRow.implicitHeight
 			implicitHeight: entryRow.implicitHeight
-			implicitWidth: listView.width
-			width: ListView.view ? ListView.view.width : listView.width
+			implicitWidth: ListView.view ? ListView.view.width : 0
+			width: ListView.view ? ListView.view.width : 0
 
 			onEntered: drag => previewReorder(drag)
 			onPositionChanged: drag => previewReorder(drag)
@@ -449,8 +514,7 @@ Item {
 				anchors.fill: parent
 				color: DynamicColors.tPalette.m3surface
 				implicitHeight: entryLayout.implicitHeight + Appearance.padding.small * 2
-				implicitWidth: parent.width
-				opacity: root.draggedUid === slot.uid ? 0 : 1
+				opacity: root.draggedItemData?.entry === slot.entryData ? 0 : 1
 				radius: Appearance.rounding.full
 
 				Behavior on opacity {
@@ -468,7 +532,7 @@ Item {
 					CustomRect {
 						id: handle
 
-						color: Qt.alpha(DynamicColors.palette.m3onSurface, handleDrag.active ? 0.12 : handleHover.hovered ? 0.09 : 0.06)
+						color: Qt.alpha(DynamicColors.palette.m3onSurface, handleMouse.pressed ? 0.12 : handleMouse.containsMouse ? 0.09 : 0.06)
 						implicitHeight: 32
 						implicitWidth: implicitHeight
 						radius: Appearance.rounding.full
@@ -484,34 +548,37 @@ Item {
 							text: "drag_indicator"
 						}
 
-						HoverHandler {
-							id: handleHover
+						MouseArea {
+							id: handleMouse
 
-							cursorShape: handleDrag.active ? Qt.ClosedHandCursor : Qt.OpenHandCursor
-						}
+							acceptedButtons: Qt.LeftButton
+							anchors.fill: parent
+							cursorShape: pressed ? Qt.ClosedHandCursor : containsMouse ? Qt.OpenHandCursor : Qt.ArrowCursor
+							hoverEnabled: true
+							preventStealing: true
 
-						DragHandler {
-							id: handleDrag
-
-							enabled: true
-							grabPermissions: PointerHandler.CanTakeOverFromAnything
-							target: null
-							xAxis.enabled: false
-							yAxis.enabled: true
-
-							onActiveChanged: {
-								if (active) {
-									root.beginVisualDrag(slot.uid, slot.modelData, entryRow);
-								} else if (root.draggedUid === slot.uid) {
+							onCanceled: {
+								if (root.draggedItemData && root.draggedItemData.entry === slot.entryData)
 									root.endVisualDrag();
-								}
 							}
-							onActiveTranslationChanged: {
-								if (!active || root.draggedUid !== slot.uid)
+							onPositionChanged: mouse => {
+								if (!pressed || !root.dragActive || !root.draggedItemData || root.draggedItemData.entry !== slot.entryData)
 									return;
 
-								root.dragX = root.dragStartX;
-								root.dragY = root.dragStartY + activeTranslation.y;
+								const pointer = handle.mapToItem(root, mouse.x, mouse.y);
+								const offsetX = root.dragPointerStartX - root.dragStartX;
+								const offsetY = root.dragPointerStartY - root.dragStartY;
+
+								root.dragX = pointer.x - offsetX;
+								root.dragY = pointer.y - offsetY;
+							}
+							onPressed: mouse => {
+								const pointer = handle.mapToItem(root, mouse.x, mouse.y);
+								root.beginVisualDrag(slot.modelData, entryRow, pointer.x, pointer.y);
+							}
+							onReleased: {
+								if (root.draggedItemData && root.draggedItemData.entry === slot.entryData)
+									root.endVisualDrag();
 							}
 						}
 					}
@@ -531,7 +598,7 @@ Item {
 						Layout.rightMargin: Appearance.padding.small
 						checked: slot.entryData.enabled ?? true
 
-						onToggled: root.updateEntry(slot.DelegateModel.itemsIndex, checked)
+						onToggled: root.cloneAndUpdateEnabled(slot.entryData, checked)
 					}
 				}
 			}
