@@ -5,6 +5,7 @@ import QtQuick.Layouts
 import qs.Components
 import qs.Config
 import qs.Modules
+import qs.Helpers
 import qs.Daemons
 
 CustomRect {
@@ -78,6 +79,13 @@ CustomRect {
 					if (adapter)
 						adapter.enabled = !adapter.enabled;
 				}
+			}
+
+			Toggle {
+				checked: GameMode.enabled
+				icon: GameMode.enabled ? "videogame_asset" : "videogame_asset_off"
+
+				onClicked: GameMode.enabled = !GameMode.enabled
 			}
 		}
 	}

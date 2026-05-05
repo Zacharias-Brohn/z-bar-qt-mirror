@@ -2,7 +2,7 @@ import QtQuick
 import qs.Config
 
 NumberAnimation {
-	duration: MaterialEasing.standardTime
-	easing.bezierCurve: MaterialEasing.standard
+	duration: Appearance.anim.durations.normal
+	easing.bezierCurve: Appearance.anim.curves.standard
 	easing.type: Easing.BezierSpline
 }
