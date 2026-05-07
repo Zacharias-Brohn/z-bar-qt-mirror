@@ -129,7 +129,7 @@ Variants {
 			}
 
 			IpcHandler {
-				function toggleLauncher(): void {
+				function toggleLauncher(fix: string): void {
 					visibilities.launcher = !visibilities.launcher;
 				}
 
