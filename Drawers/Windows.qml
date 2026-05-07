@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Effects
 import Quickshell
+import Quickshell.Io
 import Quickshell.Wayland
 import Quickshell.Hyprland
 import ZShell.Blobs
@@ -125,6 +126,14 @@ Variants {
 				property bool sidebar
 
 				Component.onCompleted: Visibilities.load(scope.modelData, this)
+			}
+
+			IpcHandler {
+				function toggleLauncher(): void {
+					visibilities.launcher = !visibilities.launcher;
+				}
+
+				target: "visibilities"
 			}
 
 			Binding {
