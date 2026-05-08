@@ -9,10 +9,6 @@ JsonObject {
 			enabled: true
 		},
 		{
-			id: "audio",
-			enabled: true
-		},
-		{
 			id: "media",
 			enabled: true
 		},
@@ -22,10 +18,6 @@ JsonObject {
 		},
 		{
 			id: "updates",
-			enabled: true
-		},
-		{
-			id: "dash",
 			enabled: true
 		},
 		{
@@ -47,10 +39,6 @@ JsonObject {
 		{
 			id: "tray",
 			enabled: true
-		},
-		{
-			id: "upower",
-			enabled: false
 		},
 		{
 			id: "network",

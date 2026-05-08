@@ -28,70 +28,9 @@ Item {
 	property int uidCounter: 0
 	property var visualEntries: []
 
-	function beginVisualDrag(uid, modelData, item) {
-		const pos = item.mapToItem(root, 0, 0);
-
-		root.draggedUid = uid;
-		root.draggedModelData = modelData;
-		root.dragHeight = item.height;
-		root.dragStartX = pos.x;
-		root.dragStartY = pos.y;
-		root.dragX = pos.x;
-		root.dragY = pos.y;
-		root.dragActive = true;
-		root.dropAnimating = false;
-		root.pendingCommitEntries = [];
-	}
-
-	function commitVisualOrder(entries) {
-		const list = [];
-
-		for (let i = 0; i < entries.length; i++)
-			list.push(entries[i].entry);
-
-		root.object[root.setting] = list;
-		Config.save();
-		root.rebuildVisualEntries();
-	}
-
-	function endVisualDrag() {
-		const entries = root.visualEntries.slice();
-		const finalIndex = root.indexForUid(root.draggedUid);
-		const finalItem = listView.itemAtIndex(finalIndex);
-
-		root.dragActive = false;
-
-		if (!finalItem) {
-			root.pendingCommitEntries = entries;
-			root.finishVisualDrag();
-			return;
-		}
-
-		const pos = finalItem.mapToItem(root, 0, 0);
-
-		root.pendingCommitEntries = entries;
-		root.dropAnimating = true;
-		settleX.to = pos.x;
-		settleY.to = pos.y;
-		settleAnim.start();
-	}
-
 	function ensureVisualEntries() {
 		if (!root.dragActive && !root.dropAnimating)
 			root.rebuildVisualEntries();
-	}
-
-	function finishVisualDrag() {
-		const entries = root.pendingCommitEntries.slice();
-
-		root.dragActive = false;
-		root.dropAnimating = false;
-		root.draggedUid = "";
-		root.draggedModelData = null;
-		root.pendingCommitEntries = [];
-		root.dragHeight = 0;
-
-		root.commitVisualOrder(entries);
 	}
 
 	function iconForId(id) {
@@ -153,7 +92,7 @@ Item {
 		case "spacer":
 			return qsTr("Spacer");
 		case "activeWindow":
-			return qsTr("Active window");
+			return qsTr("Title");
 		case "tray":
 			return qsTr("Tray");
 		case "upower":
@@ -163,32 +102,12 @@ Item {
 		case "clock":
 			return qsTr("Clock");
 		case "notifBell":
-			return qsTr("Notification bell");
+			return qsTr("Notifs");
+		case "hyprsunset":
+			return qsTr("Night light");
 		default:
 			return id;
 		}
-	}
-
-	function moveArrayItem(list, from, to) {
-		const next = list.slice();
-		const [item] = next.splice(from, 1);
-		next.splice(to, 0, item);
-		return next;
-	}
-
-	function previewVisualMove(from, hovered, before) {
-		let to = hovered + (before ? 0 : 1);
-
-		if (to > from)
-			to -= 1;
-
-		to = Math.max(0, Math.min(visualModel.items.count - 1, to));
-
-		if (from === to)
-			return;
-
-		visualModel.items.move(from, to);
-		root.visualEntries = root.moveArrayItem(root.visualEntries, from, to);
 	}
 
 	function rebuildVisualEntries() {
@@ -225,7 +144,6 @@ Item {
 		list[index] = entry;
 		root.object[root.setting] = list;
 		Config.save();
-		root.ensureVisualEntries();
 	}
 
 	Layout.fillWidth: true
@@ -233,7 +151,7 @@ Item {
 
 	Component.onCompleted: root.rebuildVisualEntries()
 
-	Rectangle {
+	CustomRect {
 		anchors.fill: parent
 		anchors.margins: -Appearance.padding.smaller
 		color: DynamicColors.palette.m3primaryContainer
@@ -248,39 +166,12 @@ Item {
 		}
 	}
 
-	ParallelAnimation {
-		id: settleAnim
-
-		onFinished: root.finishVisualDrag()
-
-		Anim {
-			id: settleX
-
-			duration: Appearance.anim.durations.normal
-			property: "dragX"
-			target: root
-		}
-
-		Anim {
-			id: settleY
-
-			duration: Appearance.anim.durations.normal
-			property: "dragY"
-			target: root
-		}
-	}
-
-	ColumnLayout {
+	RowLayout {
 		id: layout
 
 		anchors.fill: parent
-		spacing: Appearance.spacing.smaller
 
-		CustomText {
-			Layout.fillWidth: true
-			font.pointSize: Appearance.font.size.larger
-			text: root.name
-		}
+		// spacing: Appearance.spacing.smaller
 
 		DelegateModel {
 			id: visualModel
@@ -293,248 +184,40 @@ Item {
 			}
 		}
 
-		ListView {
-			id: listView
-
-			Layout.fillWidth: true
-			Layout.preferredHeight: contentHeight
-			boundsBehavior: Flickable.StopAtBounds
-			clip: false
-			implicitHeight: contentHeight
-			implicitWidth: width
-			interactive: !(root.dragActive || root.dropAnimating)
+		Repeater {
+			delegate: entryDelegate
 			model: visualModel
-			spacing: Appearance.spacing.small
-
-			add: Transition {
-				Anim {
-					properties: "opacity,scale"
-					to: 1
-				}
-			}
-			addDisplaced: Transition {
-				Anim {
-					duration: Appearance.anim.durations.normal
-					property: "y"
-				}
-			}
-			displaced: Transition {
-				Anim {
-					duration: Appearance.anim.durations.normal
-					property: "y"
-				}
-			}
-			move: Transition {
-				Anim {
-					duration: Appearance.anim.durations.normal
-					property: "y"
-				}
-			}
-			removeDisplaced: Transition {
-				Anim {
-					duration: Appearance.anim.durations.normal
-					property: "y"
-				}
-			}
-		}
-	}
-
-	Loader {
-		active: root.dragActive || root.dropAnimating
-		asynchronous: false
-
-		sourceComponent: Item {
-			Drag.active: root.dragActive
-			Drag.hotSpot.x: width / 2
-			Drag.hotSpot.y: height / 2
-			height: proxyRect.implicitHeight
-			implicitHeight: proxyRect.implicitHeight
-			implicitWidth: listView.width
-			visible: root.draggedModelData !== null
-			width: listView.width
-			x: root.dragX
-			y: root.dragY
-			z: 100
-
-			Drag.source: QtObject {
-				property string uid: root.draggedUid
-				property int visualIndex: root.indexForUid(root.draggedUid)
-			}
-
-			CustomRect {
-				id: proxyRect
-
-				color: DynamicColors.tPalette.m3surface
-				implicitHeight: proxyRow.implicitHeight + Appearance.padding.small * 2
-				implicitWidth: parent.width
-				opacity: 0.95
-				radius: Appearance.rounding.normal
-				width: parent.width
-
-				RowLayout {
-					id: proxyRow
-
-					anchors.fill: parent
-					anchors.margins: Appearance.padding.small
-					spacing: Appearance.spacing.normal
-
-					CustomRect {
-						color: Qt.alpha(DynamicColors.palette.m3onSurface, 0.12)
-						implicitHeight: 32
-						implicitWidth: implicitHeight
-						radius: Appearance.rounding.small
-
-						MaterialIcon {
-							anchors.centerIn: parent
-							color: DynamicColors.palette.m3onSurfaceVariant
-							text: "drag_indicator"
-						}
-					}
-
-					MaterialIcon {
-						color: DynamicColors.palette.m3onSurfaceVariant
-						text: root.iconForId(root.draggedModelData?.entry?.id ?? "")
-					}
-
-					CustomText {
-						Layout.fillWidth: true
-						font.pointSize: Appearance.font.size.larger
-						text: root.labelForId(root.draggedModelData?.entry?.id ?? "")
-					}
-
-					CustomSwitch {
-						checked: root.draggedModelData?.entry?.enabled ?? true
-						enabled: false
-					}
-				}
-			}
 		}
 	}
 
 	Component {
 		id: entryDelegate
 
-		DropArea {
-			id: slot
-
-			readonly property var entryData: modelData.entry
+		IconButton {
+			required property int index
 			required property var modelData
-			readonly property string uid: modelData.uid
 
-			function previewReorder(drag) {
-				const source = drag.source;
-				if (!source || !source.uid || source.uid === slot.uid)
-					return;
+			Layout.fillWidth: true
+			Layout.preferredWidth: implicitWidth + (stateLayer.pressed ? 18 : internalChecked ? 7 : 0)
+			checked: modelData.entry.enabled ?? true
+			font: Appearance.font.family.sans
+			// icon: root.iconForId(modelData.entry.id)
+			icon: root.labelForId(modelData.entry.id)
+			inactiveColour: DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHighest, 2)
+			radius: stateLayer.pressed ? 6 / 2 : internalChecked ? 6 : 8
+			radiusAnim.duration: MaterialEasing.expressiveEffectsTime
+			radiusAnim.easing.bezierCurve: MaterialEasing.expressiveEffects
+			toggle: true
+			visible: !["spacer", "upower", "dash", "audio"].some(prefix => modelData.entry.id.startsWith(prefix))
 
-				const from = source.visualIndex;
-				const hovered = slot.DelegateModel.itemsIndex;
-
-				if (from < 0 || hovered < 0)
-					return;
-
-				root.previewVisualMove(from, hovered, drag.y < height / 2);
-			}
-
-			height: entryRow.implicitHeight
-			implicitHeight: entryRow.implicitHeight
-			implicitWidth: listView.width
-			width: ListView.view ? ListView.view.width : listView.width
-
-			onEntered: drag => previewReorder(drag)
-			onPositionChanged: drag => previewReorder(drag)
-
-			CustomRect {
-				id: entryRow
-
-				anchors.fill: parent
-				color: DynamicColors.tPalette.m3surface
-				implicitHeight: entryLayout.implicitHeight + Appearance.padding.small * 2
-				implicitWidth: parent.width
-				opacity: root.draggedUid === slot.uid ? 0 : 1
-				radius: Appearance.rounding.full
-
-				Behavior on opacity {
-					Anim {
-					}
-				}
-
-				RowLayout {
-					id: entryLayout
-
-					anchors.fill: parent
-					anchors.margins: Appearance.padding.small
-					spacing: Appearance.spacing.normal
-
-					CustomRect {
-						id: handle
-
-						color: Qt.alpha(DynamicColors.palette.m3onSurface, handleDrag.active ? 0.12 : handleHover.hovered ? 0.09 : 0.06)
-						implicitHeight: 32
-						implicitWidth: implicitHeight
-						radius: Appearance.rounding.full
-
-						Behavior on color {
-							CAnim {
-							}
-						}
-
-						MaterialIcon {
-							anchors.centerIn: parent
-							color: DynamicColors.palette.m3onSurfaceVariant
-							text: "drag_indicator"
-						}
-
-						HoverHandler {
-							id: handleHover
-
-							cursorShape: handleDrag.active ? Qt.ClosedHandCursor : Qt.OpenHandCursor
-						}
-
-						DragHandler {
-							id: handleDrag
-
-							enabled: true
-							grabPermissions: PointerHandler.CanTakeOverFromAnything
-							target: null
-							xAxis.enabled: false
-							yAxis.enabled: true
-
-							onActiveChanged: {
-								if (active) {
-									root.beginVisualDrag(slot.uid, slot.modelData, entryRow);
-								} else if (root.draggedUid === slot.uid) {
-									root.endVisualDrag();
-								}
-							}
-							onActiveTranslationChanged: {
-								if (!active || root.draggedUid !== slot.uid)
-									return;
-
-								root.dragX = root.dragStartX;
-								root.dragY = root.dragStartY + activeTranslation.y;
-							}
-						}
-					}
-
-					MaterialIcon {
-						color: DynamicColors.palette.m3onSurfaceVariant
-						text: root.iconForId(slot.entryData.id)
-					}
-
-					CustomText {
-						Layout.fillWidth: true
-						font.pointSize: Appearance.font.size.larger
-						text: root.labelForId(slot.entryData.id)
-					}
-
-					CustomSwitch {
-						Layout.rightMargin: Appearance.padding.small
-						checked: slot.entryData.enabled ?? true
-
-						onToggled: root.updateEntry(slot.DelegateModel.itemsIndex, checked)
-					}
+			Behavior on Layout.preferredWidth {
+				Anim {
+					duration: MaterialEasing.expressiveEffectsTime
+					easing.bezierCurve: MaterialEasing.expressiveEffects
 				}
 			}
+
+			onClicked: root.updateEntry(index, internalChecked)
 		}
 	}
 }
