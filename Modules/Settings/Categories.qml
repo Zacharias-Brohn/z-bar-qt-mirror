@@ -171,9 +171,15 @@ Item {
 				Layout.fillHeight: true
 				Layout.preferredWidth: icon.contentWidth
 				color: categoryItem.index === clayout.currentIndex ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3onSurface
+				fill: categoryItem.index === clayout.currentIndex ? 1 : 0
 				font.pointSize: Appearance.font.size.small * 2
 				text: categoryItem.icon
 				verticalAlignment: Text.AlignVCenter
+
+				Behavior on fill {
+					Anim {
+					}
+				}
 			}
 
 			CustomText {
