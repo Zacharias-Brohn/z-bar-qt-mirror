@@ -92,7 +92,7 @@ Item {
 		case "spacer":
 			return qsTr("Spacer");
 		case "activeWindow":
-			return qsTr("Active window");
+			return qsTr("Title");
 		case "tray":
 			return qsTr("Tray");
 		case "upower":
@@ -102,7 +102,9 @@ Item {
 		case "clock":
 			return qsTr("Clock");
 		case "notifBell":
-			return qsTr("Notification bell");
+			return qsTr("Notifs");
+		case "hyprsunset":
+			return qsTr("Night light");
 		default:
 			return id;
 		}
@@ -168,7 +170,8 @@ Item {
 		id: layout
 
 		anchors.fill: parent
-		spacing: Appearance.spacing.smaller
+
+		// spacing: Appearance.spacing.smaller
 
 		DelegateModel {
 			id: visualModel
@@ -197,7 +200,9 @@ Item {
 			Layout.fillWidth: true
 			Layout.preferredWidth: implicitWidth + (stateLayer.pressed ? 18 : internalChecked ? 7 : 0)
 			checked: modelData.entry.enabled ?? true
-			icon: root.iconForId(modelData.entry.id)
+			font: Appearance.font.family.sans
+			// icon: root.iconForId(modelData.entry.id)
+			icon: root.labelForId(modelData.entry.id)
 			inactiveColour: DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHighest, 2)
 			radius: stateLayer.pressed ? 6 / 2 : internalChecked ? 6 : 8
 			radiusAnim.duration: MaterialEasing.expressiveEffectsTime
