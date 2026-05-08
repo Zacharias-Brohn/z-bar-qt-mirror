@@ -33,7 +33,7 @@ CustomRect {
 			Toggle {
 				checked: Network.wifiEnabled
 				icon: Network.wifiEnabled ? "wifi" : "wifi_off"
-				visible: Network.wirelessDeviceDetails !== null
+				visible: QSNetwork.Networking.devices.values.some(n => n.type.toString() === "Wifi")
 
 				onClicked: Network.toggleWifi()
 			}
