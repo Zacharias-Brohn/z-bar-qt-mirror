@@ -14,11 +14,12 @@ Scope {
 		description: "Toggle launcher"
 		name: "toggle-launcher"
 
-		onPressed: root.launcherInterrupted = false
-		onReleased: {
+		onPressed: {
+			root.launcherInterrupted = false;
 			if (!root.launcherInterrupted && !root.hasFullscreen) {
 				const visibilities = Visibilities.getForActive();
 				visibilities.launcher = !visibilities.launcher;
+				console.log(root.launcherInterrupted);
 			}
 			root.launcherInterrupted = false;
 		}
