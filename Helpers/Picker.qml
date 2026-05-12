@@ -66,7 +66,7 @@ MouseArea {
 
 	function save(): void {
 		const tmpfile = Qt.resolvedUrl(`/tmp/zshell-picker-${Quickshell.processId}-${Date.now()}.png`);
-		ZShellIo.saveItem(screencopy, tmpfile, Qt.rect(Math.ceil(rsx), Math.ceil(rsy), Math.floor(sw), Math.floor(sh)), path => Quickshell.execDetached(["swappy", "-f", path]));
+		ZShellIo.saveItem(screencopy, tmpfile, Qt.rect(Math.ceil(rsx), Math.ceil(rsy), Math.floor(sw), Math.floor(sh)), path => Quickshell.execDetached([Quickshell.shellDir + "/scripts/rs-pictures", path]));
 		closeAnim.start();
 	}
 
