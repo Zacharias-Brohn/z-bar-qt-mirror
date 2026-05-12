@@ -74,6 +74,8 @@ Item {
 				stack.push(osd);
 			else if (currentCategory === "launcher")
 				stack.push(launcher);
+			else if (currentCategory === "screenshot")
+				stack.push(screenshot);
 		}
 
 		target: root
@@ -223,6 +225,13 @@ Item {
 		id: launcher
 
 		Cat.Launcher {
+		}
+	}
+
+	Component {
+		id: screenshot
+
+		Cat.Screenshot {
 		}
 	}
 }

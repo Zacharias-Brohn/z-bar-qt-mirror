@@ -23,6 +23,7 @@ Singleton {
 	property alias osd: adapter.osd
 	property alias overview: adapter.overview
 	property bool recentlySaved: false
+	property alias screenshot: adapter.screenshot
 	property alias services: adapter.services
 	property alias sidebar: adapter.sidebar
 	property alias utilities: adapter.utilities
@@ -128,7 +129,8 @@ Singleton {
 			background: serializeBackground(),
 			launcher: serializeLauncher(),
 			colors: serializeColors(),
-			dock: serializeDock()
+			dock: serializeDock(),
+			screenshot: serializeScreenshot()
 		};
 	}
 
@@ -272,6 +274,20 @@ Singleton {
 				sliderWidth: osd.sizes.sliderWidth,
 				sliderHeight: osd.sizes.sliderHeight
 			}
+		};
+	}
+
+	function serializeScreenshot(): var {
+		return {
+			enable_pp: screenshot.enable_pp,
+			mode: screenshot.mode,
+			corner_radius: screenshot.corner_radius,
+			drop_shadow: screenshot.drop_shadow,
+			rounded_corners: screenshot.rounded_corners,
+			shadow_blur_radius: screenshot.shadow_blur_radius,
+			shadow_color: screenshot.shadow_color,
+			shadow_offset_x: screenshot.shadow_offset_x,
+			shadow_offset_y: screenshot.shadow_offset_y
 		};
 	}
 
@@ -429,6 +445,8 @@ Singleton {
 			property Osd osd: Osd {
 			}
 			property Overview overview: Overview {
+			}
+			property Screenshot screenshot: Screenshot {
 			}
 			property Services services: Services {
 			}
