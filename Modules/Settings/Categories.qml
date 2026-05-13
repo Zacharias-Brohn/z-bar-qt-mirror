@@ -110,6 +110,12 @@ Item {
 			key: "screenshot"
 			name: "Screenshot"
 		}
+
+		ListElement {
+			icon: "cached"
+			key: "updates"
+			name: "Updates"
+		}
 	}
 
 	CustomClippingRect {
