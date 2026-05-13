@@ -54,11 +54,12 @@ pub fn apply_drop_shadow(
 ) -> RgbaImage {
     let (iw, ih) = img.dimensions();
     let br = blur_radius.ceil() as u32;
+    let spread = br * 2;
 
-    let extra_left = br.saturating_sub((-offset_x).max(0.0) as u32);
-    let extra_top = br.saturating_sub((-offset_y).max(0.0) as u32);
-    let extra_right = br + offset_x.max(0.0) as u32;
-    let extra_bottom = br + offset_y.max(0.0) as u32;
+    let extra_left = spread + (-offset_x).max(0.0).ceil() as u32;
+    let extra_top = spread + (-offset_y).max(0.0).ceil() as u32;
+    let extra_right = spread + offset_x.max(0.0).ceil() as u32;
+    let extra_bottom = spread + offset_y.max(0.0).ceil() as u32;
 
     let canvas_w = iw + extra_left + extra_right;
     let canvas_h = ih + extra_top + extra_bottom;
