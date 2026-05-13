@@ -1,10 +1,10 @@
 [package]
-name = "iwaku"
+name = "zshell-img-tools"
 version = "0.1.0"
 edition = "2024"
 
 [[bin]]
-name = "iwaku"
+name = "zshell-img-tools"
 path = "src/main.rs"
 
 [dependencies]

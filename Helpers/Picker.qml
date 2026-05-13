@@ -66,7 +66,7 @@ MouseArea {
 
 	function save(): void {
 		const tmpfile = Qt.resolvedUrl(`/tmp/zshell-picker-${Quickshell.processId}-${Date.now()}.png`);
-		const cmd = Config.screenshot.enable_pp ? ["iwaku", "--image"] : ["swappy", "-f"];
+		const cmd = Config.screenshot.enable_pp ? ["zshell-img-tools", "--image"] : ["swappy", "-f"];
 		ZShellIo.saveItem(screencopy, tmpfile, Qt.rect(Math.ceil(rsx), Math.ceil(rsy), Math.floor(sw), Math.floor(sh)), path => Quickshell.execDetached([...cmd, path]));
 		closeAnim.start();
 	}
