@@ -20,8 +20,10 @@ jobs:
 
       - name: Rustfmt
         run: |
-          if [ -f Cargo.toml ]; then
-            cargo fmt --check
+          if [ -n "$(find . -name "Cargo.toml" -print -quit)" ]; then
+            find . -name "Cargo.toml" -print0 | while IFS= read -r -d '' manifest; do
+              cargo fmt --check --manifest-path "$manifest"
+            done
           elif [ -n "$(find . -name "*.rs" -print -quit)" ]; then
             echo "Rust files found but no Cargo.toml"
             exit 1
