@@ -951,6 +951,72 @@ export const settingsIndex = [
     keywords: ["size", "osd", "height"],
   },
 
+  // SCREENSHOT CATEGORY
+  // Screenshot section
+  {
+    name: "Enable effects",
+    category: "screenshot",
+    categoryName: "Screenshot",
+    section: "Screenshot",
+    keywords: ["effects", "shadow", "screenshot"],
+  },
+  {
+    name: "Effects mode",
+    category: "screenshot",
+    categoryName: "Screenshot",
+    section: "Screenshot",
+    keywords: ["effects", "mode"],
+  },
+  {
+    name: "Corner radius",
+    category: "screenshot",
+    categoryName: "Screenshot",
+    section: "Screenshot",
+    keywords: ["corner", "radius"],
+  },
+  {
+    name: "Enable drop shadow",
+    category: "screenshot",
+    categoryName: "Screenshot",
+    section: "Screenshot",
+    keywords: ["drop", "shadow"],
+  },
+  {
+    name: "Enable rounded corners",
+    category: "screenshot",
+    categoryName: "Screenshot",
+    section: "Screenshot",
+    keywords: ["rounded", "corners"],
+  },
+  {
+    name: "Shadow blur radius",
+    category: "screenshot",
+    categoryName: "Screenshot",
+    section: "Screenshot",
+    keywords: ["blur", "shadow", "radius"],
+  },
+  {
+    name: "Shadow color",
+    category: "screenshot",
+    categoryName: "Screenshot",
+    section: "Screenshot",
+    keywords: ["color", "shadow"],
+  },
+  {
+    name: "Shadow offset X",
+    category: "screenshot",
+    categoryName: "Screenshot",
+    section: "Screenshot",
+    keywords: ["offset", "shadow"],
+  },
+  {
+    name: "Shadow offset Y",
+    category: "screenshot",
+    categoryName: "Screenshot",
+    section: "Screenshot",
+    keywords: ["offset", "shadow"],
+  },
+
   // LAUNCHER CATEGORY
   // Launcher section
   {
