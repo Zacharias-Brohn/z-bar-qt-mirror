@@ -5,18 +5,18 @@ on:
 
 jobs:
   lint:
-    runs-on: debian
-    container: debian:sid
+    runs-on: arch
+    container: archlinux:latest
 
     steps:
       - name: Install tools
         run: |
-          apt-get update
-          apt-get install -y --no-install-recommends \
+          pacman -Syu --noconfirm
+          pacman -S --noconfirm \
             git \
             nodejs \
             npm \
-            qt6-declarative-dev-tools
+            qt6-declarative
 
       - name: Checkout
         uses: actions/checkout@v4
