@@ -24,6 +24,8 @@ jobs:
       - name: Python sanity check
         run: |
           python3 --version
+          python3 -m venv .venv
+          . .venv/bin/activate
           pip install --no-cache-dir ruff
           ruff check . || true
 
