@@ -19,7 +19,7 @@ jobs:
 
       - name: Prettier
         run: |
-          if [ -n "$(find . -name "*.js" -o -name "*.jsx" -o -name "*.ts" -o -name "*.tsx" -o -name "*.mjs" -o -name "*.cjs" -print -quit)" ]; then
+          if [ -n "$(find . \( -iname "*.js" -o -iname "*.jsx" -o -iname "*.ts" -o -iname "*.tsx" -o -iname "*.mjs" -o -iname "*.cjs" \) -print -quit)" ]; then
             if ! npx --yes prettier --check "**/*.{js,jsx,ts,tsx,mjs,cjs}" --ignore-path .gitignore; then
               echo "::warning::prettier reported issues"
             fi
