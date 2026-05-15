@@ -5,8 +5,7 @@ on:
 
 jobs:
   lint:
-    runs-on: alpine
-
+    runs-on: linux
     container: alpine:latest
 
     steps:
