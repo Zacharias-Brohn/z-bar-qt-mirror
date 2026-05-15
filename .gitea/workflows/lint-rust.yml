@@ -17,7 +17,8 @@ jobs:
           apk add --no-cache \
             git \
             cargo \
-            rust
+            rust \
+            rustfmt
 
       - name: Rustfmt
         run: |
