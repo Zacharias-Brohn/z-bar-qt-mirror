@@ -14,6 +14,9 @@ jobs:
 
       - name: Install tools
         run: |
+          echo "https://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories
+          echo "https://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories
+          apk update
           apk add --no-cache \
             bash \
             git \
@@ -21,8 +24,6 @@ jobs:
             py3-pip \
             rust
           apk add --no-cache qt6-qtdeclarative-dev-tools || \
-          apk add --no-cache qt6-qtdeclarative-dev || \
-          apk add --no-cache qt6-qtdeclarative || \
           echo "::warning::qmllint not available"
 
       - name: Python lint
@@ -36,23 +37,29 @@ jobs:
 
       - name: JS lint
         run: |
-          if [ -f package.json ]; then
-            npm install --no-audit --no-fund
-            if ! npx eslint .; then
-              echo "::warning::eslint reported issues"
+          if [ -n "$(find . -name "*.js" -o -name "*.jsx" -o -name "*.ts" -o -name "*.tsx" -o -name "*.mjs" -o -name "*.cjs" -print -quit)" ]; then
+            if [ -f package.json ]; then
+              npm install --no-audit --no-fund
+            fi
+            if [ -f eslint.config.js ] || [ -f eslint.config.mjs ] || [ -f eslint.config.cjs ] || [ -f .eslintrc ] || [ -f .eslintrc.js ] || [ -f .eslintrc.cjs ] || [ -f .eslintrc.json ] || [ -f .eslintrc.yaml ] || [ -f .eslintrc.yml ]; then
+              if ! npx --yes eslint .; then
+                echo "::warning::eslint reported issues"
+              fi
+            else
+              echo "No eslint config found"
             fi
           else
-            echo "No JS project found"
+            echo "No JS/TS files found"
           fi
 
       - name: JS format (prettier)
         run: |
-          if [ -f package.json ]; then
+          if [ -n "$(find . -name "*.js" -o -name "*.jsx" -o -name "*.ts" -o -name "*.tsx" -o -name "*.mjs" -o -name "*.cjs" -print -quit)" ]; then
             if ! npx --yes prettier --check "**/*.{js,jsx,ts,tsx,mjs,cjs}" --ignore-path .gitignore; then
               echo "::warning::prettier reported issues"
             fi
           else
-            echo "No JS project found"
+            echo "No JS/TS files found"
           fi
 
       - name: Rust lint
