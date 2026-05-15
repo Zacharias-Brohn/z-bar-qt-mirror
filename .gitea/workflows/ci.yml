@@ -6,7 +6,7 @@ on:
 jobs:
   lint:
     runs-on: alpine
-    container: node:20-bookworm
+    container: node:20-alpine
 
     steps:
       - name: Checkout
@@ -19,8 +19,6 @@ jobs:
             git \
             python3 \
             py3-pip \
-            nodejs \
-            npm \
             rust
 
       - name: Python sanity check
