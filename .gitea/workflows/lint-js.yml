@@ -24,9 +24,7 @@ jobs:
               npm install --no-audit --no-fund
             fi
             if [ -f eslint.config.js ] || [ -f eslint.config.mjs ] || [ -f eslint.config.cjs ] || [ -f .eslintrc ] || [ -f .eslintrc.js ] || [ -f .eslintrc.cjs ] || [ -f .eslintrc.json ] || [ -f .eslintrc.yaml ] || [ -f .eslintrc.yml ]; then
-              if ! npx --yes eslint .; then
-                echo "::warning::eslint reported issues"
-              fi
+              npx --yes eslint .
             else
               echo "No eslint config found"
             fi

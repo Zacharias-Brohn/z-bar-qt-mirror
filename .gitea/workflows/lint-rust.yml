@@ -21,9 +21,7 @@ jobs:
       - name: Rustfmt
         run: |
           if [ -f Cargo.toml ]; then
-            if ! cargo fmt --check; then
-              echo "::warning::rustfmt reported issues"
-            fi
+            cargo fmt --check
           else
             echo "No Rust project found"
           fi

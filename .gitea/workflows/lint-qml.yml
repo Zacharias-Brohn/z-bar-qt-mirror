@@ -28,9 +28,7 @@ jobs:
           export PATH="$PATH:/usr/lib/qt6/bin:/usr/lib/qt6/libexec"
           if command -v qmllint >/dev/null 2>&1; then
             if [ -n "$(find . -name "*.qml" -print -quit)" ]; then
-              if ! find . -name "*.qml" -print0 | xargs -0 qmllint; then
-                echo "::warning::qmllint reported issues"
-              fi
+              find . -name "*.qml" -print0 | xargs -0 qmllint
             else
               echo "No QML files found"
             fi
