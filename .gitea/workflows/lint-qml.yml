@@ -9,15 +9,17 @@ jobs:
     container: debian:sid
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
       - name: Install tools
         run: |
           apt-get update
           apt-get install -y --no-install-recommends \
             git \
+            nodejs \
+            npm \
             qt6-declarative-dev-tools
+
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: QML lint
         run: |
