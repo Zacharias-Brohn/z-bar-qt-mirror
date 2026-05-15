@@ -18,13 +18,13 @@ jobs:
             git \
             cargo \
             rust \
-            rustfmt
+            rust-clippy
 
-      - name: Rustfmt
+      - name: Clippy
         run: |
           if [ -n "$(find . -name "Cargo.toml" -print -quit)" ]; then
             find . -name "Cargo.toml" -print0 | while IFS= read -r -d '' manifest; do
-              cargo fmt --check --manifest-path "$manifest"
+              cargo clippy --manifest-path "$manifest" -- -D warnings
             done
           elif [ -n "$(find . -name "*.rs" -print -quit)" ]; then
             echo "Rust files found but no Cargo.toml"
