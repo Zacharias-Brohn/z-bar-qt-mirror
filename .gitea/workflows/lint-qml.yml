@@ -23,6 +23,7 @@ jobs:
 
       - name: QML lint
         run: |
+          export PATH="$PATH:/usr/lib/qt6/bin:/usr/lib/qt6/libexec"
           if command -v qmllint >/dev/null 2>&1; then
             if [ -n "$(find . -name "*.qml" -print -quit)" ]; then
               find . -name "*.qml" -print0 | xargs -0 qmllint
