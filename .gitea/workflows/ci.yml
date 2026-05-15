@@ -14,16 +14,17 @@ jobs:
 
       - name: Install tools
         run: |
-          echo "https://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories
-          echo "https://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories
-          apk update
           apk add --no-cache \
             bash \
             git \
             python3 \
             py3-pip \
             rust
-          apk add --no-cache qt6-qtdeclarative-dev-tools || \
+          edge_main="https://dl-cdn.alpinelinux.org/alpine/edge/main"
+          edge_community="https://dl-cdn.alpinelinux.org/alpine/edge/community"
+          apk add --no-cache -X "$edge_main" -X "$edge_community" qt6-qtdeclarative-dev-tools || \
+          apk add --no-cache -X "$edge_main" -X "$edge_community" qt6-qtdeclarative-dev || \
+          apk add --no-cache -X "$edge_main" -X "$edge_community" qt6-qtdeclarative || \
           echo "::warning::qmllint not available"
 
       - name: Python lint
@@ -74,6 +75,7 @@ jobs:
 
       - name: QML lint
         run: |
+          export PATH="$PATH:/usr/lib/qt6/bin:/usr/lib/qt6/libexec"
           if command -v qmllint >/dev/null 2>&1; then
             if [ -n "$(find . -name "*.qml" -print -quit)" ]; then
               if ! find . -name "*.qml" -print0 | xargs -0 qmllint; then
