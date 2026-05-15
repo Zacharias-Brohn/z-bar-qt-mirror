@@ -13,10 +13,20 @@ jobs:
         run: |
           pacman -Syu --noconfirm
           pacman -S --noconfirm \
+            base-devel \
             git \
             nodejs \
             npm \
+            sudo \
             qt6-declarative
+
+      - name: Install quickshell-git (AUR)
+        run: |
+          useradd -m builder
+          echo "builder ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/builder
+          chmod 440 /etc/sudoers.d/builder
+          su - builder -c "cd /tmp && git clone https://aur.archlinux.org/quickshell-git.git"
+          su - builder -c "cd /tmp/quickshell-git && makepkg -si --noconfirm --needed"
 
       - name: Checkout
         uses: actions/checkout@v4
