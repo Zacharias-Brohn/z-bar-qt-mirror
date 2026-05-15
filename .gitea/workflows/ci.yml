@@ -6,7 +6,7 @@ on:
 jobs:
   lint:
     runs-on: alpine
-    container: alpine:latest
+    container: node:20-bookworm
 
     steps:
       - name: Checkout
