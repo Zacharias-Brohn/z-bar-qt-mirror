@@ -11,10 +11,13 @@ Singleton {
 	id: root
 
 	property int availableUpdates: 0
+	property string cmd: ""
 	property bool commandReady
 	property bool loaded
 	property double now: Date.now()
 	property var updates: ({})
+	property bool updating
+	property string updatingPackage: ""
 
 	function formatUpdateTime(timestamp) {
 		const diffMs = root.now - timestamp;
@@ -32,6 +35,22 @@ Singleton {
 			return Math.floor(diffMs / hourMs) + " hr ago";
 
 		return Qt.formatDateTime(new Date(timestamp), "dd hh:mm");
+	}
+
+	function performPackageUpdate(pkg: string): void {
+		if (root.cmd === "pacman")
+			pkgUpdateProc.command = ["pkexec", root.cmd, "--noconfirm", "-Sy", pkg];
+		else
+			pkgUpdateProc.command = [root.cmd, "--noconfirm", "--sudo", "pkexec", "-Sy", pkg];
+		pkgUpdateProc.running = true;
+	}
+
+	function performSystemUpdate(): void {
+		if (root.cmd === "pacman")
+			sysUpdateProc.command = ["pkexec", root.cmd, "--noconfirm", "-Syu"];
+		else
+			sysUpdateProc.command = [root.cmd, "--noconfirm", "--sudo", "pkexec", "-Syu"];
+		sysUpdateProc.running = true;
 	}
 
 	onUpdatesChanged: {
@@ -93,6 +112,28 @@ Singleton {
 	}
 
 	Process {
+		id: updateCmdDetect
+
+		command: ["sh", "-c", "command -v yay || command -v paru"]
+		running: true
+
+		stdout: StdioCollector {
+			onStreamFinished: {
+				const cmd = this.text.trim();
+				let helper;
+
+				if (cmd.length > 0) {
+					helper = cmd.split("/").pop();
+				} else {
+					helper = "pacman";
+				}
+
+				root.cmd = helper;
+			}
+		}
+	}
+
+	Process {
 		id: updatesProc
 
 		command: []
@@ -111,6 +152,44 @@ Singleton {
 					return acc;
 				}, {});
 				root.availableUpdates = lines.length;
+			}
+		}
+	}
+
+	Process {
+		id: sysUpdateProc
+
+		command: []
+		running: false
+
+		stdout: StdioCollector {
+			onStreamFinished: {
+				root.updating = false;
+			}
+		}
+
+		onRunningChanged: {
+			if (running)
+				root.updating = true;
+		}
+	}
+
+	Process {
+		id: pkgUpdateProc
+
+		command: []
+		running: false
+
+		stdout: StdioCollector {
+			onStreamFinished: {
+				root.updating = false;
+			}
+		}
+
+		onRunningChanged: {
+			if (running) {
+				root.updatingPackage = command[command.length - 1];
+				root.updating = true;
 			}
 		}
 	}
