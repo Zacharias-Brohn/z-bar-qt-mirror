@@ -22,6 +22,13 @@ ColumnLayout {
 		Config.save();
 	}
 
+	function deleteTimeoutEntry(index) {
+		let list = [...Config.general.idle.timeouts];
+		list.splice(index, 1);
+		Config.general.idle.timeouts = list;
+		Config.save();
+	}
+
 	function updateTimeoutEntry(i, key, value) {
 		const list = [...Config.general.idle.timeouts];
 		let entry = list[i];
@@ -48,6 +55,9 @@ ColumnLayout {
 
 			onAddActiveActionRequested: {
 				root.updateTimeoutEntry(index, "activeAction", "");
+			}
+			onDeleteRequested: function (index) {
+				root.deleteTimeoutEntry(index);
 			}
 			onFieldEdited: function (key, value) {
 				root.updateTimeoutEntry(index, key, value);
