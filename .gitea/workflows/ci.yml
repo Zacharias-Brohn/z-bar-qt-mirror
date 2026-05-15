@@ -1,0 +1,57 @@
+name: CI (Lint + Format Checks)
+
+on:
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: alpine
+
+    container: alpine:latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install tools
+        run: |
+          apk add --no-cache \
+            bash \
+            git \
+            python3 \
+            py3-pip \
+            nodejs \
+            npm \
+            rust
+
+      - name: Python sanity check
+        run: |
+          python3 --version
+          pip install --no-cache-dir ruff
+          ruff check . || true
+
+      - name: JS sanity check
+        run: |
+          node --version
+          npm --version
+          if [ -f package.json ]; then
+            npm install --no-audit --no-fund || true
+            npx eslint . || true
+          else
+            echo "No JS project found"
+          fi
+
+      - name: Rust sanity check
+        run: |
+          rustc --version
+          if [ -f Cargo.toml ]; then
+            cargo check || true
+            cargo fmt --check || true
+          else
+            echo "No Rust project found"
+          fi
+
+      - name: QML sanity check
+        run: |
+          echo "QML check (placeholder)"
+          find . -name "*.qml" | head -n 20
