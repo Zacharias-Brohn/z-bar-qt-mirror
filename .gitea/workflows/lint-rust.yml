@@ -16,12 +16,19 @@ jobs:
         run: |
           apk add --no-cache \
             git \
-            rust
+            cargo \
+            rust \
+            rust-clippy
 
-      - name: Rustfmt
+      - name: Clippy
         run: |
-          if [ -f Cargo.toml ]; then
-            cargo fmt --check
+          if [ -n "$(find . -name "Cargo.toml" -print -quit)" ]; then
+            find . -name "Cargo.toml" -print0 | while IFS= read -r -d '' manifest; do
+              cargo clippy --manifest-path "$manifest" -- -D warnings
+            done
+          elif [ -n "$(find . -name "*.rs" -print -quit)" ]; then
+            echo "Rust files found but no Cargo.toml"
+            exit 1
           else
             echo "No Rust project found"
           fi
