@@ -104,6 +104,18 @@ Item {
 			key: "launcher"
 			name: "Launcher"
 		}
+
+		ListElement {
+			icon: "screenshot_region"
+			key: "screenshot"
+			name: "Screenshot"
+		}
+
+		ListElement {
+			icon: "cached"
+			key: "updates"
+			name: "Updates"
+		}
 	}
 
 	CustomClippingRect {

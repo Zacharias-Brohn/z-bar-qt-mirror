@@ -10,6 +10,7 @@ Item {
 	required property var modelData
 
 	signal addActiveActionRequested
+	signal deleteRequested(int index)
 	signal fieldEdited(string key, var value)
 
 	Layout.fillWidth: true
@@ -65,42 +66,64 @@ Item {
 
 			HoverHandler {
 				id: nameHover
+			}
 
+			HoverIconButton {
+				id: editButton
+
+				anchors.left: parent.left
+				anchors.verticalCenter: parent.verticalCenter
+				font.pointSize: Appearance.font.size.large
+				icon: "edit"
+				shouldBeVisible: nameHover.hovered && !nameCell.editing
+
+				onClicked: nameCell.beginEdit()
 			}
 
 			CustomText {
 				anchors.left: parent.left
-				anchors.right: editButton.left
+				anchors.leftMargin: nameHover.hovered ? editButton.width + Appearance.spacing.smaller * 2 : 0
+				anchors.right: deleteButton.left
 				anchors.rightMargin: Appearance.spacing.small
 				anchors.verticalCenter: parent.verticalCenter
 				elide: Text.ElideRight    // enable if CustomText supports it
 				font.pointSize: Appearance.font.size.larger
 				text: root.modelData.name
 				visible: !nameCell.editing
+
+				Behavior on anchors.leftMargin {
+					Anim {
+					}
+				}
 			}
 
-			IconButton {
-				id: editButton
+			HoverIconButton {
+				id: deleteButton
 
 				anchors.right: parent.right
 				anchors.verticalCenter: parent.verticalCenter
 				font.pointSize: Appearance.font.size.large
-				icon: "edit"
-				visible: nameHover.hovered && !nameCell.editing
+				icon: "delete"
+				shouldBeVisible: nameHover.hovered && !nameCell.editing
 
-				onClicked: nameCell.beginEdit()
+				onClicked: root.deleteRequested(root.index)
 			}
 
 			CustomRect {
-				anchors.fill: parent
+				anchors.left: parent.left
+				anchors.verticalCenter: parent.verticalCenter
 				color: DynamicColors.tPalette.m3surface
+				implicitHeight: nameEditor.implicitHeight + (Appearance.padding.normal * 2)
+				implicitWidth: Math.min(nameEditor.contentWidth + (Appearance.padding.normal * 2), parent.width - Appearance.padding.normal)
 				radius: Appearance.rounding.small
 				visible: nameCell.editing
 
 				CustomTextField {
 					id: nameEditor
 
-					anchors.fill: parent
+					anchors.centerIn: parent
+					horizontalAlignment: Text.AlignHCenter
+					implicitWidth: Math.min(contentWidth + Appearance.padding.normal * 2, nameCell.width - Appearance.padding.normal)
 					text: nameCell.draftName
 
 					Keys.onEscapePressed: {

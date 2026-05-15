@@ -12,3 +12,4 @@ pkg/
 uv.lock
 .qtcreator/
 dist/
+**/target/

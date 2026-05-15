@@ -74,6 +74,10 @@ Item {
 				stack.push(osd);
 			else if (currentCategory === "launcher")
 				stack.push(launcher);
+			else if (currentCategory === "screenshot")
+				stack.push(screenshot);
+			else if (currentCategory === "updates")
+				stack.push(updates);
 		}
 
 		target: root
@@ -223,6 +227,20 @@ Item {
 		id: launcher
 
 		Cat.Launcher {
+		}
+	}
+
+	Component {
+		id: screenshot
+
+		Cat.Screenshot {
+		}
+	}
+
+	Component {
+		id: updates
+
+		Cat.SystemUpdates {
 		}
 	}
 }
