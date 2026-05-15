@@ -1,0 +1,28 @@
+name: Format (JS/TS)
+
+on:
+  pull_request:
+
+jobs:
+  format:
+    runs-on: alpine
+    container: node:20-alpine
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install tools
+        run: |
+          apk add --no-cache \
+            git
+
+      - name: Prettier
+        run: |
+          if [ -n "$(find . -name "*.js" -o -name "*.jsx" -o -name "*.ts" -o -name "*.tsx" -o -name "*.mjs" -o -name "*.cjs" -print -quit)" ]; then
+            if ! npx --yes prettier --check "**/*.{js,jsx,ts,tsx,mjs,cjs}" --ignore-path .gitignore; then
+              echo "::warning::prettier reported issues"
+            fi
+          else
+            echo "No JS/TS files found"
+          fi
