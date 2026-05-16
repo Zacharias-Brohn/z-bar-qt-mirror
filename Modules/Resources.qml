@@ -17,7 +17,7 @@ CustomRect {
 	color: visibilities.resources ? DynamicColors.palette.m3primary : DynamicColors.tPalette.m3surfaceContainer
 	implicitHeight: Config.barConfig.height + Appearance.padding.smallest * 2
 	implicitWidth: rowLayout.implicitWidth + Appearance.padding.normal * 2
-	radius: height / 2
+	radius: Appearance.rounding.full
 
 	StateLayer {
 		onClicked: root.visibilities.resources = !root.visibilities.resources

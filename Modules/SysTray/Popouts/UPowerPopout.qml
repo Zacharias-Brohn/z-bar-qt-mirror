@@ -31,7 +31,7 @@ Item {
 		implicitHeight: Math.max(saver.implicitHeight, balance.implicitHeight, perf.implicitHeight) + 5 * 2 + saverLabel.contentHeight
 		implicitWidth: saver.implicitHeight + balance.implicitHeight + perf.implicitHeight + 8 * 2 + saverLabel.contentWidth
 		// color: "transparent"
-		radius: 6
+		radius: (20 - Appearance.padding.small) * Appearance.rounding.scale
 
 		CustomRect {
 			id: indicator

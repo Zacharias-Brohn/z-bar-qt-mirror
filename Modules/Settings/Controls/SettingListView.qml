@@ -38,7 +38,7 @@ Item {
 			Layout.preferredHeight: 42 * 6 + Appearance.padding.normal * 2 + Appearance.spacing.small * 5
 			Layout.preferredWidth: 500
 			color: DynamicColors.tPalette.m3surfaceContainer
-			radius: 21 + Appearance.padding.normal
+			radius: (21 + Appearance.padding.normal) * Appearance.rounding.scale
 
 			CustomRect {
 				id: searchBox

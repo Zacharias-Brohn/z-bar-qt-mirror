@@ -41,12 +41,11 @@ CustomRect {
 	color: type === IconButton.Text ? "transparent" : disabled ? disabledColour : internalChecked ? activeColour : inactiveColour
 	implicitHeight: label.implicitHeight + padding * 2
 	implicitWidth: implicitHeight
-	radius: internalChecked ? 6 : implicitHeight / 2 * Math.min(1, 1)
+	radius: internalChecked ? 6 : (implicitHeight / 2 * Math.min(1, 1)) * Appearance.rounding.scale
 
 	Behavior on radius {
 		Anim {
 			id: radiusAnim
-
 		}
 	}
 

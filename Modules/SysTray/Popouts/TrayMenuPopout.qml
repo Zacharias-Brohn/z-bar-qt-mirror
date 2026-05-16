@@ -82,12 +82,14 @@ StackView {
 			CustomRect {
 				id: item
 
+				required property int index
 				required property QsMenuEntry modelData
 
 				color: modelData.isSeparator ? DynamicColors.palette.m3outlineVariant : "transparent"
 				implicitHeight: modelData.isSeparator ? 1 : children.implicitHeight
 				implicitWidth: root.biggestWidth
-				radius: Appearance.rounding.smallest / 2
+				radius: Appearance.rounding.full
+				visible: index !== (menuOpener.children.values.length - 1) ? true : (modelData.isSeparator ? false : true)
 
 				Loader {
 					id: children
@@ -201,18 +203,18 @@ StackView {
 			asynchronous: true
 
 			sourceComponent: Item {
-				implicitHeight: back.implicitHeight + 2 / 2
+				implicitHeight: 30
 				implicitWidth: back.implicitWidth
 
 				Item {
 					anchors.bottom: parent.bottom
-					implicitHeight: back.implicitHeight
-					implicitWidth: back.implicitWidth + 10
+					implicitHeight: 30
+					implicitWidth: root.biggestWidth
 
 					CustomRect {
 						anchors.fill: parent
 						color: DynamicColors.palette.m3secondaryContainer
-						radius: Appearance.rounding.smallest / 2
+						radius: Appearance.rounding.full
 
 						StateLayer {
 							function onClicked(): void {

@@ -242,7 +242,7 @@ Variants {
 					implicitHeight: panels.popouts.height * (1 + extraHeight)
 					implicitWidth: panels.popouts.width
 					panel: panels.popouts
-					radius: (panels.popouts.currentName.startsWith("audio") || panels.popouts.currentName.startsWith("updates")) ? Appearance.rounding.normal : Appearance.rounding.smallest
+					radius: (panels.popouts.currentName.startsWith("audio") || panels.popouts.currentName.startsWith("updates")) ? Appearance.rounding.normal : 20 * Appearance.rounding.scale
 					x: panels.popoutsWrapper.x + panels.popouts.x + Config.barConfig.border
 					y: panels.popoutsWrapper.y + panels.popouts.y + bar.implicitHeight - panels.popouts.height * extraHeight
 
