@@ -12,20 +12,35 @@ Scope {
 	required property ShellScreen screen
 
 	ExclusionZone {
+		id: top
+
 		anchors.top: true
 		exclusiveZone: root.bar.exclusiveZone
 	}
 
 	ExclusionZone {
+		id: left
+
 		anchors.left: true
 	}
 
 	ExclusionZone {
+		id: right
+
 		anchors.right: true
 	}
 
 	ExclusionZone {
+		id: bottom
+
 		anchors.bottom: true
+	}
+
+	Timer {
+		interval: 5000
+		running: true
+
+		onTriggered: console.log("top height:", top.exclusiveZone, "left width:", left.exclusiveZone, "right width:", right.exclusiveZone, "bottom height:", bottom.exclusiveZone)
 	}
 
 	component ExclusionZone: CustomWindow {
