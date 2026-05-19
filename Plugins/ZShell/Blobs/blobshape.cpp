@@ -77,26 +77,6 @@ void BlobShape::geometryChange(const QRectF& newGeometry, const QRectF& oldGeome
 		if (std::abs(m_pendingDx) > 0.5f || std::abs(m_pendingDy) > 0.5f || dw > 0.5 || dh > 0.5) {
 			m_pendingDx = 0;
 			m_pendingDy = 0;
-			// Update cached padded values immediately so markShapeDirty() uses
-			// current dimensions for neighbor-finding. The values are also updated
-			// in updatePolish() later, but that happens after markShapeDirty()
-			// has already used them to find intersecting shapes.
-			if (isInvertedRect()) {
-				const QPointF scenePos = mapToScene(QPointF(0, 0));
-				m_cachedPaddedX = static_cast<float>(scenePos.x());
-				m_cachedPaddedY = static_cast<float>(scenePos.y());
-				m_cachedPaddedW = static_cast<float>(newGeometry.width());
-				m_cachedPaddedH = static_cast<float>(newGeometry.height());
-			} else {
-				const QPointF scenePos = mapToScene(QPointF(0, 0));
-				const float hw = static_cast<float>(newGeometry.width()) * 0.5f;
-				const float hh = static_cast<float>(newGeometry.height()) * 0.5f;
-				const float totalPad = static_cast<float>(m_group->smoothing()) + deformPadding(m_deformMatrix, hw, hh);
-				m_cachedPaddedX = static_cast<float>(scenePos.x()) - totalPad;
-				m_cachedPaddedY = static_cast<float>(scenePos.y()) - totalPad;
-				m_cachedPaddedW = static_cast<float>(newGeometry.width()) + 2.0f * totalPad;
-				m_cachedPaddedH = static_cast<float>(newGeometry.height()) + 2.0f * totalPad;
-			}
 			m_group->markShapeDirty(this);
 		}
 	}
