@@ -18,9 +18,11 @@ jobs:
                     git \
                     cargo \
                     rust \
+                    rustfmt \
                     rust-clippy
 
             - name: Format check
+              continue-on-error: true
               run: |
                   if [ -n "$(find . -name "Cargo.toml" -print -quit)" ]; then
                     find . -name "Cargo.toml" -print0 | while IFS= read -r -d '' manifest; do

@@ -1,2 +1,3 @@
+.venv/
 scripts/fzf.js
 scripts/fuzzysort.js

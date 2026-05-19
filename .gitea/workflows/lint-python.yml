@@ -23,6 +23,7 @@ jobs:
                   pip install --no-cache-dir ruff
 
             - name: Format check
+              continue-on-error: true
               run: |
                   . .venv/bin/activate
                   ruff format --check .

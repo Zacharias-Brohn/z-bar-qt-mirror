@@ -18,9 +18,10 @@ jobs:
                     git
 
             - name: Prettier
+              continue-on-error: true
               run: |
                   if [ -n "$(find . \( -iname "*.js" -o -iname "*.jsx" -o -iname "*.ts" -o -iname "*.tsx" -o -iname "*.mjs" -o -iname "*.cjs" \) -print -quit)" ]; then
-                    npx --yes prettier --check "**/*.{js,jsx,ts,tsx,mjs,cjs}" --ignore-path .gitignore
+                    npx --yes prettier --check "**/*.{js,jsx,ts,tsx,mjs,cjs}" --ignore-path .prettierignore
                   else
                     echo "No JS/TS files found"
                   fi

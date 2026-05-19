@@ -33,5 +33,4 @@ def lock():
 
 @app.command()
 def call(target: str, method: str, method_args: list[str] = typer.Argument(None)):
-    subprocess.run(args + ["ipc"] + ["call"] + [target] +
-                   [method] + method_args, check=True)
+    subprocess.run(args + ["ipc"] + ["call"] + [target] + [method] + method_args, check=True)
