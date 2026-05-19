@@ -72,11 +72,17 @@ void BlobShape::geometryChange(const QRectF& newGeometry, const QRectF& oldGeome
 		// Accumulate sub-pixel drift so slow movements don't desync the shader
 		m_pendingDx += static_cast<float>(newGeometry.x() - oldGeometry.x());
 		m_pendingDy += static_cast<float>(newGeometry.y() - oldGeometry.y());
-		const auto dw = std::abs(newGeometry.width() - oldGeometry.width());
-		const auto dh = std::abs(newGeometry.height() - oldGeometry.height());
-		if (std::abs(m_pendingDx) > 0.5f || std::abs(m_pendingDy) > 0.5f || dw > 0.5 || dh > 0.5) {
+		// Accumulate size delta across multiple frames so incremental size
+		// changes that are each below the threshold still trigger a dirty
+		// mark once their accumulated delta exceeds it.
+		m_pendingDw += static_cast<float>(newGeometry.width() - oldGeometry.width());
+		m_pendingDh += static_cast<float>(newGeometry.height() - oldGeometry.height());
+		if (std::abs(m_pendingDx) > 0.5f || std::abs(m_pendingDy) > 0.5f ||
+		    std::abs(m_pendingDw) > 0.5f || std::abs(m_pendingDh) > 0.5f) {
 			m_pendingDx = 0;
 			m_pendingDy = 0;
+			m_pendingDw = 0;
+			m_pendingDh = 0;
 			m_group->markShapeDirty(this);
 		}
 	}
