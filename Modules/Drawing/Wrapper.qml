@@ -12,90 +12,29 @@ Item {
 
 	required property Canvas drawing
 	property bool expanded: true
+	property real offsetScale: shouldBeActive ? 0 : 1
 	required property ShellScreen screen
 	readonly property bool shouldBeActive: visibilities.isDrawing
 	required property var visibilities
 
+	anchors.leftMargin: (-implicitWidth - 5) * offsetScale
 	implicitHeight: content.implicitHeight
-	implicitWidth: 0
-	visible: width > 0
+	implicitWidth: root.expanded ? content.implicitWidth : icon.implicitWidth
+	opacity: 1 - offsetScale
+	visible: offsetScale < 1
 
-	states: [
-		State {
-			name: "hidden"
-			when: !root.shouldBeActive
-
-			PropertyChanges {
-				root.implicitWidth: 0
-			}
-
-			PropertyChanges {
-				icon.opacity: 0
-			}
-
-			PropertyChanges {
-				content.opacity: 0
-			}
-		},
-		State {
-			name: "collapsed"
-			when: root.shouldBeActive && !root.expanded
-
-			PropertyChanges {
-				root.implicitWidth: icon.implicitWidth
-			}
-
-			PropertyChanges {
-				icon.opacity: 1
-			}
-
-			PropertyChanges {
-				content.opacity: 0
-			}
-		},
-		State {
-			name: "visible"
-			when: root.shouldBeActive && root.expanded
-
-			PropertyChanges {
-				root.implicitWidth: content.implicitWidth
-			}
-
-			PropertyChanges {
-				icon.opacity: 0
-			}
-
-			PropertyChanges {
-				content.opacity: 1
-			}
+	Behavior on implicitWidth {
+		Anim {
+			duration: Appearance.anim.durations.expressiveDefaultSpatial
+			easing.bezierCurve: Appearance.anim.curves.expressiveDefaultSpatial
 		}
-	]
-	transitions: [
-		Transition {
-			from: "*"
-			to: "*"
-
-			ParallelAnimation {
-				Anim {
-					easing.bezierCurve: MaterialEasing.expressiveEffects
-					property: "implicitWidth"
-					target: root
-				}
-
-				Anim {
-					duration: Appearance.anim.durations.small
-					property: "opacity"
-					target: icon
-				}
-
-				Anim {
-					duration: Appearance.anim.durations.small
-					property: "opacity"
-					target: content
-				}
-			}
+	}
+	Behavior on offsetScale {
+		Anim {
+			duration: Appearance.anim.durations.expressiveDefaultSpatial
+			easing.bezierCurve: Appearance.anim.curves.expressiveDefaultSpatial
 		}
-	]
+	}
 
 	onVisibleChanged: {
 		if (!visible)
@@ -109,8 +48,12 @@ Item {
 		anchors.right: parent.right
 		anchors.verticalCenter: parent.verticalCenter
 		height: content.contentItem.height
-		opacity: 1
+		opacity: root.expanded ? 0 : 1
 
+		Behavior on opacity {
+			Anim {
+			}
+		}
 		sourceComponent: MaterialIcon {
 			font.pointSize: Appearance.font.size.larger
 			text: "arrow_forward_ios"
@@ -122,7 +65,12 @@ Item {
 
 		anchors.right: parent.right
 		anchors.verticalCenter: parent.verticalCenter
+		opacity: root.expanded ? 1 : 0
 
+		Behavior on opacity {
+			Anim {
+			}
+		}
 		sourceComponent: Content {
 			drawing: root.drawing
 			visibilities: root.visibilities
