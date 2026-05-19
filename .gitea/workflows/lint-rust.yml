@@ -12,6 +12,17 @@ jobs:
             - name: Checkout
               uses: actions/checkout@v4
 
+            - name: Cache cargo
+              uses: actions/cache@v4
+              with:
+                  path: |
+                      ~/.cargo/registry
+                      ~/.cargo/git
+                      target
+                  key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+                  restore-keys: |
+                      ${{ runner.os }}-cargo-
+
             - name: Install tools
               run: |
                   apk add --no-cache \
@@ -25,8 +36,10 @@ jobs:
               continue-on-error: true
               run: |
                   if [ -n "$(find . -name "Cargo.toml" -print -quit)" ]; then
-                    find . -name "Cargo.toml" -print0 | while IFS= read -r -d '' manifest; do
-                      cargo fmt --manifest-path "$manifest" --check
+                    for manifest in $(find . -name "Cargo.toml"); do
+                      cargo fmt --manifest-path "$manifest" --check && \
+                        echo "$manifest: formatting OK" || \
+                        echo "$manifest: needs formatting"
                     done
                   elif [ -n "$(find . -name "*.rs" -print -quit)" ]; then
                     echo "Rust files found but no Cargo.toml"
@@ -38,9 +51,13 @@ jobs:
             - name: Clippy
               run: |
                   if [ -n "$(find . -name "Cargo.toml" -print -quit)" ]; then
-                    find . -name "Cargo.toml" -print0 | while IFS= read -r -d '' manifest; do
-                      cargo clippy --manifest-path "$manifest" -- -D warnings
+                    status=0
+                    for manifest in $(find . -name "Cargo.toml"); do
+                      cargo clippy --manifest-path "$manifest" -- -D warnings && \
+                        echo "$manifest: Clippy passed" || \
+                        { echo "$manifest: Clippy failed"; status=1; }
                     done
+                    exit $status
                   elif [ -n "$(find . -name "*.rs" -print -quit)" ]; then
                     echo "Rust files found but no Cargo.toml"
                     exit 1
