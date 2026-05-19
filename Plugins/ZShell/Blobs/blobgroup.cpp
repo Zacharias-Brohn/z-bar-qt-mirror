@@ -85,8 +85,6 @@ void BlobGroup::markShapeDirty(BlobShape* source) {
 		const QRectF otherRect(static_cast<double>(shape->m_cachedPaddedX), static_cast<double>(shape->m_cachedPaddedY),
 		                       static_cast<double>(shape->m_cachedPaddedW), static_cast<double>(shape->m_cachedPaddedH));
 		if (srcRect.intersects(otherRect)) {
-			shape->setExpandedRect(srcRect);
-			shape->m_hasExpandedRect = true;
 			shape->polish();
 			shape->update();
 		}

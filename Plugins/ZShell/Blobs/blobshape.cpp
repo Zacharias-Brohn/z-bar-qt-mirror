@@ -118,8 +118,6 @@ void BlobShape::updatePolish() {
 	if (!m_group)
 		return;
 
-	m_hasExpandedRect = false;
-
 	// Ensure all shapes have up-to-date physics (only once per frame)
 	m_group->ensurePhysicsUpdated();
 
@@ -166,20 +164,18 @@ void BlobShape::updatePolish() {
 		if (isExcluded(other))
 			continue;
 
-	const QPointF otherScene = other->mapToScene(QPointF(0, 0));
-		const float otherHW = static_cast<float>(other->width()) * 0.5f;
-		const float otherHH = static_cast<float>(other->height()) * 0.5f;
-		const float otherPad = pad + deformPadding(other->m_deformMatrix, otherHW, otherHH);
-		const QRectF otherPadded(otherScene.x() - static_cast<double>(otherPad),
-		                         otherScene.y() - static_cast<double>(otherPad), other->width() + 2.0 * static_cast<double>(otherPad),
-		                         other->height() + 2.0 * static_cast<double>(otherPad));
+		const QPointF otherScene = other->mapToScene(QPointF(0, 0));
 
 		bool include = false;
 		if (isInvertedRect()) {
 			include = true;
-		} else if (m_hasExpandedRect) {
-			include = m_expandedRect.intersects(otherPadded);
 		} else {
+			const float otherHW = static_cast<float>(other->width()) * 0.5f;
+			const float otherHH = static_cast<float>(other->height()) * 0.5f;
+			const float otherPad = pad + deformPadding(other->m_deformMatrix, otherHW, otherHH);
+			const QRectF otherPadded(otherScene.x() - static_cast<double>(otherPad),
+			                         otherScene.y() - static_cast<double>(otherPad), other->width() + 2.0 * static_cast<double>(otherPad),
+			                         other->height() + 2.0 * static_cast<double>(otherPad));
 			include = myPadded.intersects(otherPadded);
 		}
 

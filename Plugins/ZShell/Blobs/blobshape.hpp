@@ -67,20 +67,10 @@ virtual void updatePhysics() {
 }
 
 virtual void registerWithGroup();
- virtual void unregisterFromGroup();
- void updateCenteredDeformMatrix();
+virtual void unregisterFromGroup();
+void updateCenteredDeformMatrix();
 
- void setExpandedRect(const QRectF& rect) {
- 	m_expandedRect = rect;
- }
- const QRectF& expandedRect() const {
- 	return m_expandedRect;
- }
- bool hasExpandedRect() const {
- 	return m_hasExpandedRect;
- }
-
- BlobGroup* m_group = nullptr;
+BlobGroup* m_group = nullptr;
 qreal m_radius = 0;
 QMatrix4x4 m_deformMatrix;     // identity by default
 QMatrix4x4 m_centeredDeformMatrix;
@@ -98,8 +88,5 @@ float m_pendingDy = 0;
 bool m_cachedHasInverted = false;
 float m_cachedInvertedRadius = 0;
 float m_cachedInvertedOuter[4] = {};
- float m_cachedInvertedInner[4] = {};
-
- QRectF m_expandedRect;
- bool m_hasExpandedRect = false;
+float m_cachedInvertedInner[4] = {};
 };
