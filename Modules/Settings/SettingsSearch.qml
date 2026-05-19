@@ -51,8 +51,6 @@ Item {
 	implicitHeight: searchContainer.implicitHeight
 	implicitWidth: 200
 
-	Component.onCompleted: console.log(root.height)
-
 	Shortcut {
 		sequence: "/"
 

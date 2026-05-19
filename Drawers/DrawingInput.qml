@@ -32,7 +32,6 @@ CustomMouseArea {
 
 		if (root.visibilities.isDrawing && (event.buttons & Qt.LeftButton)) {
 			root.drawing.points.push(Qt.point(x, y));
-			console.log(root.drawing.points);
 			root.drawing.requestPaint();
 		}
 

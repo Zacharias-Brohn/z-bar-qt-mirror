@@ -13,7 +13,6 @@ Searcher {
 
 	function launch(entry: DesktopEntry): void {
 		appDb.incrementFrequency(entry.id);
-		console.log(root.command);
 
 		if (entry.runInTerminal)
 			Quickshell.execDetached({
