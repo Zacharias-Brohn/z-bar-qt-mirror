@@ -30,8 +30,10 @@ CustomMouseArea {
 		const x = event.x;
 		const y = event.y;
 
-		if (event.buttons & Qt.LeftButton)
-			root.drawing.appendPoint(x, y);
+		if (root.visibilities.isDrawing && (event.buttons & Qt.LeftButton)) {
+			root.drawing.points.push(Qt.point(x, y));
+			root.drawing.requestPaint();
+		}
 
 		if (root.inLeftPanel(root.popout, x, y)) {
 			root.z = -2;
@@ -44,7 +46,8 @@ CustomMouseArea {
 
 		if (root.visibilities.isDrawing && (event.buttons & Qt.LeftButton)) {
 			root.panels.drawing.expanded = false;
-			root.drawing.beginStroke(x, y);
+			root.drawing.points.push(Qt.point(x, y));
+			root.drawing.requestPaint();
 			return;
 		}
 
@@ -52,7 +55,6 @@ CustomMouseArea {
 			root.drawing.clear();
 	}
 	onReleased: {
-		if (root.visibilities.isDrawing)
-			root.drawing.endStroke();
+		root.drawing.points = [];
 	}
 }

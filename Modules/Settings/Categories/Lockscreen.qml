@@ -31,8 +31,8 @@ SettingsPage {
 		}
 
 		SettingSpinBox {
-			name: "Max fingerprint tries"
 			min: 1
+			name: "Max fingerprint tries"
 			object: Config.lock
 			setting: "maxFprintTries"
 			step: 1
@@ -41,9 +41,18 @@ SettingsPage {
 		Separator {
 		}
 
+		SettingSwitch {
+			name: "Show notification details"
+			object: Config.lock
+			setting: "showNotifContent"
+		}
+
+		Separator {
+		}
+
 		SettingSpinBox {
-			name: "Blur amount"
 			min: 0
+			name: "Blur amount"
 			object: Config.lock
 			setting: "blurAmount"
 			step: 1
@@ -53,9 +62,9 @@ SettingsPage {
 		}
 
 		SettingSpinBox {
-			name: "Height multiplier"
 			max: 2
 			min: 0.1
+			name: "Height multiplier"
 			object: Config.lock.sizes
 			setting: "heightMult"
 			step: 0.05
@@ -65,9 +74,9 @@ SettingsPage {
 		}
 
 		SettingSpinBox {
-			name: "Aspect ratio"
 			max: 4
 			min: 0.5
+			name: "Aspect ratio"
 			object: Config.lock.sizes
 			setting: "ratio"
 			step: 0.05
@@ -77,8 +86,8 @@ SettingsPage {
 		}
 
 		SettingSpinBox {
-			name: "Center width"
 			min: 100
+			name: "Center width"
 			object: Config.lock.sizes
 			setting: "centerWidth"
 			step: 10

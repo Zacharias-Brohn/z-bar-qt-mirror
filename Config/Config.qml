@@ -83,6 +83,10 @@ Singleton {
 			wallFadeDuration: background.wallFadeDuration,
 			enabled: background.enabled,
 			alignX: background.alignX,
+			sourceClipX: background.sourceClipX,
+			sourceClipY: background.sourceClipY,
+			sourceClipW: background.sourceClipW,
+			sourceClipH: background.sourceClipH,
 			alignY: background.alignY,
 			zoom: background.zoom
 		};
@@ -94,6 +98,7 @@ Singleton {
 			hideWhenNotif: barConfig.hideWhenNotif,
 			rounding: barConfig.rounding,
 			border: barConfig.border,
+			smoothing: barConfig.smoothing,
 			height: barConfig.height,
 			popouts: {
 				tray: barConfig.popouts.tray,
@@ -236,6 +241,7 @@ Singleton {
 		return {
 			recolorLogo: lock.recolorLogo,
 			enableFprint: lock.enableFprint,
+			showNotifContent: lock.showNotifContent,
 			maxFprintTries: lock.maxFprintTries,
 			blurAmount: lock.blurAmount,
 			sizes: {

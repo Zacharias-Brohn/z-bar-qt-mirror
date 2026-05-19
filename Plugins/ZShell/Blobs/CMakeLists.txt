@@ -12,6 +12,7 @@ qml_module(ZShell-blobs
 
 qt_add_shaders(ZShell-blobs "blob_shaders"
     BATCHABLE OPTIMIZED NOHLSL NOMSL
+	GLSL "300es,330"
     PREFIX "/"
     FILES
         shaders/blob.frag

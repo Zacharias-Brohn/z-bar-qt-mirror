@@ -14,6 +14,7 @@ Searcher {
 	property string actualCurrent: WallpaperPath.currentWallpaperPath
 	readonly property string current: showPreview ? previewPath : actualCurrent
 	property string previewPath
+	property bool recentlyChanged
 	property bool showPreview: false
 
 	function preview(path: string): void {

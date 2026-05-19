@@ -58,6 +58,7 @@ JsonObject {
 	property Popouts popouts: Popouts {
 	}
 	property int rounding: 8
+	property int smoothing: 32
 
 	component Popouts: JsonObject {
 		property bool activeWindow: true

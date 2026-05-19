@@ -29,13 +29,13 @@ SettingsPage {
 			step: 50
 		}
 
-		// Separator {
-		// }
-		//
-		// WallpaperCropper {
-		// 	Layout.fillWidth: true
-		// 	Layout.preferredHeight: 300
-		// }
+		Separator {
+		}
+
+		WallpaperCropper {
+			Layout.fillWidth: true
+			Layout.preferredHeight: 600
+		}
 	}
 
 	SettingsSection {

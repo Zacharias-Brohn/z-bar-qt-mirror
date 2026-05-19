@@ -284,6 +284,8 @@ CustomRect {
 		Layout.fillWidth: true
 		color: root.urgency === "critical" ? DynamicColors.palette.m3onSecondaryContainer : DynamicColors.palette.m3onSurface
 		text: {
+			if (!Config.lock.showNotifContent)
+				return "Unlock to view";
 			const summary = modelData.summary.replace(/\n/g, " ");
 			const body = modelData.body.replace(/\n/g, " ");
 			const color = root.urgency === "critical" ? DynamicColors.palette.m3secondary : DynamicColors.palette.m3outline;

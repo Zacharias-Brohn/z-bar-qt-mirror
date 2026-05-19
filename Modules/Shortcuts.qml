@@ -19,7 +19,6 @@ Scope {
 			if (!root.launcherInterrupted && !root.hasFullscreen) {
 				const visibilities = Visibilities.getForActive();
 				visibilities.launcher = !visibilities.launcher;
-				console.log(root.launcherInterrupted);
 			}
 			root.launcherInterrupted = false;
 		}

@@ -346,7 +346,6 @@ Singleton {
 
 		stdout: StdioCollector {
 			onStreamFinished: {
-				console.log("this is running");
 				if (root.gpuType === "GENERIC") {
 					const percs = text.trim().split("\n");
 					const sum = percs.reduce((acc, d) => acc + parseInt(d, 10), 0);

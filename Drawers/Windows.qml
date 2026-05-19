@@ -158,6 +158,7 @@ Variants {
 					id: blobGroup
 
 					color: DynamicColors.palette.m3surface
+					smoothing: Config.barConfig.smoothing
 
 					Behavior on color {
 						CAnim {
@@ -179,28 +180,34 @@ Variants {
 				PanelBg {
 					id: dashBg
 
-					deformAmount: 0.08 * Config.appearance.deform.scale
-					implicitHeight: panels.dashboard.height
+					property real extraHeight: 0.2
+
+					deformAmount: 0.08
+					implicitHeight: panels.dashboard.height * (1 + extraHeight)
 					implicitWidth: panels.dashboard.width
-					panel: panels.dashboard
+					panel: panels.dashboardWrapper
 					radius: Appearance.rounding.normal
 					x: panels.dashboardWrapper.x + panels.dashboard.x + Config.barConfig.border
-					y: panels.dashboardWrapper.y + panels.dashboard.y + bar.implicitHeight
+					y: panels.dashboardWrapper.y + panels.dashboard.y + bar.implicitHeight - panels.dashboard.height * extraHeight
 				}
 
 				PanelBg {
 					id: launcherBg
 
-					deformAmount: 0.08 * Config.appearance.deform.scale
+					property real extraHeight: 0.2
+
+					deformAmount: 0.08
+					implicitHeight: panels.launcher.height * (1 + extraHeight)
 					panel: panels.launcher
 					radius: Appearance.rounding.smallest + 5
+					y: panels.launcher.y + bar.implicitHeight
 				}
 
 				PanelBg {
 					id: sidebarBg
 
 					bottomLeftRadius: 0
-					deformAmount: 0.08 * Config.appearance.deform.scale
+					deformAmount: 0.08
 					exclude: panels.sidebar.offsetScale > 0.08 ? [] : [utilsBg]
 					implicitHeight: panel.height * (1 / rawDeformMatrix.m22) + 2
 					panel: panels.sidebar
@@ -209,10 +216,10 @@ Variants {
 				PanelBg {
 					id: osdBg
 
-					deformAmount: 0.1 * Config.appearance.deform.scale
+					deformAmount: 0.1
 					implicitHeight: panels.osd.height
 					implicitWidth: panels.osd.width
-					panel: panels.osd
+					panel: panels.osdWrapper
 					radius: 20
 					x: panels.osdWrapper.x + panels.osd.x + Config.barConfig.border
 					y: panels.osdWrapper.y + panels.osd.y + bar.implicitHeight
@@ -227,7 +234,7 @@ Variants {
 				PanelBg {
 					id: utilsBg
 
-					deformAmount: panels.sidebar.visible ? (0.1 * Config.appearance.deform.scale) : (0.1 * Config.appearance.deform.scale)
+					deformAmount: panels.sidebar.visible ? (0.1) : (0.1)
 					exclude: panels.sidebar.offsetScale > 0.08 ? [] : [sidebarBg]
 					panel: panels.utilities
 					topLeftRadius: 0
@@ -238,10 +245,10 @@ Variants {
 
 					property real extraHeight: panels.popouts.isDetached ? 0 : 0.2
 
-					deformAmount: panels.popouts.isDetached ? 0.05 * Config.appearance.deform.scale : panels.popouts.hasCurrent ? 0.15 * Config.appearance.deform.scale : 0.1 * Config.appearance.deform.scale
+					deformAmount: panels.popouts.isDetached ? 0.05 : panels.popouts.hasCurrent ? 0.15 : 0.1
 					implicitHeight: panels.popouts.height * (1 + extraHeight)
 					implicitWidth: panels.popouts.width
-					panel: panels.popouts
+					panel: panels.popoutsWrapper
 					radius: (panels.popouts.currentName.startsWith("audio") || panels.popouts.currentName.startsWith("updates")) ? Appearance.rounding.normal : 20 * Appearance.rounding.scale
 					x: panels.popoutsWrapper.x + panels.popouts.x + Config.barConfig.border
 					y: panels.popoutsWrapper.y + panels.popouts.y + bar.implicitHeight - panels.popouts.height * extraHeight
@@ -255,10 +262,10 @@ Variants {
 				PanelBg {
 					id: resourcesBg
 
-					deformAmount: 0.08 * Config.appearance.deform.scale
+					deformAmount: 0.08
 					implicitHeight: panels.resources.height
 					implicitWidth: panels.resources.width
-					panel: panels.resources
+					panel: panels.resourcesWrapper
 					radius: Appearance.rounding.normal
 					x: panels.resourcesWrapper.x + panels.resources.x + Config.barConfig.border
 					y: panels.resourcesWrapper.y + panels.resources.y + bar.implicitHeight
@@ -267,17 +274,23 @@ Variants {
 				PanelBg {
 					id: settingsBg
 
-					deformAmount: 0.08 * Config.appearance.deform.scale
+					property real extraHeight: 0.2
+
+					deformAmount: 0.08
+					implicitHeight: panels.settings.height * (1 + extraHeight)
+					implicitWidth: panels.settings.width
 					panel: panels.settings
 					radius: Appearance.rounding.large
 					topLeftRadius: Appearance.rounding.large + Appearance.padding.smaller
 					topRightRadius: Appearance.rounding.large + Appearance.padding.smaller
+					x: panels.settingsWrapper.x + panels.settings.x + Config.barConfig.border
+					y: panels.settingsWrapper.y + panels.settings.y + bar.implicitHeight - panels.settings.height * extraHeight
 				}
 
 				PanelBg {
 					id: dockBg
 
-					deformAmount: 0.08 * Config.appearance.deform.scale
+					deformAmount: 0.08
 					panel: panels.dock
 					radius: Appearance.rounding.normal
 				}
@@ -285,7 +298,7 @@ Variants {
 				PanelBg {
 					id: drawingBg
 
-					deformAmount: 0.08 * Config.appearance.deform.scale
+					deformAmount: 0.08
 					panel: panels.drawing
 					radius: Appearance.rounding.normal
 				}
@@ -380,7 +393,7 @@ Variants {
 		property real deformAmount: 0.15
 		required property Item panel
 
-		deformScale: deformAmount / 10000
+		deformScale: (deformAmount * Config.appearance.deform.scale) / 10000
 		group: blobGroup
 		implicitHeight: panel.height
 		implicitWidth: panel.width

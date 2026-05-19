@@ -78,7 +78,7 @@ CustomMouseArea {
 		const dragY = y - dragStart.y;
 
 		if (root.visibilities.isDrawing && !root.inLeftPanel(root.panels.drawing, x, y)) {
-			root.input.z = 2;
+			// root.input.z = 2;
 			root.panels.drawing.expanded = false;
 		}
 
@@ -96,25 +96,25 @@ CustomMouseArea {
 			if (dragY < -10)
 				visibilities.dock = true;
 
-			if (panels.sidebar.width === 0) {
-				const showOsd = inRightPanel(panels.osdWrapper, x, y);
+		if (panels.sidebar.width === 0) {
+			const showOsd = inRightPanel(panels.osdWrapper, x, y);
 
-				if (showOsd) {
-					osdShortcutActive = false;
-					root.panels.osd.hovered = true;
-				}
-			} else {
-				const outOfSidebar = x < width - panels.sidebar.width;
-				const showOsd = outOfSidebar && inRightPanel(panels.osdWrapper, x, y);
-
-				if (!osdShortcutActive) {
-					visibilities.osd = showOsd;
-					root.panels.osd.hovered = showOsd;
-				} else if (showOsd) {
-					osdShortcutActive = false;
-					root.panels.osd.hovered = true;
-				}
+			if (showOsd) {
+				osdShortcutActive = false;
+				root.panels.osd.hovered = true;
 			}
+		} else {
+			const outOfSidebar = x < width - panels.sidebar.width;
+			const showOsd = outOfSidebar && inRightPanel(panels.osdWrapper, x, y);
+
+			if (!osdShortcutActive) {
+				visibilities.osd = showOsd;
+				root.panels.osd.hovered = showOsd;
+			} else if (showOsd) {
+				osdShortcutActive = false;
+				root.panels.osd.hovered = true;
+			}
+		}
 
 		if (Config.dock.enable && !Config.dock.hoverToReveal && !visibilities.dock && !visibilities.launcher && inBottomPanel(panels.dock, x, y))
 			visibilities.dock = true;

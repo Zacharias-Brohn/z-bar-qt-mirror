@@ -7,45 +7,24 @@ import qs.Helpers
 Item {
 	id: root
 
+	property real offsetScale: shouldBeActive ? 0 : 1
 	required property var panels
 	required property ShellScreen screen
+	readonly property bool shouldBeActive: visibilities.settings
 	required property PersistentProperties visibilities
 
-	implicitHeight: 0
+	anchors.topMargin: (-implicitHeight - 5) * offsetScale
+	implicitHeight: content.implicitHeight
 	implicitWidth: content.implicitWidth
-	visible: height > 0
+	opacity: 1 - offsetScale
+	visible: offsetScale < 1
 
-	states: State {
-		name: "visible"
-		when: root.visibilities.settings
-
-		PropertyChanges {
-			root.implicitHeight: content.implicitHeight
+	Behavior on offsetScale {
+		Anim {
+			duration: Appearance.anim.durations.expressiveDefaultSpatial
+			easing.bezierCurve: Appearance.anim.curves.expressiveDefaultSpatial
 		}
 	}
-	transitions: [
-		Transition {
-			from: ""
-			to: "visible"
-
-			Anim {
-				duration: MaterialEasing.expressiveEffectsTime
-				easing.bezierCurve: MaterialEasing.expressiveEffects
-				property: "implicitHeight"
-				target: root
-			}
-		},
-		Transition {
-			from: "visible"
-			to: ""
-
-			Anim {
-				easing.bezierCurve: MaterialEasing.expressiveEffects
-				property: "implicitHeight"
-				target: root
-			}
-		}
-	]
 
 	CustomClippingRect {
 		anchors.fill: parent
