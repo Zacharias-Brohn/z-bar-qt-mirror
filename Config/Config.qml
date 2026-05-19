@@ -83,6 +83,10 @@ Singleton {
 			wallFadeDuration: background.wallFadeDuration,
 			enabled: background.enabled,
 			alignX: background.alignX,
+			sourceClipX: background.sourceClipX,
+			sourceClipY: background.sourceClipY,
+			sourceClipW: background.sourceClipW,
+			sourceClipH: background.sourceClipH,
 			alignY: background.alignY,
 			zoom: background.zoom
 		};

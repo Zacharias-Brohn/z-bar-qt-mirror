@@ -35,30 +35,24 @@ Item {
 		id: two
 	}
 
-	component Img: CachingImage {
+	component Img: Image {
 		id: img
 
-		property real imageRatio: Math.max(1, sourceSize.width) / Math.max(1, sourceSize.height)
-		property bool isValid: sourceSize.width > 0 && sourceSize.height > 0 && root.width > 0 && root.height > 0
-		property real windowRatio: root.width / Math.max(1, root.height)
-
 		function update(): void {
-			if (path === root.source) {
+			if (source === root.source) {
 				root.current = this;
 			} else {
-				path = root.source;
+				source = root.source;
 			}
 		}
 
-		anchors.fill: undefined
+		anchors.fill: parent
 		asynchronous: true
 		fillMode: Image.PreserveAspectCrop
-		height: isValid ? (imageRatio > windowRatio ? root.height : root.width / imageRatio) * Config.background.zoom : root.height
 		opacity: 0
+		retainWhileLoading: true
 		scale: Wallpapers.showPreview ? 1 : 0.8
-		width: isValid ? (imageRatio > windowRatio ? root.height * imageRatio : root.width) * Config.background.zoom : root.width
-		x: isValid ? (root.width - width) * Config.background.alignX : 0
-		y: isValid ? (root.height - height) * Config.background.alignY : 0
+		sourceClipRect: Qt.rect(Config.background.sourceClipX, Config.background.sourceClipY, Config.background.sourceClipW, Config.background.sourceClipH)
 
 		states: State {
 			name: "visible"
