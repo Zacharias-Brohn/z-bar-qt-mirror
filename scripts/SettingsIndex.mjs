@@ -305,6 +305,13 @@ export const settingsIndex = [
         keywords: ["attempts", "limit", "fprint"],
     },
     {
+        name: "Show notification details",
+        category: "lockscreen",
+        categoryName: "Lockscreen",
+        section: "Lockscreen",
+        keywords: ["notification", "hide", "privacy"],
+    },
+    {
         name: "Blur amount",
         category: "lockscreen",
         categoryName: "Lockscreen",
