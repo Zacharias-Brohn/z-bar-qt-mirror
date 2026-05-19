@@ -272,6 +272,8 @@ Variants {
 					radius: Appearance.rounding.large
 					topLeftRadius: Appearance.rounding.large + Appearance.padding.smaller
 					topRightRadius: Appearance.rounding.large + Appearance.padding.smaller
+					x: panels.settingsWrapper.x + panels.settings.x + Config.barConfig.border
+					y: panels.settingsWrapper.y + panels.settings.y + bar.implicitHeight
 				}
 
 				PanelBg {

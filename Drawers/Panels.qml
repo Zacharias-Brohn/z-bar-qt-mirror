@@ -34,6 +34,7 @@ Item {
 	readonly property alias resourcesWrapper: resourcesWrapper
 	required property ShellScreen screen
 	readonly property alias settings: settings
+	readonly property alias settingsWrapper: settingsWrapper
 	readonly property alias sidebar: sidebar
 	readonly property alias toasts: toasts
 	readonly property alias utilities: utilities
@@ -176,15 +177,25 @@ Item {
 		visibilities: root.visibilities
 	}
 
-	Settings.Wrapper {
-		id: settings
+	Item {
+		id: settingsWrapper
 
 		anchors.horizontalCenter: parent.horizontalCenter
 		anchors.top: parent.top
-		// anchors.centerIn: parent
-		panels: root
-		screen: root.screen
-		visibilities: root.visibilities
+		clip: true
+		implicitHeight: settings.implicitHeight * (1 - settings.offsetScale)
+		implicitWidth: settings.implicitWidth
+
+		Settings.Wrapper {
+			id: settings
+
+			anchors.horizontalCenter: parent.horizontalCenter
+			anchors.top: parent.top
+			// anchors.centerIn: parent
+			panels: root
+			screen: root.screen
+			visibilities: root.visibilities
+		}
 	}
 
 	Dock.Wrapper {
