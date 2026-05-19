@@ -73,7 +73,9 @@ void BlobGroup::markShapeDirty(BlobShape* source) {
 	source->polish();
 	source->update();
 
-	// Use cached padded rects to find spatial neighbors
+	// Use actual current geometry (not cached rects) to find spatial neighbors.
+	// Cached rects can be stale when multiple shapes move simultaneously,
+	// causing the blob background to desync from panels that changed size.
 	const float pad = static_cast<float>(m_smoothing) * 2.0f;
 	const QRectF srcRect(static_cast<double>(source->m_cachedPaddedX - pad),
 	                     static_cast<double>(source->m_cachedPaddedY - pad), static_cast<double>(source->m_cachedPaddedW + pad * 2.0f),
@@ -82,8 +84,9 @@ void BlobGroup::markShapeDirty(BlobShape* source) {
 	for (auto* shape : std::as_const(m_shapes)) {
 		if (shape == source)
 			continue;
-		const QRectF otherRect(static_cast<double>(shape->m_cachedPaddedX), static_cast<double>(shape->m_cachedPaddedY),
-		                       static_cast<double>(shape->m_cachedPaddedW), static_cast<double>(shape->m_cachedPaddedH));
+		const QPointF shapeScene = shape->mapToScene(QPointF(0, 0));
+		const QRectF otherRect(shapeScene.x(), shapeScene.y(),
+		                       static_cast<double>(shape->width()), static_cast<double>(shape->height()));
 		if (srcRect.intersects(otherRect)) {
 			shape->polish();
 			shape->update();
