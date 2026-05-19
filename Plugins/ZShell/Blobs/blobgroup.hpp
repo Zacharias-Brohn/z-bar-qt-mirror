@@ -45,7 +45,7 @@ BlobInvertedRect* invertedRect() const {
 }
 
 void markDirty();
-void markShapeDirty(BlobShape* source, const QRectF& oldGeometry);
+void markShapeDirty(BlobShape* source);
 void ensurePhysicsUpdated();
 
 signals:

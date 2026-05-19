@@ -77,7 +77,7 @@ void BlobShape::geometryChange(const QRectF& newGeometry, const QRectF& oldGeome
 		if (std::abs(m_pendingDx) > 0.5f || std::abs(m_pendingDy) > 0.5f || dw > 0.5 || dh > 0.5) {
 			m_pendingDx = 0;
 			m_pendingDy = 0;
-			m_group->markShapeDirty(this, oldGeometry);
+			m_group->markShapeDirty(this);
 		}
 	}
 }
