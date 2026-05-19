@@ -8,23 +8,9 @@ jobs:
         runs-on: alpine
         container: node:26-alpine
 
-        env:
-            CARGO_INCREMENTAL: 0
-
         steps:
             - name: Checkout
               uses: actions/checkout@v4
-
-            - name: Cache cargo
-              uses: https://code.forgejo.org/actions/cache@v3
-              with:
-                  path: |
-                      ~/.cargo/registry
-                      ~/.cargo/git
-                      target
-                  key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-                  restore-keys: |
-                      ${{ runner.os }}-cargo-
 
             - name: Install tools
               run: |
