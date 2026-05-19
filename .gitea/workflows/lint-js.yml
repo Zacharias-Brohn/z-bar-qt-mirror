@@ -1,10 +1,10 @@
-name: Lint (JS/TS)
+name: Lint & Format (JS/TS)
 
 on:
     pull_request:
 
 jobs:
-    lint:
+    lint-format:
         runs-on: alpine
         container: node:20-alpine
 
@@ -16,6 +16,14 @@ jobs:
               run: |
                   apk add --no-cache \
                     git
+
+            - name: Prettier
+              run: |
+                  if [ -n "$(find . \( -iname "*.js" -o -iname "*.jsx" -o -iname "*.ts" -o -iname "*.tsx" -o -iname "*.mjs" -o -iname "*.cjs" \) -print -quit)" ]; then
+                    npx --yes prettier --check "**/*.{js,jsx,ts,tsx,mjs,cjs}" --ignore-path .gitignore
+                  else
+                    echo "No JS/TS files found"
+                  fi
 
             - name: ESLint
               run: |

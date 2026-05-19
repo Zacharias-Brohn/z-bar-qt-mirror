@@ -1,10 +1,10 @@
-name: Lint (Rust)
+name: Lint & Format (Rust)
 
 on:
     pull_request:
 
 jobs:
-    lint:
+    lint-format:
         runs-on: alpine
         container: node:20-alpine
 
@@ -19,6 +19,19 @@ jobs:
                     cargo \
                     rust \
                     rust-clippy
+
+            - name: Format check
+              run: |
+                  if [ -n "$(find . -name "Cargo.toml" -print -quit)" ]; then
+                    find . -name "Cargo.toml" -print0 | while IFS= read -r -d '' manifest; do
+                      cargo fmt --manifest-path "$manifest" --check
+                    done
+                  elif [ -n "$(find . -name "*.rs" -print -quit)" ]; then
+                    echo "Rust files found but no Cargo.toml"
+                    exit 1
+                  else
+                    echo "No Rust project found"
+                  fi
 
             - name: Clippy
               run: |
