@@ -69,6 +69,26 @@ void BlobShape::geometryChange(const QRectF& newGeometry, const QRectF& oldGeome
 	QQuickItem::geometryChange(newGeometry, oldGeometry);
 	updateCenteredDeformMatrix();
 	if (m_group) {
+		// Update cached values so markShapeDirty uses current geometry
+		const QPointF scenePos = mapToScene(QPointF(0, 0));
+		if (isInvertedRect()) {
+			m_cachedPaddedX = static_cast<float>(scenePos.x());
+			m_cachedPaddedY = static_cast<float>(scenePos.y());
+			m_cachedPaddedW = static_cast<float>(width());
+			m_cachedPaddedH = static_cast<float>(height());
+			m_localPaddedRect = QRectF(0, 0, width(), height());
+		} else {
+			const float hw = static_cast<float>(width()) * 0.5f;
+			const float hh = static_cast<float>(height()) * 0.5f;
+			const float totalPad = static_cast<float>(m_group->smoothing()) + deformPadding(m_deformMatrix, hw, hh);
+			m_cachedPaddedX = static_cast<float>(scenePos.x()) - totalPad;
+			m_cachedPaddedY = static_cast<float>(scenePos.y()) - totalPad;
+			m_cachedPaddedW = static_cast<float>(width()) + 2.0f * totalPad;
+			m_cachedPaddedH = static_cast<float>(height()) + 2.0f * totalPad;
+			m_localPaddedRect = QRectF(static_cast<double>(-totalPad), static_cast<double>(-totalPad),
+			                           width() + 2.0 * static_cast<double>(totalPad), height() + 2.0 * static_cast<double>(totalPad));
+		}
+
 		// Accumulate sub-pixel drift so slow movements don't desync the shader
 		m_pendingDx += static_cast<float>(newGeometry.x() - oldGeometry.x());
 		m_pendingDy += static_cast<float>(newGeometry.y() - oldGeometry.y());
