@@ -30,6 +30,7 @@ Loader {
 			}
 
 			WallBackground {
+				screen: root.screen
 			}
 
 			Loader {

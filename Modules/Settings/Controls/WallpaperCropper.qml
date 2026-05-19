@@ -18,8 +18,8 @@ Item {
 		property real displayY: (height - paintedHeight) * 0.5
 		property real scaleX: sourceW / displayW
 		property real scaleY: sourceH / displayH
-		property real sourceH: sourceSize.height
-		property real sourceW: sourceSize.width
+		property real sourceH: Quickshell.screens[0].height
+		property real sourceW: Quickshell.screens[0].width
 
 		anchors.fill: parent
 		fillMode: Image.PreserveAspectFit
@@ -85,6 +85,7 @@ Item {
 				updateCrop(mouse.x, mouse.y);
 			}
 			onReleased: {
+				Wallpapers.recentlyChanged = false;
 				Config.background.sourceClipX = cropRect.sourceRect.x;
 				Config.background.sourceClipY = cropRect.sourceRect.y;
 				Config.background.sourceClipW = cropRect.sourceRect.width;

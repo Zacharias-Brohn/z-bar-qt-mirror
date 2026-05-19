@@ -1,5 +1,6 @@
 pragma ComponentBehavior: Bound
 
+import Quickshell
 import QtQuick
 import qs.Components
 import qs.Helpers
@@ -8,73 +9,34 @@ import qs.Config
 Item {
 	id: root
 
-	property Image current: one
+	required property ShellScreen screen
 	property string source: Wallpapers.current
 
 	anchors.fill: parent
 
-	Component.onCompleted: {
-		if (source)
-			Qt.callLater(() => one.update());
-	}
-	onSourceChanged: {
-		if (!source) {
-			current = null;
-		} else if (current === one) {
-			two.update();
-		} else {
-			one.update();
-		}
-	}
-
-	Img {
-		id: one
-	}
-
-	Img {
-		id: two
-	}
-
-	component Img: Image {
+	Image {
 		id: img
-
-		function update(): void {
-			if (source === root.source) {
-				root.current = this;
-			} else {
-				source = root.source;
-			}
-		}
 
 		anchors.fill: parent
 		asynchronous: true
 		fillMode: Image.PreserveAspectCrop
-		opacity: 0
+		opacity: 1
 		retainWhileLoading: true
-		scale: Wallpapers.showPreview ? 1 : 0.8
-		sourceClipRect: Qt.rect(Config.background.sourceClipX, Config.background.sourceClipY, Config.background.sourceClipW, Config.background.sourceClipH)
+		source: root.source
+		sourceClipRect: Wallpapers.recentlyChanged ? null : Qt.rect(Config.background.sourceClipX, Config.background.sourceClipY, Config.background.sourceClipW, Config.background.sourceClipH)
+		sourceSize.height: root.screen.height
+		sourceSize.width: root.screen.width
 
-		states: State {
-			name: "visible"
-			when: root.current === img
-
-			PropertyChanges {
-				img.opacity: 1
-				img.scale: 1
+		onSourceChanged: {
+			if (Wallpapers.recentlyChanged) {
+				Config.background.sourceClipH = 0;
+				Config.background.sourceClipW = 0;
+				Config.background.sourceClipY = 0;
+				Config.background.sourceClipX = 0;
+				Config.background.zoom = 1.0;
+				Config.save();
 			}
-		}
-		transitions: Transition {
-			Anim {
-				duration: Config.background.wallFadeDuration
-				properties: "opacity,scale"
-				target: img
-			}
-		}
-
-		onStatusChanged: {
-			if (status === Image.Ready) {
-				root.current = this;
-			}
+			Wallpapers.recentlyChanged = true;
 		}
 	}
 }
