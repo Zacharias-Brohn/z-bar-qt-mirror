@@ -6,7 +6,7 @@ import QtQuick.Controls
 import qs.Components
 import qs.Config
 import "../../scripts/fuzzysort.js" as Fuzzy
-import "./SettingsIndex.mjs" as SettingsIndex
+import "../../scripts/SettingsIndex.mjs" as SettingsIndex
 
 Item {
 	id: root
@@ -51,12 +51,13 @@ Item {
 	implicitHeight: searchContainer.implicitHeight
 	implicitWidth: 200
 
+	Component.onCompleted: console.log(root.height)
+
 	Shortcut {
 		sequence: "/"
+
 		onActivated: searchField.forceActiveFocus()
 	}
-
-	Component.onCompleted: console.log(root.height)
 
 	ListModel {
 		id: resultsModel
