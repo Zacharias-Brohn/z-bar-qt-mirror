@@ -24,7 +24,7 @@ Item {
 		const diff = parent.width - Math.floor(off + content.nonAnimWidth);
 		if (diff < 0)
 			return off + diff;
-		return Math.floor(Math.max(off, 0));
+		return Math.max(off, 0);
 	}
 	y: content.isDetached ? (parent.height - content.nonAnimHeight) / 2 : 0
 
