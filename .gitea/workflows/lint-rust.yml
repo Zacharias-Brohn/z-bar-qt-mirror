@@ -8,6 +8,9 @@ jobs:
         runs-on: alpine
         container: node:20-alpine
 
+        env:
+            CARGO_INCREMENTAL: 0
+
         steps:
             - name: Checkout
               uses: actions/checkout@v4
@@ -53,7 +56,7 @@ jobs:
                   if [ -n "$(find . -name "Cargo.toml" -print -quit)" ]; then
                     status=0
                     for manifest in $(find . -name "Cargo.toml"); do
-                      cargo clippy --manifest-path "$manifest" -- -D warnings && \
+                      cargo clippy --manifest-path "$manifest" --all-targets --all-features -- -D warnings && \
                         echo "$manifest: Clippy passed" || \
                         { echo "$manifest: Clippy failed"; status=1; }
                     done
