@@ -67,27 +67,48 @@ void BlobGroup::markDirty() {
 	}
 }
 
-void BlobGroup::markShapeDirty(BlobShape* source) {
+void BlobGroup::markShapeDirty(BlobShape* source, const QRectF& oldGeometry) {
 	m_physicsUpdated = false;
 
 	source->polish();
 	source->update();
 
-	// Use actual current geometry (not cached rects) to find spatial neighbors.
-	// Cached rects can be stale when multiple shapes move simultaneously,
-	// causing the blob background to desync from panels that changed size.
 	const float pad = static_cast<float>(m_smoothing) * 2.0f;
-	const QRectF srcRect(static_cast<double>(source->m_cachedPaddedX - pad),
-	                     static_cast<double>(source->m_cachedPaddedY - pad), static_cast<double>(source->m_cachedPaddedW + pad * 2.0f),
-	                     static_cast<double>(source->m_cachedPaddedH + pad * 2.0f));
 
+	// Compute the source's dirty rect in scene space using its old position
+	const QPointF oldScene(oldGeometry.x(), oldGeometry.y());
+	const QRectF oldDirtyRect(oldScene.x() - static_cast<double>(pad),
+	                          oldScene.y() - static_cast<double>(pad),
+	                          static_cast<double>(oldGeometry.width() + pad * 2.0),
+	                          static_cast<double>(oldGeometry.height() + pad * 2.0));
+
+	// Compute the source's dirty rect using its new position (fresh from polish)
+	const QRectF newDirtyRect(static_cast<double>(source->m_cachedPaddedX - pad),
+	                          static_cast<double>(source->m_cachedPaddedY - pad),
+	                          static_cast<double>(source->m_cachedPaddedW + pad * 2.0),
+	                          static_cast<double>(source->m_cachedPaddedH + pad * 2.0));
+
+	// Mark shapes near the old position as dirty (prevents ghost blobs after panel moves)
 	for (auto* shape : std::as_const(m_shapes)) {
 		if (shape == source)
 			continue;
 		const QPointF shapeScene = shape->mapToScene(QPointF(0, 0));
-		const QRectF otherRect(shapeScene.x(), shapeScene.y(),
+		const QRectF shapeRect(shapeScene.x(), shapeScene.y(),
 		                       static_cast<double>(shape->width()), static_cast<double>(shape->height()));
-		if (srcRect.intersects(otherRect)) {
+		if (oldDirtyRect.intersects(shapeRect)) {
+			shape->polish();
+			shape->update();
+		}
+	}
+
+	// Mark shapes near the new position as dirty
+	for (auto* shape : std::as_const(m_shapes)) {
+		if (shape == source)
+			continue;
+		const QPointF shapeScene = shape->mapToScene(QPointF(0, 0));
+		const QRectF shapeRect(shapeScene.x(), shapeScene.y(),
+		                       static_cast<double>(shape->width()), static_cast<double>(shape->height()));
+		if (newDirtyRect.intersects(shapeRect)) {
 			shape->polish();
 			shape->update();
 		}
