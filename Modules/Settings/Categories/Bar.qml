@@ -19,8 +19,8 @@ SettingsPage {
 		}
 
 		SettingSpinBox {
-			name: "Height"
 			min: 1
+			name: "Height"
 			object: Config.barConfig
 			setting: "height"
 		}
@@ -29,8 +29,8 @@ SettingsPage {
 		}
 
 		SettingSpinBox {
-			name: "Rounding"
 			min: 0
+			name: "Rounding"
 			object: Config.barConfig
 			setting: "rounding"
 		}
@@ -39,10 +39,20 @@ SettingsPage {
 		}
 
 		SettingSpinBox {
-			name: "Border"
 			min: 0
+			name: "Border"
 			object: Config.barConfig
 			setting: "border"
+		}
+
+		Separator {
+		}
+
+		SettingSpinBox {
+			min: 0
+			name: "Smoothing"
+			object: Config.barConfig
+			setting: "smoothing"
 		}
 	}
 
@@ -145,8 +155,8 @@ SettingsPage {
 		}
 
 		SettingSpinBox {
-			name: "Dock height"
 			min: 1
+			name: "Dock height"
 			object: Config.dock
 			setting: "height"
 		}
@@ -173,8 +183,8 @@ SettingsPage {
 		}
 
 		SettingStringList {
-			name: "Pinned apps"
 			addLabel: qsTr("Add pinned app")
+			name: "Pinned apps"
 			object: Config.dock
 			setting: "pinnedApps"
 		}
@@ -183,8 +193,8 @@ SettingsPage {
 		}
 
 		SettingStringList {
-			name: "Ignored app regexes"
 			addLabel: qsTr("Add ignored regex")
+			name: "Ignored app regexes"
 			object: Config.dock
 			setting: "ignoredAppRegexes"
 		}

@@ -26,38 +26,6 @@ Item {
 		}
 	}
 
-	// states: State {
-	// 	name: "visible"
-	// 	when: root.visibilities.settings
-	//
-	// 	PropertyChanges {
-	// 		root.implicitHeight: content.implicitHeight
-	// 	}
-	// }
-	// transitions: [
-	// 	Transition {
-	// 		from: ""
-	// 		to: "visible"
-	//
-	// 		Anim {
-	// 			duration: MaterialEasing.expressiveEffectsTime
-	// 			easing.bezierCurve: MaterialEasing.expressiveEffects
-	// 			property: "implicitHeight"
-	// 			target: root
-	// 		}
-	// 	},
-	// 	Transition {
-	// 		from: "visible"
-	// 		to: ""
-	//
-	// 		Anim {
-	// 			easing.bezierCurve: MaterialEasing.expressiveEffects
-	// 			property: "implicitHeight"
-	// 			target: root
-	// 		}
-	// 	}
-	// ]
-
 	CustomClippingRect {
 		anchors.fill: parent
 

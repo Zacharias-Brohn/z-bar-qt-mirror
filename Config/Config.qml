@@ -94,6 +94,7 @@ Singleton {
 			hideWhenNotif: barConfig.hideWhenNotif,
 			rounding: barConfig.rounding,
 			border: barConfig.border,
+			smoothing: barConfig.smoothing,
 			height: barConfig.height,
 			popouts: {
 				tray: barConfig.popouts.tray,
