@@ -39,8 +39,10 @@ pub fn apply_rounded_corners(img: RgbaImage, radius: f32) -> RgbaImage {
     );
 
     let mut pixmap = rgba_image_to_pixmap(&img);
-    let mut dst_paint = PixmapPaint::default();
-    dst_paint.blend_mode = BlendMode::DestinationIn;
+    let dst_paint = PixmapPaint {
+        blend_mode: BlendMode::DestinationIn,
+        ..Default::default()
+    };
     pixmap.draw_pixmap(0, 0, mask.as_ref(), &dst_paint, Transform::identity(), None);
     pixmap_to_rgba_image(pixmap)
 }
@@ -69,8 +71,10 @@ pub fn apply_drop_shadow(
     let shadow_x = (extra_left as f32 + offset_x) as i32;
     let shadow_y = (extra_top as f32 + offset_y) as i32;
 
-    let mut sp = PixmapPaint::default();
-    sp.blend_mode = BlendMode::Source;
+    let sp = PixmapPaint {
+        blend_mode: BlendMode::Source,
+        ..Default::default()
+    };
     shadow_pixmap.draw_pixmap(
         shadow_x,
         shadow_y,
@@ -87,8 +91,10 @@ pub fn apply_drop_shadow(
     let blurred_pixmap = rgba_image_to_pixmap(&blurred);
 
     let mut canvas = Pixmap::new(canvas_w, canvas_h).expect("canvas pixmap");
-    let mut p = PixmapPaint::default();
-    p.blend_mode = BlendMode::Source;
+    let p = PixmapPaint {
+        blend_mode: BlendMode::Source,
+        ..Default::default()
+    };
     canvas.draw_pixmap(
         0,
         0,
@@ -98,8 +104,10 @@ pub fn apply_drop_shadow(
         None,
     );
 
-    let mut p2 = PixmapPaint::default();
-    p2.blend_mode = BlendMode::SourceOver;
+    let p2 = PixmapPaint {
+        blend_mode: BlendMode::SourceOver,
+        ..Default::default()
+    };
     canvas.draw_pixmap(
         extra_left as i32,
         extra_top as i32,

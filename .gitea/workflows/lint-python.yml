@@ -1,27 +1,34 @@
-name: Lint (Python)
+name: Lint & Format (Python)
 
 on:
-  pull_request:
+    pull_request:
 
 jobs:
-  lint:
-    runs-on: alpine
-    container: node:20-alpine
+    lint-format:
+        runs-on: alpine
+        container: node:26-alpine
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
 
-      - name: Install tools
-        run: |
-          apk add --no-cache \
-            git \
-            python3 \
-            py3-pip
+            - name: Install tools
+              run: |
+                  apk add --no-cache \
+                    git \
+                    python3 \
+                    py3-pip
+                  python3 -m venv .venv
+                  . .venv/bin/activate
+                  pip install --no-cache-dir ruff
 
-      - name: Ruff
-        run: |
-          python3 -m venv .venv
-          . .venv/bin/activate
-          pip install --no-cache-dir ruff
-          ruff check .
+            - name: Format check
+              continue-on-error: true
+              run: |
+                  . .venv/bin/activate
+                  ruff format --check .
+
+            - name: Lint
+              run: |
+                  . .venv/bin/activate
+                  ruff check .

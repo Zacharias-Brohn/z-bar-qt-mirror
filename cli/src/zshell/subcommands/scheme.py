@@ -23,64 +23,71 @@ app = typer.Typer()
 @app.command()
 def generate(
     # image inputs (optional - used for image mode)
-    image_path: Optional[Path] = typer.Option(
-        None, help="Path to source image. Required for image mode."),
+    image_path: Optional[Path] = typer.Option(None, help="Path to source image. Required for image mode."),
     scheme: Optional[str] = typer.Option(
-        None, help="Color scheme algorithm to use for image mode. Ignored in preset mode."),
+        None, help="Color scheme algorithm to use for image mode. Ignored in preset mode."
+    ),
     # preset inputs (optional - used for preset mode)
     preset: Optional[str] = typer.Option(
-        None, help="Name of a premade scheme in this format: <preset_name>:<preset_flavor>"),
-    mode: Optional[str] = typer.Option(
-        None, help="Mode of the preset scheme (dark or light)."),
+        None, help="Name of a premade scheme in this format: <preset_name>:<preset_flavor>"
+    ),
+    mode: Optional[str] = typer.Option(None, help="Mode of the preset scheme (dark or light)."),
 ):
 
     HOME = str(os.getenv("HOME"))
     OUTPUT = Path(HOME + "/.local/state/zshell/scheme.json")
     SEQ_STATE = Path(HOME + "/.local/state/zshell/sequences.txt")
-    THUMB_PATH = Path(HOME +
-                      "/.cache/zshell/imagecache/thumbnail.jpg")
-    WALL_DIR_PATH = Path(HOME +
-                         "/.local/state/zshell/wallpaper_path.json")
+    THUMB_PATH = Path(HOME + "/.cache/zshell/imagecache/thumbnail.jpg")
+    WALL_DIR_PATH = Path(HOME + "/.local/state/zshell/wallpaper_path.json")
 
     TEMPLATE_DIR = Path(HOME + "/.config/zshell/templates")
     WALL_PATH = Path()
     CONFIG = Path(HOME + "/.config/zshell/config.json")
 
     if preset is not None and image_path is not None:
-        raise typer.BadParameter(
-            "Use either --image-path or --preset, not both.")
+        raise typer.BadParameter("Use either --image-path or --preset, not both.")
 
     def get_scheme_class(scheme_name: str):
         match scheme_name:
             case "fruit-salad":
                 from materialyoucolor.scheme.scheme_fruit_salad import SchemeFruitSalad
+
                 return SchemeFruitSalad
             case "expressive":
                 from materialyoucolor.scheme.scheme_expressive import SchemeExpressive
+
                 return SchemeExpressive
             case "monochrome":
                 from materialyoucolor.scheme.scheme_monochrome import SchemeMonochrome
+
                 return SchemeMonochrome
             case "rainbow":
                 from materialyoucolor.scheme.scheme_rainbow import SchemeRainbow
+
                 return SchemeRainbow
             case "tonal-spot":
                 from materialyoucolor.scheme.scheme_tonal_spot import SchemeTonalSpot
+
                 return SchemeTonalSpot
             case "neutral":
                 from materialyoucolor.scheme.scheme_neutral import SchemeNeutral
+
                 return SchemeNeutral
             case "fidelity":
                 from materialyoucolor.scheme.scheme_fidelity import SchemeFidelity
+
                 return SchemeFidelity
             case "content":
                 from materialyoucolor.scheme.scheme_content import SchemeContent
+
                 return SchemeContent
             case "vibrant":
                 from materialyoucolor.scheme.scheme_vibrant import SchemeVibrant
+
                 return SchemeVibrant
             case _:
                 from materialyoucolor.scheme.scheme_fruit_salad import SchemeFruitSalad
+
                 return SchemeFruitSalad
 
     def hex_to_hct(hex_color: str) -> Hct:
@@ -163,16 +170,11 @@ def generate(
     def harmonize(from_hct: Hct, to_hct: Hct, tone_boost: float) -> Hct:
         diff = difference_degrees(from_hct.hue, to_hct.hue)
         rotation = min(diff * 0.8, 100)
-        output_hue = sanitize_degrees_double(
-            from_hct.hue
-            + rotation * rotation_direction(from_hct.hue, to_hct.hue)
-        )
+        output_hue = sanitize_degrees_double(from_hct.hue + rotation * rotation_direction(from_hct.hue, to_hct.hue))
         tone = max(0.0, min(100.0, from_hct.tone * (1 + tone_boost)))
         return Hct.from_hct(output_hue, from_hct.chroma, tone)
 
-    def terminal_palette(
-        colors: dict[str, str], mode: str, variant: str
-    ) -> dict[str, str]:
+    def terminal_palette(colors: dict[str, str], mode: str, variant: str) -> dict[str, str]:
         light = mode.lower() == "light"
 
         key_hex = (
@@ -307,7 +309,7 @@ def generate(
             "seed": seed.to_int(),
             "flavor": flavor,
             "variant": variant,
-            "colors": colors
+            "colors": colors,
         }
 
         for k, v in colors.items():
@@ -349,7 +351,7 @@ def generate(
 
     def tmux_wrap_sequences(seq: str) -> str:
         ESC = "\x1b"
-        return f"{ESC}Ptmux;{seq.replace(ESC, ESC+ESC)}{ESC}\\"
+        return f"{ESC}Ptmux;{seq.replace(ESC, ESC + ESC)}{ESC}\\"
 
     def parse_output_directive(first_line: str) -> Optional[Path]:
         s = first_line.strip()
@@ -406,8 +408,7 @@ def generate(
                 template = env.from_string(body)
                 text = template.render(**context)
             except Exception as e:
-                raise RuntimeError(
-                    f"Template render failed for '{rel}': {e}") from e
+                raise RuntimeError(f"Template render failed for '{rel}': {e}") from e
 
             out_path.write_text(text, encoding="utf-8")
 
@@ -435,18 +436,13 @@ def generate(
         try:
             return PRESETS[name].primary
         except KeyError:
-            raise typer.BadParameter(
-                f"Preset '{name}' not found. Available presets: {', '.join(PRESETS.keys())}")
+            raise typer.BadParameter(f"Preset '{name}' not found. Available presets: {', '.join(PRESETS.keys())}")
 
     def generate_color_scheme(seed: Hct, mode: str, scheme_class) -> dict[str, str]:
 
         is_dark = mode.lower() == "dark"
 
-        scheme = scheme_class(
-            seed,
-            is_dark,
-            0.0
-        )
+        scheme = scheme_class(seed, is_dark, 0.0)
 
         color_dict = {}
         for color in vars(MaterialDynamicColors).keys():
@@ -499,7 +495,7 @@ def generate(
             "mode": effective_mode,
             "variant": scheme,
             "colors": colors,
-            "seed": seed.to_int()
+            "seed": seed.to_int(),
         }
 
         if TEMPLATE_DIR is not None:
@@ -511,7 +507,7 @@ def generate(
                 wallpaper_path=wp,
                 name=name,
                 flavor=flavor,
-                variant=scheme
+                variant=scheme,
             )
 
             rendered = render_all_templates(

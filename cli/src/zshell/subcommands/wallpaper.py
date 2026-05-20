@@ -12,29 +12,28 @@ app = typer.Typer()
 
 @app.command()
 def set(wallpaper: Path):
-    subprocess.run(args + ["ipc"] + ["call"] +
-                   ["wallpaper"] + ["set"] + [wallpaper], check=True)
+    subprocess.run(args + ["ipc"] + ["call"] + ["wallpaper"] + ["set"] + [wallpaper], check=True)
 
 
 @app.command()
 def lockscreen(
-        input_image: Annotated[
-            Path,
-            typer.Option(),
-        ],
-        output_path: Annotated[
-            Path,
-            typer.Option(),
-        ],
-        blur_amount: int = 20
+    input_image: Annotated[
+        Path,
+        typer.Option(),
+    ],
+    output_path: Annotated[
+        Path,
+        typer.Option(),
+    ],
+    blur_amount: int = 20,
 ):
     img = Image.open(input_image)
     size = img.size
-    if (blur_amount == 0):
+    if blur_amount == 0:
         img.save(output_path, "PNG")
         return
 
-    if (size[0] < 3840 or size[1] < 2160):
+    if size[0] < 3840 or size[1] < 2160:
         img = img.resize((size[0] // 2, size[1] // 2), Image.NEAREST)
     else:
         img = img.resize((size[0] // 4, size[1] // 4), Image.NEAREST)
