@@ -1,7 +1,7 @@
 mod config;
 mod effects;
 
-use anyhow::{bail, Context, Result};
+use anyhow::{Context, Result, bail};
 use std::io::Write as _;
 use std::process::{Command, Stdio};
 

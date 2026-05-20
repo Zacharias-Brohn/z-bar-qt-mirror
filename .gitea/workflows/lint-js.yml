@@ -1,33 +1,42 @@
-name: Lint (JS/TS)
+name: Lint & Format (JS/TS)
 
 on:
-  pull_request:
+    pull_request:
 
 jobs:
-  lint:
-    runs-on: alpine
-    container: node:20-alpine
+    lint-format:
+        runs-on: alpine
+        container: node:26-alpine
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
 
-      - name: Install tools
-        run: |
-          apk add --no-cache \
-            git
+            - name: Install tools
+              run: |
+                  apk add --no-cache \
+                    git
 
-      - name: ESLint
-        run: |
-          if [ -n "$(find . \( -iname "*.js" -o -iname "*.jsx" -o -iname "*.ts" -o -iname "*.tsx" -o -iname "*.mjs" -o -iname "*.cjs" \) -print -quit)" ]; then
-            if [ -f package.json ]; then
-              npm install --no-audit --no-fund
-            fi
-            if [ -f eslint.config.js ] || [ -f eslint.config.mjs ] || [ -f eslint.config.cjs ] || [ -f .eslintrc ] || [ -f .eslintrc.js ] || [ -f .eslintrc.cjs ] || [ -f .eslintrc.json ] || [ -f .eslintrc.yaml ] || [ -f .eslintrc.yml ]; then
-              npx --yes eslint .
-            else
-              echo "No eslint config found"
-            fi
-          else
-            echo "No JS/TS files found"
-          fi
+            - name: Prettier
+              continue-on-error: true
+              run: |
+                  if [ -n "$(find . \( -iname "*.js" -o -iname "*.jsx" -o -iname "*.ts" -o -iname "*.tsx" -o -iname "*.mjs" -o -iname "*.cjs" \) -print -quit)" ]; then
+                    npx --yes prettier --check "**/*.{js,jsx,ts,tsx,mjs,cjs}" --ignore-path .prettierignore
+                  else
+                    echo "No JS/TS files found"
+                  fi
+
+            - name: ESLint
+              run: |
+                  if [ -n "$(find . \( -iname "*.js" -o -iname "*.jsx" -o -iname "*.ts" -o -iname "*.tsx" -o -iname "*.mjs" -o -iname "*.cjs" \) -print -quit)" ]; then
+                    if [ -f package.json ]; then
+                      npm install --no-audit --no-fund
+                    fi
+                    if [ -f eslint.config.js ] || [ -f eslint.config.mjs ] || [ -f eslint.config.cjs ] || [ -f .eslintrc ] || [ -f .eslintrc.js ] || [ -f .eslintrc.cjs ] || [ -f .eslintrc.json ] || [ -f .eslintrc.yaml ] || [ -f .eslintrc.yml ]; then
+                      npx --yes eslint . && echo "ESLint passed" || echo "ESLint failed"
+                    else
+                      echo "No eslint config found"
+                    fi
+                  else
+                    echo "No JS/TS files found"
+                  fi
