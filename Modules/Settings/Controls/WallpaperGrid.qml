@@ -23,25 +23,12 @@ GridView {
 	delegate: Item {
 		required property int index
 		readonly property bool isCurrent: modelData && modelData.path === Wallpapers.actualCurrent
-		readonly property real itemMargin: Appearance.spacing.normal / 2
-		readonly property real itemRadius: Appearance.rounding.normal
+		readonly property real itemMargin: Appearance.spacing.normal
+		readonly property real itemRadius: Appearance.rounding.small
 		required property var modelData
 
 		height: root.cellHeight
 		width: root.cellWidth
-
-		StateLayer {
-			function onClicked(): void {
-				Wallpapers.setWallpaper(modelData.path);
-			}
-
-			anchors.bottomMargin: itemMargin
-			anchors.fill: parent
-			anchors.leftMargin: itemMargin
-			anchors.rightMargin: itemMargin
-			anchors.topMargin: itemMargin
-			radius: itemRadius
-		}
 
 		CustomClippingRect {
 			id: image
@@ -53,8 +40,6 @@ GridView {
 			anchors.topMargin: itemMargin
 			antialiasing: true
 			color: DynamicColors.tPalette.m3surfaceContainer
-			layer.enabled: true
-			layer.smooth: true
 			radius: itemRadius
 
 			CachingImage {
@@ -100,6 +85,33 @@ GridView {
 				}
 			}
 
+			Rectangle {
+				anchors.fill: parent
+				antialiasing: true
+				border.color: DynamicColors.palette.m3primary
+				border.width: isCurrent ? 2 : 0
+				color: "transparent"
+				radius: itemRadius + 2
+				smooth: true
+
+				Behavior on border.width {
+					NumberAnimation {
+						duration: 150
+						easing.type: Easing.OutQuad
+					}
+				}
+
+				MaterialIcon {
+					anchors.margins: Appearance.padding.small
+					anchors.right: parent.right
+					anchors.top: parent.top
+					color: DynamicColors.palette.m3primary
+					font.pointSize: Appearance.font.size.large
+					text: "check_circle"
+					visible: isCurrent
+				}
+			}
+
 			Timer {
 				id: fallbackTimer
 
@@ -112,35 +124,17 @@ GridView {
 			}
 		}
 
-		Rectangle {
+		StateLayer {
+			function onClicked(): void {
+				Wallpapers.setWallpaper(modelData.path);
+			}
+
 			anchors.bottomMargin: itemMargin
 			anchors.fill: parent
 			anchors.leftMargin: itemMargin
 			anchors.rightMargin: itemMargin
 			anchors.topMargin: itemMargin
-			antialiasing: true
-			border.color: DynamicColors.palette.m3primary
-			border.width: isCurrent ? 2 : 0
-			color: "transparent"
-			radius: itemRadius - border.width
-			smooth: true
-
-			Behavior on border.width {
-				NumberAnimation {
-					duration: 150
-					easing.type: Easing.OutQuad
-				}
-			}
-
-			MaterialIcon {
-				anchors.margins: Appearance.padding.small
-				anchors.right: parent.right
-				anchors.top: parent.top
-				color: DynamicColors.palette.m3primary
-				font.pointSize: Appearance.font.size.large
-				text: "check_circle"
-				visible: isCurrent
-			}
+			radius: itemRadius
 		}
 	}
 }
