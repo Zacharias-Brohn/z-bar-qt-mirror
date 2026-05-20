@@ -13,11 +13,11 @@ Singleton {
 
 	function setHyprConf(): void {
 		Hypr.extras.applyOptions({
-			"animations:enabled": 0,
-			"decoration:shadow:enabled": 0,
-			"decoration:blur:enabled": 0,
-			"general:border_size": 0,
-			"decoration:rounding": 0
+			"animations.enabled": 0,
+			"decoration.shadow.enabled": 0,
+			"decoration.blur.enabled": 0,
+			"general.border_size": 0,
+			"decoration.rounding": 0
 		});
 	}
 

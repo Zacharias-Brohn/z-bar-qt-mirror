@@ -80,10 +80,32 @@ Singleton {
 	}
 
 	function reloadHyprRules(): void {
-		const barStr = Hyprland.usingLua ? `eval 'hl.layer_rule({ match = { namespace = "ZShell-Bar" }, %1 = true, %2 = true })'` : "keyword layerrule %1 %2, match:namespace ZShell-Bar";
-		const authStr = Hyprland.usingLua ? `eval 'hl.layer_rule({ match = { namespace = "ZShell-Auth" }, %1 = true, %2 = true })'` : "keyword layerrule %1 %2, match:namespace ZShell-Auth";
-		Hypr.extras.batchMessage([barStr.arg("blur").arg(transparency.enabled ? 1 : 0), barStr.arg("ignore_alpha").arg(transparency.base - 0.03)]);
-		Hypr.extras.batchMessage([authStr.arg("blur").arg(transparency.enabled ? 1 : 0), authStr.arg("ignore_alpha").arg(transparency.base - 0.03)]);
+		const blur = transparency.enabled ? 1 : 0;
+		const alpha = transparency.base - 0.03;
+
+		const rules = `
+			hl.layer_rule({
+				match = { namespace = "ZShell-Bar" },
+				blur = ${blur}
+			})
+
+			hl.layer_rule({
+				match = { namespace = "ZShell-Bar" },
+				ignore_alpha = ${alpha}
+			})
+
+			hl.layer_rule({
+				match = { namespace = "ZShell-Auth" },
+				blur = ${blur}
+			})
+
+			hl.layer_rule({
+				match = { namespace = "ZShell-Auth" },
+				ignore_alpha = ${alpha}
+			})
+		`;
+
+		Hypr.extras.message(`eval ${rules}`);
 	}
 
 	function setMode(mode: string): void {
