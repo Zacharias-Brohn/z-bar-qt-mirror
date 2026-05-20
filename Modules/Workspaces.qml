@@ -79,7 +79,8 @@ Item {
 					}
 
 					onPressed: {
-						Hyprland.dispatch(`workspace ${button.modelData.name}`);
+						const ws = button.modelData.name;
+						Hyprland.dispatch(Hyprland.usingLua ? `hl.dsp.focus({ workspace= "${ws}"})` : `workspace ${ws}`);
 					}
 				}
 			}

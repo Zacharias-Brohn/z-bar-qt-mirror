@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 
 import Quickshell
 import Quickshell.Io
+import Quickshell.Hyprland
 import QtQuick
 import ZShell
 import qs.Helpers
@@ -79,8 +80,8 @@ Singleton {
 	}
 
 	function reloadHyprRules(): void {
-		const barStr = "keyword layerrule %1 %2, match:namespace ZShell-Bar";
-		const authStr = "keyword layerrule %1 %2, match:namespace ZShell-Auth";
+		const barStr = Hyprland.usingLua ? `eval 'hl.layer_rule({ match = { namespace = "ZShell-Bar" }, %1 = true, %2 = true })'` : "keyword layerrule %1 %2, match:namespace ZShell-Bar";
+		const authStr = Hyprland.usingLua ? `eval 'hl.layer_rule({ match = { namespace = "ZShell-Auth" }, %1 = true, %2 = true })'` : "keyword layerrule %1 %2, match:namespace ZShell-Auth";
 		Hypr.extras.batchMessage([barStr.arg("blur").arg(transparency.enabled ? 1 : 0), barStr.arg("ignore_alpha").arg(transparency.base - 0.03)]);
 		Hypr.extras.batchMessage([authStr.arg("blur").arg(transparency.enabled ? 1 : 0), authStr.arg("ignore_alpha").arg(transparency.base - 0.03)]);
 	}
@@ -92,6 +93,14 @@ Singleton {
 	}
 
 	Component.onCompleted: debounceTimer.triggered()
+
+	Connections {
+		function onUsingLuaChanged(): void {
+			root.reloadHyprRules();
+		}
+
+		target: Hyprland
+	}
 
 	Connections {
 		function onConfigReloaded(): void {

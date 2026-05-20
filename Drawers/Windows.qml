@@ -279,7 +279,7 @@ Variants {
 					deformAmount: 0.08
 					implicitHeight: panels.settings.height * (1 + extraHeight)
 					implicitWidth: panels.settings.width
-					panel: panels.settings
+					panel: panels.settingsWrapper
 					radius: Appearance.rounding.large
 					topLeftRadius: Appearance.rounding.large + Appearance.padding.smaller
 					topRightRadius: Appearance.rounding.large + Appearance.padding.smaller
