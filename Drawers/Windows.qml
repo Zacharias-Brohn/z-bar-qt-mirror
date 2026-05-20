@@ -64,7 +64,7 @@ Variants {
 
 				height: win.height - bar.implicitHeight - Config.barConfig.border
 				intersection: Intersection.Xor
-				regions: popoutRegions.instances
+				regions: [...popoutRegions.instances, ...subMenuRegions.instances]
 				width: win.width - Config.barConfig.border * 2
 				x: Config.barConfig.border
 				y: bar.implicitHeight
@@ -90,6 +90,22 @@ Variants {
 					width: modelData.width
 					x: modelData.x + Config.barConfig.border
 					y: modelData.y + bar.implicitHeight
+				}
+			}
+
+			Variants {
+				id: subMenuRegions
+
+				model: panels.traySubmenus.children
+
+				Region {
+					required property Item modelData
+
+					height: modelData.height
+					intersection: Intersection.Subtract
+					width: modelData.width
+					x: modelData.x + panels.traySubmenus.x + Config.barConfig.border
+					y: modelData.y + panels.traySubmenus.y + bar.implicitHeight
 				}
 			}
 
@@ -301,6 +317,18 @@ Variants {
 					deformAmount: 0.08
 					panel: panels.drawing
 					radius: Appearance.rounding.normal
+				}
+
+				Repeater {
+					model: panels.traySubmenus.children
+
+					PanelBg {
+						required property Item modelData
+
+						deformAmount: 0.1
+						panel: modelData
+						radius: 20 * Appearance.rounding.scale
+					}
 				}
 			}
 

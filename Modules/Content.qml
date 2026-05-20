@@ -16,6 +16,7 @@ Item {
 	readonly property Item current: currentPopout?.item ?? null
 	readonly property Popout currentPopout: content.children.find(c => c.shouldBeActive) ?? null
 	required property PopoutState popouts
+	required property ShellScreen screen
 
 	implicitHeight: (currentPopout?.implicitHeight ?? 0) + 5 * 2
 	implicitWidth: (currentPopout?.implicitWidth ?? 0) + 5 * 2
@@ -63,6 +64,7 @@ Item {
 
 					TrayMenuPopout {
 						popouts: root.popouts
+						screen: root.screen
 						trayItem: trayMenu.modelData.menu
 					}
 				}

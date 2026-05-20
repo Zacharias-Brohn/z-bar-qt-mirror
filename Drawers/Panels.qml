@@ -13,6 +13,7 @@ import qs.Modules.Resources as Resources
 import qs.Modules.Settings as Settings
 import qs.Modules.Drawing as Drawing
 import qs.Modules.Dock as Dock
+import qs.Modules.SysTray.Popouts as SysPopouts
 import qs.Config
 
 Item {
@@ -37,6 +38,7 @@ Item {
 	readonly property alias settingsWrapper: settingsWrapper
 	readonly property alias sidebar: sidebar
 	readonly property alias toasts: toasts
+	readonly property alias traySubmenus: traySubmenus
 	readonly property alias utilities: utilities
 	required property PersistentProperties visibilities
 
@@ -91,6 +93,79 @@ Item {
 		drawing: root.drawingItem
 		screen: root.screen
 		visibilities: root.visibilities
+	}
+
+	Item {
+		id: traySubmenus
+
+		Repeater {
+			model: popouts.content.state.submenus
+
+			CustomClippingRect {
+				id: subMenuWrapper
+
+				required property int index
+				required property var modelData
+				property real targetX: 0
+				property real targetY: 0
+
+				function updatePosition() {
+					let sourceItem = modelData.sourceItem;
+					if (!sourceItem || !sourceItem.parent)
+						return;
+
+					let mapped = sourceItem.mapToItem(root, 0, -Appearance.padding.small);
+
+					let rightX = mapped.x + modelData.sourceWidth + Config.barConfig.border;
+					let leftX = mapped.x - implicitWidth - Config.barConfig.border;
+
+					if (rightX + implicitWidth > root.width) {
+						targetX = leftX;
+					} else {
+						targetX = rightX;
+					}
+
+					targetY = mapped.y;
+
+					if (targetY + implicitHeight > root.height) {
+						targetY = root.height - implicitHeight;
+					}
+					if (targetY < 0)
+						targetY = 0;
+				}
+
+				implicitHeight: subMenuContent.implicitHeight + Appearance.padding.small * 2
+				implicitWidth: subMenuContent.implicitWidth + Appearance.padding.small * 2
+				radius: Appearance.rounding.normal
+				x: targetX
+				y: targetY
+
+				Behavior on implicitHeight {
+					Anim {
+					}
+				}
+				Behavior on implicitWidth {
+					Anim {
+					}
+				}
+
+				Component.onCompleted: {
+					updatePosition();
+				}
+				onImplicitHeightChanged: updatePosition()
+				onImplicitWidthChanged: updatePosition()
+
+				SysPopouts.SubMenu {
+					id: subMenuContent
+
+					anchors.centerIn: parent
+					handle: subMenuWrapper.modelData.handle
+					level: subMenuWrapper.index + 1
+					popouts: root.popouts.state
+					screen: root.screen
+				}
+			}
+		}
 	}
 
 	Modules.ClipWrapper {
