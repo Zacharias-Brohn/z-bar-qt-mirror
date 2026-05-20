@@ -7,10 +7,27 @@ jobs:
     lint-format:
         runs-on: alpine
         container: node:26-alpine
+        env:
+            CARGO_HOME: ${{ github.workspace }}/.cargo
 
         steps:
             - name: Checkout
               uses: actions/checkout@v4
+
+            - name: Cache cargo packages
+              uses: actions/cache@v4
+              env:
+                  cache-name: cache-cargo-packages
+              with:
+                  path: |
+                      .cargo/registry
+                      .cargo/git
+                      target
+                  key: rust-${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/Cargo.lock') }}
+                  restore-keys: |
+                      rust-${{ runner.os }}-build-${{ env.cache-name }}-
+                      rust-${{ runner.os }}-build-
+                      rust-
 
             - name: Install tools
               run: |
