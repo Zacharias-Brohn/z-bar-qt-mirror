@@ -1,3 +1,5 @@
+pragma ComponentBehavior: Bound
+
 import Quickshell
 import Quickshell.Widgets
 import QtQuick
@@ -20,7 +22,6 @@ Item {
 	required property PersistentProperties visibilities
 
 	function scrollToSetting(section: string, settingName: string) {
-		// Wait for the StackView transition to complete, then scroll
 		root.pendingSection = section;
 		root.pendingSetting = settingName;
 		scrollTimer.restart();
@@ -157,6 +158,7 @@ Item {
 		id: background
 
 		Cat.Background {
+			screen: root.screen
 		}
 	}
 

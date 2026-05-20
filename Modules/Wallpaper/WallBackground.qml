@@ -17,26 +17,63 @@ Item {
 	Image {
 		id: img
 
-		anchors.fill: parent
 		asynchronous: true
-		fillMode: Image.PreserveAspectCrop
+		fillMode: Image.Stretch
 		opacity: 1
 		retainWhileLoading: true
 		source: root.source
-		sourceClipRect: Wallpapers.recentlyChanged ? null : Qt.rect(Config.background.sourceClipX, Config.background.sourceClipY, Config.background.sourceClipW, Config.background.sourceClipH)
 		sourceSize.height: root.screen.height
 		sourceSize.width: root.screen.width
 
-		onSourceChanged: {
-			if (Wallpapers.recentlyChanged) {
-				Config.background.sourceClipH = 0;
-				Config.background.sourceClipW = 0;
-				Config.background.sourceClipY = 0;
-				Config.background.sourceClipX = 0;
-				Config.background.zoom = 1.0;
-				Config.save();
+		Behavior on height {
+			Anim {
 			}
-			Wallpapers.recentlyChanged = true;
+		}
+		Behavior on width {
+			Anim {
+			}
+		}
+		Behavior on x {
+			Anim {
+			}
+		}
+		Behavior on y {
+			Anim {
+			}
+		}
+
+		Connections {
+			function onAdapterUpdated(): void {
+				const displayData = Wallpapers.getCrop(root.screen.name);
+				const displayRect = Qt.rect(displayData.x, displayData.y, displayData.width, displayData.height);
+				const scale = root.screen.width / displayData.width;
+				if (displayRect.width > 0 && displayRect.height > 0) {
+					img.anchors.fill = null;
+					img.x = -displayRect.x;
+					img.y = -displayRect.y;
+					img.width = img.implicitWidth * scale;
+					img.height = img.implicitHeight * scale;
+				} else {
+					img.anchors.fill = root;
+				}
+			}
+
+			function onLoaded(): void {
+				const displayData = Wallpapers.getCrop(root.screen.name);
+				const displayRect = Qt.rect(displayData.x, displayData.y, displayData.width, displayData.height);
+				const scale = root.screen.width / displayData.width;
+				if (displayRect.width > 0 && displayRect.height > 0) {
+					img.anchors.fill = null;
+					img.x = -displayRect.x;
+					img.y = -displayRect.y;
+					img.width = img.implicitWidth * scale;
+					img.height = img.implicitHeight * scale;
+				} else {
+					img.anchors.fill = root;
+				}
+			}
+
+			target: Wallpapers.monitorCrops
 		}
 	}
 }

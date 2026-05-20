@@ -1,9 +1,12 @@
+import Quickshell
 import QtQuick.Layouts
 import qs.Modules.Settings.Controls
 import qs.Config
 
 SettingsPage {
 	id: root
+
+	required property ShellScreen screen
 
 	SettingsSection {
 		sectionId: "Wallpaper"
@@ -35,6 +38,7 @@ SettingsPage {
 		WallpaperCropper {
 			Layout.fillWidth: true
 			Layout.preferredHeight: 600
+			screen: root.screen
 		}
 	}
 
