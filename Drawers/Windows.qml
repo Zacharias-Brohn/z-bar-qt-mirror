@@ -182,7 +182,7 @@ Variants {
 
 					property real extraHeight: 0.2
 
-					deformAmount: 0.08
+					deformAmount: 0.06
 					implicitHeight: panels.dashboard.height * (1 + extraHeight)
 					implicitWidth: panels.dashboard.width
 					panel: panels.dashboardWrapper
@@ -196,7 +196,7 @@ Variants {
 
 					property real extraHeight: 0.2
 
-					deformAmount: 0.08
+					deformAmount: 0.06
 					implicitHeight: panels.launcher.height * (1 + extraHeight)
 					panel: panels.launcher
 					radius: Appearance.rounding.smallest + 5
@@ -207,7 +207,7 @@ Variants {
 					id: sidebarBg
 
 					bottomLeftRadius: 0
-					deformAmount: 0.08
+					deformAmount: 0.04
 					exclude: panels.sidebar.offsetScale > 0.08 ? [] : [utilsBg]
 					implicitHeight: panel.height * (1 / rawDeformMatrix.m22) + 2
 					panel: panels.sidebar
@@ -262,7 +262,7 @@ Variants {
 				PanelBg {
 					id: resourcesBg
 
-					deformAmount: 0.08
+					deformAmount: 0.05
 					implicitHeight: panels.resources.height
 					implicitWidth: panels.resources.width
 					panel: panels.resourcesWrapper
@@ -276,10 +276,10 @@ Variants {
 
 					property real extraHeight: 0.2
 
-					deformAmount: 0.08
+					deformAmount: 0.03
 					implicitHeight: panels.settings.height * (1 + extraHeight)
 					implicitWidth: panels.settings.width
-					panel: panels.settingsWrapper
+					panel: panels.settings
 					radius: Appearance.rounding.large
 					topLeftRadius: Appearance.rounding.large + Appearance.padding.smaller
 					topRightRadius: Appearance.rounding.large + Appearance.padding.smaller

@@ -5,11 +5,165 @@
 #include <qjsonarray.h>
 #include <qlocalsocket.h>
 #include <qloggingcategory.h>
+#include <qmetatype.h>
+#include <qregularexpression.h>
 #include <qvariant.h>
 
 Q_LOGGING_CATEGORY(lcHypr, "ZShell.internal.hypr", QtInfoMsg)
 
 namespace ZShell::internal::hypr {
+
+namespace {
+
+static QString luaEscapeString(const QString& s) {
+	QString out;
+	out.reserve(s.size() + 2);
+	out += QLatin1Char('"');
+
+	for (const QChar c : s) {
+		switch (c.unicode()) {
+		case '\\':
+			out += QLatin1String(R"(\\)");
+			break;
+		case '"':
+			out += QLatin1String(R"(\")");
+			break;
+		case '\n':
+			out += QLatin1String(R"(\n)");
+			break;
+		case '\r':
+			out += QLatin1String(R"(\r)");
+			break;
+		case '\t':
+			out += QLatin1String(R"(\t)");
+			break;
+		default:
+			out += c;
+			break;
+		}
+	}
+
+	out += QLatin1Char('"');
+	return out;
+}
+
+static QString luaValue(const QVariant& v);
+
+static QString luaArray(const QVariantList& list) {
+	QStringList parts;
+	parts.reserve(list.size());
+
+	for (const auto& item : list) {
+		parts << luaValue(item);
+	}
+
+	return QLatin1String("{ ") + parts.join(QLatin1String(", ")) + QLatin1String(" }");
+}
+
+static QString luaArray(const QStringList& list) {
+	QStringList parts;
+	parts.reserve(list.size());
+
+	for (const auto& item : list) {
+		parts << luaEscapeString(item);
+	}
+
+	return QLatin1String("{ ") + parts.join(QLatin1String(", ")) + QLatin1String(" }");
+}
+
+static QString luaMapFromHash(const QVariantHash& hash) {
+	QStringList parts;
+	parts.reserve(hash.size());
+
+	for (auto it = hash.cbegin(); it != hash.cend(); ++it) {
+		parts << luaEscapeString(it.key()) + QLatin1String(" = ") + luaValue(it.value());
+	}
+
+	return QLatin1String("{ ") + parts.join(QLatin1String(", ")) + QLatin1String(" }");
+}
+
+static QString luaMap(const QVariantMap& map) {
+	QStringList parts;
+	parts.reserve(map.size());
+
+	for (auto it = map.cbegin(); it != map.cend(); ++it) {
+		parts << luaEscapeString(it.key()) + QLatin1String(" = ") + luaValue(it.value());
+	}
+
+	return QLatin1String("{ ") + parts.join(QLatin1String(", ")) + QLatin1String(" }");
+}
+
+static QString luaValue(const QVariant& v) {
+	if (!v.isValid() || v.isNull()) {
+		return QLatin1String("nil");
+	}
+
+	switch (v.metaType().id()) {
+	case QMetaType::Bool:
+		return v.toBool() ? QLatin1String("true") : QLatin1String("false");
+
+	case QMetaType::Int:
+	case QMetaType::UInt:
+	case QMetaType::LongLong:
+	case QMetaType::ULongLong:
+	case QMetaType::Double:
+		return v.toString();
+
+	case QMetaType::QString:
+		return luaEscapeString(v.toString());
+
+	case QMetaType::QStringList:
+		return luaArray(v.toStringList());
+
+	case QMetaType::QVariantList:
+		return luaArray(v.toList());
+
+	case QMetaType::QVariantMap:
+		return luaMap(v.toMap());
+
+	case QMetaType::QVariantHash:
+		return luaMapFromHash(v.toHash());
+
+	default:
+		return luaEscapeString(v.toString());
+	}
+}
+
+static QString normalizeOptionPath(QString key) {
+	key = key.trimmed();
+	key.replace(QLatin1Char(':'), QLatin1Char('.'));
+	return key;
+}
+
+static QString buildHlConfigCall(const QString& key, const QVariant& value) {
+	const auto parts = normalizeOptionPath(key).split(QLatin1Char('.'), Qt::SkipEmptyParts);
+	if (parts.isEmpty()) {
+		return {};
+	}
+
+	QString out;
+	out.reserve(32 + key.size() + value.toString().size());
+	out += QLatin1String("hl.config({ ");
+
+	for (int i = 0; i < parts.size(); ++i) {
+		out += parts.at(i);
+		out += QLatin1String(" = ");
+		if (i + 1 < parts.size()) {
+			out += QLatin1String("{ ");
+		}
+	}
+
+	out += luaValue(value);
+
+	for (int i = 0; i + 1 < parts.size(); ++i) {
+		out += QLatin1String(" }");
+	}
+
+	out += QLatin1String(" })");
+	return out;
+}
+
+} // namespace
 
 HyprExtras::HyprExtras(QObject* parent)
 	: QObject(parent)
@@ -26,7 +180,7 @@ HyprExtras::HyprExtras(QObject* parent)
 
 	auto hyprDir = QString("%1/hypr/%2").arg(qEnvironmentVariable("XDG_RUNTIME_DIR"), his);
 	if (!QDir(hyprDir).exists()) {
-		hyprDir = "/tmp/hypr/" + his;
+		hyprDir = QStringLiteral("/tmp/hypr/") + his;
 
 		if (!QDir(hyprDir).exists()) {
 			qCWarning(lcHypr) << "Hyprland socket directory does not exist. Unable to connect to Hyprland socket.";
@@ -34,8 +188,8 @@ HyprExtras::HyprExtras(QObject* parent)
 		}
 	}
 
-	m_requestSocket = hyprDir + "/.socket.sock";
-	m_eventSocket = hyprDir + "/.socket2.sock";
+	m_requestSocket = hyprDir + QStringLiteral("/.socket.sock");
+	m_eventSocket = hyprDir + QStringLiteral("/.socket2.sock");
 
 	refreshOptions();
 	refreshDevices();
@@ -74,7 +228,8 @@ void HyprExtras::batchMessage(const QStringList& messages) {
 		return;
 	}
 
-	makeRequest("[[BATCH]]" + messages.join(";"), [](bool success, const QByteArray& res) {
+	makeRequest(QStringLiteral("[[BATCH]]") + messages.join(QLatin1Char(';')),
+	            [](bool success, const QByteArray& res) {
 			if (!success) {
 				qCWarning(lcHypr) << "batchMessage: request error:" << QString::fromUtf8(res);
 			}
@@ -86,14 +241,21 @@ void HyprExtras::applyOptions(const QVariantHash& options) {
 		return;
 	}
 
-	QString request;
-	request.reserve(12 + options.size() * 40);
-	request += QLatin1String("[[BATCH]]");
+	QStringList calls;
+	calls.reserve(options.size());
+
 	for (auto it = options.constBegin(); it != options.constEnd(); ++it) {
-		request += QLatin1String("keyword ") + it.key() + QLatin1Char(' ') + it.value().toString() + QLatin1Char(';');
+		const auto call = buildHlConfigCall(it.key(), it.value());
+		if (!call.isEmpty()) {
+			calls << call;
+		}
 	}
 
-	makeRequest(request, [this](bool success, const QByteArray& res) {
+	if (calls.isEmpty()) {
+		return;
+	}
+
+	makeRequest(QStringLiteral("eval ") + calls.join(QLatin1String("; ")), [this](bool success, const QByteArray& res) {
 			if (success) {
 				refreshOptions();
 			} else {
@@ -107,7 +269,7 @@ void HyprExtras::refreshOptions() {
 		m_optionsRefresh->close();
 	}
 
-	m_optionsRefresh = makeRequestJson("descriptions", [this](bool success, const QJsonDocument& response) {
+	m_optionsRefresh = makeRequestJson(QStringLiteral("descriptions"), [this](bool success, const QJsonDocument& response) {
 			m_optionsRefresh.reset();
 			if (!success) {
 				return;
@@ -118,8 +280,9 @@ void HyprExtras::refreshOptions() {
 
 			for (const auto& o : std::as_const(options)) {
 				const auto obj = o.toObject();
-				const auto key = obj.value("value").toString();
-				const auto value = obj.value("data").toObject().value("current").toVariant();
+				const auto key = obj.value(QStringLiteral("value")).toString();
+				const auto value = obj.value(QStringLiteral("data")).toObject().value(QStringLiteral("current")).toVariant();
+
 				if (m_options.value(key) != value) {
 					dirty = true;
 					m_options.insert(key, value);
@@ -137,7 +300,7 @@ void HyprExtras::refreshDevices() {
 		m_devicesRefresh->close();
 	}
 
-	m_devicesRefresh = makeRequestJson("devices", [this](bool success, const QJsonDocument& response) {
+	m_devicesRefresh = makeRequestJson(QStringLiteral("devices"), [this](bool success, const QJsonDocument& response) {
 			m_devicesRefresh.reset();
 			if (success) {
 				m_devices->updateLastIpcObject(response.object());
@@ -167,23 +330,23 @@ void HyprExtras::readEvent() {
 		if (rawEvent.isEmpty()) {
 			break;
 		}
-		rawEvent.truncate(rawEvent.length() - 1); // Remove trailing \n
+		rawEvent.truncate(rawEvent.length() - 1);
 		const auto event = QByteArrayView(rawEvent.data(), rawEvent.indexOf(">>"));
 		handleEvent(QString::fromUtf8(event));
 	}
 }
 
 void HyprExtras::handleEvent(const QString& event) {
-	if (event == "configreloaded") {
+	if (event == QStringLiteral("configreloaded")) {
 		refreshOptions();
-	} else if (event == "activelayout") {
+	} else if (event == QStringLiteral("activelayout")) {
 		refreshDevices();
 	}
 }
 
 HyprExtras::SocketPtr HyprExtras::makeRequestJson(
 	const QString& request, const std::function<void(bool, QJsonDocument)>& callback) {
-	return makeRequest("j/" + request, [callback](bool success, const QByteArray& response) {
+	return makeRequest(QStringLiteral("j/") + request, [callback](bool success, const QByteArray& response) {
 			callback(success, QJsonDocument::fromJson(response));
 		});
 }
