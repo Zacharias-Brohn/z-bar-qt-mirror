@@ -4,6 +4,7 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Hyprland
+import ZShell.Internal
 import qs.Config
 import qs.Components
 import qs.Helpers
@@ -29,23 +30,63 @@ RowLayout {
 
 			required property ShellScreen modelData
 
+			function zoomClipRect(zoom: real): void {
+				let oldCenterX = cropRect.x + cropRect.width * 0.5;
+				let oldCenterY = cropRect.y + cropRect.height * 0.5;
+
+				cropRect.zoom = zoom;
+
+				cropRect.x = oldCenterX - cropRect.width * 0.5;
+				cropRect.y = oldCenterY - cropRect.height * 0.5;
+
+				cropRect.clampToBounds();
+			}
+
 			Layout.fillHeight: true
 			Layout.fillWidth: true
 
-			Image {
+			RowLayout {
+				id: sliderLayout
+
+				anchors.bottom: parent.bottom
+				anchors.left: parent.left
+				anchors.right: parent.right
+				implicitHeight: 30
+				spacing: Appearance.spacing.large
+
+				CustomText {
+					text: qsTr("Crop scale")
+				}
+
+				CustomSlider {
+					id: zoomSlider
+
+					Layout.fillWidth: true
+					Layout.preferredHeight: 10
+					from: 1.0
+					to: 5.0
+					value: cropRect.zoom
+
+					onMoved: delegate.zoomClipRect(value)
+				}
+			}
+
+			CachingImage {
 				id: scaledImg
 
 				property var displayData
-				readonly property real imageRatio: scaledImg.sourceSize.width / scaledImg.sourceSize.height
 				property real monitorScale: 1.0
-				readonly property real scaleDownX: scaledImg.paintedWidth / scaledImg.sourceSize.width
-				readonly property real scaleDownY: scaledImg.paintedHeight / scaledImg.sourceSize.height
-				readonly property real scaleX: (scaledImg.sourceSize.width * monitorScale) / scaledImg.paintedWidth
-				readonly property real scaleY: (scaledImg.sourceSize.height * monitorScale) / scaledImg.paintedHeight
 
-				anchors.fill: parent
+				anchors.bottom: sliderLayout.top
+				anchors.left: parent.left
+				anchors.right: parent.right
+				anchors.top: parent.top
+				asynchronous: true
 				fillMode: Image.PreserveAspectFit
+				// retainWhileLoading: true
 				source: Wallpapers.current
+				sourceSize.height: parent.height
+				sourceSize.width: parent.width
 
 				onPaintedWidthChanged: {
 					if (paintedWidth > 0) {
@@ -84,6 +125,7 @@ RowLayout {
 					}
 					readonly property real imageX: (scaledImg.width - scaledImg.paintedWidth) / 2
 					readonly property real imageY: (scaledImg.height - scaledImg.paintedHeight) / 2
+					property real imgAspectRatio: scaledImg.paintedWidth / scaledImg.paintedHeight
 					property real zoom: scaledImg.displayData.zoom
 
 					function centerInImage() {
@@ -114,7 +156,13 @@ RowLayout {
 					border.color: "lime"
 					border.width: 2
 					height: baseHeight / zoom
+					opacity: zoom > 1.0 ? 1 : Math.abs(aspectRatio - imgAspectRatio) > 0.1 ? 1 : 0
 					width: baseWidth / zoom
+
+					Behavior on opacity {
+						Anim {
+						}
+					}
 
 					onHeightChanged: clampToBounds()
 					onWidthChanged: clampToBounds()
@@ -147,9 +195,11 @@ RowLayout {
 						updateCrop(mouse.x, mouse.y);
 					}
 					onReleased: {
-						const croprect = cropRect.mapToItem(scaledImg, 0, 0, cropRect.width, cropRect.height);
-						const upscaledRect = Qt.rect((croprect.x - cropRect.imageX) / scaledImg.paintedWidth, (croprect.y - cropRect.imageY) / scaledImg.paintedHeight, croprect.width / scaledImg.paintedWidth, croprect.height / scaledImg.paintedHeight);
-						Wallpapers.setCrop(delegate.modelData.name, upscaledRect, croprect, cropRect.zoom);
+						if (cropRect.opacity > 0) {
+							const croprect = cropRect.mapToItem(scaledImg, 0, 0, cropRect.width, cropRect.height);
+							const upscaledRect = Qt.rect((croprect.x - cropRect.imageX) / scaledImg.paintedWidth, (croprect.y - cropRect.imageY) / scaledImg.paintedHeight, croprect.width / scaledImg.paintedWidth, croprect.height / scaledImg.paintedHeight);
+							Wallpapers.setCrop(delegate.modelData.name, upscaledRect, croprect, cropRect.zoom);
+						}
 					}
 					onWheel: wheel => {
 						let oldCenterX = cropRect.x + cropRect.width * 0.5;
@@ -161,7 +211,6 @@ RowLayout {
 							cropRect.zoom /= 1.1;
 
 						cropRect.zoom = Math.max(1.0, Math.min(cropRect.zoom, 5.0));
-						console.log(cropRect.zoom);
 
 						cropRect.x = oldCenterX - cropRect.width * 0.5;
 						cropRect.y = oldCenterY - cropRect.height * 0.5;
