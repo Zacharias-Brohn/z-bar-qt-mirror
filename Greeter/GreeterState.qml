@@ -16,27 +16,14 @@ Scope {
 	property bool launching: false
 	property string promptMessage: ""
 	readonly property var selectedSession: sessionIndex >= 0 ? sessions[sessionIndex] : null
+	readonly property var selectedUser: Users.selectedUser
 	property int sessionIndex: sessions.length > 0 ? 0 : -1
 	property var sessions: []
+	readonly property string userFace: selectedUser ? selectedUser.face : ""
+	readonly property string username: Users.selectedUsername
 
 	// User handling - now uses the Users singleton
 	readonly property var users: Users.users
-	readonly property var selectedUser: Users.selectedUser
-	readonly property string username: Users.selectedUsername
-	readonly property string userFace: selectedUser ? selectedUser.face : ""
-
-	// User selection functions (delegate to Users singleton)
-	function selectUser(username: string): bool {
-		return Users.selectUser(username);
-	}
-
-	function selectNextUser(): void {
-		Users.selectNext();
-	}
-
-	function selectPreviousUser(): void {
-		Users.selectPrevious();
-	}
 
 	signal flashMsg
 
@@ -58,11 +45,11 @@ Scope {
 
 			event.accepted = true;
 			return;
-		}
-
-		if (event.text && !/[\r\n]/.test(event.text)) {
+		} else if (event.key === Qt.Key_Escape) {
+			buffer = "";
+		} else if (" abcdefghijklmnopqrstuvwxyz1234567890`~!@#$%^&*()-_=+[{]}\\|;:'\",<.>/?".includes(event.text.toLowerCase())) {
+			// No illegal characters (you are insane if you use unicode in your password)
 			buffer += event.text;
-			event.accepted = true;
 		}
 	}
 
@@ -79,6 +66,19 @@ Scope {
 
 		launching = true;
 		Greetd.launch(selectedSession.command, [], true);
+	}
+
+	function selectNextUser(): void {
+		Users.selectNext();
+	}
+
+	function selectPreviousUser(): void {
+		Users.selectPrevious();
+	}
+
+	// User selection functions (delegate to Users singleton)
+	function selectUser(username: string): bool {
+		return Users.selectUser(username);
 	}
 
 	function submit(): void {
