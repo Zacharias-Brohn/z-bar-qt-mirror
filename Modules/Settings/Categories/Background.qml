@@ -36,8 +36,6 @@ SettingsPage {
 		}
 
 		WallpaperCropper {
-			Layout.fillWidth: true
-			Layout.preferredHeight: 600
 			screen: root.screen
 		}
 	}

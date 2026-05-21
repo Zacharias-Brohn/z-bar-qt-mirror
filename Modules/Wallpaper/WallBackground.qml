@@ -13,6 +13,21 @@ Item {
 	required property ShellScreen screen
 	property string source: Wallpapers.current
 
+	function refreshData(): void {
+		Hyprland.refreshMonitors();
+		const scale = Hyprland.monitorFor(root.screen).scale;
+		if (scale > 0 && img.resScale !== scale) {
+			img.resScale = scale;
+			img.sourceSize.width = root.screen.width * scale;
+		}
+		const displayData = Wallpapers.getCrop(root.screen.name);
+		const displayRect = Qt.rect(img.sourceSize.width * displayData.x, img.implicitHeight * displayData.y, img.sourceSize.width * displayData.width, img.implicitHeight * displayData.height);
+		img.anchors.fill = null;
+		img.zoom = displayData.zoom;
+		img.x = -(displayRect.x * displayData.zoom / img.resScale);
+		img.y = -(displayRect.y * displayData.zoom / img.resScale);
+	}
+
 	anchors.fill: parent
 
 	Image {
@@ -49,35 +64,19 @@ Item {
 			}
 		}
 
+		onStatusChanged: {
+			if (img.status == Image.Ready) {
+				root.refreshData();
+			}
+		}
+
 		Connections {
 			function onAdapterUpdated(): void {
-				Hyprland.refreshMonitors();
-				const scale = Hyprland.monitorFor(root.screen).scale;
-				if (scale > 0 && img.resScale !== scale) {
-					img.resScale = scale;
-					img.sourceSize.width = root.screen.width * scale;
-				}
-				const displayData = Wallpapers.getCrop(root.screen.name);
-				const displayRect = Qt.rect(img.sourceSize.width * displayData.x, img.implicitHeight * displayData.y, img.sourceSize.width * displayData.width, img.implicitHeight * displayData.height);
-				img.anchors.fill = null;
-				img.zoom = displayData.zoom;
-				img.x = -(displayRect.x * displayData.zoom / img.resScale);
-				img.y = -(displayRect.y * displayData.zoom / img.resScale);
+				root.refreshData();
 			}
 
 			function onLoaded(): void {
-				Hyprland.refreshMonitors();
-				const scale = Hyprland.monitorFor(root.screen).scale;
-				if (scale > 0 && img.resScale !== scale) {
-					img.resScale = scale;
-					img.sourceSize.width = root.screen.width * scale;
-				}
-				const displayData = Wallpapers.getCrop(root.screen.name);
-				const displayRect = Qt.rect(img.sourceSize.width * displayData.x, img.implicitHeight * displayData.y, img.sourceSize.width * displayData.width, img.implicitHeight * displayData.height);
-				img.anchors.fill = null;
-				img.zoom = displayData.zoom;
-				img.x = -(displayRect.x * displayData.zoom / img.resScale);
-				img.y = -(displayRect.y * displayData.zoom / img.resScale);
+				root.refreshData();
 			}
 
 			target: Wallpapers.monitorCrops

@@ -14,10 +14,15 @@ RowLayout {
 	required property ShellScreen screen
 
 	Layout.fillWidth: true
+	Layout.preferredHeight: 400
 	spacing: Appearance.spacing.normal
 
 	Repeater {
-		model: Quickshell.screens
+		model: ScriptModel {
+			values: [...Quickshell.screens].sort((a, b) => {
+				return a.x - b.x;
+			})
+		}
 
 		Item {
 			id: delegate
@@ -44,25 +49,23 @@ RowLayout {
 				height: width / imageRatio
 				source: Wallpapers.current
 
-				Component.onCompleted: {
-					Hyprland.refreshMonitors();
-					// monitorScale = Hyprland.monitorFor(delegate.modelData).scale;
-				}
-				onScaleYChanged: console.log(scaleX, scaleY, "scale")
-				onStatusChanged: {
-					if (scaledImg.status == Image.Ready) {
-						console.log(scaledImg.sourceSize.width, scaledImg.sourceSize.height, scaledImg.width, scaledImg.height, delegate.modelData.width, delegate.modelData.height);
-					}
-				}
-
-				Connections {
-					function onLoaded(): void {
+				onPaintedWidthChanged: {
+					if (paintedWidth > 0) {
 						scaledImg.displayData = Wallpapers.getCrop(delegate.modelData.name);
-						cropRect.zoom = scaledImg.displayData.zoom;
+						cropRect.zoom = Wallpapers.getCrop(delegate.modelData.name).zoom;
 						cropRect.restoreFromData();
 					}
+				}
 
-					target: Wallpapers.monitorCrops
+				CustomText {
+					id: monitorId
+
+					anchors.centerIn: parent
+					color: Qt.alpha(DynamicColors.palette.m3surface, 0.85)
+					font.pointSize: Appearance.font.size.large * 4
+					style: Text.Outline
+					styleColor: DynamicColors.palette.m3onSurface
+					text: delegate.modelData.name
 				}
 
 				CustomRect {
@@ -91,22 +94,20 @@ RowLayout {
 					}
 
 					function clampToBounds() {
-						x = Math.max(imageX, Math.min(x, imageX + scaledImg.width - width));
+						x = Math.max(imageX, Math.min(x, imageX + scaledImg.paintedWidth - width));
 
-						y = Math.max(imageY, Math.min(y, imageY + scaledImg.height - height));
+						y = Math.max(imageY, Math.min(y, imageY + scaledImg.paintedHeight - height));
 					}
 
 					function restoreFromData() {
 						let data = scaledImg.displayData;
 
 						if (data && data.scaledX !== 0 || data.scaledY !== 0 || data.scaledWidth !== 0 || data.scaledHeight !== 0) {
-							console.log("true");
-							x = imageX + data.scaledX;
-							y = imageY + data.scaledY;
+							x = data.scaledX;
+							y = data.scaledY;
 
 							clampToBounds();
 						} else {
-							console.log("false");
 							zoom = 1.0;
 							centerInImage();
 						}
