@@ -1,5 +1,6 @@
 import QtQuick.Layouts
 import QtQuick
+import QtQuick.VectorImage
 import Quickshell
 import Quickshell.Services.SystemTray
 import qs.Modules

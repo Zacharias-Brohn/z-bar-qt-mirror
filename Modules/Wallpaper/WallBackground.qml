@@ -1,6 +1,7 @@
 pragma ComponentBehavior: Bound
 
 import Quickshell
+import Quickshell.Hyprland
 import QtQuick
 import qs.Components
 import qs.Helpers
@@ -17,13 +18,19 @@ Item {
 	Image {
 		id: img
 
+		property int displayH
+		property int displayW
+		property real resScale
+		property real zoom: 1.0
+
 		asynchronous: true
-		fillMode: Image.Stretch
+		fillMode: Image.PreserveAspectCrop
+		height: implicitHeight * zoom / resScale
 		opacity: 1
 		retainWhileLoading: true
 		source: root.source
-		sourceSize.height: root.screen.height
-		sourceSize.width: root.screen.width
+		sourceSize.width: root.screen.width * resScale
+		width: implicitWidth * zoom / resScale
 
 		Behavior on height {
 			Anim {
@@ -44,33 +51,33 @@ Item {
 
 		Connections {
 			function onAdapterUpdated(): void {
-				const displayData = Wallpapers.getCrop(root.screen.name);
-				const displayRect = Qt.rect(displayData.x, displayData.y, displayData.width, displayData.height);
-				const scale = root.screen.width / displayData.width;
-				if (displayRect.width > 0 && displayRect.height > 0) {
-					img.anchors.fill = null;
-					img.x = -displayRect.x;
-					img.y = -displayRect.y;
-					img.width = img.implicitWidth * scale;
-					img.height = img.implicitHeight * scale;
-				} else {
-					img.anchors.fill = root;
+				Hyprland.refreshMonitors();
+				const scale = Hyprland.monitorFor(root.screen).scale;
+				if (scale > 0 && img.resScale !== scale) {
+					img.resScale = scale;
+					img.sourceSize.width = root.screen.width * scale;
 				}
+				const displayData = Wallpapers.getCrop(root.screen.name);
+				const displayRect = Qt.rect(img.sourceSize.width * displayData.x, img.implicitHeight * displayData.y, img.sourceSize.width * displayData.width, img.implicitHeight * displayData.height);
+				img.anchors.fill = null;
+				img.zoom = displayData.zoom;
+				img.x = -(displayRect.x * displayData.zoom / img.resScale);
+				img.y = -(displayRect.y * displayData.zoom / img.resScale);
 			}
 
 			function onLoaded(): void {
-				const displayData = Wallpapers.getCrop(root.screen.name);
-				const displayRect = Qt.rect(displayData.x, displayData.y, displayData.width, displayData.height);
-				const scale = root.screen.width / displayData.width;
-				if (displayRect.width > 0 && displayRect.height > 0) {
-					img.anchors.fill = null;
-					img.x = -displayRect.x;
-					img.y = -displayRect.y;
-					img.width = img.implicitWidth * scale;
-					img.height = img.implicitHeight * scale;
-				} else {
-					img.anchors.fill = root;
+				Hyprland.refreshMonitors();
+				const scale = Hyprland.monitorFor(root.screen).scale;
+				if (scale > 0 && img.resScale !== scale) {
+					img.resScale = scale;
+					img.sourceSize.width = root.screen.width * scale;
 				}
+				const displayData = Wallpapers.getCrop(root.screen.name);
+				const displayRect = Qt.rect(img.sourceSize.width * displayData.x, img.implicitHeight * displayData.y, img.sourceSize.width * displayData.width, img.implicitHeight * displayData.height);
+				img.anchors.fill = null;
+				img.zoom = displayData.zoom;
+				img.x = -(displayRect.x * displayData.zoom / img.resScale);
+				img.y = -(displayRect.y * displayData.zoom / img.resScale);
 			}
 
 			target: Wallpapers.monitorCrops
