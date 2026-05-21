@@ -38,15 +38,13 @@ RowLayout {
 				property var displayData
 				readonly property real imageRatio: scaledImg.sourceSize.width / scaledImg.sourceSize.height
 				property real monitorScale: 1.0
-				readonly property real scaleDownX: scaledImg.width / scaledImg.sourceSize.width
-				readonly property real scaleDownY: scaledImg.height / scaledImg.sourceSize.height
-				readonly property real scaleX: (scaledImg.sourceSize.width * monitorScale) / scaledImg.width
-				readonly property real scaleY: (scaledImg.sourceSize.height * monitorScale) / scaledImg.height
+				readonly property real scaleDownX: scaledImg.paintedWidth / scaledImg.sourceSize.width
+				readonly property real scaleDownY: scaledImg.paintedHeight / scaledImg.sourceSize.height
+				readonly property real scaleX: (scaledImg.sourceSize.width * monitorScale) / scaledImg.paintedWidth
+				readonly property real scaleY: (scaledImg.sourceSize.height * monitorScale) / scaledImg.paintedHeight
 
-				anchors.left: parent.left
-				anchors.right: parent.right
-				anchors.verticalCenter: parent.verticalCenter
-				height: width / imageRatio
+				anchors.fill: parent
+				fillMode: Image.PreserveAspectFit
 				source: Wallpapers.current
 
 				onPaintedWidthChanged: {
@@ -74,23 +72,23 @@ RowLayout {
 					property real aspectRatio: delegate.modelData.width / delegate.modelData.height
 					readonly property real baseHeight: baseWidth / aspectRatio
 					readonly property real baseWidth: {
-						let fittedHeight = scaledImg.height;
+						let fittedHeight = scaledImg.paintedHeight;
 						let fittedWidth = fittedHeight * aspectRatio;
 
-						if (fittedWidth > scaledImg.width) {
-							fittedWidth = scaledImg.width;
+						if (fittedWidth > scaledImg.paintedWidth) {
+							fittedWidth = scaledImg.paintedWidth;
 							fittedHeight = fittedWidth / aspectRatio;
 						}
 
 						return fittedWidth;
 					}
-					readonly property real imageX: (scaledImg.width - scaledImg.width) / 2
-					readonly property real imageY: (scaledImg.height - scaledImg.height) / 2
+					readonly property real imageX: (scaledImg.width - scaledImg.paintedWidth) / 2
+					readonly property real imageY: (scaledImg.height - scaledImg.paintedHeight) / 2
 					property real zoom: scaledImg.displayData.zoom
 
 					function centerInImage() {
-						x = imageX + (scaledImg.width - width) / 2;
-						y = imageY + (scaledImg.height - height) / 2;
+						x = imageX + (scaledImg.paintedWidth - width) / 2;
+						y = imageY + (scaledImg.paintedHeight - height) / 2;
 					}
 
 					function clampToBounds() {
@@ -129,9 +127,9 @@ RowLayout {
 						let nx = mouseX - cropRect.width * 0.5;
 						let ny = mouseY - cropRect.height * 0.5;
 
-						nx = Math.max(cropRect.imageX, Math.min(nx, cropRect.imageX + scaledImg.width - cropRect.width));
+						nx = Math.max(cropRect.imageX, Math.min(nx, cropRect.imageX + scaledImg.paintedWidth - cropRect.width));
 
-						ny = Math.max(cropRect.imageY, Math.min(ny, cropRect.imageY + scaledImg.height - cropRect.height));
+						ny = Math.max(cropRect.imageY, Math.min(ny, cropRect.imageY + scaledImg.paintedHeight - cropRect.height));
 
 						cropRect.x = nx;
 						cropRect.y = ny;
@@ -150,7 +148,7 @@ RowLayout {
 					}
 					onReleased: {
 						const croprect = cropRect.mapToItem(scaledImg, 0, 0, cropRect.width, cropRect.height);
-						const upscaledRect = Qt.rect(croprect.x / scaledImg.width, croprect.y / scaledImg.height, croprect.width / scaledImg.width, croprect.height / scaledImg.height);
+						const upscaledRect = Qt.rect((croprect.x - cropRect.imageX) / scaledImg.paintedWidth, (croprect.y - cropRect.imageY) / scaledImg.paintedHeight, croprect.width / scaledImg.paintedWidth, croprect.height / scaledImg.paintedHeight);
 						Wallpapers.setCrop(delegate.modelData.name, upscaledRect, croprect, cropRect.zoom);
 					}
 					onWheel: wheel => {
