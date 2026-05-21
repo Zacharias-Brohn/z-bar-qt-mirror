@@ -50,6 +50,15 @@ SettingsPage {
 		Separator {
 		}
 
+		SettingSwitch {
+			name: "Show notification icon"
+			object: Config.lock
+			setting: "showNotifIcon"
+		}
+
+		Separator {
+		}
+
 		SettingSpinBox {
 			min: 0
 			name: "Blur amount"

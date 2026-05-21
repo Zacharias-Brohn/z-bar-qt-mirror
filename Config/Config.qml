@@ -242,6 +242,7 @@ Singleton {
 			recolorLogo: lock.recolorLogo,
 			enableFprint: lock.enableFprint,
 			showNotifContent: lock.showNotifContent,
+			showNotifIcon: lock.showNotifIcon,
 			maxFprintTries: lock.maxFprintTries,
 			blurAmount: lock.blurAmount,
 			sizes: {
