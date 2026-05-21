@@ -6,6 +6,7 @@ JsonObject {
 	property int maxFprintTries: 3
 	property bool recolorLogo: false
 	property bool showNotifContent: false
+	property bool showNotifIcon: false
 	property Sizes sizes: Sizes {
 	}
 

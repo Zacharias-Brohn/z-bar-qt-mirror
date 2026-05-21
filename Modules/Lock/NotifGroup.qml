@@ -58,6 +58,7 @@ CustomRect {
 					fillMode: Image.PreserveAspectCrop
 					height: Config.notifs.sizes.image
 					source: Qt.resolvedUrl(root.image)
+					visible: Config.lock.showNotifIcon
 					width: Config.notifs.sizes.image
 				}
 			}

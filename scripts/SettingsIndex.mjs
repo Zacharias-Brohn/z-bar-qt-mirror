@@ -312,6 +312,13 @@ export const settingsIndex = [
         keywords: ["notification", "hide", "privacy"],
     },
     {
+        name: "Show notification icon",
+        category: "lockscreen",
+        categoryName: "Lockscreen",
+        section: "Lockscreen",
+        keywords: ["notification", "hide", "icon"],
+    },
+    {
         name: "Blur amount",
         category: "lockscreen",
         categoryName: "Lockscreen",
