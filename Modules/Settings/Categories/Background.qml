@@ -36,7 +36,6 @@ SettingsPage {
 		}
 
 		WallpaperCropper {
-			screen: root.screen
 		}
 	}
 
