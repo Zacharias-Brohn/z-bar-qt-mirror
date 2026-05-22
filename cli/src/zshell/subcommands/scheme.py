@@ -7,7 +7,7 @@ import subprocess
 
 from jinja2 import Environment, FileSystemLoader, StrictUndefined, Undefined
 from typing import Any, Optional, Tuple
-from zshell.utils.schemepalettes import PRESETS
+from zshell.utils.schemepalettes import get_palette, list_schemes, resolve_preset
 from pathlib import Path
 from PIL import Image
 from materialyoucolor.quantize import QuantizeCelebi
@@ -21,17 +21,31 @@ app = typer.Typer()
 
 
 @app.command()
+def list_presets():
+    schemes = list_schemes()
+    for sid, meta in sorted(schemes.items()):
+        var_list = []
+        for v in meta.variants:
+            parts = [f"{v.id} ({', '.join(sorted(v.modes))})"]
+            if v.accents:
+                parts.append(f"accents: {', '.join(v.accents)}")
+            var_list.append(" | ".join(parts))
+        print(f"{meta.name} ({sid})")
+        print(f"  Variants: {', '.join(var_list)}")
+        print()
+
+
+@app.command()
 def generate(
-    # image inputs (optional - used for image mode)
     image_path: Optional[Path] = typer.Option(None, help="Path to source image. Required for image mode."),
     scheme: Optional[str] = typer.Option(
         None, help="Color scheme algorithm to use for image mode. Ignored in preset mode."
     ),
-    # preset inputs (optional - used for preset mode)
     preset: Optional[str] = typer.Option(
-        None, help="Name of a premade scheme in this format: <preset_name>:<preset_flavor>"
+        None, help="Name of a premade scheme in this format: <scheme>:<variant>[:<accent>]"
     ),
     mode: Optional[str] = typer.Option(None, help="Mode of the preset scheme (dark or light)."),
+    accent: Optional[str] = typer.Option(None, help="Accent for schemes that support it (e.g. mauve)."),
 ):
 
     HOME = str(os.getenv("HOME"))
@@ -432,12 +446,6 @@ def generate(
         result = QuantizeCelebi(pixel_array, 128)
         return Hct.from_int(Score.score(result)[0])
 
-    def seed_from_preset(name: str) -> Hct:
-        try:
-            return PRESETS[name].primary
-        except KeyError:
-            raise typer.BadParameter(f"Preset '{name}' not found. Available presets: {', '.join(PRESETS.keys())}")
-
     def generate_color_scheme(seed: Hct, mode: str, scheme_class) -> dict[str, str]:
 
         is_dark = mode.lower() == "dark"
@@ -466,9 +474,15 @@ def generate(
         scheme_class = get_scheme_class(scheme)
 
         if preset:
-            seed = seed_from_preset(preset)
-            effective_mode = mode or config_mode
-            name, flavor = preset.split(":")
+            p_scheme, p_variant, p_accent = resolve_preset(preset)
+            accent = accent or p_accent
+            palette_obj = get_palette(p_scheme, p_variant, mode or config_mode, accent=accent)
+            colors = palette_obj.colors
+            effective_mode = palette_obj.mode
+            name = palette_obj.scheme
+            flavor = palette_obj.variant
+
+            seed = hex_to_hct(colors.get("primary", "#000000").lstrip("#"))
         else:
             image_path = image_path or Path(WALL_PATH)
             generate_thumbnail(image_path, str(THUMB_PATH))
@@ -483,7 +497,9 @@ def generate(
             else:
                 effective_mode = config_mode
 
-        colors = generate_color_scheme(seed, effective_mode, scheme_class)
+            colors = generate_color_scheme(seed, effective_mode, scheme_class)
+
+        variant_val = scheme if not preset else p_variant
 
         if smart and not preset:
             apply_gtk_mode(effective_mode)
@@ -493,7 +509,7 @@ def generate(
             "name": name,
             "flavor": flavor,
             "mode": effective_mode,
-            "variant": scheme,
+            "variant": variant_val,
             "colors": colors,
             "seed": seed.to_int(),
         }
@@ -507,7 +523,7 @@ def generate(
                 wallpaper_path=wp,
                 name=name,
                 flavor=flavor,
-                variant=scheme,
+                variant=variant_val,
             )
 
             rendered = render_all_templates(
@@ -525,5 +541,3 @@ def generate(
             json.dump(output_dict, f, indent=4)
     except Exception as e:
         print(f"Error: {e}")
-        # with open(output, "w") as f:
-        #     f.write(f"Error: {e}")

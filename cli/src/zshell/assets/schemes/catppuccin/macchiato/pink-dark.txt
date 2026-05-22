@@ -22,13 +22,13 @@ outline 6e738d
 outlineVariant 494d64
 shadow 000000
 scrim 000000
-surfaceTint 967cbe
-primary c6a0f6
+surfaceTint b791b2
+primary f5bde6
 onPrimary 24273a
-primaryContainer 967cbe
+primaryContainer b791b2
 onPrimaryContainer ffffff
 inversePrimary 6c4f94
-secondary 766597
+secondary 95689a
 onSecondary ffffff
 secondaryContainer 544874
 onSecondaryContainer cbbae8
