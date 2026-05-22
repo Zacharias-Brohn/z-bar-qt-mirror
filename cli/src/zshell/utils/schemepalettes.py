@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Mapping
 
 ASSETS = Path(__file__).resolve().parent.parent / "assets" / "schemes"
 
