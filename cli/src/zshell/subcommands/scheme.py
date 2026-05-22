@@ -45,7 +45,6 @@ def generate(
         None, help="Name of a premade scheme in this format: <scheme>:<variant>[:<accent>]"
     ),
     mode: Optional[str] = typer.Option(None, help="Mode of the preset scheme (dark or light)."),
-    accent: Optional[str] = typer.Option(None, help="Accent for schemes that support it (e.g. mauve)."),
 ):
 
     HOME = str(os.getenv("HOME"))
@@ -475,8 +474,7 @@ def generate(
 
         if preset:
             p_scheme, p_variant, p_accent = resolve_preset(preset)
-            accent = accent or p_accent
-            palette_obj = get_palette(p_scheme, p_variant, mode or config_mode, accent=accent)
+            palette_obj = get_palette(p_scheme, p_variant, mode or config_mode, accent=p_accent)
             colors = palette_obj.colors
             effective_mode = palette_obj.mode
             name = palette_obj.scheme
