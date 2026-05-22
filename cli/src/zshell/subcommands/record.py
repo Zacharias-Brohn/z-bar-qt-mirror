@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 import os
 import json
 import subprocess
@@ -16,6 +15,7 @@ CONFIG = Path(HOME) / ".config/zshell/config.json"
 
 STATE_DIR = Path(HOME) / ".local/state/zshell/record"
 TEMP_RECORDING = STATE_DIR / "recording.mp4"
+REPLAY_RECORDING = STATE_DIR / "replay.mp4"
 NOTIF_ID_FILE = STATE_DIR / "notifid.txt"
 
 RECORDINGS_DIR = os.getenv("ZSHELL_RECORDINGS_DIR",
