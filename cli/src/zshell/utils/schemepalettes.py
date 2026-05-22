@@ -78,12 +78,14 @@ def _discover_schemes() -> dict[str, SchemeMeta]:
 
             if modes:
                 vname = var_dir.name.capitalize()
-                variants.append(SchemeVariant(
-                    id=var_dir.name,
-                    name=vname,
-                    modes=frozenset(modes),
-                    accents=tuple(sorted(accents)),
-                ))
+                variants.append(
+                    SchemeVariant(
+                        id=var_dir.name,
+                        name=vname,
+                        modes=frozenset(modes),
+                        accents=tuple(sorted(accents)),
+                    )
+                )
 
         schemes[sid] = SchemeMeta(
             id=sid,
@@ -118,8 +120,7 @@ def get_palette(scheme: str, variant: str, mode: str, accent: str | None = None)
     if not txt_path.exists():
         var_info = next(v for v in meta.variants if v.id == variant)
         raise FileNotFoundError(
-            f"No {mode} palette for '{scheme}:{variant}'. "
-            f"Available modes: {sorted(var_info.modes)}"
+            f"No {mode} palette for '{scheme}:{variant}'. Available modes: {sorted(var_info.modes)}"
         )
 
     colors = _parse_txt(txt_path)

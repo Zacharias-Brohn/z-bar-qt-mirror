@@ -12,39 +12,23 @@ def tmp_schemes(tmp_path: Path) -> Path:
 
     gmedium = schemes / "gruvbox" / "medium"
     gmedium.mkdir(parents=True)
-    (gmedium / "dark.txt").write_text(
-        "background 101415\nonBackground e0e3e4\nprimary 81d3e0\nsurface 1c2021\n"
-    )
-    (gmedium / "light.txt").write_text(
-        "background fbf1c7\nonBackground 3c3836\nprimary 6b5f10\nsurface fbf1c7\n"
-    )
+    (gmedium / "dark.txt").write_text("background 101415\nonBackground e0e3e4\nprimary 81d3e0\nsurface 1c2021\n")
+    (gmedium / "light.txt").write_text("background fbf1c7\nonBackground 3c3836\nprimary 6b5f10\nsurface fbf1c7\n")
 
     ghard = schemes / "gruvbox" / "hard"
     ghard.mkdir(parents=True)
-    (ghard / "dark.txt").write_text(
-        "background 0b0d0e\nprimary 81d3e0\n"
-    )
+    (ghard / "dark.txt").write_text("background 0b0d0e\nprimary 81d3e0\n")
 
     cmocha = schemes / "catppuccin" / "mocha"
     cmocha.mkdir(parents=True)
-    (cmocha / "dark.txt").write_text(
-        "background 1e1e2e\nprimary cba6f7\nsecondary 756294\nsurface 313244\n"
-    )
-    (cmocha / "mauve-dark.txt").write_text(
-        "background 1e1e2e\nprimary cba6f7\nsecondary 756294\nsurface 313244\n"
-    )
-    (cmocha / "green-dark.txt").write_text(
-        "background 1e1e2e\nprimary a6e3a1\nsecondary 5b8964\nsurface 313244\n"
-    )
+    (cmocha / "dark.txt").write_text("background 1e1e2e\nprimary cba6f7\nsecondary 756294\nsurface 313244\n")
+    (cmocha / "mauve-dark.txt").write_text("background 1e1e2e\nprimary cba6f7\nsecondary 756294\nsurface 313244\n")
+    (cmocha / "green-dark.txt").write_text("background 1e1e2e\nprimary a6e3a1\nsecondary 5b8964\nsurface 313244\n")
 
     clatte = schemes / "catppuccin" / "latte"
     clatte.mkdir(parents=True)
-    (clatte / "light.txt").write_text(
-        "background eff1f5\nprimary 8839ef\nsecondary c2b8d0\nsurface ccd0da\n"
-    )
-    (clatte / "mauve-light.txt").write_text(
-        "background eff1f5\nprimary 8839ef\nsecondary c2b8d0\nsurface ccd0da\n"
-    )
+    (clatte / "light.txt").write_text("background eff1f5\nprimary 8839ef\nsecondary c2b8d0\nsurface ccd0da\n")
+    (clatte / "mauve-light.txt").write_text("background eff1f5\nprimary 8839ef\nsecondary c2b8d0\nsurface ccd0da\n")
 
     cextra = schemes / "extra" / "default"
     cextra.mkdir(parents=True)

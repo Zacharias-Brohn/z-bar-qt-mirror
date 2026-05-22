@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-import subprocess
 from unittest.mock import patch, call
 from zshell.subcommands.shell import app
 
 
 def invoke(*args: str) -> None:
     from typer.testing import CliRunner
+
     runner = CliRunner()
     result = runner.invoke(app, args)
     if result.exit_code != 0:
@@ -51,18 +51,14 @@ class TestLock:
     @patch("zshell.subcommands.shell.subprocess.run")
     def test_lock_runs_ipc_call_lock(self, mock_run):
         invoke("lock")
-        mock_run.assert_called_once_with(
-            ["qs", "-c", "zshell", "ipc", "call", "lock", "lock"], check=True
-        )
+        mock_run.assert_called_once_with(["qs", "-c", "zshell", "ipc", "call", "lock", "lock"], check=True)
 
 
 class TestCall:
     @patch("zshell.subcommands.shell.subprocess.run")
     def test_call_no_args(self, mock_run):
         invoke("call", "target", "method")
-        mock_run.assert_called_once_with(
-            ["qs", "-c", "zshell", "ipc", "call", "target", "method"], check=True
-        )
+        mock_run.assert_called_once_with(["qs", "-c", "zshell", "ipc", "call", "target", "method"], check=True)
 
     @patch("zshell.subcommands.shell.subprocess.run")
     def test_call_with_args(self, mock_run):
