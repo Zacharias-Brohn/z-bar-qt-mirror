@@ -17,6 +17,12 @@ def start(no_daemon: bool = False):
 
 
 @app.command()
+def restart(no_daemon: bool = False):
+    subprocess.run(args + ["kill"], check=False)
+    subprocess.run(args + ["-n"] + ([] if no_daemon else ["-d"]), check=True)
+
+
+@app.command()
 def show():
     subprocess.run(args + ["ipc"] + ["show"], check=True)
 
@@ -33,4 +39,4 @@ def lock():
 
 @app.command()
 def call(target: str, method: str, method_args: list[str] = typer.Argument(None)):
-    subprocess.run(args + ["ipc"] + ["call"] + [target] + [method] + method_args, check=True)
+    subprocess.run(args + ["ipc"] + ["call"] + [target] + [method] + (method_args or []), check=True)
