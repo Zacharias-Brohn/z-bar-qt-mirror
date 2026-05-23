@@ -60,12 +60,18 @@ CustomClippingRect {
 			}
 		}
 
-		ColumnLayout {
+		Column {
 			id: clayout
 
 			anchors.left: parent.left
 			anchors.right: parent.right
 			spacing: Appearance.spacing.small
+
+			// move: Transition {
+			// 	Anim {
+			// 		properties: "y"
+			// 	}
+			// }
 		}
 	}
 }

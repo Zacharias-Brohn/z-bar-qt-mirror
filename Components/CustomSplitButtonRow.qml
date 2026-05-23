@@ -8,19 +8,33 @@ Item {
 	id: root
 
 	property alias active: splitButton.active
+	property alias buttonAlias: splitButton
 	property bool enabled: true
 	property alias expanded: splitButton.expanded
 	property int expandedZ: 100
 	required property string label
 	property alias menuItems: splitButton.menuItems
+	property bool shouldBeActive: true
 	property alias type: splitButton.type
 
 	signal selected(item: MenuItem)
 
-	Layout.fillWidth: true
-	Layout.preferredHeight: row.implicitHeight + Appearance.padding.smaller * 2
+	anchors.left: parent.left
+	anchors.right: parent.right
 	clip: false
+	implicitHeight: row.implicitHeight + Appearance.padding.smaller * 2
+	opacity: shouldBeActive ? 1 : 0
+	scale: shouldBeActive ? 1 : 0.8
 	z: root.expanded ? expandedZ : -1
+
+	Behavior on opacity {
+		Anim {
+		}
+	}
+	Behavior on scale {
+		Anim {
+		}
+	}
 
 	RowLayout {
 		id: row

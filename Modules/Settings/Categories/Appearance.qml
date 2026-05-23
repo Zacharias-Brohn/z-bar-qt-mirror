@@ -1,3 +1,4 @@
+import QtQuick
 import qs.Modules.Settings.Controls
 import qs.Config
 
@@ -80,6 +81,7 @@ SettingsPage {
 			name: "Sans family"
 			object: Config.appearance.font.family
 			setting: "sans"
+			stringList: Qt.fontFamilies()
 		}
 
 		Separator {
@@ -89,6 +91,7 @@ SettingsPage {
 			name: "Monospace family"
 			object: Config.appearance.font.family
 			setting: "mono"
+			stringList: Qt.fontFamilies()
 		}
 	}
 

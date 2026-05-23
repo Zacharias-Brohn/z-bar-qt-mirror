@@ -1,4 +1,6 @@
 import Quickshell
+import QtQuick
+import QtQuick.Layouts
 import qs.Modules.Settings.Controls
 import qs.Config
 import qs.Components
@@ -67,6 +69,7 @@ SettingsPage {
 
 		CustomSplitButtonRow {
 			active: Config.general.color.mode === "light" ? menuItems[0] : menuItems[1]
+			buttonAlias.disabled: !Config.general.color.schemeGeneration
 			label: qsTr("Scheme mode")
 
 			menuItems: [
@@ -100,6 +103,7 @@ SettingsPage {
 			id: schemeType
 
 			active: root.schemeTypeItem(menuItems, Config.colors.schemeType)
+			buttonAlias.disabled: !Config.general.color.schemeGeneration
 			label: qsTr("Scheme type")
 			z: 2
 
@@ -169,21 +173,69 @@ SettingsPage {
 		}
 
 		Separator {
+			shouldBeActive: Config.general.color.schemeGeneration ? 0 : 1
+		}
+
+		SchemesListView {
+			name: "Color scheme presets"
+			object: Config.colors.presets
+			setting: "name"
+			shouldBeActive: Config.general.color.schemeGeneration ? 0 : 1
+			stringList: FetchPresets.presetNames()
+		}
+
+		Separator {
+			shouldBeActive: Config.colors.presets.name !== "" && !Config.general.color.schemeGeneration
+		}
+
+		SchemesListView {
+			name: "Preset variant"
+			object: Config.colors.presets
+			setting: "variant"
+			shouldBeActive: Config.colors.presets.name !== "" && !Config.general.color.schemeGeneration
+			stringList: FetchPresets.variantNames(Config.colors.presets.name)
+
+			onOptionSet: item => {
+				Quickshell.execDetached(["zshell-cli", "scheme", "generate", "--preset", `${Config.colors.presets.name.toLowerCase()}:${item}`]);
+			}
+		}
+
+		Separator {
+			shouldBeActive: Config.colors.presets.variant !== "" && FetchPresets.accents(Config.colors.presets.name, Config.colors.presets.variant).length > 0 && !Config.general.color.schemeGeneration
+		}
+
+		SchemesListView {
+			name: "Preset accent"
+			object: Config.colors.presets
+			setting: "accent"
+			shouldBeActive: Config.colors.presets.variant !== "" && FetchPresets.accents(Config.colors.presets.name, Config.colors.presets.variant).length > 0 && !Config.general.color.schemeGeneration
+			stringList: FetchPresets.accents(Config.colors.presets.name, Config.colors.presets.variant)
+
+			onOptionSet: item => {
+				Quickshell.execDetached(["zshell-cli", "scheme", "generate", "--preset", `${Config.colors.presets.name.toLowerCase()}:${Config.colors.presets.variant}`, "--accent", `${item}`]);
+			}
+		}
+
+		Separator {
+			shouldBeActive: Config.general.color.schemeGeneration ? 1 : 0
 		}
 
 		SettingSwitch {
 			name: "Smart color scheme"
 			object: Config.general.color
 			setting: "smart"
+			shouldBeActive: Config.general.color.schemeGeneration ? 1 : 0
 		}
 
 		Separator {
+			shouldBeActive: Config.general.color.schemeGeneration ? 1 : 0
 		}
 
 		SettingSpinner {
 			name: "Schedule dark mode"
 			object: Config.general.color
 			settings: ["scheduleDarkStart", "scheduleDarkEnd", "scheduleDark"]
+			shouldBeActive: Config.general.color.schemeGeneration ? 1 : 0
 		}
 
 		Separator {

@@ -13,11 +13,29 @@ Item {
 	id: wrapper
 
 	property bool changesMade: false
+	property bool shouldBeActive: true
 
 	signal requestCrop
 
-	Layout.fillWidth: true
-	Layout.preferredHeight: 400
+	anchors.left: parent.left
+	anchors.right: parent.right
+	implicitHeight: shouldBeActive ? 400 : 0
+	opacity: shouldBeActive ? 1 : 0
+	scale: shouldBeActive ? 1 : 0.8
+	visible: opacity > 0
+
+	Behavior on opacity {
+		Anim {
+		}
+	}
+	Behavior on scale {
+		Anim {
+		}
+	}
+	Behavior on y {
+		Anim {
+		}
+	}
 
 	IconButton {
 		anchors.margins: Appearance.padding.normal

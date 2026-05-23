@@ -12,7 +12,7 @@ Singleton {
 
 	readonly property int darkEnd: Config.general.color.scheduleDarkEnd
 	readonly property int darkStart: Config.general.color.scheduleDarkStart
-	readonly property bool enabled: Config.general.color.scheduleDark
+	readonly property bool enabled: Config.general.color.scheduleDark && Config.general.color.schemeGeneration
 
 	function applyDarkMode() {
 		Quickshell.execDetached(["zshell-cli", "scheme", "generate", "--mode", "dark"]);

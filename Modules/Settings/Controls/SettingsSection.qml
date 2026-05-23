@@ -10,18 +10,39 @@ CustomRect {
 	property real contentPadding: Appearance.padding.large
 	property string sectionId: ""
 
-	Layout.fillWidth: true
-	Layout.preferredHeight: layout.implicitHeight + contentPadding * 2
+	anchors.left: parent.left
+	anchors.right: parent.right
 	color: DynamicColors.tPalette.m3surfaceContainer
+	implicitHeight: layout.height + contentPadding * 2
 	radius: Appearance.rounding.normal - Appearance.padding.smaller
 
-	ColumnLayout {
+	Behavior on implicitHeight {
+		Anim {
+		}
+	}
+	Behavior on y {
+		Anim {
+		}
+	}
+
+	Column {
 		id: layout
 
 		anchors.left: parent.left
 		anchors.margins: root.contentPadding
 		anchors.right: parent.right
-		anchors.verticalCenter: parent.verticalCenter
+		anchors.top: parent.top
+		// anchors.verticalCenter: parent.verticalCenter
 		spacing: Appearance.spacing.normal
+
+		Behavior on height {
+			Anim {
+			}
+		}
+		move: Transition {
+			Anim {
+				properties: "y"
+			}
+		}
 	}
 }

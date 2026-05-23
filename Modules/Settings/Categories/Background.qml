@@ -43,7 +43,6 @@ SettingsPage {
 		sectionId: "Wallpapers"
 
 		WallpaperGrid {
-			Layout.fillWidth: true
 		}
 	}
 }

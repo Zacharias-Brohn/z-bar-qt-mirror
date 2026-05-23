@@ -7,9 +7,13 @@ CustomRect {
 	id: root
 
 	required property string name
+	property bool shouldBeActive: true
 
-	Layout.preferredHeight: 60
-	Layout.preferredWidth: 200
+	implicitHeight: 60
+	implicitWidth: 200
+	opacity: shouldBeActive ? 1 : 0
+	scale: shouldBeActive ? 1 : 0.8
+	visible: opacity > 0
 
 	CustomText {
 		anchors.fill: parent

@@ -11,10 +11,32 @@ Item {
 
 	required property string name
 	required property var object
+	property alias row: row
 	required property string setting
+	property bool shouldBeActive: true
+	required property list<var> stringList
 
-	Layout.fillWidth: true
-	Layout.preferredHeight: row.height
+	signal optionSet
+
+	anchors.left: parent.left
+	anchors.right: parent.right
+	implicitHeight: shouldBeActive ? row.height : 0
+	opacity: shouldBeActive ? 1 : 0
+	scale: shouldBeActive ? 1 : 0.8
+	visible: opacity > 0
+
+	Behavior on opacity {
+		Anim {
+		}
+	}
+	Behavior on scale {
+		Anim {
+		}
+	}
+	Behavior on y {
+		Anim {
+		}
+	}
 
 	RowLayout {
 		id: row
@@ -120,17 +142,18 @@ Item {
 						StateLayer {
 							onClicked: {
 								root.object[root.setting] = fontDelegate.modelData;
+								root.optionSet();
 								Config.save();
 							}
 						}
 					}
 					model: ScriptModel {
 						values: {
-							const fonts = Qt.fontFamilies();
+							const values = root.stringList;
 							const search = fontSearch.text;
 							var regex = new RegExp(search, "i");
 
-							return fonts.filter(n => regex.test(n));
+							return values.filter(n => regex.test(n));
 						}
 					}
 				}

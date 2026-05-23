@@ -12,13 +12,19 @@ GridView {
 
 	readonly property int columnsCount: Math.max(1, Math.floor(width / minCellWidth))
 	readonly property int minCellWidth: 200 + Appearance.spacing.normal
+	property bool shouldBeActive: true
 
-	Layout.preferredHeight: contentHeight
+	anchors.left: parent.left
+	anchors.right: parent.right
 	cellHeight: 140 + Appearance.spacing.normal
 	cellWidth: width / columnsCount
 	clip: true
+	implicitHeight: shouldBeActive ? contentHeight : 0
 	interactive: false
 	model: Wallpapers.list
+	opacity: shouldBeActive ? 1 : 0
+	scale: shouldBeActive ? 1 : 0.8
+	visible: opacity > 0
 
 	delegate: Item {
 		required property int index
@@ -135,6 +141,18 @@ GridView {
 			anchors.rightMargin: itemMargin
 			anchors.topMargin: itemMargin
 			radius: itemRadius
+		}
+	}
+	Behavior on opacity {
+		Anim {
+		}
+	}
+	Behavior on scale {
+		Anim {
+		}
+	}
+	Behavior on y {
+		Anim {
 		}
 	}
 }

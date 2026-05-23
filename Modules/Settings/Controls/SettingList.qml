@@ -8,13 +8,31 @@ Item {
 
 	required property int index
 	required property var modelData
+	property bool shouldBeActive: true
 
 	signal addActiveActionRequested
 	signal deleteRequested(int index)
 	signal fieldEdited(string key, var value)
 
-	Layout.fillWidth: true
-	Layout.preferredHeight: row.implicitHeight + Appearance.padding.smaller * 2
+	anchors.left: parent.left
+	anchors.right: parent.right
+	implicitHeight: shouldBeActive ? row.implicitHeight + Appearance.padding.smaller * 2 : 0
+	opacity: shouldBeActive ? 1 : 0
+	scale: shouldBeActive ? 1 : 0.8
+	visible: opacity > 0
+
+	Behavior on opacity {
+		Anim {
+		}
+	}
+	Behavior on scale {
+		Anim {
+		}
+	}
+	Behavior on y {
+		Anim {
+		}
+	}
 
 	CustomRect {
 		anchors.left: parent.left

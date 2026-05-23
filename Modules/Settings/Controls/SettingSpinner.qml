@@ -11,6 +11,7 @@ Item {
 	required property string name
 	required property var object
 	required property list<string> settings
+	property bool shouldBeActive: true
 
 	function commitChoice(choice: int, setting: string): void {
 		root.object[setting] = choice;
@@ -32,8 +33,25 @@ Item {
 		return Qt.formatTime(d, "h AP");
 	}
 
-	Layout.fillWidth: true
-	Layout.preferredHeight: row.implicitHeight + Appearance.padding.smaller * 2
+	anchors.left: parent.left
+	anchors.right: parent.right
+	implicitHeight: shouldBeActive ? row.implicitHeight + Appearance.padding.smaller * 2 : 0
+	opacity: shouldBeActive ? 1 : 0
+	scale: shouldBeActive ? 1 : 0.8
+	visible: opacity > 0
+
+	Behavior on opacity {
+		Anim {
+		}
+	}
+	Behavior on scale {
+		Anim {
+		}
+	}
+	Behavior on y {
+		Anim {
+		}
+	}
 
 	Rectangle {
 		anchors.fill: parent
