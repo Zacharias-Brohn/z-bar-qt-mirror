@@ -12,9 +12,27 @@ Item {
 	required property string name
 	required property var object
 	required property string setting
+	property bool shouldBeActive: true
 
-	Layout.fillWidth: true
-	Layout.preferredHeight: layout.implicitHeight
+	anchors.left: parent.left
+	anchors.right: parent.right
+	implicitHeight: shouldBeActive ? layout.implicitHeight : 0
+	opacity: shouldBeActive ? 1 : 0
+	scale: shouldBeActive ? 1 : 0.8
+	visible: opacity > 0
+
+	Behavior on opacity {
+		Anim {
+		}
+	}
+	Behavior on scale {
+		Anim {
+		}
+	}
+	Behavior on y {
+		Anim {
+		}
+	}
 
 	Rectangle {
 		anchors.fill: parent
@@ -46,6 +64,9 @@ Item {
 		StringListEditor {
 			Layout.fillWidth: true
 			addLabel: root.addLabel
+			anchors.left: undefined
+			anchors.right: undefined
+			anchors.verticalCenter: undefined
 			values: [...(root.object[root.setting] ?? [])]
 
 			onListEdited: function (values) {

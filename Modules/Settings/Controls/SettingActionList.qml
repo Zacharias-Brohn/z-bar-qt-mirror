@@ -13,6 +13,7 @@ ColumnLayout {
 	required property string name
 	required property var object
 	required property string setting
+	property bool shouldBeActive: true
 
 	function addAction() {
 		const list = [...root.object[root.setting]];
@@ -44,8 +45,26 @@ ColumnLayout {
 		Config.save();
 	}
 
-	Layout.fillWidth: true
+	anchors.left: parent.left
+	anchors.right: parent.right
+	height: shouldBeActive ? implicitHeight : 0
+	opacity: shouldBeActive ? 1 : 0
+	scale: shouldBeActive ? 1 : 0.8
 	spacing: Appearance.spacing.smaller
+	visible: opacity > 0
+
+	Behavior on opacity {
+		Anim {
+		}
+	}
+	Behavior on scale {
+		Anim {
+		}
+	}
+	Behavior on y {
+		Anim {
+		}
+	}
 
 	Rectangle {
 		anchors.fill: parent

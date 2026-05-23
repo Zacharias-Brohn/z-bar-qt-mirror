@@ -16,7 +16,7 @@ Item {
 	property bool shouldBeActive: true
 	required property list<var> stringList
 
-	signal optionSet
+	signal optionSet(option: string)
 
 	anchors.left: parent.left
 	anchors.right: parent.right
@@ -55,8 +55,6 @@ Item {
 		}
 
 		CustomClippingRect {
-			id: fontArea
-
 			Layout.preferredHeight: 42 * 6 + Appearance.padding.normal * 2 + Appearance.spacing.small * 5
 			Layout.preferredWidth: 500
 			color: DynamicColors.tPalette.m3surfaceContainer
@@ -86,7 +84,7 @@ Item {
 				}
 
 				CustomTextField {
-					id: fontSearch
+					id: textSearch
 
 					anchors.left: searchIcon.right
 					anchors.leftMargin: Appearance.spacing.small
@@ -112,7 +110,7 @@ Item {
 					spacing: Appearance.spacing.small
 
 					delegate: CustomRect {
-						id: fontDelegate
+						id: delegate
 
 						required property string modelData
 
@@ -136,13 +134,13 @@ Item {
 							horizontalAlignment: Text.AlignRight
 							text: "check_circle"
 							verticalAlignment: Text.AlignVCenter
-							visible: root.object[root.setting] === fontDelegate.modelData
+							visible: root.object[root.setting] === delegate.modelData
 						}
 
 						StateLayer {
 							onClicked: {
-								root.object[root.setting] = fontDelegate.modelData;
-								root.optionSet();
+								root.object[root.setting] = delegate.modelData;
+								root.optionSet(delegate.modelData);
 								Config.save();
 							}
 						}
@@ -150,7 +148,7 @@ Item {
 					model: ScriptModel {
 						values: {
 							const values = root.stringList;
-							const search = fontSearch.text;
+							const search = textSearch.text;
 							var regex = new RegExp(search, "i");
 
 							return values.filter(n => regex.test(n));

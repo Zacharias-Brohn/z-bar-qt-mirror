@@ -12,11 +12,28 @@ CustomRect {
 	property alias expanded: menu.expanded
 	property alias label: label
 	property alias menu: menu
+	property bool shouldBeActive: true
 	property alias text: label.text
 
 	color: enabled ? DynamicColors.palette.m3primary : DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHigh, 2)
+	opacity: shouldBeActive ? 1 : 0
 	radius: Appearance.rounding.full
+	scale: shouldBeActive ? 1 : 0.8
+	visible: opacity > 0
 	z: expanded ? 100 : 0
+
+	Behavior on opacity {
+		Anim {
+		}
+	}
+	Behavior on scale {
+		Anim {
+		}
+	}
+	Behavior on y {
+		Anim {
+		}
+	}
 
 	CustomText {
 		id: label

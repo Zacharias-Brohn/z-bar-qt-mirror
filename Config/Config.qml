@@ -115,7 +115,12 @@ Singleton {
 
 	function serializeColors(): var {
 		return {
-			schemeType: colors.schemeType
+			schemeType: colors.schemeType,
+			presets: {
+				name: colors.presets.name,
+				variant: colors.presets.variant,
+				accent: colors.presets.accent
+			}
 		};
 	}
 

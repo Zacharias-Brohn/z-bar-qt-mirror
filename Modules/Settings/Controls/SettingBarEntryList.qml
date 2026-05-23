@@ -25,6 +25,7 @@ Item {
 	required property var object
 	property var pendingCommitEntries: []
 	required property string setting
+	property bool shouldBeActive: true
 	property int uidCounter: 0
 	property var visualEntries: []
 
@@ -146,8 +147,25 @@ Item {
 		Config.save();
 	}
 
-	Layout.fillWidth: true
-	implicitHeight: layout.implicitHeight
+	anchors.left: parent.left
+	anchors.right: parent.right
+	implicitHeight: shouldBeActive ? layout.implicitHeight : 0
+	opacity: shouldBeActive ? 1 : 0
+	scale: shouldBeActive ? 1 : 0.8
+	visible: opacity > 0
+
+	Behavior on opacity {
+		Anim {
+		}
+	}
+	Behavior on scale {
+		Anim {
+		}
+	}
+	Behavior on y {
+		Anim {
+		}
+	}
 
 	Component.onCompleted: root.rebuildVisualEntries()
 

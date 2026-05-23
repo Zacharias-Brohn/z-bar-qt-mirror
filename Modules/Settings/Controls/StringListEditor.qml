@@ -9,6 +9,7 @@ ColumnLayout {
 	id: root
 
 	property string addLabel: qsTr("Add entry")
+	property bool shouldBeActive: true
 	property var values: []
 
 	signal listEdited(var values)
@@ -31,8 +32,26 @@ ColumnLayout {
 		root.listEdited(list);
 	}
 
-	Layout.fillWidth: true
+	anchors.left: parent.left
+	anchors.right: parent.right
+	height: shouldBeActive ? implicitHeight : 0
+	opacity: shouldBeActive ? 1 : 0
+	scale: shouldBeActive ? 1 : 0.8
 	spacing: Appearance.spacing.smaller
+	visible: opacity > 0
+
+	Behavior on opacity {
+		Anim {
+		}
+	}
+	Behavior on scale {
+		Anim {
+		}
+	}
+	Behavior on y {
+		Anim {
+		}
+	}
 
 	Repeater {
 		model: [...root.values]
