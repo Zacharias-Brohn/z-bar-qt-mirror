@@ -21,18 +21,36 @@ app = typer.Typer()
 
 
 @app.command()
-def list_presets():
+def list_presets(
+    json_format: bool = typer.Option(False, "--json", help="Output in JSON format"),
+):
     schemes = list_schemes()
-    for sid, meta in sorted(schemes.items()):
-        var_list = []
-        for v in meta.variants:
-            parts = [f"{v.id} ({', '.join(sorted(v.modes))})"]
-            if v.accents:
-                parts.append(f"accents: {', '.join(v.accents)}")
-            var_list.append(" | ".join(parts))
-        print(f"{meta.name} ({sid})")
-        print(f"  Variants: {', '.join(var_list)}")
-        print()
+    if json_format:
+        out = {}
+        for sid, meta in sorted(schemes.items()):
+            variants = {}
+            for v in meta.variants:
+                entry = {"modes": sorted(v.modes)}
+                if v.accents:
+                    entry["accents"] = sorted(v.accents)
+                    entry["default_accent"] = sorted(v.accents)[0]
+                variants[v.id] = entry
+            out[meta.name] = {
+                "id": sid,
+                "variants": variants,
+            }
+        print(json.dumps({"presets": out}, indent=2))
+    else:
+        for sid, meta in sorted(schemes.items()):
+            var_list = []
+            for v in meta.variants:
+                parts = [f"{v.id} ({', '.join(sorted(v.modes))})"]
+                if v.accents:
+                    parts.append(f"accents: {', '.join(v.accents)}")
+                var_list.append(" | ".join(parts))
+            print(f"{meta.name} ({sid})")
+            print(f"  Variants: {', '.join(var_list)}")
+            print()
 
 
 @app.command()
@@ -41,10 +59,9 @@ def generate(
     scheme: Optional[str] = typer.Option(
         None, help="Color scheme algorithm to use for image mode. Ignored in preset mode."
     ),
-    preset: Optional[str] = typer.Option(
-        None, help="Name of a premade scheme in this format: <scheme>:<variant>[:<accent>]"
-    ),
+    preset: Optional[str] = typer.Option(None, help="Name of a premade scheme in this format: <scheme>:<variant>"),
     mode: Optional[str] = typer.Option(None, help="Mode of the preset scheme (dark or light)."),
+    accent: Optional[str] = typer.Option(None, help="Accent for schemes that support it (e.g. mauve)."),
 ):
 
     HOME = str(os.getenv("HOME"))
@@ -473,8 +490,17 @@ def generate(
         scheme_class = get_scheme_class(scheme)
 
         if preset:
-            p_scheme, p_variant, p_accent = resolve_preset(preset)
-            palette_obj = get_palette(p_scheme, p_variant, mode or config_mode, accent=p_accent)
+            p_scheme, p_variant = resolve_preset(preset)
+            schemes = list_schemes()
+            if accent and p_scheme in schemes:
+                meta = schemes[p_scheme]
+                var_accents = next((v.accents for v in meta.variants if v.id == p_variant), ())
+                if accent not in var_accents:
+                    available = ", ".join(var_accents) if var_accents else "none"
+                    raise typer.BadParameter(
+                        f"Accent '{accent}' not available for '{p_scheme}:{p_variant}'. Available accents: {available}"
+                    )
+            palette_obj = get_palette(p_scheme, p_variant, mode or config_mode, accent=accent)
             colors = palette_obj.colors
             effective_mode = palette_obj.mode
             name = palette_obj.scheme

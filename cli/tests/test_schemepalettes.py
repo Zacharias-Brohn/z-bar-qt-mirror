@@ -154,13 +154,14 @@ class TestListSchemes:
 
 class TestResolvePreset:
     def test_two_parts(self):
-        assert sp.resolve_preset("gruvbox:medium") == ("gruvbox", "medium", None)
+        assert sp.resolve_preset("gruvbox:medium") == ("gruvbox", "medium")
 
     def test_three_parts(self):
-        assert sp.resolve_preset("catppuccin:mocha:mauve") == ("catppuccin", "mocha", "mauve")
+        with pytest.raises(ValueError, match="Invalid preset spec"):
+            sp.resolve_preset("catppuccin:mocha:mauve")
 
     def test_one_part(self):
-        assert sp.resolve_preset("default") == ("default", "default", None)
+        assert sp.resolve_preset("default") == ("default", "default")
 
     def test_edge_spaces(self):
-        assert sp.resolve_preset(" catppuccin : mocha : mauve ") == (" catppuccin ", " mocha ", " mauve ")
+        assert sp.resolve_preset(" catppuccin : mocha ") == (" catppuccin ", " mocha ")

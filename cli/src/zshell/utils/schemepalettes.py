@@ -132,12 +132,10 @@ def list_schemes() -> dict[str, SchemeMeta]:
     return dict(SCHEMES)
 
 
-def resolve_preset(spec: str) -> tuple[str, str, str | None]:
+def resolve_preset(spec: str) -> tuple[str, str]:
     parts = spec.split(":")
-    if len(parts) == 3:
-        return parts[0], parts[1], parts[2]
     if len(parts) == 2:
-        return parts[0], parts[1], None
+        return parts[0], parts[1]
     if len(parts) == 1:
-        return parts[0], "default", None
-    raise ValueError(f"Invalid preset spec '{spec}'. Use <scheme>:<variant>[:<accent>]")
+        return parts[0], "default"
+    raise ValueError(f"Invalid preset spec '{spec}'. Use <scheme>:<variant>")
