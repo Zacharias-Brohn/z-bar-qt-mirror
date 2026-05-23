@@ -1,4 +1,5 @@
 import subprocess
+import time
 import typer
 
 args = ["qs", "-c", "zshell"]
@@ -8,7 +9,7 @@ app = typer.Typer()
 
 @app.command()
 def kill():
-    subprocess.run(args + ["kill"], check=True)
+    subprocess.run(args + ["kill"], check=False)
 
 
 @app.command()
@@ -19,6 +20,11 @@ def start(no_daemon: bool = False):
 @app.command()
 def restart(no_daemon: bool = False):
     subprocess.run(args + ["kill"], check=False)
+    for _ in range(50):
+        result = subprocess.run(args + ["kill"], capture_output=True)
+        if result.returncode == 255:
+            break
+        time.sleep(0.05)
     subprocess.run(args + ["-n"] + ([] if no_daemon else ["-d"]), check=True)
 
 
