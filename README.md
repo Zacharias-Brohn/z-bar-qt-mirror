@@ -216,12 +216,56 @@ Action-driven flows (`>` prefix by default) include calculator, wallpaper picker
 
 `zshell-cli` provides these subcommands:
 
-- `shell` - start/kill/log/IPC calls
-- `screenshot` - open area picker (`start`, `start-freeze`)
-- `wallpaper` - set wallpaper + generate lockscreen blur image
-- `scheme` - generate and apply dynamic/preset color schemes
+### `shell` — daemon management
 
-Note: `cli/src/zshell/subcommands/scheme.py` uses Jinja2 templating for `~/.config/zshell/templates` rendering.
+| Command | Description |
+|---------|-------------|
+| `start` | Start the shell daemon (pass `--no-daemon` to run in foreground) |
+| `kill`  | Kill the running shell daemon |
+| `restart` | Kill then restart the daemon |
+| `lock`  | Lock the session via IPC |
+| `show`  | Show the shell window via IPC |
+| `log`   | Print daemon logs |
+
+### `scheme` — color scheme generation
+
+```
+Usage: zshell-cli scheme generate [--preset <scheme>:<variant>] [--accent <accent>]
+                                   [--mode <dark|light>] [--image-path <path>]
+
+Generate a color scheme from a wallpaper image (Material You) or from
+a built-in preset.
+
+Preset selection:
+  --preset <scheme>:<variant>    Pick a built-in scheme (e.g. catppuccin:mocha)
+  --accent <name>                Accent color for schemes that support it
+                                   (catppuccin accepts: blue, green, mauve,
+                                   peach, pink, red, rosewater, etc.)
+  --mode <dark|light>            Override variant mode
+
+  If variant has both dark and light modes, the mode is auto-detected from
+  the current system or config preference.
+
+  List all available presets:
+    zshell-cli scheme list-presets         # human-readable
+    zshell-cli scheme list-presets --json  # machine-readable (QML UI)
+
+  Examples:
+    zshell-cli scheme generate --preset gruvbox:medium
+    zshell-cli scheme generate --preset catppuccin:mocha --accent green
+    zshell-cli scheme generate --preset everforest:medium --mode light
+```
+
+Note: Template rendering (Jinja2) applies generated colors to `~/.config/zshell/templates/*`.
+
+### `screenshot` — area picker
+
+- `start` — open interactive area picker
+- `start-freeze` — freeze screen then pick
+
+### `wallpaper` — wallpaper management
+
+- Set wallpaper and generate lockscreen blur background
 
 ## Greeter
 
