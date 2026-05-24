@@ -134,7 +134,7 @@ Item {
 			anchors.right: parent.right
 			anchors.top: searchBar.bottom
 			anchors.topMargin: Appearance.spacing.smaller
-			color: DynamicColors.tPalette.m3surfaceContainer
+			color: DynamicColors.tPalette.m3surfaceContainerLowest
 			radius: Appearance.rounding.normal
 
 			StackView {
