@@ -120,7 +120,7 @@ def start_recording(region: Optional[str], sound: bool):
 
         monitors = _monitors_intersecting_region(x, y, w, h)
         framerate = _highest_refresh(monitors)
-        cmd.extend(["-w", "-region", geometry, "-f", str(int(framerate))])
+        cmd.extend(["-w", "region", "-region", geometry, "-f", str(int(framerate))])
 
     else:
         monitor_name = _focused_monitor_name()
