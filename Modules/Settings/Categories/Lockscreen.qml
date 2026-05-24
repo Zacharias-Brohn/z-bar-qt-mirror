@@ -104,6 +104,18 @@ SettingsPage {
 	}
 
 	SettingsSection {
+		sectionId: "Greeter"
+
+		SettingsHeader {
+			name: "Greeter"
+		}
+
+		SettingsIconButton {
+			name: "Install wallpaper and color scheme to greeter"
+		}
+	}
+
+	SettingsSection {
 		sectionId: "Idle"
 
 		Idle {
