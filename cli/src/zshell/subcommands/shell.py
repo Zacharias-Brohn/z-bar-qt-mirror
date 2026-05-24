@@ -18,29 +18,32 @@ def kill():
     sys.stderr.write(result.stderr.decode())
 
 
+def start_instance(no_daemon: bool = False) -> None:
+    result = subprocess.run(args + ["-n"] + ([] if no_daemon else ["-d"]), capture_output=True)
+    stdout = result.stdout.decode().strip()
+    if stdout:
+        if "already running" in stdout.lower():
+            raise click.ClickException(stdout)
+    if result.returncode != 0:
+        stderr = result.stderr.decode().strip()
+        raise click.ClickException(stderr)
+
+
 @app.command()
 def start(no_daemon: bool = False):
-    check = subprocess.run(args + ["ipc"] + ["show"], capture_output=True)
-    if check.returncode == 0:
-        raise click.ClickException("An instance of this configuration is already running.")
-    result = subprocess.run(args + ["-n"] + ([] if no_daemon else ["-d"]), capture_output=True)
-    if result.returncode != 0:
-        raise click.ClickException(result.stderr.decode().strip())
-    sys.stderr.write(result.stderr.decode())
+    start_instance(no_daemon)
 
 
 @app.command()
 def restart(no_daemon: bool = False):
-    subprocess.run(args + ["kill"])
-    for _ in range(50):
+    subprocess.run(args + ["kill"], capture_output=True)
+    deadline = time.monotonic() + 2.5
+    while time.monotonic() < deadline:
         result = subprocess.run(args + ["kill"], capture_output=True)
         if result.returncode == 255:
             break
         time.sleep(0.05)
-    result = subprocess.run(args + ["-n"] + ([] if no_daemon else ["-d"]), capture_output=True)
-    if result.returncode != 0:
-        raise click.ClickException(result.stderr.decode().strip())
-    sys.stderr.write(result.stderr.decode())
+    start_instance(no_daemon=no_daemon)
 
 
 @app.command()

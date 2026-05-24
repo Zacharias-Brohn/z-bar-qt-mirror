@@ -34,34 +34,29 @@ class TestKill:
 class TestStart:
     @patch("zshell.subcommands.shell.subprocess.run")
     def test_start_default_daemon(self, mock_run):
-        mock_run.side_effect = [
-            CompletedProcess([], 1, b"", b""),  # ipc show → no instance
-            CompletedProcess([], 0, b"", b"Launching config\n"),  # launch ok
-        ]
+        mock_run.return_value = CompletedProcess([], 0, b"", b"Launching config\n")
         invoke("start")
-        assert mock_run.call_args_list == [
-            call(["qs", "-c", "zshell", "ipc", "show"], capture_output=True),
-            call(["qs", "-c", "zshell", "-n", "-d"], capture_output=True),
-        ]
+        mock_run.assert_called_once_with(["qs", "-c", "zshell", "-n", "-d"], capture_output=True)
 
     @patch("zshell.subcommands.shell.subprocess.run")
     def test_start_no_daemon(self, mock_run):
-        mock_run.side_effect = [
-            CompletedProcess([], 1, b"", b""),
-            CompletedProcess([], 0, b"", b"Launching config\n"),
-        ]
+        mock_run.return_value = CompletedProcess([], 0, b"", b"Launching config\n")
         invoke("start", "--no-daemon")
-        assert mock_run.call_args_list == [
-            call(["qs", "-c", "zshell", "ipc", "show"], capture_output=True),
-            call(["qs", "-c", "zshell", "-n"], capture_output=True),
-        ]
+        mock_run.assert_called_once_with(["qs", "-c", "zshell", "-n"], capture_output=True)
 
     @patch("zshell.subcommands.shell.subprocess.run")
     def test_start_already_running_errors(self, mock_run):
-        mock_run.return_value = CompletedProcess([], 0, b"", b"target visibilities\n")
+        mock_run.return_value = CompletedProcess([], 0, b"An instance of this configuration is already running.\n", b"")
         result = runner.invoke(app, ["start"])
         assert result.exit_code != 0
         assert "already running" in result.output
+
+    @patch("zshell.subcommands.shell.subprocess.run")
+    def test_start_other_failure_errors(self, mock_run):
+        mock_run.return_value = CompletedProcess([], 1, b"", b"Config error\n")
+        result = runner.invoke(app, ["start"])
+        assert result.exit_code != 0
+        assert "Config error" in result.output
 
 
 class TestShow:
@@ -106,30 +101,30 @@ class TestCall:
 
 
 class TestRestart:
+    @patch("zshell.subcommands.shell.start_instance")
     @patch("zshell.subcommands.shell.subprocess.run")
-    def test_restart_kills_then_starts(self, mock_run):
+    def test_restart_kills_then_starts(self, mock_run, mock_start):
         mock_run.side_effect = [
-            CompletedProcess([], 0, b"", b"Killed abc\n"),  # first kill (no capture)
+            CompletedProcess([], 0, b"", b"Killed abc\n"),  # first kill (captured)
             CompletedProcess([], 255, b"", b""),  # poll → no instance
-            CompletedProcess([], 0, b"", b"Launching config\n"),  # launch ok
         ]
         invoke("restart")
         assert mock_run.call_args_list == [
-            call(["qs", "-c", "zshell", "kill"]),  # no capture_output
             call(["qs", "-c", "zshell", "kill"], capture_output=True),
-            call(["qs", "-c", "zshell", "-n", "-d"], capture_output=True),
+            call(["qs", "-c", "zshell", "kill"], capture_output=True),
         ]
+        mock_start.assert_called_once_with(no_daemon=False)
 
+    @patch("zshell.subcommands.shell.start_instance")
     @patch("zshell.subcommands.shell.subprocess.run")
-    def test_restart_no_daemon(self, mock_run):
+    def test_restart_no_daemon(self, mock_run, mock_start):
         mock_run.side_effect = [
             CompletedProcess([], 0, b"", b"Killed abc\n"),
             CompletedProcess([], 255, b"", b""),
-            CompletedProcess([], 0, b"", b"Launching config\n"),
         ]
         invoke("restart", "--no-daemon")
         assert mock_run.call_args_list == [
-            call(["qs", "-c", "zshell", "kill"]),
             call(["qs", "-c", "zshell", "kill"], capture_output=True),
-            call(["qs", "-c", "zshell", "-n"], capture_output=True),
+            call(["qs", "-c", "zshell", "kill"], capture_output=True),
         ]
+        mock_start.assert_called_once_with(no_daemon=True)
