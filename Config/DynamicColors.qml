@@ -30,9 +30,10 @@ Singleton {
 	readonly property alias wallLuminance: analyser.luminance
 
 	function alterColor(c: color, a: real, layer: int): color {
-		const luminance = getLuminance(c);
+		const initLuminance = getLuminance(c);
+		const luminance = Math.max(initLuminance, 0.001);
 
-		const offset = (!light || layer == 1 ? 1 : -layer / 2) * (light ? 0.2 : 0.3) * (1 - transparency.base) * (1 + wallLuminance * (light ? (layer == 1 ? 3 : 1) : 2.5));
+		const offset = (!light || layer == 1 ? 1 : -layer / 2) * (light ? 0.2 : 0.3) * (0.2 + 0.3 * (1 - transparency.base)) * (1 + wallLuminance * (light ? (layer == 1 ? 3 : 1) : 2.5));
 		const scale = (luminance + offset) / luminance;
 		const r = Math.max(0, Math.min(1, c.r * scale));
 		const g = Math.max(0, Math.min(1, c.g * scale));
