@@ -42,7 +42,7 @@ def restart(no_daemon: bool = False):
         result = subprocess.run(args + ["kill"], capture_output=True)
         if result.returncode == 255:
             break
-        time.sleep(0.05)
+        time.sleep(0.25)
     start_instance(no_daemon=no_daemon)
 
 
