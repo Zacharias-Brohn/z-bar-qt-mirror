@@ -1,13 +1,14 @@
-import qs.Modules.Notifications.Sidebar.Utils.Cards
-import qs.Config
+import Quickshell
 import QtQuick
 import QtQuick.Layouts
+import qs.Modules.Notifications.Sidebar.Utils.Cards
+import qs.Config
 
 Item {
 	id: root
 
 	required property Item popouts
-	required property var props
+	required property PersistentProperties props
 	required property var visibilities
 
 	implicitHeight: layout.implicitHeight
@@ -20,6 +21,12 @@ Item {
 		spacing: 8
 
 		IdleInhibit {
+		}
+
+		Record {
+			props: root.props
+			visibilities: root.visibilities
+			z: 1
 		}
 
 		Toggles {
