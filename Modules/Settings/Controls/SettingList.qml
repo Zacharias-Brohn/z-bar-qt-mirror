@@ -194,6 +194,9 @@ Item {
 			}
 
 			Separator {
+				Layout.fillWidth: true
+				anchors.left: undefined
+				anchors.right: undefined
 			}
 
 			RowLayout {
@@ -225,6 +228,9 @@ Item {
 			}
 
 			Separator {
+				Layout.fillWidth: true
+				anchors.left: undefined
+				anchors.right: undefined
 			}
 
 			Item {
