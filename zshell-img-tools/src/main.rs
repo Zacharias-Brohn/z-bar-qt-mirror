@@ -1,21 +1,21 @@
 mod config;
 mod effects;
 
-use anyhow::{Context, Result, bail};
+use anyhow::{bail, Context, Result};
 use std::io::Write as _;
 use std::process::{Command, Stdio};
 
-/// CLI overrides that map 1:1 to `EffectsConfig` fields.
-/// All fields are `Option<T>` so we can tell "not supplied" from any concrete value.
 #[derive(Default)]
 struct CliOverrides {
     rounded_corners: Option<bool>,
     corner_radius: Option<f32>,
     drop_shadow: Option<bool>,
+    scale: Option<f32>,
     shadow_blur_radius: Option<f32>,
+    shadow_blur_passes: Option<u32>,
     shadow_offset_x: Option<f32>,
     shadow_offset_y: Option<f32>,
-    /// Accepted as four comma-separated u8 values, e.g. `255,0,0,200`
+    // Accepted as four comma-separated u8 values, e.g. `255,0,0,200`
     shadow_color: Option<[u8; 4]>,
 }
 
@@ -30,24 +30,24 @@ fn parse_bool(s: &str) -> Result<bool> {
 fn parse_shadow_color(s: &str) -> Result<[u8; 4]> {
     let parts: Vec<&str> = s.split(',').collect();
     if parts.len() != 4 {
-        bail!("--shadow_color expects four comma-separated u8 values, e.g. 255,0,0,200");
+        bail!("--shadow-color expects four comma-separated u8 values, e.g. 255,0,0,200");
     }
     let r = parts[0]
         .trim()
         .parse::<u8>()
-        .context("shadow_color red channel")?;
+        .context("shadow-color red channel")?;
     let g = parts[1]
         .trim()
         .parse::<u8>()
-        .context("shadow_color green channel")?;
+        .context("shadow-color green channel")?;
     let b = parts[2]
         .trim()
         .parse::<u8>()
-        .context("shadow_color blue channel")?;
+        .context("shadow-color blue channel")?;
     let a = parts[3]
         .trim()
         .parse::<u8>()
-        .context("shadow_color alpha channel")?;
+        .context("shadow-color alpha channel")?;
     Ok([r, g, b, a])
 }
 
@@ -68,66 +68,81 @@ fn main() -> Result<()> {
                         .context("Expected a path after --image")?,
                 );
             }
-            "--rounded_corners" => {
+            "--rounded-corners" => {
                 i += 1;
                 let val = args
                     .get(i)
-                    .context("Expected true/false after --rounded_corners")?;
+                    .context("Expected true/false after --rounded-corners")?;
                 overrides.rounded_corners = Some(parse_bool(val)?);
             }
-            "--corner_radius" => {
+            "--corner-radius" => {
                 i += 1;
                 let val = args
                     .get(i)
-                    .context("Expected a number after --corner_radius")?;
+                    .context("Expected a number after --corner-radius")?;
                 overrides.corner_radius = Some(
                     val.parse::<f32>()
-                        .context("--corner_radius must be a number")?,
+                        .context("--corner-radius must be a number")?,
                 );
             }
-            "--drop_shadow" => {
+            "--drop-shadow" => {
                 i += 1;
                 let val = args
                     .get(i)
-                    .context("Expected true/false after --drop_shadow")?;
+                    .context("Expected true/false after --drop-shadow")?;
                 overrides.drop_shadow = Some(parse_bool(val)?);
             }
-            "--shadow_blur_radius" => {
+            "--shadow-blur-radius" => {
                 i += 1;
                 let val = args
                     .get(i)
-                    .context("Expected a number after --shadow_blur_radius")?;
+                    .context("Expected a number after --shadow-blur-radius")?;
                 overrides.shadow_blur_radius = Some(
                     val.parse::<f32>()
-                        .context("--shadow_blur_radius must be a number")?,
+                        .context("--shadow-blur-radius must be a number")?,
                 );
             }
-            "--shadow_offset_x" => {
+            "--shadow-offset-x" => {
                 i += 1;
                 let val = args
                     .get(i)
-                    .context("Expected a number after --shadow_offset_x")?;
+                    .context("Expected a number after --shadow-offset-x")?;
                 overrides.shadow_offset_x = Some(
                     val.parse::<f32>()
-                        .context("--shadow_offset_x must be a number")?,
+                        .context("--shadow-offset-x must be a number")?,
                 );
             }
-            "--shadow_offset_y" => {
+            "--shadow-offset-y" => {
                 i += 1;
                 let val = args
                     .get(i)
-                    .context("Expected a number after --shadow_offset_y")?;
+                    .context("Expected a number after --shadow-offset-y")?;
                 overrides.shadow_offset_y = Some(
                     val.parse::<f32>()
-                        .context("--shadow_offset_y must be a number")?,
+                        .context("--shadow-offset-y must be a number")?,
                 );
             }
-            "--shadow_color" => {
+            "--shadow-blur-passes" => {
                 i += 1;
                 let val = args
                     .get(i)
-                    .context("Expected r,g,b,a after --shadow_color")?;
+                    .context("Expected a number after --shadow-blur-passes")?;
+                overrides.shadow_blur_passes = Some(
+                    val.parse::<u32>()
+                        .context("--shadow-blur-passes must be a number")?,
+                );
+            }
+            "--shadow-color" => {
+                i += 1;
+                let val = args
+                    .get(i)
+                    .context("Expected r,g,b,a after --shadow-color")?;
                 overrides.shadow_color = Some(parse_shadow_color(val)?);
+            }
+            "--scale" => {
+                i += 1;
+                let val = args.get(i).context("Expected a number after --scale")?;
+                overrides.scale = Some(val.parse::<f32>().context("--scale must be a number")?);
             }
             unknown => bail!("Unknown argument: {unknown}"),
         }
@@ -158,9 +173,22 @@ fn main() -> Result<()> {
         if let Some(v) = overrides.shadow_offset_y {
             effects.shadow_offset_y = v;
         }
+        if let Some(v) = overrides.shadow_blur_passes {
+            effects.shadow_blur_passes = v;
+        }
         if let Some(v) = overrides.shadow_color {
             effects.shadow_color = v;
         }
+        if let Some(v) = overrides.scale {
+            effects.scale = v;
+        }
+    }
+
+    if effects.scale != 1.0 {
+        effects.corner_radius *= effects.scale;
+        effects.shadow_blur_radius *= effects.scale;
+        effects.shadow_offset_x *= effects.scale;
+        effects.shadow_offset_y *= effects.scale;
     }
 
     if let Err(e) = process_image(&image_path, &effects) {
@@ -191,21 +219,30 @@ fn process_image(path: &str, effects: &config::EffectsConfig) -> Result<()> {
         .spawn()
         .context("Failed to spawn swappy. Is it installed and in PATH?")?;
 
-    child
-        .stdin
-        .take()
-        .context("Failed to get swappy stdin")?
-        .write_all(&png_bytes)
-        .context("Failed to write image data to swappy")?;
-
-    let status = child.wait().context("Failed to wait for swappy")?;
-
-    if !status.success() {
-        eprintln!(
-            "swappy exited with non-zero status for '{}': {}",
-            path, status
-        );
+    // Writes the PNG bytes to swappy's stdin and then closes
+    if let Some(mut stdin) = child.stdin.take() {
+        stdin
+            .write_all(&png_bytes)
+            .context("Failed to write image data to swappy")?;
     }
+
+    // Writes the PNG bytes to swappy's stdin and waits for swappy to close
+    // child
+    //     .stdin
+    //     .take()
+    //     .context("Failed to get swappy stdin")?
+    //     .write_all(&png_bytes)
+    //     .context("Failed to write image data to swappy")?
+    //     .spawn();
+    //
+    // let status = child.await().context("Failed to wait for swappy")?;
+    //
+    // if !status.success() {
+    //     eprintln!(
+    //         "swappy exited with non-zero status for '{}': {}",
+    //         path, status
+    //     );
+    // }
 
     Ok(())
 }

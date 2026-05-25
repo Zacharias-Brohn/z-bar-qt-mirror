@@ -1,6 +1,6 @@
 [package]
 name = "zshell-img-tools"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2024"
 
 [[bin]]
@@ -8,10 +8,10 @@ name = "zshell-img-tools"
 path = "src/main.rs"
 
 [dependencies]
-image = { version = "0.25", features = ["png"] }
-tiny-skia = "0.11"
+image = { version = "0.25", default-features = false, features = ["png"] }
+tiny-skia = { version = "0.11", default-features = false, features = ["std", "simd"] }
 serde = { version = "1", features = ["derive"] }
-anyhow = "1"
+anyhow = "1.0"
 serde_json = "1.0.149"
 
 [profile.release]

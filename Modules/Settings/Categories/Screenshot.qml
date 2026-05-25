@@ -106,6 +106,19 @@ SettingsPage {
 		}
 
 		SettingSpinBox {
+			min: 1
+			name: "Shadow passes"
+			object: Config.screenshot
+			setting: "shadow_blur_passes"
+			step: 1
+			visible: Config.screenshot.mode === "manual"
+		}
+
+		Separator {
+			visible: Config.screenshot.mode === "manual"
+		}
+
+		SettingSpinBox {
 			min: 0
 			name: "Shadow offset X"
 			object: Config.screenshot

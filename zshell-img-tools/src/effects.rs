@@ -16,6 +16,7 @@ pub fn apply_effects(img: RgbaImage, cfg: &EffectsConfig) -> RgbaImage {
             cfg.shadow_blur_radius,
             cfg.shadow_offset_x,
             cfg.shadow_offset_y,
+            cfg.shadow_blur_passes,
             cfg.shadow_color,
         )
     } else {
@@ -52,11 +53,16 @@ pub fn apply_drop_shadow(
     blur_radius: f32,
     offset_x: f32,
     offset_y: f32,
+    blur_passes: u32,
     shadow_color: [u8; 4],
 ) -> RgbaImage {
     let (iw, ih) = img.dimensions();
     let br = blur_radius.ceil() as u32;
-    let spread = br * 2;
+    let bp = blur_passes;
+    // Original idea
+    // let spread = br * bp;
+    // Claude is hallucinating but let's try it **Worked btw**
+    let spread = (br as f32 * (bp as f32).sqrt() * 2.0).ceil() as u32;
 
     let extra_left = spread + (-offset_x).max(0.0).ceil() as u32;
     let extra_top = spread + (-offset_y).max(0.0).ceil() as u32;
@@ -86,8 +92,11 @@ pub fn apply_drop_shadow(
 
     tint_pixmap_as_shadow(&mut shadow_pixmap, shadow_color);
 
+    // Shadow
     let shadow_img = pixmap_to_rgba_image(shadow_pixmap);
-    let blurred = box_blur_rgba(&shadow_img, br);
+    // Shadow blur
+    let blurred = box_blur_rgba(&shadow_img, br, bp);
+    // Shadow pos
     let blurred_pixmap = rgba_image_to_pixmap(&blurred);
 
     let mut canvas = Pixmap::new(canvas_w, canvas_h).expect("canvas pixmap");
@@ -136,6 +145,7 @@ fn rounded_rect_path(x: f32, y: f32, w: f32, h: f32, r: f32) -> Path {
     pb.finish().expect("rounded rect path")
 }
 
+// Shadow pos
 fn rgba_image_to_pixmap(img: &RgbaImage) -> Pixmap {
     let (w, h) = img.dimensions();
     let mut pixmap = Pixmap::new(w, h).expect("pixmap alloc");
@@ -154,6 +164,7 @@ fn rgba_image_to_pixmap(img: &RgbaImage) -> Pixmap {
     pixmap
 }
 
+// Shadow
 fn pixmap_to_rgba_image(pixmap: Pixmap) -> RgbaImage {
     let (w, h) = (pixmap.width(), pixmap.height());
     let mut out = RgbaImage::new(w, h);
@@ -176,31 +187,16 @@ fn pixmap_to_rgba_image(pixmap: Pixmap) -> RgbaImage {
     out
 }
 
-fn tint_pixmap_as_shadow(pixmap: &mut Pixmap, color: [u8; 4]) {
-    let [sr, sg, sb, _] = color;
-    for px in pixmap.pixels_mut() {
-        let a = px.alpha();
-        if a > 0 {
-            let af = a as f32 / 255.0;
-            *px = tiny_skia::PremultipliedColorU8::from_rgba(
-                (sr as f32 * af) as u8,
-                (sg as f32 * af) as u8,
-                (sb as f32 * af) as u8,
-                a,
-            )
-            .unwrap_or(tiny_skia::PremultipliedColorU8::TRANSPARENT);
-        }
-    }
-}
-
-fn box_blur_rgba(img: &RgbaImage, radius: u32) -> RgbaImage {
+// Shadow blur
+fn box_blur_rgba(img: &RgbaImage, radius: u32, bp: u32) -> RgbaImage {
     if radius == 0 {
         return img.clone();
     }
-    let mut buf = sliding_horizontal(img, radius);
-    buf = sliding_vertical(&buf, radius);
-    buf = sliding_horizontal(&buf, radius);
-    buf = sliding_vertical(&buf, radius);
+    let mut buf = img.clone();
+    for _ in 0..bp {
+        buf = sliding_horizontal(&buf, radius);
+        buf = sliding_vertical(&buf, radius);
+    }
     buf
 }
 
@@ -248,6 +244,23 @@ fn sliding_horizontal(img: &RgbaImage, radius: u32) -> RgbaImage {
         }
     }
     out
+}
+
+fn tint_pixmap_as_shadow(pixmap: &mut Pixmap, color: [u8; 4]) {
+    let [sr, sg, sb, _] = color;
+    for px in pixmap.pixels_mut() {
+        let a = px.alpha();
+        if a > 0 {
+            let af = a as f32 / 255.0;
+            *px = tiny_skia::PremultipliedColorU8::from_rgba(
+                (sr as f32 * af) as u8,
+                (sg as f32 * af) as u8,
+                (sb as f32 * af) as u8,
+                a,
+            )
+            .unwrap_or(tiny_skia::PremultipliedColorU8::TRANSPARENT);
+        }
+    }
 }
 
 fn sliding_vertical(img: &RgbaImage, radius: u32) -> RgbaImage {
