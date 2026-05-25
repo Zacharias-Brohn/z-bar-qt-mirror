@@ -34,9 +34,9 @@ def lockscreen(
         return
 
     if size[0] < 3840 or size[1] < 2160:
-        img = img.resize((size[0] // 2, size[1] // 2), Image.NEAREST)
+        img = img.resize((size[0] // 2, size[1] // 2), Image.Resampling.NEAREST)
     else:
-        img = img.resize((size[0] // 4, size[1] // 4), Image.NEAREST)
+        img = img.resize((size[0] // 4, size[1] // 4), Image.Resampling.NEAREST)
 
     img = img.filter(ImageFilter.GaussianBlur(blur_amount))
 

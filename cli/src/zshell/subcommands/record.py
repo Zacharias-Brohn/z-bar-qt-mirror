@@ -18,8 +18,7 @@ TEMP_RECORDING = STATE_DIR / "recording.mp4"
 REPLAY_RECORDING = STATE_DIR / "replay.mp4"
 NOTIF_ID_FILE = STATE_DIR / "notifid.txt"
 
-RECORDINGS_DIR = os.getenv("ZSHELL_RECORDINGS_DIR",
-                           str(Path(HOME) / "Videos/Recordings"))
+RECORDINGS_DIR = os.getenv("ZSHELL_RECORDINGS_DIR", str(Path(HOME) / "Videos/Recordings"))
 
 
 def _read_extra_args() -> list[str]:
@@ -36,7 +35,7 @@ def _is_recording() -> bool:
     return subprocess.run(["pidof", RECORDER], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode == 0
 
 
-def _notify(summary: str, body: str = "", actions: list = None, timeout: int = 5000) -> Optional[int]:
+def _notify(summary: str, body: str = "", actions: list | None = None, timeout: int = 5000) -> Optional[int]:
     args = ["notify-send", summary, body, "-t", str(timeout), "-p"]
     if actions:
         for action in actions:
@@ -49,14 +48,12 @@ def _notify(summary: str, body: str = "", actions: list = None, timeout: int = 5
 
 
 def _close_notification(notif_id: int):
-    subprocess.run(["notify-send", "--close", str(notif_id)],
-                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    subprocess.run(["notify-send", "--close", str(notif_id)], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 
 def _get_monitors() -> list[dict]:
     try:
-        res = subprocess.run(["hyprctl", "monitors", "-j"],
-                             capture_output=True, text=True)
+        res = subprocess.run(["hyprctl", "monitors", "-j"], capture_output=True, text=True)
         return json.loads(res.stdout)
     except Exception:
         return []
@@ -92,6 +89,7 @@ def _slurp_region() -> Optional[str]:
 
 def _parse_geometry(geometry: str) -> Optional[tuple[int, int, int, int]]:
     import re
+
     match = re.match(r"(\d+)x(\d+)\+(\d+)\+(\d+)", geometry)
     if match:
         return int(match.group(3)), int(match.group(4)), int(match.group(1)), int(match.group(2))
@@ -139,8 +137,7 @@ def start_recording(region: Optional[str], sound: bool):
     cmd.extend(extra_args)
     cmd.extend(["-o", str(TEMP_RECORDING)])
 
-    subprocess.Popen(cmd, start_new_session=True,
-                     stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    subprocess.Popen(cmd, start_new_session=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     notif_id = _notify("Recording started", f"Saving to {TEMP_RECORDING}")
     if notif_id is not None:
@@ -148,14 +145,12 @@ def start_recording(region: Optional[str], sound: bool):
 
     time.sleep(1)
     if not _is_recording():
-        _notify("Recording failed",
-                "Check gpu-screen-recorder output.", timeout=5000)
+        _notify("Recording failed", "Check gpu-screen-recorder output.", timeout=5000)
         raise typer.Exit(code=1)
 
 
 def stop_recording(clipboard: bool):
-    subprocess.run(["pkill", "-f", RECORDER],
-                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    subprocess.run(["pkill", "-f", RECORDER], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     for _ in range(50):
         if not _is_recording():
@@ -178,30 +173,31 @@ def stop_recording(clipboard: bool):
         NOTIF_ID_FILE.unlink()
 
     if clipboard:
-        subprocess.run(["wl-copy", "--type", "text/uri-list", f"file://{final_path}"],
-                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.run(
+            ["wl-copy", "--type", "text/uri-list", f"file://{final_path}"],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
 
     _notify("Recording stopped", f"Saved to {final_path}", timeout=5000)
 
 
 def toggle_pause():
-    subprocess.run(["pkill", "-USR2", "-f", RECORDER],
-                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    subprocess.run(["pkill", "-USR2", "-f", RECORDER], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     typer.echo("Toggled pause.")
 
 
 @app.command()
 def record(
     region: Optional[str] = typer.Option(
-        None, "--region", "-r",
+        None,
+        "--region",
+        "-r",
         help="Record a region. Use 'slurp' (or omit value) to select interactively, or give 'WxH+X+Y'.",
     ),
-    sound: bool = typer.Option(
-        False, "--sound", "-s", help="Record audio from default output."),
-    pause: bool = typer.Option(
-        False, "--pause", "-p", help="Toggle pause/resume."),
-    clipboard: bool = typer.Option(
-        False, "--clipboard", "-c", help="Copy the final recording path to clipboard."),
+    sound: bool = typer.Option(False, "--sound", "-s", help="Record audio from default output."),
+    pause: bool = typer.Option(False, "--pause", "-p", help="Toggle pause/resume."),
+    clipboard: bool = typer.Option(False, "--clipboard", "-c", help="Copy the final recording path to clipboard."),
 ):
     """Start or stop a screen recording with gpu-screen-recorder."""
     if pause:
