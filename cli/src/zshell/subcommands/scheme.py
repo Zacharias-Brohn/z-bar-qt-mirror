@@ -2,6 +2,7 @@ import typer
 import json
 import shutil
 import os
+import sys
 import re
 import subprocess
 
@@ -105,7 +106,9 @@ def list_presets(
 
 @app.command()
 def generate(
-    image_path: Optional[Path] = typer.Option(None, help="Path to source image. Required for image mode."),
+    image_path: Optional[Path] = typer.Option(
+        None, help="Path to source image. Required for image mode."
+    ),
     scheme: Optional[str] = typer.Option(
         None,
         help="Color scheme algorithm to use for image mode. Ignored in preset mode.",
@@ -127,6 +130,11 @@ def generate(
         autocompletion=_complete_accent,
     ),
 ):
+    if not any([image_path, scheme, preset, mode, accent]):
+        print(
+            "Hint: use --preset <scheme>:<variant> or --image-path <path>",
+            file=sys.stderr,
+        )
 
     HOME = str(os.getenv("HOME"))
     OUTPUT = Path(HOME + "/.local/state/zshell/scheme.json")
@@ -264,11 +272,15 @@ def generate(
     def harmonize(from_hct: Hct, to_hct: Hct, tone_boost: float) -> Hct:
         diff = difference_degrees(from_hct.hue, to_hct.hue)
         rotation = min(diff * 0.8, 100)
-        output_hue = sanitize_degrees_double(from_hct.hue + rotation * rotation_direction(from_hct.hue, to_hct.hue))
+        output_hue = sanitize_degrees_double(
+            from_hct.hue + rotation * rotation_direction(from_hct.hue, to_hct.hue)
+        )
         tone = max(0.0, min(100.0, from_hct.tone * (1 + tone_boost)))
         return Hct.from_hct(output_hue, from_hct.chroma, tone)
 
-    def terminal_palette(colors: dict[str, str], mode: str, variant: str) -> dict[str, str]:
+    def terminal_palette(
+        colors: dict[str, str], mode: str, variant: str
+    ) -> dict[str, str]:
         light = mode.lower() == "light"
 
         key_hex = (
@@ -570,13 +582,17 @@ def generate(
             schemes = list_schemes()
             if accent and p_scheme in schemes:
                 meta = schemes[p_scheme]
-                var_accents = next((v.accents for v in meta.variants if v.id == p_variant), ())
+                var_accents = next(
+                    (v.accents for v in meta.variants if v.id == p_variant), ()
+                )
                 if accent not in var_accents:
                     available = ", ".join(var_accents) if var_accents else "none"
                     raise typer.BadParameter(
                         f"Accent '{accent}' not available for '{p_scheme}:{p_variant}'. Available accents: {available}"
                     )
-            palette_obj = get_palette(p_scheme, p_variant, mode or config_mode, accent=accent)
+            palette_obj = get_palette(
+                p_scheme, p_variant, mode or config_mode, accent=accent
+            )
             colors = palette_obj.colors
             effective_mode = palette_obj.mode
             name = palette_obj.scheme
