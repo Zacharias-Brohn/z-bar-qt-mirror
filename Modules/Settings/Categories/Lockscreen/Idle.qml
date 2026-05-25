@@ -72,6 +72,8 @@ ColumnLayout {
 
 		SettingList {
 			Layout.fillWidth: true
+			anchors.left: undefined
+			anchors.right: undefined
 
 			onAddActiveActionRequested: {
 				root.updateTimeoutEntry(index, "activeAction", "");
