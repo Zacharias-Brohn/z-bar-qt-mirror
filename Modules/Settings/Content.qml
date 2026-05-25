@@ -79,6 +79,8 @@ Item {
 				stack.push(screenshot);
 			else if (currentCategory === "updates")
 				stack.push(updates);
+			else if (currentCategory === "plugins")
+				stack.push(plugins);
 		}
 
 		target: root
@@ -243,6 +245,13 @@ Item {
 		id: updates
 
 		Cat.SystemUpdates {
+		}
+	}
+
+	Component {
+		id: plugins
+
+		Cat.Plugins {
 		}
 	}
 }

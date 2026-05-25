@@ -6,6 +6,7 @@
 //@ pragma Env QT_SCALE_FACTOR_ROUNDING_POLICY=Round
 //@ pragma DropExpensiveFonts
 import Quickshell
+import qs.Extensions
 import qs.Modules
 import qs.Modules.Wallpaper
 import qs.Modules.Lock
@@ -37,5 +38,8 @@ ShellRoot {
 	}
 
 	Polkit {
+	}
+
+	LoadExtensions {
 	}
 }

@@ -116,6 +116,12 @@ Item {
 			key: "updates"
 			name: "Updates"
 		}
+
+		ListElement {
+			icon: "extension"
+			key: "plugins"
+			name: "Extensions"
+		}
 	}
 
 	CustomClippingRect {
