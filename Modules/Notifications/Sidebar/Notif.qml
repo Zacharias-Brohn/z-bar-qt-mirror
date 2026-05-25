@@ -136,7 +136,10 @@ CustomRect {
 				wrapMode: Text.WordWrap
 
 				onLinkActivated: link => {
-					Quickshell.execDetached(["app2unit", "-O", "--", link]);
+					if (Config.launcher.uwsm)
+						Quickshell.execDetached(["app2unit", "-O", "--", link]);
+					else
+						Quickshell.execDetached(["xdg-open", link]);
 					root.visibilities.sidebar = false;
 				}
 			}

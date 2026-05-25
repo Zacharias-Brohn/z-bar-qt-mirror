@@ -14,6 +14,8 @@ import qs.Helpers
 import qs.Modules.Polkit
 
 ShellRoot {
+	settings.watchFiles: true
+
 	Windows {
 	}
 
