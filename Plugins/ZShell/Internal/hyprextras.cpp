@@ -1,8 +1,13 @@
 #include "hyprextras.hpp"
 #include "hyprdevices.hpp"
 
+#include <functional>
+#include <memory>
+
 #include <qdir.h>
 #include <qjsonarray.h>
+#include <qjsondocument.h>
+#include <qjsonobject.h>
 #include <qlocalsocket.h>
 #include <qloggingcategory.h>
 #include <qmetatype.h>
@@ -163,6 +168,65 @@ static QString buildHlConfigCall(const QString& key, const QVariant& value) {
 	return out;
 }
 
+static QVariant parseGetOptionValue(const QJsonObject& obj) {
+	if (obj.contains(QStringLiteral("bool"))) {
+		return obj.value(QStringLiteral("bool")).toBool();
+	}
+
+	if (obj.contains(QStringLiteral("int"))) {
+		return obj.value(QStringLiteral("int")).toInt();
+	}
+
+	if (obj.contains(QStringLiteral("float"))) {
+		return obj.value(QStringLiteral("float")).toDouble();
+	}
+
+	if (obj.contains(QStringLiteral("str"))) {
+		return obj.value(QStringLiteral("str")).toString();
+	}
+
+	if (obj.contains(QStringLiteral("current"))) {
+		return obj.value(QStringLiteral("current")).toVariant();
+	}
+
+	if (obj.contains(QStringLiteral("value"))) {
+		return obj.value(QStringLiteral("value")).toVariant();
+	}
+
+	if (obj.contains(QStringLiteral("data"))) {
+		const auto data = obj.value(QStringLiteral("data"));
+		if (data.isObject()) {
+			const auto d = data.toObject();
+			if (d.contains(QStringLiteral("current"))) {
+				return d.value(QStringLiteral("current")).toVariant();
+			}
+			if (d.contains(QStringLiteral("value"))) {
+				return d.value(QStringLiteral("value")).toVariant();
+			}
+		} else {
+			return data.toVariant();
+		}
+	}
+
+	return {};
+}
+
+static void insertNestedValue(QVariantMap& root, const QStringList& path, const QVariant& value) {
+	if (path.isEmpty()) {
+		return;
+	}
+
+	if (path.size() == 1) {
+		root.insert(path.first(), value);
+		return;
+	}
+
+	const QString head = path.first();
+	QVariantMap child = root.value(head).toMap();
+	insertNestedValue(child, path.mid(1), value);
+	root.insert(head, child);
+}
+
 } // namespace
 
 HyprExtras::HyprExtras(QObject* parent)
@@ -203,7 +267,7 @@ HyprExtras::HyprExtras(QObject* parent)
 	m_socket->connectToServer(m_eventSocket, QLocalSocket::ReadOnly);
 }
 
-QVariantHash HyprExtras::options() const {
+QVariantMap HyprExtras::options() const {
 	return m_options;
 }
 
@@ -269,30 +333,59 @@ void HyprExtras::refreshOptions() {
 		m_optionsRefresh->close();
 	}
 
-	m_optionsRefresh = makeRequestJson(QStringLiteral("descriptions"), [this](bool success, const QJsonDocument& response) {
-			m_optionsRefresh.reset();
-			if (!success) {
+	++m_optionsRefreshGeneration;
+	const quint64 generation = m_optionsRefreshGeneration;
+
+	static const QStringList optionKeys = {
+		QStringLiteral("general:border_size"),
+		QStringLiteral("decoration:rounding"),
+		QStringLiteral("animations:enabled"),
+	};
+
+	auto nextOptions = std::make_shared<QVariantMap>();
+
+	auto step = std::make_shared<std::function<void(int)> >();
+	*step = [this, generation, nextOptions, step](int index) {
+			if (generation != m_optionsRefreshGeneration) {
 				return;
 			}
 
-			const auto options = response.array();
-			bool dirty = false;
-
-			for (const auto& o : std::as_const(options)) {
-				const auto obj = o.toObject();
-				const auto key = obj.value(QStringLiteral("value")).toString();
-				const auto value = obj.value(QStringLiteral("data")).toObject().value(QStringLiteral("current")).toVariant();
-
-				if (m_options.value(key) != value) {
-					dirty = true;
-					m_options.insert(key, value);
+			if (index >= optionKeys.size()) {
+				if (m_options != *nextOptions) {
+					m_options = *nextOptions;
+					emit optionsChanged();
 				}
+				return;
 			}
 
-			if (dirty) {
-				emit optionsChanged();
-			}
-		});
+			const QString key = optionKeys.at(index);
+
+			m_optionsRefresh = makeRequestJson(
+				QStringLiteral("getoption ") + key,
+				[this, generation, nextOptions, step, index, key](bool success, const QJsonDocument& response)
+			{
+				m_optionsRefresh.reset();
+
+				if (generation != m_optionsRefreshGeneration) {
+					return;
+				}
+
+				if (success && response.isObject()) {
+					const QVariant value = parseGetOptionValue(response.object());
+					if (value.isValid()) {
+						insertNestedValue(*nextOptions, key.split(QLatin1Char(':'), Qt::SkipEmptyParts), value);
+					} else {
+						qCWarning(lcHypr) << "refreshOptions: getoption returned no usable value for" << key;
+					}
+				} else if (!success) {
+					qCWarning(lcHypr) << "refreshOptions: getoption request error for" << key;
+				}
+
+				(*step)(index + 1);
+			});
+		};
+
+	(*step)(0);
 }
 
 void HyprExtras::refreshDevices() {

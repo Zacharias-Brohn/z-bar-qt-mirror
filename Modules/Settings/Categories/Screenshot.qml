@@ -43,7 +43,7 @@ SettingsPage {
 		}
 
 		Separator {
-			visible: Config.screenshot.mode === "manual"
+			shouldBeActive: Config.screenshot.mode === "manual"
 		}
 
 		SettingSpinBox {
@@ -51,34 +51,34 @@ SettingsPage {
 			name: "Corner radius"
 			object: Config.screenshot
 			setting: "corner_radius"
+			shouldBeActive: Config.screenshot.mode === "manual"
 			step: 1
-			visible: Config.screenshot.mode === "manual"
 		}
 
 		Separator {
-			visible: Config.screenshot.mode === "manual"
+			shouldBeActive: Config.screenshot.mode === "manual"
 		}
 
 		SettingSwitch {
 			name: "Enable drop shadow"
 			object: Config.screenshot
 			setting: "drop_shadow"
-			visible: Config.screenshot.mode === "manual"
+			shouldBeActive: Config.screenshot.mode === "manual"
 		}
 
 		Separator {
-			visible: Config.screenshot.mode === "manual"
+			shouldBeActive: Config.screenshot.mode === "manual"
 		}
 
 		SettingSwitch {
 			name: "Enable rounded corners"
 			object: Config.screenshot
 			setting: "rounded_corners"
-			visible: Config.screenshot.mode === "manual"
+			shouldBeActive: Config.screenshot.mode === "manual"
 		}
 
 		Separator {
-			visible: Config.screenshot.mode === "manual"
+			shouldBeActive: Config.screenshot.mode === "manual"
 		}
 
 		SettingSpinBox {
@@ -86,23 +86,23 @@ SettingsPage {
 			name: "Shadow blur radius"
 			object: Config.screenshot
 			setting: "shadow_blur_radius"
+			shouldBeActive: Config.screenshot.mode === "manual"
 			step: 1
-			visible: Config.screenshot.mode === "manual"
 		}
 
 		Separator {
-			visible: Config.screenshot.mode === "manual"
+			shouldBeActive: Config.screenshot.mode === "manual"
 		}
 
 		SettingSwitch {
 			name: "Shadow color broken atm"
 			object: Config.Screenshot
 			setting: "shadow_color"
-			visible: Config.screenshot.mode === "manual"
+			shouldBeActive: Config.screenshot.mode === "manual"
 		}
 
 		Separator {
-			visible: Config.screenshot.mode === "manual"
+			shouldBeActive: Config.screenshot.mode === "manual"
 		}
 
 		SettingSpinBox {
@@ -110,12 +110,12 @@ SettingsPage {
 			name: "Shadow passes"
 			object: Config.screenshot
 			setting: "shadow_blur_passes"
+			shouldBeActive: Config.screenshot.mode === "manual"
 			step: 1
-			visible: Config.screenshot.mode === "manual"
 		}
 
 		Separator {
-			visible: Config.screenshot.mode === "manual"
+			shouldBeActive: Config.screenshot.mode === "manual"
 		}
 
 		SettingSpinBox {
@@ -123,12 +123,12 @@ SettingsPage {
 			name: "Shadow offset X"
 			object: Config.screenshot
 			setting: "shadow_offset_x"
+			shouldBeActive: Config.screenshot.mode === "manual"
 			step: 1
-			visible: Config.screenshot.mode === "manual"
 		}
 
 		Separator {
-			visible: Config.screenshot.mode === "manual"
+			shouldBeActive: Config.screenshot.mode === "manual"
 		}
 
 		SettingSpinBox {
@@ -136,8 +136,8 @@ SettingsPage {
 			name: "Shadow offset Y"
 			object: Config.screenshot
 			setting: "shadow_offset_y"
+			shouldBeActive: Config.screenshot.mode === "manual"
 			step: 1
-			visible: Config.screenshot.mode === "manual"
 		}
 	}
 }

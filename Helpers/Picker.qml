@@ -30,8 +30,8 @@ MouseArea {
 	property real ey: screen.height
 	required property LazyLoader loader
 	property bool onClient
-	property real realBorderWidth: onClient ? (Hypr.options["general:border_size"] ?? 1) : 2
-	property real realRounding: onClient ? (Hypr.options["decoration:rounding"] ?? 0) : 0
+	property real realBorderWidth: onClient ? (Hypr.options.general.border_size ?? 1) : 2
+	property real realRounding: onClient ? (Hypr.options.decoration.rounding ?? 0) : 0
 	property real rsx: Math.min(sx, ex)
 	property real rsy: Math.min(sy, ey)
 	required property ShellScreen screen
