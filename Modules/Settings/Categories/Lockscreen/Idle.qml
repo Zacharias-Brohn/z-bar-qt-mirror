@@ -9,6 +9,8 @@ import qs.Modules.Settings.Controls
 ColumnLayout {
 	id: root
 
+	property bool shouldBeActive: true
+
 	function addTimeoutEntry() {
 		let list = [...Config.general.idle.timeouts];
 
@@ -40,8 +42,26 @@ ColumnLayout {
 		Config.save();
 	}
 
-	Layout.fillWidth: true
+	anchors.left: parent.left
+	anchors.right: parent.right
+	height: shouldBeActive ? implicitHeight : 0
+	opacity: shouldBeActive ? 1 : 0
+	scale: shouldBeActive ? 1 : 0.8
 	spacing: Appearance.spacing.smaller
+	visible: opacity > 0
+
+	Behavior on opacity {
+		Anim {
+		}
+	}
+	Behavior on scale {
+		Anim {
+		}
+	}
+	Behavior on y {
+		Anim {
+		}
+	}
 
 	Settings {
 		name: "Idle Monitors"
@@ -52,6 +72,8 @@ ColumnLayout {
 
 		SettingList {
 			Layout.fillWidth: true
+			anchors.left: undefined
+			anchors.right: undefined
 
 			onAddActiveActionRequested: {
 				root.updateTimeoutEntry(index, "activeAction", "");

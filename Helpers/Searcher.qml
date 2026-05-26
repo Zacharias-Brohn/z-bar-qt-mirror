@@ -1,7 +1,7 @@
-import Quickshell
 import "../scripts/fzf.js" as Fzf
 import "../scripts/fuzzysort.js" as Fuzzy
 import QtQuick
+import Quickshell
 
 Singleton {
 	property var extraOpts: ({})

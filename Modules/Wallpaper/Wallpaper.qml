@@ -6,7 +6,7 @@ import qs.Modules.DesktopIcons
 
 Loader {
 	active: Config.background.enabled
-	asynchronous: true
+	asynchronous: false
 
 	sourceComponent: Variants {
 		model: Quickshell.screens

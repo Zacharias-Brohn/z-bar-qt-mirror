@@ -127,6 +127,9 @@ ColumnLayout {
 				}
 
 				Separator {
+					Layout.fillWidth: true
+					anchors.left: undefined
+					anchors.right: undefined
 				}
 
 				RowLayout {
@@ -207,6 +210,8 @@ ColumnLayout {
 				StringListEditor {
 					Layout.fillWidth: true
 					addLabel: qsTr("Add command argument")
+					anchors.left: undefined
+					anchors.right: undefined
 					values: [...(modelData.command ?? [])]
 
 					onListEdited: function (values) {
@@ -215,6 +220,9 @@ ColumnLayout {
 				}
 
 				Separator {
+					Layout.fillWidth: true
+					anchors.left: undefined
+					anchors.right: undefined
 				}
 
 				RowLayout {
@@ -233,6 +241,9 @@ ColumnLayout {
 				}
 
 				Separator {
+					Layout.fillWidth: true
+					anchors.left: undefined
+					anchors.right: undefined
 				}
 
 				RowLayout {
