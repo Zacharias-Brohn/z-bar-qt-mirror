@@ -20,7 +20,7 @@ Item {
 	required property PersistentProperties visibilities
 
 	implicitHeight: content.implicitHeight
-	implicitWidth: content.implicitWidth || 854 // Hard coded fallback for first open
+	implicitWidth: content.implicitWidth || 854
 	opacity: 1 - offsetScale
 	visible: offsetScale < 1
 

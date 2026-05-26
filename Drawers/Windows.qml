@@ -229,6 +229,7 @@ Variants {
 					id: notifsBg
 
 					panel: panels.notifications
+					radius: Appearance.rounding.normal
 				}
 
 				PanelBg {
