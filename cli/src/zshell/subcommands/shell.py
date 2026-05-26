@@ -51,6 +51,7 @@ def show():
     result = subprocess.run(args + ["ipc"] + ["show"], capture_output=True)
     if result.returncode != 0:
         raise click.ClickException(result.stderr.decode().strip())
+    sys.stdout.write(result.stdout.decode())
     sys.stderr.write(result.stderr.decode())
 
 
