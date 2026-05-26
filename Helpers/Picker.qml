@@ -34,8 +34,13 @@ MouseArea {
 	property real realRounding: onClient ? (Hypr.options.decoration.rounding ?? 0) : 0
 	property real rsx: Math.min(sx, ex)
 	property real rsy: Math.min(sy, ey)
+	readonly property real scaleRatio: Hypr.monitorFor(screen).scale
 	required property ShellScreen screen
 	property real sh: Math.abs(sy - ey)
+	readonly property color shadowColor: Hypr.options.decoration.shadow.color
+	readonly property var shadowOffset: Hypr.options.decoration.shadow.offset
+	readonly property int shadowRange: Hypr.options.decoration.shadow.range
+	readonly property int shadowRenderPower: Hypr.options.decoration.shadow.render_power
 	property real ssx
 	property real ssy
 	property real sw: Math.abs(sx - ex)
@@ -66,9 +71,7 @@ MouseArea {
 
 	function save(): void {
 		const tmpfile = Qt.resolvedUrl(`/tmp/zshell-picker-${Quickshell.processId}-${Date.now()}.png`);
-		const scale = Hypr.monitorFor(screen).scale;
-		console.log(scale);
-		const cmd = Config.screenshot.enable_pp ? ["zshell-img-tools", "--scale", scale, "--image"] : ["swappy", "-f"];
+		const cmd = Config.screenshot.enable_pp ? ["zshell-img-tools", "--scale", root.scaleRatio, "--shadow-blur-radius", root.shadowRange, "--image"] : ["swappy", "-f"];
 		ZShellIo.saveItem(screencopy, tmpfile, Qt.rect(Math.ceil(rsx), Math.ceil(rsy), Math.floor(sw), Math.floor(sh)), path => Quickshell.execDetached([...cmd, path]));
 		closeAnim.start();
 	}

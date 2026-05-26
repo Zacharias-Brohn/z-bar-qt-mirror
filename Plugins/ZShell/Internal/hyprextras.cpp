@@ -5,12 +5,14 @@
 #include <memory>
 
 #include <qdir.h>
+#include <qcolor.h>
 #include <qjsonarray.h>
 #include <qjsondocument.h>
 #include <qjsonobject.h>
 #include <qlocalsocket.h>
 #include <qloggingcategory.h>
 #include <qmetatype.h>
+#include <qobject.h>
 #include <qregularexpression.h>
 #include <qvariant.h>
 
@@ -168,13 +170,30 @@ static QString buildHlConfigCall(const QString& key, const QVariant& value) {
 	return out;
 }
 
+static QColor colorFromInt(quint32 value) {
+	const int a = (value >> 24) & 0xFF;
+	const int r = (value >> 16) & 0xFF;
+	const int g = (value >> 8) & 0xFF;
+	const int b = value & 0xFF;
+
+	return QColor(r, g, b, a);
+}
+
 static QVariant parseGetOptionValue(const QJsonObject& obj) {
 	if (obj.contains(QStringLiteral("bool"))) {
 		return obj.value(QStringLiteral("bool")).toBool();
 	}
 
 	if (obj.contains(QStringLiteral("int"))) {
-		return obj.value(QStringLiteral("int")).toInt();
+		const auto value = obj.value(QStringLiteral("int")).toInt();
+
+		const auto option = obj.value(QStringLiteral("option")).toString();
+
+		if (option.contains(QStringLiteral("color")) || option.contains(QStringLiteral("col."))) {
+			return colorFromInt(static_cast<quint32>(value));
+		}
+
+		return value;
 	}
 
 	if (obj.contains(QStringLiteral("float"))) {
@@ -191,6 +210,10 @@ static QVariant parseGetOptionValue(const QJsonObject& obj) {
 
 	if (obj.contains(QStringLiteral("value"))) {
 		return obj.value(QStringLiteral("value")).toVariant();
+	}
+
+	if (obj.contains(QStringLiteral("vec2"))) {
+		return obj.value(QStringLiteral("vec2")).toVariant();
 	}
 
 	if (obj.contains(QStringLiteral("data"))) {
@@ -340,6 +363,11 @@ void HyprExtras::refreshOptions() {
 		QStringLiteral("general:border_size"),
 		QStringLiteral("decoration:rounding"),
 		QStringLiteral("animations:enabled"),
+		QStringLiteral("decoration:shadow:enabled"),
+		QStringLiteral("decoration:shadow:offset"),
+		QStringLiteral("decoration:shadow:color"),
+		QStringLiteral("decoration:shadow:range"),
+		QStringLiteral("decoration:shadow:render_power"),
 	};
 
 	auto nextOptions = std::make_shared<QVariantMap>();
