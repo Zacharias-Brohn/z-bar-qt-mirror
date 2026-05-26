@@ -7,7 +7,7 @@ import typer
 from typer._completion_shared import install, _get_shell_name
 from zshell.subcommands import shell, scheme, screenshot, wallpaper, record
 
-app = typer.Typer(name="zshell-cli")
+app = typer.Typer(name="zshell-cli", add_completion=False)
 
 app.add_typer(shell.app, name="shell")
 app.add_typer(scheme.app, name="scheme")
@@ -44,16 +44,10 @@ def _install_completion() -> None:
         pass
 
 
-@app.callback()
-def main_options(
-    install_autocomplete: bool = typer.Option(False, "--install-autocomplete", help="Install shell completion for tab-completion."),
-):
-    if install_autocomplete:
-        _install_completion()
-        raise typer.Exit()
-
-
 def main() -> None:
+    if "--install-autocomplete" in sys.argv:
+        _install_completion()
+        return
     if sys.stdout.isatty() and not _completion_installed():
         click.echo("zshell-cli: Tip: run with --install-autocomplete for tab completion.", err=True)
     app()
