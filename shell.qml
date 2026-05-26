@@ -6,14 +6,20 @@
 //@ pragma Env QT_SCALE_FACTOR_ROUNDING_POLICY=Round
 //@ pragma DropExpensiveFonts
 import Quickshell
+import Quickshell.Services.UPower
 import qs.Modules
 import qs.Modules.Wallpaper
 import qs.Modules.Lock
 import qs.Drawers
 import qs.Helpers
 import qs.Modules.Polkit
+import qs.Daemons
 
 ShellRoot {
+	id: root
+
+	readonly property bool laptop: UPower.displayDevice.isLaptopBattery
+
 	settings.watchFiles: true
 
 	Windows {
@@ -37,5 +43,12 @@ ShellRoot {
 	}
 
 	Polkit {
+	}
+
+	LazyLoader {
+		activeAsync: root.laptop
+
+		component: Battery {
+		}
 	}
 }
