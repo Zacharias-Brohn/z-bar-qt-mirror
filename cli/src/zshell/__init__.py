@@ -2,7 +2,6 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-import click
 import typer
 from typer._completion_shared import install, _get_shell_name
 from zshell.subcommands import shell, scheme, screenshot, wallpaper, record
@@ -30,16 +29,16 @@ def _completion_installed() -> bool:
 
 def _install_completion() -> None:
     if _completion_installed():
-        click.echo("zshell-cli: Shell completion already installed.")
+        print("zshell-cli: Shell completion already installed.")
         raise typer.Exit()
     shell = _get_shell_name()
     if shell is None:
-        click.echo("zshell-cli: Unable to detect shell type.", err=True)
+        print("zshell-cli: Unable to detect shell type.", file=sys.stderr)
         raise typer.Exit(code=1)
     try:
         _, path = install(prog_name="zshell-cli")
-        click.secho(f"zshell-cli: Shell completion installed ({shell}: {path})", fg="green")
-        click.echo("zshell-cli: Restart your shell or source the file to enable tab-completion.")
+        print(f"zshell-cli: Shell completion installed ({shell}: {path})")
+        print("zshell-cli: Restart your shell or source the file to enable tab-completion.")
     except Exception:
         pass
 
@@ -49,5 +48,5 @@ def main() -> None:
         _install_completion()
         return
     if sys.stdout.isatty() and not _completion_installed():
-        click.echo("zshell-cli: Tip: run with --install-autocomplete for tab completion.", err=True)
+        print("zshell-cli: Tip: run with --install-autocomplete for tab completion.", file=sys.stderr)
     app()

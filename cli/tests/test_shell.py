@@ -62,8 +62,9 @@ class TestStart:
 class TestShow:
     @patch("zshell.subcommands.shell.subprocess.run")
     def test_show_runs_ipc_show(self, mock_run):
-        mock_run.return_value = CompletedProcess([], 0, b"", b"target visibilities\n")
-        invoke("show")
+        mock_run.return_value = CompletedProcess([], 0, b"target visibilities\n", b"")
+        result = invoke("show")
+        assert "target visibilities" in result.output
         mock_run.assert_called_once_with(["qs", "-c", "zshell", "ipc", "show"], capture_output=True)
 
 
