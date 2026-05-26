@@ -6,7 +6,6 @@ import Quickshell
 Singleton {
 	property var extraOpts: ({})
 	readonly property list<var> fuzzyPrepped: useFuzzy ? list.map(e => {
-		console.log(useFuzzy);
 		const obj = {
 			_item: e
 		};

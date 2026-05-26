@@ -214,6 +214,10 @@ Singleton {
 			},
 			idle: {
 				timeouts: general.idle.timeouts
+			},
+			battery: {
+				popupThresholds: general.battery.popupThresholds,
+				critPerc: general.battery.critPerc
 			}
 		};
 	}

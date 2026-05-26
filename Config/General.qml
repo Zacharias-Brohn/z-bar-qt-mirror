@@ -4,6 +4,8 @@ import Quickshell
 JsonObject {
 	property Apps apps: Apps {
 	}
+	property Battery battery: Battery {
+	}
 	property Color color: Color {
 	}
 	property string dateFormat: "ddd d MMM - hh:mm:ss"
@@ -18,6 +20,17 @@ JsonObject {
 		property list<string> explorer: ["dolphin"]
 		property list<string> playback: ["mpv"]
 		property list<string> terminal: ["kitty"]
+	}
+	component Battery: JsonObject {
+		property int critPerc: 5
+		property list<var> popupThresholds: [
+			{
+				perc: 20,
+				name: qsTr("Low battery"),
+				message: qsTr("Battery at %1%").arg(Battery.currentPerc * 100),
+				icon: "battery_android_frame_2"
+			},
+		]
 	}
 	component Color: JsonObject {
 		property int hyprsunsetTemp: 5000
