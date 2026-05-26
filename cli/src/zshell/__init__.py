@@ -28,14 +28,14 @@ def _completion_installed() -> bool:
     return False
 
 
-def _auto_install_completion() -> None:
-    if not sys.stdout.isatty():
-        return
+def _install_completion() -> None:
     if _completion_installed():
-        return
+        click.echo("zshell-cli: Shell completion already installed.")
+        raise typer.Exit()
     shell = _get_shell_name()
     if shell is None:
-        return
+        click.echo("zshell-cli: Unable to detect shell type.", err=True)
+        raise typer.Exit(code=1)
     try:
         _, path = install(prog_name="zshell-cli")
         click.secho(f"zshell-cli: Shell completion installed ({shell}: {path})", fg="green")
@@ -44,6 +44,16 @@ def _auto_install_completion() -> None:
         pass
 
 
+@app.callback()
+def main_options(
+    install_autocomplete: bool = typer.Option(False, "--install-autocomplete", help="Install shell completion for tab-completion."),
+):
+    if install_autocomplete:
+        _install_completion()
+        raise typer.Exit()
+
+
 def main() -> None:
-    _auto_install_completion()
+    if sys.stdout.isatty() and not _completion_installed():
+        click.echo("zshell-cli: Tip: run with --install-autocomplete for tab completion.", err=True)
     app()
