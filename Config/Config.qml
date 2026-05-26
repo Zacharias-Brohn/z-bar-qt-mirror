@@ -293,7 +293,6 @@ Singleton {
 		return {
 			enable_pp: screenshot.enable_pp,
 			mode: screenshot.mode,
-			scale: screenshot.scale,
 			corner_radius: screenshot.corner_radius,
 			drop_shadow: screenshot.drop_shadow,
 			rounded_corners: screenshot.rounded_corners,

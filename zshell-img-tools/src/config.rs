@@ -14,7 +14,6 @@ pub struct EffectsConfig {
     pub corner_radius: f32,
     pub drop_shadow: bool,
     pub rounded_corners: bool,
-    pub scale: f32,
     pub shadow_blur_radius: f32,
     pub shadow_blur_passes: u32,
     pub shadow_color: [u8; 4],

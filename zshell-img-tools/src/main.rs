@@ -10,7 +10,6 @@ struct CliOverrides {
     rounded_corners: Option<bool>,
     corner_radius: Option<f32>,
     drop_shadow: Option<bool>,
-    scale: Option<f32>,
     shadow_blur_radius: Option<f32>,
     shadow_blur_passes: Option<u32>,
     shadow_offset_x: Option<f32>,
@@ -56,6 +55,7 @@ fn main() -> Result<()> {
 
     let mut image_path: Option<String> = None;
     let mut overrides = CliOverrides::default();
+    let mut scale: Option<f32> = None;
 
     let mut i = 0;
     while i < args.len() {
@@ -142,7 +142,7 @@ fn main() -> Result<()> {
             "--scale" => {
                 i += 1;
                 let val = args.get(i).context("Expected a number after --scale")?;
-                overrides.scale = Some(val.parse::<f32>().context("--scale must be a number")?);
+                scale = Some(val.parse::<f32>().context("--scale must be a number")?);
             }
             unknown => bail!("Unknown argument: {unknown}"),
         }
@@ -179,16 +179,14 @@ fn main() -> Result<()> {
         if let Some(v) = overrides.shadow_color {
             effects.shadow_color = v;
         }
-        if let Some(v) = overrides.scale {
-            effects.scale = v;
-        }
     }
 
-    if effects.scale != 1.0 {
-        effects.corner_radius *= effects.scale;
-        effects.shadow_blur_radius *= effects.scale;
-        effects.shadow_offset_x *= effects.scale;
-        effects.shadow_offset_y *= effects.scale;
+    // if scale is set do
+    if let Some(scale) = scale.filter(|&s| s != 1.0) {
+        effects.corner_radius *= scale;
+        effects.shadow_blur_radius *= scale;
+        effects.shadow_offset_x *= scale;
+        effects.shadow_offset_y *= scale;
     }
 
     if let Err(e) = process_image(&image_path, &effects) {
@@ -225,24 +223,6 @@ fn process_image(path: &str, effects: &config::EffectsConfig) -> Result<()> {
             .write_all(&png_bytes)
             .context("Failed to write image data to swappy")?;
     }
-
-    // Writes the PNG bytes to swappy's stdin and waits for swappy to close
-    // child
-    //     .stdin
-    //     .take()
-    //     .context("Failed to get swappy stdin")?
-    //     .write_all(&png_bytes)
-    //     .context("Failed to write image data to swappy")?
-    //     .spawn();
-    //
-    // let status = child.await().context("Failed to wait for swappy")?;
-    //
-    // if !status.success() {
-    //     eprintln!(
-    //         "swappy exited with non-zero status for '{}': {}",
-    //         path, status
-    //     );
-    // }
 
     Ok(())
 }
