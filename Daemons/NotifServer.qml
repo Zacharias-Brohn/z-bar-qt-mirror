@@ -179,6 +179,8 @@ Singleton {
 		property string appIcon
 		property string appName
 		property string body
+		property string cachedImageSource: ""
+		property bool cachingImage: false
 		property bool closed
 		readonly property Connections conn: Connections {
 			function onActionsChanged(): void {
@@ -214,9 +216,9 @@ Singleton {
 			}
 
 			function onImageChanged(): void {
-				notif.image = notif.notification.image;
-				if (notif.notification?.image)
-					notif.dummyImageLoader.active = true;
+				notif.imageSource = notif.notification.image || "";
+				notif.image = notif.imageSource;
+				notif.cacheImageIfNeeded();
 			}
 
 			function onResidentChanged(): void {
@@ -233,60 +235,12 @@ Singleton {
 
 			target: notif.notification
 		}
-		readonly property LazyLoader dummyImageLoader: LazyLoader {
-			active: false
-
-			PanelWindow {
-				color: "transparent"
-				implicitHeight: Config.notifs.sizes.image
-				implicitWidth: Config.notifs.sizes.image
-
-				mask: Region {
-				}
-
-				Image {
-					function tryCache(): void {
-						if (status !== Image.Ready || width != Config.notifs.sizes.image || height != Config.notifs.sizes.image)
-							return;
-
-						const cacheKey = notif.appName + notif.summary + notif.id;
-						let h1 = 0xdeadbeef, h2 = 0x41c6ce57, ch;
-						for (let i = 0; i < cacheKey.length; i++) {
-							ch = cacheKey.charCodeAt(i);
-							h1 = Math.imul(h1 ^ ch, 2654435761);
-							h2 = Math.imul(h2 ^ ch, 1597334677);
-						}
-						h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507);
-						h1 ^= Math.imul(h2 ^ (h2 >>> 13), 3266489909);
-						h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507);
-						h2 ^= Math.imul(h1 ^ (h1 >>> 13), 3266489909);
-						const hash = (h2 >>> 0).toString(16).padStart(8, 0) + (h1 >>> 0).toString(16).padStart(8, 0);
-
-						const cache = `${Paths.notifimagecache}/${hash}.png`;
-						ZShellIo.saveItem(this, Qt.resolvedUrl(cache), () => {
-							notif.image = cache;
-							notif.dummyImageLoader.active = false;
-						});
-					}
-
-					anchors.fill: parent
-					asynchronous: true
-					cache: false
-					fillMode: Image.PreserveAspectCrop
-					opacity: 0
-					source: Qt.resolvedUrl(notif.image)
-
-					onHeightChanged: tryCache()
-					onStatusChanged: tryCache()
-					onWidthChanged: tryCache()
-				}
-			}
-		}
 		property real expireTimeout: 5
 		property bool hasActionIcons
-		property string id
 		property string image
+		property string imageSource
 		property var locks: new Set()
+		property string notifId
 		property Notification notification
 		property bool popup
 		property bool resident
@@ -329,6 +283,35 @@ Singleton {
 		}
 		property int urgency: NotificationUrgency.Normal
 
+		function cacheImageIfNeeded(): void {
+			const source = imageSource;
+
+			if (!source || cachingImage)
+				return;
+
+			if (cachedImageSource === source)
+				return;
+
+			if (source.startsWith("file:")) {
+				cachedImageSource = source;
+				image = source;
+				return;
+			}
+
+			const hash = hashForString(source);
+			const cache = `${Paths.notifimagecache}/${hash}.png`;
+			const cacheUrl = Qt.resolvedUrl(cache);
+
+			cachingImage = true;
+			ZShellIo.saveImage(source, cacheUrl, () => {
+				cachedImageSource = source;
+				image = cache;
+				cachingImage = false;
+			}, () => {
+				cachingImage = false;
+			});
+		}
+
 		function close(): void {
 			closed = true;
 			if (locks.size === 0 && root.list.includes(this)) {
@@ -336,6 +319,20 @@ Singleton {
 				notification?.dismiss();
 				destroy();
 			}
+		}
+
+		function hashForString(s: string): string {
+			let h1 = 0xdeadbeef, h2 = 0x41c6ce57, ch;
+			for (let i = 0; i < s.length; i++) {
+				ch = s.charCodeAt(i);
+				h1 = Math.imul(h1 ^ ch, 2654435761);
+				h2 = Math.imul(h2 ^ ch, 1597334677);
+			}
+			h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507);
+			h1 ^= Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+			h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507);
+			h2 ^= Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+			return (h2 >>> 0).toString(16).padStart(8, "0") + (h1 >>> 0).toString(16).padStart(8, "0");
 		}
 
 		function lock(item: Item): void {
@@ -352,14 +349,13 @@ Singleton {
 			if (!notification)
 				return;
 
-			id = notification.id;
+			notifId = notification.id;
 			summary = notification.summary;
 			body = notification.body;
 			appIcon = notification.appIcon;
 			appName = notification.appName;
-			image = notification.image;
-			if (notification?.image)
-				dummyImageLoader.active = true;
+			imageSource = notification.image || "";
+			image = imageSource;
 			expireTimeout = notification.expireTimeout;
 			urgency = notification.urgency;
 			resident = notification.resident;
@@ -369,6 +365,8 @@ Singleton {
 						text: a.text,
 						invoke: () => a.invoke()
 					}));
+
+			cacheImageIfNeeded();
 		}
 	}
 }

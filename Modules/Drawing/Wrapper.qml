@@ -47,6 +47,7 @@ Item {
 		active: Qt.binding(() => root.shouldBeActive || root.visible)
 		anchors.right: parent.right
 		anchors.verticalCenter: parent.verticalCenter
+		asynchronous: true
 		height: content.contentItem.height
 		opacity: root.expanded ? 0 : 1
 
@@ -65,6 +66,7 @@ Item {
 
 		anchors.right: parent.right
 		anchors.verticalCenter: parent.verticalCenter
+		asynchronous: true
 		opacity: root.expanded ? 1 : 0
 
 		Behavior on opacity {

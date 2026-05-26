@@ -8,7 +8,7 @@ import QtQuick
 Item {
 	id: root
 
-	readonly property int padding: 6
+	readonly property int padding: Appearance.padding.smaller
 	required property Item panels
 	required property PersistentProperties visibilities
 
@@ -54,7 +54,7 @@ Item {
 		anchors.fill: parent
 		anchors.margins: root.padding
 		color: "transparent"
-		radius: Appearance.rounding.smallest / 2
+		radius: Appearance.rounding.normal - root.padding
 
 		CustomListView {
 			id: list
@@ -72,7 +72,7 @@ Item {
 				required property NotifServer.Notif modelData
 				readonly property alias nonAnimHeight: notif.nonAnimHeight
 
-				implicitHeight: notif.implicitHeight + (idx === 0 ? 0 : 8)
+				implicitHeight: notif.implicitHeight + (idx === 0 ? 0 : Appearance.spacing.small)
 				implicitWidth: notif.implicitWidth
 
 				ListView.onRemove: removeAnim.start()
@@ -149,48 +149,6 @@ Item {
 			move: Transition {
 				Anim {
 					property: "y"
-				}
-			}
-
-			ExtraIndicator {
-				anchors.top: parent.top
-				extra: {
-					const count = list.count;
-					if (count === 0)
-						return 0;
-
-					const scrollY = list.contentY;
-
-					let height = 0;
-					for (let i = 0; i < count; i++) {
-						height += (list.itemAtIndex(i)?.nonAnimHeight ?? 0) + 8;
-
-						if (height - 8 >= scrollY)
-							return i;
-					}
-
-					return count;
-				}
-			}
-
-			ExtraIndicator {
-				anchors.bottom: parent.bottom
-				extra: {
-					const count = list.count;
-					if (count === 0)
-						return 0;
-
-					const scrollY = list.contentHeight - (list.contentY + list.height);
-
-					let height = 0;
-					for (let i = count - 1; i >= 0; i--) {
-						height += (list.itemAtIndex(i)?.nonAnimHeight ?? 0) + 8;
-
-						if (height - 8 >= scrollY)
-							return count - i - 1;
-					}
-
-					return 0;
 				}
 			}
 		}
