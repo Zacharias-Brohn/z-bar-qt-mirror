@@ -2,6 +2,7 @@ import typer
 import json
 import shutil
 import os
+import sys
 import re
 import subprocess
 
@@ -15,9 +16,59 @@ from materialyoucolor.score.score import Score
 from materialyoucolor.dynamiccolor.material_dynamic_colors import MaterialDynamicColors
 from materialyoucolor.hct.hct import Hct
 from materialyoucolor.utils.color_utils import argb_from_rgb
-from materialyoucolor.utils.math_utils import difference_degrees, rotation_direction, sanitize_degrees_double
+from materialyoucolor.utils.math_utils import (
+    difference_degrees,
+    rotation_direction,
+    sanitize_degrees_double,
+)
 
 app = typer.Typer()
+
+
+def _complete_scheme_name(incomplete):
+    schemes = [
+        "fruit-salad",
+        "expressive",
+        "monochrome",
+        "rainbow",
+        "tonal-spot",
+        "neutral",
+        "fidelity",
+        "content",
+        "vibrant",
+    ]
+    return [s for s in schemes if incomplete in s]
+
+
+def _complete_preset(incomplete):
+    results = []
+    for sid, meta in list_schemes().items():
+        for v in meta.variants:
+            preset = f"{sid}:{v.id}"
+            if incomplete in preset:
+                results.append((preset, f"{meta.name} - {v.name}"))
+    return results
+
+
+def _complete_mode(incomplete):
+    return [m for m in ("dark", "light") if incomplete in m]
+
+
+def _complete_accent(ctx, incomplete):
+    preset_val = ctx.params.get("preset")
+    if preset_val:
+        try:
+            p_scheme, p_variant = resolve_preset(preset_val)
+            for v in list_schemes()[p_scheme].variants:
+                if v.id == p_variant:
+                    return [a for a in v.accents if incomplete in a]
+        except (ValueError, KeyError):
+            pass
+    all_accents = set()
+    for meta in list_schemes().values():
+        for v in meta.variants:
+            all_accents.update(v.accents)
+    return [a for a in sorted(all_accents) if incomplete in a]
 
 
 @app.command()
@@ -30,7 +81,7 @@ def list_presets(
         for sid, meta in sorted(schemes.items()):
             variants = {}
             for v in meta.variants:
-                entry = {"modes": sorted(v.modes)}
+                entry: dict[str, Any] = {"modes": sorted(v.modes)}
                 if v.accents:
                     entry["accents"] = sorted(v.accents)
                     entry["default_accent"] = sorted(v.accents)[0]
@@ -55,14 +106,35 @@ def list_presets(
 
 @app.command()
 def generate(
-    image_path: Optional[Path] = typer.Option(None, help="Path to source image. Required for image mode."),
-    scheme: Optional[str] = typer.Option(
-        None, help="Color scheme algorithm to use for image mode. Ignored in preset mode."
+    image_path: Optional[Path] = typer.Option(
+        None, help="Path to source image. Required for image mode."
     ),
-    preset: Optional[str] = typer.Option(None, help="Name of a premade scheme in this format: <scheme>:<variant>"),
-    mode: Optional[str] = typer.Option(None, help="Mode of the preset scheme (dark or light)."),
-    accent: Optional[str] = typer.Option(None, help="Accent for schemes that support it (e.g. mauve)."),
+    scheme: Optional[str] = typer.Option(
+        None,
+        help="Color scheme algorithm to use for image mode. Ignored in preset mode.",
+        autocompletion=_complete_scheme_name,
+    ),
+    preset: Optional[str] = typer.Option(
+        None,
+        help="Name of a premade scheme in this format: <scheme>:<variant>",
+        autocompletion=_complete_preset,
+    ),
+    mode: Optional[str] = typer.Option(
+        None,
+        help="Mode of the preset scheme (dark or light).",
+        autocompletion=_complete_mode,
+    ),
+    accent: Optional[str] = typer.Option(
+        None,
+        help="Accent for schemes that support it (e.g. mauve).",
+        autocompletion=_complete_accent,
+    ),
 ):
+    if not any([image_path, scheme, preset, mode, accent]):
+        print(
+            "Hint: use --preset <scheme>:<variant> or --image-path <path>",
+            file=sys.stderr,
+        )
 
     HOME = str(os.getenv("HOME"))
     OUTPUT = Path(HOME + "/.local/state/zshell/scheme.json")
@@ -200,11 +272,15 @@ def generate(
     def harmonize(from_hct: Hct, to_hct: Hct, tone_boost: float) -> Hct:
         diff = difference_degrees(from_hct.hue, to_hct.hue)
         rotation = min(diff * 0.8, 100)
-        output_hue = sanitize_degrees_double(from_hct.hue + rotation * rotation_direction(from_hct.hue, to_hct.hue))
+        output_hue = sanitize_degrees_double(
+            from_hct.hue + rotation * rotation_direction(from_hct.hue, to_hct.hue)
+        )
         tone = max(0.0, min(100.0, from_hct.tone * (1 + tone_boost)))
         return Hct.from_hct(output_hue, from_hct.chroma, tone)
 
-    def terminal_palette(colors: dict[str, str], mode: str, variant: str) -> dict[str, str]:
+    def terminal_palette(
+        colors: dict[str, str], mode: str, variant: str
+    ) -> dict[str, str]:
         light = mode.lower() == "light"
 
         key_hex = (
@@ -236,7 +312,7 @@ def generate(
 
         image = Image.open(image_path)
         image = image.convert("RGB")
-        image.thumbnail(size, Image.NEAREST)
+        image.thumbnail(size, Image.Resampling.NEAREST)
 
         thumbnail_file.parent.mkdir(parents=True, exist_ok=True)
         image.save(thumbnail_path, "JPEG")
@@ -268,8 +344,15 @@ def generate(
         is_dark = ""
 
         with Image.open(image_path) as img:
-            img.thumbnail((1, 1), Image.LANCZOS)
-            hct = Hct.from_int(argb_from_rgb(*img.getpixel((0, 0))))
+            img.thumbnail((1, 1), Image.Resampling.LANCZOS)
+            px = img.getpixel((0, 0))
+            if isinstance(px, (int, float)):
+                r = g = b = int(px)
+            elif px is not None:
+                r, g, b = int(px[0]), int(px[1]), int(px[2])
+            else:
+                r = g = b = 0
+            hct = Hct.from_int(argb_from_rgb(r, g, b))
             is_dark = "light" if hct.tone > 50 else "dark"
 
         return is_dark
@@ -431,6 +514,8 @@ def generate(
 
             raw = tpl_path.read_text(encoding="utf-8")
             out_path, body = split_directive_and_body(raw)
+            if out_path is None:
+                continue
 
             out_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -484,23 +569,30 @@ def generate(
         with CONFIG.open() as f:
             config = json.load(f)
 
-        scheme = scheme or config["colors"]["schemeType"]
+        scheme_type = config["colors"].get("schemeType", "fruit-salad")
+        scheme = scheme or scheme_type
+        assert isinstance(scheme, str)
         config_mode = config["general"]["color"]["mode"]
         smart = bool(config["general"]["color"].get("smart", False))
         scheme_class = get_scheme_class(scheme)
 
+        p_variant = "default"
         if preset:
             p_scheme, p_variant = resolve_preset(preset)
             schemes = list_schemes()
             if accent and p_scheme in schemes:
                 meta = schemes[p_scheme]
-                var_accents = next((v.accents for v in meta.variants if v.id == p_variant), ())
+                var_accents = next(
+                    (v.accents for v in meta.variants if v.id == p_variant), ()
+                )
                 if accent not in var_accents:
                     available = ", ".join(var_accents) if var_accents else "none"
                     raise typer.BadParameter(
                         f"Accent '{accent}' not available for '{p_scheme}:{p_variant}'. Available accents: {available}"
                     )
-            palette_obj = get_palette(p_scheme, p_variant, mode or config_mode, accent=accent)
+            palette_obj = get_palette(
+                p_scheme, p_variant, mode or config_mode, accent=accent
+            )
             colors = palette_obj.colors
             effective_mode = palette_obj.mode
             name = palette_obj.scheme
