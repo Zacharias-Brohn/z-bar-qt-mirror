@@ -19,6 +19,21 @@ Item {
 	required property RowLayout loader
 	required property Wrapper popouts
 
+	function resolveIcon(app: string, icon: string): string {
+		if (app === "chrome_status_icon_1") {
+			return Quickshell.iconPath("discord-tray");
+		} else if (app === "AyuGramDesktop") {
+			if (icon === Quickshell.iconPath("com.ayugram.desktop-attention-symbolic"))
+				return Quickshell.iconPath("telegram-attention-panel");
+			else if (icon === Quickshell.iconPath("com.ayugram.desktop-mute-symbolic"))
+				return Quickshell.iconPath("telegram-mute-panel");
+			else if (icon === Quickshell.iconPath("com.ayugram.desktop-symbolic"))
+				return Quickshell.iconPath("telegram-panel");
+		}
+
+		return root.item.icon;
+	}
+
 	CustomRect {
 		anchors.fill: parent
 		anchors.margins: 3
@@ -32,6 +47,7 @@ Item {
 			onClicked: {
 				if (mouse.button === Qt.LeftButton) {
 					root.item.activate();
+					console.log(icon.source + "\n" + root.item.id);
 				} else if (mouse.button === Qt.RightButton) {
 					root.popouts.currentName = `traymenu${root.ind}`;
 					root.popouts.currentCenter = Qt.binding(() => root.mapToItem(root.loader, root.implicitWidth / 2, 0).x);
@@ -55,6 +71,6 @@ Item {
 		implicitSize: 24 * root.dpr
 		layer.enabled: Config.general.color.smart || Config.general.color.scheduleDark
 		scale: 1 / root.dpr
-		source: root.item.icon
+		source: root.resolveIcon(root.item.id, root.item.icon)
 	}
 }
