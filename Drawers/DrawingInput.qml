@@ -32,10 +32,10 @@ CustomMouseArea {
 		if (root.visibilities.isDrawing && (event.buttons & Qt.LeftButton)) {
 			root.drawing.points.push(Qt.point(x, y));
 			root.drawing.requestPaint();
+			return;
 		}
 
-		if (root.inLeftPanel(root.popout, x, y)) {
-			console.log("set -2 z");
+		if (!(event.buttons & Qt.LeftButton) && root.inLeftPanel(root.popout, x, y)) {
 			root.z = -2;
 			root.panels.drawing.expanded = true;
 		}
