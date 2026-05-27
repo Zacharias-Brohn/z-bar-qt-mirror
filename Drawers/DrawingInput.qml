@@ -22,20 +22,20 @@ CustomMouseArea {
 	}
 
 	acceptedButtons: Qt.LeftButton | Qt.RightButton
-	anchors.fill: root.visibilities.isDrawing ? parent : undefined
+	enabled: z > 0
 	hoverEnabled: true
 	visible: root.visibilities.isDrawing
 
 	onPositionChanged: event => {
 		const x = event.x;
 		const y = event.y;
-
 		if (root.visibilities.isDrawing && (event.buttons & Qt.LeftButton)) {
 			root.drawing.points.push(Qt.point(x, y));
 			root.drawing.requestPaint();
 		}
 
 		if (root.inLeftPanel(root.popout, x, y)) {
+			console.log("set -2 z");
 			root.z = -2;
 			root.panels.drawing.expanded = true;
 		}

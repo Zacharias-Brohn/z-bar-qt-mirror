@@ -78,7 +78,7 @@ CustomMouseArea {
 		const dragY = y - dragStart.y;
 
 		if (root.visibilities.isDrawing && !root.inLeftPanel(root.panels.drawing, x, y)) {
-			// root.input.z = 2;
+			root.input.z = 2;
 			root.panels.drawing.expanded = false;
 		}
 

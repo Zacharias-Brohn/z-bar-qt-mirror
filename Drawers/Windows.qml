@@ -309,12 +309,11 @@ Variants {
 				id: drawingLoader
 
 				active: visibilities.isDrawing
+				anchors.fill: parent
+				z: 2
 
 				sourceComponent: Drawing {
 					id: drawing
-
-					anchors.fill: parent
-					z: 2
 				}
 			}
 
@@ -322,6 +321,8 @@ Variants {
 				id: inputLoader
 
 				active: visibilities.isDrawing
+				anchors.fill: parent
+				z: 2
 
 				sourceComponent: DrawingInput {
 					id: input
@@ -331,7 +332,6 @@ Variants {
 					panels: panels
 					popout: panels.drawing
 					visibilities: visibilities
-					z: 2
 				}
 			}
 

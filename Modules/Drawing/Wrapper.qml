@@ -48,7 +48,6 @@ Item {
 		anchors.right: parent.right
 		anchors.verticalCenter: parent.verticalCenter
 		asynchronous: true
-		height: content.item.height
 		opacity: root.expanded ? 0 : 1
 
 		Behavior on opacity {
