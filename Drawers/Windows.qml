@@ -305,22 +305,34 @@ Variants {
 				}
 			}
 
-			Drawing {
-				id: drawing
+			Loader {
+				id: drawingLoader
 
-				anchors.fill: parent
-				z: 2
+				active: visibilities.isDrawing
+
+				sourceComponent: Drawing {
+					id: drawing
+
+					anchors.fill: parent
+					z: 2
+				}
 			}
 
-			DrawingInput {
-				id: input
+			Loader {
+				id: inputLoader
 
-				bar: bar
-				drawing: drawing
-				panels: panels
-				popout: panels.drawing
-				visibilities: visibilities
-				z: 2
+				active: visibilities.isDrawing
+
+				sourceComponent: DrawingInput {
+					id: input
+
+					bar: bar
+					drawing: drawingLoader.item
+					panels: panels
+					popout: panels.drawing
+					visibilities: visibilities
+					z: 2
+				}
 			}
 
 			Interactions {
@@ -328,8 +340,8 @@ Variants {
 
 				anchors.fill: parent
 				bar: bar
-				drawing: drawing
-				input: input
+				drawing: drawingLoader.item
+				input: inputLoader.item
 				panels: panels
 				popouts: panels.popouts
 				screen: scope.modelData
@@ -340,7 +352,7 @@ Variants {
 					id: panels
 
 					bar: bar
-					drawingItem: drawing
+					drawingItem: drawingLoader.item
 					screen: scope.modelData
 					visibilities: visibilities
 
