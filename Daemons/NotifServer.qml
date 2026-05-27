@@ -218,7 +218,7 @@ Singleton {
 			function onImageChanged(): void {
 				notif.imageSource = notif.notification.image || "";
 				notif.image = notif.imageSource;
-				notif.cacheImageIfNeeded();
+				notif.cacheImageIfNeeded(notif.imageSource);
 			}
 
 			function onResidentChanged(): void {
@@ -283,29 +283,18 @@ Singleton {
 		}
 		property int urgency: NotificationUrgency.Normal
 
-		function cacheImageIfNeeded(): void {
-			const source = imageSource;
-
+		function cacheImageIfNeeded(source: string): void {
 			if (!source || cachingImage)
 				return;
 
 			if (cachedImageSource === source)
 				return;
 
-			if (source.startsWith("file:")) {
-				cachedImageSource = source;
-				image = source;
-				return;
-			}
-
-			const hash = hashForString(source);
-			const cache = `${Paths.notifimagecache}/${hash}.png`;
-			const cacheUrl = Qt.resolvedUrl(cache);
-
 			cachingImage = true;
-			ZShellIo.saveImage(source, cacheUrl, () => {
+
+			ZShellIo.cacheImage(Qt.resolvedUrl(source), Paths.notifimagecache, (path, url) => {
 				cachedImageSource = source;
-				image = cache;
+				image = path;
 				cachingImage = false;
 			}, () => {
 				cachingImage = false;
@@ -319,20 +308,6 @@ Singleton {
 				notification?.dismiss();
 				destroy();
 			}
-		}
-
-		function hashForString(s: string): string {
-			let h1 = 0xdeadbeef, h2 = 0x41c6ce57, ch;
-			for (let i = 0; i < s.length; i++) {
-				ch = s.charCodeAt(i);
-				h1 = Math.imul(h1 ^ ch, 2654435761);
-				h2 = Math.imul(h2 ^ ch, 1597334677);
-			}
-			h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507);
-			h1 ^= Math.imul(h2 ^ (h2 >>> 13), 3266489909);
-			h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507);
-			h2 ^= Math.imul(h1 ^ (h1 >>> 13), 3266489909);
-			return (h2 >>> 0).toString(16).padStart(8, "0") + (h1 >>> 0).toString(16).padStart(8, "0");
 		}
 
 		function lock(item: Item): void {
