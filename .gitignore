@@ -13,3 +13,5 @@ uv.lock
 .qtcreator/
 dist/
 **/target/
+**/test-plugins/
+**/Charts/

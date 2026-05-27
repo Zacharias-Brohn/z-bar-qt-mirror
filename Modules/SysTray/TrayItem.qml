@@ -29,6 +29,13 @@ Item {
 				return Quickshell.iconPath("telegram-mute-panel");
 			else if (icon === Quickshell.iconPath("com.ayugram.desktop-symbolic"))
 				return Quickshell.iconPath("telegram-panel");
+		} else if (app === "TelegramDesktop") {
+			if (icon === Quickshell.iconPath("org.telegram.desktop-symbolic"))
+				return Quickshell.iconPath("telegram-panel");
+			else if (icon === Quickshell.iconPath("org.telegram.desktop-attention-symbolic"))
+				return Quickshell.iconPath("telegram-attention-panel");
+			else if (icon === Quickshell.iconPath("org.telegram.desktop-mute-symbolic"))
+				return Quickshell.iconPath("telegram-mute-panel");
 		}
 
 		return root.item.icon;
