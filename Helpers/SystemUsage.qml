@@ -17,6 +17,7 @@ Singleton {
 	property var disks: []
 	property real gpuMemTotal: 0
 	property real gpuMemUsed
+	property string gpuName
 	property real gpuPerc
 	property real gpuTemp
 	readonly property string gpuType: Config.services.gpuType.toUpperCase() || autoGpuType
