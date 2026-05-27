@@ -55,7 +55,7 @@ Item {
 				if (mouse.button === Qt.LeftButton) {
 					root.item.activate();
 					console.log(icon.source + "\n" + root.item.id);
-				} else if (mouse.button === Qt.RightButton) {
+				} else if (mouse.button === Qt.RightButton && Config.barConfig.popouts.tray) {
 					root.popouts.currentName = `traymenu${root.ind}`;
 					root.popouts.currentCenter = Qt.binding(() => root.mapToItem(root.loader, root.implicitWidth / 2, 0).x);
 					root.popouts.hasCurrent = true;
