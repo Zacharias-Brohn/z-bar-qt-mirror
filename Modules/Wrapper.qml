@@ -15,9 +15,8 @@ Item {
 	property real currentCenter
 	property alias currentName: popoutState.currentName
 	property string detachedMode
-	readonly property bool isDetached: detachedMode.length > 0
 	property alias hasCurrent: popoutState.hasCurrent
-	readonly property real nonAnimHeight: children.find(c => c.shouldBeActive)?.implicitHeight ?? content.implicitHeight
+	readonly property real nonAnimHeight: content.implicitHeight || 150
 	readonly property real nonAnimWidth: children.find(c => c.shouldBeActive)?.implicitWidth ?? content.implicitWidth
 	required property real offsetScale
 	property string queuedMode
@@ -28,29 +27,13 @@ Item {
 		detachedMode = "";
 	}
 
-	function detach(mode: string): void {
-		setAnims(true);
-		if (mode === "winfo") {
-			detachedMode = mode;
-		} else {
-			queuedMode = mode;
-			detachedMode = "any";
-		}
-		setAnims(false);
-		focus = true;
-	}
-
-	function setAnims(detach: bool): void {
-		const type = `expressive${detach ? "Slow" : "Default"}Spatial`;
-		animLength = Appearance.anim.durations[type];
-		animCurve = Appearance.anim.curves[type];
-	}
-
 	focus: hasCurrent
 	implicitHeight: nonAnimHeight
 	implicitWidth: nonAnimWidth
 
 	Behavior on implicitHeight {
+		enabled: root.offsetScale < 1
+
 		Anim {
 			duration: root.animLength
 			easing.bezierCurve: root.animCurve
@@ -72,41 +55,15 @@ Item {
 	Comp {
 		id: content
 
-		// anchors.horizontalCenter: parent.horizontalCenter
-		// anchors.top: parent.top
 		anchors.centerIn: parent
-		shouldBeActive: root.hasCurrent && !root.detachedMode
+		shouldBeActive: root.hasCurrent
 
 		sourceComponent: Content {
 			popouts: popoutState
 		}
-	}
 
-	// Comp {
-	// 	id: winfo
-	//
-	// 	anchors.centerIn: parent
-	// 	shouldBeActive: root.detachedMode === "winfo"
-	//
-	// 	sourceComponent: WindowInfo {
-	// 		client: Hypr.activeToplevel
-	// 		screen: root.screen
-	// 	}
-	// }
-	//
-	// Comp {
-	// 	id: controlCenter
-	//
-	// 	anchors.centerIn: parent
-	// 	shouldBeActive: root.detachedMode === "any"
-	//
-	// 	sourceComponent: ControlCenter {
-	// 		active: root.queuedMode
-	// 		screen: root.screen
-	//
-	// 		onClose: root.close()
-	// 	}
-	// }
+		onActiveChanged: console.log("active:", content.implicitHeight)
+	}
 
 	component Comp: Loader {
 		id: comp
