@@ -36,6 +36,7 @@ Scope {
 			for (const perc of root.popupThresholds) {
 				if (p <= perc.perc && !perc.warned) {
 					perc.warned = true;
+					console.log(perc.warned + "\n" + [...Config.general.battery.popupThresholds][0].warned);
 					Toaster.toast(perc.title ?? qsTr("Battery warning"), perc.message ?? qsTr("Battery perc is low"), perc.icon ?? "battery_android_alert", perc.critical ? Toast.Error : Toast.Warning);
 				}
 			}
