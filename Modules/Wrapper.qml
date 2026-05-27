@@ -61,8 +61,6 @@ Item {
 		sourceComponent: Content {
 			popouts: popoutState
 		}
-
-		onActiveChanged: console.log("active:", content.implicitHeight)
 	}
 
 	component Comp: Loader {
