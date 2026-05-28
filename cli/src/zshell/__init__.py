@@ -32,11 +32,11 @@ def _completion_installed() -> bool:
 def _install_completion() -> None:
     if _completion_installed():
         print("zshell-cli: Shell completion already installed.")
-        raise typer.Exit()
+        sys.exit(0)
     shell = _get_shell_name()
     if shell is None:
         print("zshell-cli: Unable to detect shell type.", file=sys.stderr)
-        raise typer.Exit(code=1)
+        sys.exit(1)
     try:
         _, path = install(prog_name="zshell-cli")
         print(f"zshell-cli: Shell completion installed ({shell}: {path})")
