@@ -76,8 +76,8 @@ MouseArea {
 		const rounding = root.cornerRadius > 0;
 		const shadow_blur = root.shadowRange / root.shadowRenderPower;
 		const r = Math.floor(root.shadowColor.r * 256);
-		const g = Math.floor(root.shadowColor.b * 256);
-		const b = Math.floor(root.shadowColor.g * 256);
+		const g = Math.floor(root.shadowColor.g * 256);
+		const b = Math.floor(root.shadowColor.b * 256);
 		const a = Math.floor(root.shadowColor.a * 256);
 		const args = Config.screenshot.mode === "auto" ? ["--rounding", `${rounding}`, "--radius", root.cornerRadius, "--shadow", root.shadowEnabled, "--shadow-blur", `${shadow_blur}`, "--shadow-color", `${r},${g},${b},${a}`, "--shadow-offset-x", root.shadowOffset[0], "--shadow-offset-y", root.shadowOffset[1]] : [];
 		const cmd = Config.screenshot.enable_pp ? ["zshell-img-tools", "--scale", root.scaleRatio, ...args, "--image"] : ["swappy", "-f"];
