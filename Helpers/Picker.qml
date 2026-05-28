@@ -26,6 +26,7 @@ MouseArea {
 			return (bc.pinned - ac.pinned) || ((bc.fullscreen !== 0) - (ac.fullscreen !== 0)) || (bc.floating - ac.floating);
 		});
 	}
+	readonly property int cornerRadius: Hypr.options.decoration.rounding
 	property real ex: screen.width
 	property real ey: screen.height
 	required property LazyLoader loader
@@ -38,6 +39,7 @@ MouseArea {
 	required property ShellScreen screen
 	property real sh: Math.abs(sy - ey)
 	readonly property color shadowColor: Hypr.options.decoration.shadow.color
+	readonly property bool shadowEnabled: Hypr.options.decoration.shadow.enabled
 	readonly property var shadowOffset: Hypr.options.decoration.shadow.offset
 	readonly property int shadowRange: Hypr.options.decoration.shadow.range
 	readonly property int shadowRenderPower: Hypr.options.decoration.shadow.render_power
@@ -71,7 +73,14 @@ MouseArea {
 
 	function save(): void {
 		const tmpfile = Qt.resolvedUrl(`/tmp/zshell-picker-${Quickshell.processId}-${Date.now()}.png`);
-		const cmd = Config.screenshot.enable_pp ? ["zshell-img-tools", "--scale", root.scaleRatio, "--shadow-blur-radius", root.shadowRange, "--image"] : ["swappy", "-f"];
+		const rounding = root.cornerRadius > 0;
+		const shadow_blur = root.shadowRange / root.shadowRenderPower;
+		const r = Math.floor(root.shadowColor.r * 256);
+		const g = Math.floor(root.shadowColor.b * 256);
+		const b = Math.floor(root.shadowColor.g * 256);
+		const a = Math.floor(root.shadowColor.a * 256);
+		const args = Config.screenshot.mode === "auto" ? ["--rounding", `${rounding}`, "--radius", root.cornerRadius, "--shadow", root.shadowEnabled, "--shadow-blur", `${shadow_blur}`, "--shadow-color", `${r},${g},${b},${a}`, "--shadow-offset-x", root.shadowOffset[0], "--shadow-offset-y", root.shadowOffset[1]] : [];
+		const cmd = Config.screenshot.enable_pp ? ["zshell-img-tools", "--scale", root.scaleRatio, ...args, "--image"] : ["swappy", "-f"];
 		ZShellIo.saveItem(screencopy, tmpfile, Qt.rect(Math.ceil(rsx), Math.ceil(rsy), Math.floor(sw), Math.floor(sh)), path => Quickshell.execDetached([...cmd, path]));
 		closeAnim.start();
 	}

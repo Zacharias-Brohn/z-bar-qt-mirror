@@ -20,7 +20,7 @@ SettingsPage {
 		}
 
 		CustomSplitButtonRow {
-			// active: true
+			active: Config.screenshot.mode === "manual" ? menuItems[0] : menuItems[1]
 			label: qsTr("Effects mode")
 
 			menuItems: [
