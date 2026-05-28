@@ -1011,7 +1011,7 @@ export const settingsIndex = [
         keywords: ["corner", "radius"],
     },
     {
-        name: "Enable drop shadow",
+        name: "Enable shadow",
         category: "screenshot",
         categoryName: "Screenshot",
         section: "Screenshot",
@@ -1025,19 +1025,19 @@ export const settingsIndex = [
         keywords: ["rounded", "corners"],
     },
     {
-        name: "Shadow blur radius",
+        name: "Shadow blur amount",
         category: "screenshot",
         categoryName: "Screenshot",
         section: "Screenshot",
         keywords: ["blur", "shadow", "radius"],
     },
-    {
-        name: "Shadow color",
-        category: "screenshot",
-        categoryName: "Screenshot",
-        section: "Screenshot",
-        keywords: ["color", "shadow"],
-    },
+    // {
+    //     name: "Shadow color",
+    //     category: "screenshot",
+    //     categoryName: "Screenshot",
+    //     section: "Screenshot",
+    //     keywords: ["color", "shadow"],
+    // },
     {
         name: "Shadow offset X",
         category: "screenshot",
