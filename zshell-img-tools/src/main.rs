@@ -80,7 +80,7 @@ fn run() -> Result<()> {
                 image_path = Some(next_arg(&args, &mut i, "--image")?);
             }
             "--corner" => {
-                let val = next_arg(&args, &mut i, "--corners")?;
+                let val = next_arg(&args, &mut i, "--corner")?;
                 overrides.rounded_corners = Some(parse_bool(&val)?);
             }
             "--corner-radius" => {
