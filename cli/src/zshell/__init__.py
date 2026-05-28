@@ -1,4 +1,5 @@
 from __future__ import annotations
+import os
 import sys
 from pathlib import Path
 
@@ -49,7 +50,8 @@ def main() -> None:
     if "--install-autocomplete" in sys.argv:
         _install_completion()
         return
-    completion_init()
+    if "_ZSHELL_CLI_COMPLETE" in os.environ:
+        completion_init()
     if sys.stdout.isatty() and not _completion_installed():
         print("zshell-cli: Tip: run with --install-autocomplete for tab completion.", file=sys.stderr)
     app()
