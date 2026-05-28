@@ -42,11 +42,13 @@ jobs:
               continue-on-error: true
               run: |
                   if [ -n "$(find . -name "Cargo.toml" -print -quit)" ]; then
+                    status=0
                     for manifest in $(find . -name "Cargo.toml"); do
                       cargo fmt --manifest-path "$manifest" --check && \
                         echo "$manifest: formatting OK" || \
-                        echo "$manifest: needs formatting"
+                        { echo "$manifest: needs formatting"; status=1; }
                     done
+                    exit $status
                   elif [ -n "$(find . -name "*.rs" -print -quit)" ]; then
                     echo "Rust files found but no Cargo.toml"
                     exit 1
