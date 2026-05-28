@@ -10,12 +10,10 @@ pub struct Config {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct EffectsConfig {
-    pub mode: String,
     pub corner_radius: f32,
     pub drop_shadow: bool,
     pub rounded_corners: bool,
     pub shadow_blur_radius: f32,
-    pub shadow_blur_passes: u32,
     pub shadow_color: [u8; 4],
     pub shadow_offset_x: f32,
     pub shadow_offset_y: f32,

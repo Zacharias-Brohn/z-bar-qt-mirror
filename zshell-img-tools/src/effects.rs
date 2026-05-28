@@ -16,7 +16,6 @@ pub fn apply_effects(img: RgbaImage, cfg: &EffectsConfig) -> RgbaImage {
             cfg.shadow_blur_radius,
             cfg.shadow_offset_x,
             cfg.shadow_offset_y,
-            cfg.shadow_blur_passes,
             cfg.shadow_color,
         )
     } else {
@@ -53,12 +52,12 @@ pub fn apply_drop_shadow(
     blur_radius: f32,
     offset_x: f32,
     offset_y: f32,
-    blur_passes: u32,
+    // blur_passes: u32,
     shadow_color: [u8; 4],
 ) -> RgbaImage {
     let (iw, ih) = img.dimensions();
     let br = blur_radius.ceil() as u32;
-    let bp = blur_passes;
+    let bp = 1;
     // Original idea
     // let spread = br * bp;
     // Claude is hallucinating but let's try it **Worked btw**
