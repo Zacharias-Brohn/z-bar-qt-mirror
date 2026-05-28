@@ -4,7 +4,7 @@
 #include <qpainter.h>
 #include <qpen.h>
 
-namespace caelestia::internal {
+namespace ZShell::internal {
 
 ArcGauge::ArcGauge(QQuickItem* parent)
 	: QQuickPaintedItem(parent) {
@@ -116,4 +116,4 @@ void ArcGauge::setLineWidth(qreal width) {
 	update();
 }
 
-} // namespace caelestia::internal
+} // namespace ZShell::internal

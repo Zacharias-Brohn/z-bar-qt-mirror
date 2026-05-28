@@ -23,12 +23,12 @@ RowLayout {
 			let modRowPos = sysTrayMod.mapToItem(sysModRow, modPos.x, modPos.y);
 			let child = sysModRow.childAt(modRowPos.x, modRowPos.y);
 			if (child) {
-				if (child.objectName === "audioWidget")
+				if (child.objectName === "audioWidget" && Config.barConfig.popouts.audio)
 					return {
 						id: "audio",
 						item: child
 					};
-				if (child.objectName === "upowerWidget")
+				if (child.objectName === "upowerWidget" && Config.barConfig.popouts.upower)
 					return {
 						id: "upower",
 						item: child

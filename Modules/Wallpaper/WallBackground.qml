@@ -6,6 +6,7 @@ import QtQuick
 import qs.Components
 import qs.Helpers
 import qs.Config
+import ZShell.Internal
 
 Item {
 	id: root
@@ -15,58 +16,64 @@ Item {
 
 	function refreshData(): void {
 		Hyprland.refreshMonitors();
-		const scale = Hyprland.monitorFor(root.screen).scale;
-		if (scale > 0 && img.resScale !== scale) {
-			img.resScale = scale;
-			img.sourceSize.width = root.screen.width * scale;
+		let scale = Hyprland.monitorFor(root.screen).scale;
+		if (scale <= 0)
+			scale = 1.0; // Fallback to avoid zeroes on initialization
+
+		if (root.screen.width > 0 && root.screen.height > 0) {
+			img.screenResolution = Qt.size(root.screen.width * scale, root.screen.height * scale);
 		}
+
 		const displayData = Wallpapers.getCrop(root.screen.name);
-		const displayRect = Qt.rect(img.sourceSize.width * displayData.x, img.implicitHeight * displayData.y, img.sourceSize.width * displayData.width, img.implicitHeight * displayData.height);
-		img.anchors.fill = null;
-		img.zoom = displayData.zoom;
-		img.x = -(displayRect.x * displayData.zoom / img.resScale);
-		img.y = -(displayRect.y * displayData.zoom / img.resScale);
+
+		if (displayData) {
+			img.cropX = displayData.x !== undefined ? displayData.x : 0.0;
+			img.cropY = displayData.y !== undefined ? displayData.y : 0.0;
+			img.cropWidth = (displayData.width !== undefined && displayData.width > 0) ? displayData.width : 1.0;
+			img.cropHeight = (displayData.height !== undefined && displayData.height > 0) ? displayData.height : 1.0;
+		}
 	}
 
 	anchors.fill: parent
 
-	Image {
+	Component.onCompleted: root.refreshData()
+
+	Connections {
+		function onHeightChanged() {
+			root.refreshData();
+		}
+
+		function onWidthChanged() {
+			root.refreshData();
+		}
+
+		target: root.screen
+	}
+
+	WallpaperImage {
 		id: img
 
-		property int displayH
-		property int displayW
-		property real resScale
-		property real zoom: 1.0
-
-		asynchronous: true
-		fillMode: Image.PreserveAspectCrop
-		height: implicitHeight * zoom / resScale
-		opacity: 1
-		retainWhileLoading: true
+		anchors.fill: parent
 		source: root.source
-		sourceSize.width: root.screen.width * resScale
-		width: implicitWidth * zoom / resScale
 
-		Behavior on height {
+		Behavior on cropHeight {
 			Anim {
 			}
 		}
-		Behavior on width {
+		Behavior on cropWidth {
 			Anim {
 			}
 		}
-		Behavior on x {
+		Behavior on cropX {
 			Anim {
 			}
 		}
-		Behavior on y {
+		Behavior on cropY {
 			Anim {
 			}
 		}
-
-		onStatusChanged: {
-			if (img.status == Image.Ready) {
-				root.refreshData();
+		Behavior on zoom {
+			Anim {
 			}
 		}
 

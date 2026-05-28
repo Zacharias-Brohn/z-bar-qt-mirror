@@ -32,10 +32,9 @@ Item {
 		Loader {
 			id: content
 
-			active: true
+			active: root.shouldBeActive || root.visible
 			anchors.bottom: parent.bottom
 			anchors.horizontalCenter: parent.horizontalCenter
-			visible: true
 
 			sourceComponent: Content {
 				screen: root.screen

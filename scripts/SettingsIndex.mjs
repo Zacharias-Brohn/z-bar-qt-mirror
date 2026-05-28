@@ -180,6 +180,14 @@ export const settingsIndex = [
         section: "Bar",
         keywords: ["smoothing", "rounding"],
     },
+    // System tray section
+    {
+        name: "Tray icon size",
+        category: "bar",
+        categoryName: "Bar",
+        section: "Tray",
+        keywords: ["tray", "icon", "size"],
+    },
     // Popouts section
     {
         name: "Tray",

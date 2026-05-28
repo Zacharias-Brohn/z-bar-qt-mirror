@@ -1,17 +1,22 @@
 #include "writefile.hpp"
 
 #include <QtConcurrent/qtconcurrentrun.h>
+#include <QtCore/QCryptographicHash>
+#include <QtCore/QSaveFile>
+#include <QtGui/QImageReader>
 #include <QtQuick/qquickimageprovider.h>
 #include <QtQuick/qquickitemgrabresult.h>
 #include <QtQuick/qquickwindow.h>
 
-#include <qdir.h>
-#include <qfile.h>
-#include <qfileinfo.h>
-#include <qfuturewatcher.h>
-#include <qimage.h>
-#include <qjsengine.h>
-#include <qqmlengine.h>
+#include <QDir>
+#include <QFile>
+#include <QFileInfo>
+#include <QFutureWatcher>
+#include <QImage>
+#include <QJSValue>
+#include <QQmlEngine>
+#include <QSize>
+#include <QVariant>
 
 namespace ZShell {
 
@@ -84,54 +89,51 @@ void ZShellIo::saveItem(
 		&QQuickItemGrabResult::ready,
 		this,
 		[grabResult, scaledRect, path, onSaved, onFailed, this]() {
+			const auto future = QtConcurrent::run([grabResult, scaledRect, path]() {
+				QImage image = grabResult->image();
 
-			QImage image = grabResult->image();
-
-			if (scaledRect.isValid()) {
-				image = image.copy(scaledRect);
-			}
-
-			const auto future = QtConcurrent::run([image, path]() {
+				if (scaledRect.isValid()) {
+					image = image.copy(scaledRect);
+				}
 
 				const QString file = path.toLocalFile();
 				const QString parent = QFileInfo(file).absolutePath();
 
-				return QDir().mkpath(parent) && image.save(file);
+				QDir().mkpath(parent);
+
+				QSaveFile out(file);
+				if (!out.open(QIODevice::WriteOnly)) {
+					return false;
+				}
+
+				if (!image.save(&out, "PNG")) {
+					return false;
+				}
+
+				return out.commit();
 			});
 
 			auto* watcher = new QFutureWatcher<bool>(this);
 			auto* engine = qmlEngine(this);
 
-			QObject::connect(
-				watcher,
-				&QFutureWatcher<bool>::finished,
-				this,
-				[=]() {
-
+			QObject::connect(watcher, &QFutureWatcher<bool>::finished, this, [=]() {
 				if (watcher->result()) {
-
-					if (onSaved.isCallable()) {
+					if (onSaved.isCallable() && engine) {
 						onSaved.call({
-							QJSValue(path.toLocalFile()),
-							engine->toScriptValue(QVariant::fromValue(path))
+							engine->toScriptValue(path.toLocalFile()),
+							engine->toScriptValue(path)
 						});
 					}
-
 				} else {
-
-					qWarning() << "ZShellIo::saveItem: failed to save"
-					           << path;
-
-					if (onFailed.isCallable()) {
+					qWarning() << "ZShellIo::saveItem: failed to save" << path;
+					if (onFailed.isCallable() && engine) {
 						onFailed.call({
-							engine->toScriptValue(QVariant::fromValue(path))
+							engine->toScriptValue(path)
 						});
 					}
 				}
-
 				watcher->deleteLater();
-			}
-				);
+			});
 
 			watcher->setFuture(future);
 		}
@@ -139,106 +141,130 @@ void ZShellIo::saveItem(
 }
 
 // ============================================================
-// saveImage
+// cacheImage
 // ============================================================
 
-void ZShellIo::saveImage(const QUrl& source, const QUrl& target) {
-	this->saveImage(source, target, QJSValue(), QJSValue());
+void ZShellIo::cacheImage(const QUrl& source, const QString& cacheDir) {
+	this->cacheImage(source, cacheDir, QJSValue(), QJSValue());
 }
 
-void ZShellIo::saveImage(const QUrl& source, const QUrl& target, QJSValue onSaved) {
-	this->saveImage(source, target, onSaved, QJSValue());
+void ZShellIo::cacheImage(const QUrl& source, const QString& cacheDir, QJSValue onSaved) {
+	this->cacheImage(source, cacheDir, onSaved, QJSValue());
 }
 
-void ZShellIo::saveImage(
+void ZShellIo::cacheImage(
 	const QUrl& source,
-	const QUrl& target,
+	const QString& cacheDir,
 	QJSValue onSaved,
 	QJSValue onFailed
 	) {
-	auto* engine = qmlEngine(this);
+	if (cacheDir.isEmpty()) {
+		qWarning() << "ZShellIo::cacheImage: cacheDir is empty";
+		return;
+	}
 
-	const auto future = QtConcurrent::run([this, source, target]() {
-			return this->saveImageInternal(source, target);
+	QImage image;
+	if (!loadSourceImage(source, image)) {
+		qWarning() << "ZShellIo::cacheImage: failed to load source image" << source;
+		auto* engine = qmlEngine(this);
+		if (onFailed.isCallable() && engine) {
+			onFailed.call({
+					engine->toScriptValue(source),
+					engine->toScriptValue(cacheDir)
+				});
+		}
+		return;
+	}
+
+	const auto future = QtConcurrent::run([image, cacheDir]() -> QString {
+			if (image.isNull()) {
+				return QString();
+			}
+
+			const QImage normalized = image.convertToFormat(QImage::Format_RGBA8888);
+
+			const QByteArray bytes(
+				reinterpret_cast<const char*>(normalized.constBits()),
+				qsizetype(normalized.sizeInBytes())
+				);
+
+			const QByteArray digest =
+				QCryptographicHash::hash(bytes, QCryptographicHash::Sha256).toHex();
+
+			QDir dir(cacheDir);
+			if (!dir.exists() && !QDir().mkpath(cacheDir)) {
+				return QString();
+			}
+
+			const QString finalPath = dir.filePath(QString::fromLatin1(digest) + ".png");
+
+			if (QFile::exists(finalPath)) {
+				return finalPath;
+			}
+
+			QSaveFile out(finalPath);
+			if (!out.open(QIODevice::WriteOnly)) {
+				return QString();
+			}
+
+			if (!normalized.save(&out, "PNG")) {
+				return QString();
+			}
+
+			if (!out.commit()) {
+				return QString();
+			}
+
+			return finalPath;
 		});
 
-	auto* watcher = new QFutureWatcher<bool>(this);
+	auto* watcher = new QFutureWatcher<QString>(this);
+	auto* engine = qmlEngine(this);
 
-	QObject::connect(
-		watcher,
-		&QFutureWatcher<bool>::finished,
-		this,
-		[=]() {
+	QObject::connect(watcher, &QFutureWatcher<QString>::finished, this, [=]() {
+			const QString finalPath = watcher->result();
 
-			if (watcher->result()) {
-
-				if (onSaved.isCallable()) {
+			if (!finalPath.isEmpty()) {
+				if (onSaved.isCallable() && engine) {
 					onSaved.call({
-						QJSValue(target.toLocalFile()),
-						engine->toScriptValue(QVariant::fromValue(target))
+						engine->toScriptValue(finalPath),
+						engine->toScriptValue(QUrl::fromLocalFile(finalPath))
 					});
 				}
-
 			} else {
-
-				qWarning() << "ZShellIo::saveImage: failed to save"
-				           << source
-				           << "to"
-				           << target;
-
-				if (onFailed.isCallable()) {
+				qWarning() << "ZShellIo::cacheImage: failed to cache" << source;
+				if (onFailed.isCallable() && engine) {
 					onFailed.call({
-						engine->toScriptValue(QVariant::fromValue(target))
+						engine->toScriptValue(source),
+						engine->toScriptValue(cacheDir)
 					});
 				}
 			}
 
 			watcher->deleteLater();
-		}
-		);
+		});
 
 	watcher->setFuture(future);
 }
 
-bool ZShellIo::saveImageInternal(const QUrl& source, const QUrl& target) const {
+// ============================================================
+// loadSourceImage
+// ============================================================
 
-	if (!target.isLocalFile()) {
-		qWarning() << "ZShellIo::saveImage: target"
-		           << target
-		           << "is not a local file";
-		return false;
-	}
-
-	const QString targetFile = target.toLocalFile();
-
-	if (!QDir().mkpath(QFileInfo(targetFile).absolutePath())) {
-		return false;
-	}
-
-	// ========================================================
-	// Local file path
-	// ========================================================
+bool ZShellIo::loadSourceImage(const QUrl& source, QImage& image) const {
+	image = QImage();
 
 	if (source.isLocalFile()) {
-
-		QFile::remove(targetFile);
-
-		return QFile::copy(
-			source.toLocalFile(),
-			targetFile
-			);
+		QImageReader reader(source.toLocalFile());
+		reader.setAutoTransform(true);
+		image = reader.read();
+		return !image.isNull();
 	}
 
-	// ========================================================
-	// image:// provider path
-	// ========================================================
-
 	if (source.scheme() == "image") {
-
 		auto* engine = qmlEngine(const_cast<ZShellIo*>(this));
-
 		if (!engine) {
-			qWarning() << "ZShellIo::saveImage: no QQmlEngine";
+			qWarning() << "ZShellIo::loadSourceImage: no QQmlEngine";
 			return false;
 		}
 
@@ -246,70 +272,44 @@ bool ZShellIo::saveImageInternal(const QUrl& source, const QUrl& target) const {
 
 		const QString imageId =
 			source.path().startsWith('/')
-			        ? source.path().mid(1)
-			        : source.path();
+		? source.path().mid(1)
+		: source.path();
 
-		auto* providerBase =
-			engine->imageProvider(providerId);
-
+		auto* providerBase = engine->imageProvider(providerId);
 		if (!providerBase) {
-			qWarning() << "ZShellIo::saveImage: provider not found"
+			qWarning() << "ZShellIo::loadSourceImage: provider not found"
 			           << providerId;
 			return false;
 		}
 
-		auto* provider =
-			dynamic_cast<QQuickImageProvider*>(providerBase);
-
+		auto* provider = dynamic_cast<QQuickImageProvider*>(providerBase);
 		if (!provider) {
-			qWarning() << "ZShellIo::saveImage: provider is not a QQuickImageProvider"
-			           << providerId;
-			return false;
-		}
-
-		if (!provider) {
-			qWarning() << "ZShellIo::saveImage: provider not found"
+			qWarning() << "ZShellIo::loadSourceImage: provider is not a QQuickImageProvider"
 			           << providerId;
 			return false;
 		}
 
 		QSize size;
-		QImage image;
 
 		switch (provider->imageType()) {
-
 		case QQuickImageProvider::Image:
-			image = provider->requestImage(
-				imageId,
-				&size,
-				QSize()
-				);
+			image = provider->requestImage(imageId, &size, QSize());
 			break;
 
 		case QQuickImageProvider::Pixmap:
-			image = provider->requestPixmap(
-				imageId,
-				&size,
-				QSize()
-				).toImage();
+			image = provider->requestPixmap(imageId, &size, QSize()).toImage();
 			break;
 
 		default:
-			qWarning() << "ZShellIo::saveImage: unsupported provider type";
+			qWarning() << "ZShellIo::loadSourceImage: unsupported provider type"
+			           << providerId;
 			return false;
 		}
 
-		if (image.isNull()) {
-			qWarning() << "ZShellIo::saveImage: provider returned null image";
-			return false;
-		}
-
-		return image.save(targetFile);
+		return !image.isNull();
 	}
 
-	qWarning() << "ZShellIo::saveImage: unsupported source"
-	           << source;
-
+	qWarning() << "ZShellIo::loadSourceImage: unsupported source" << source;
 	return false;
 }
 
@@ -318,18 +318,12 @@ bool ZShellIo::saveImageInternal(const QUrl& source, const QUrl& target) const {
 // ============================================================
 
 bool ZShellIo::copyFile(const QUrl& source, const QUrl& target, bool overwrite) const {
-
 	if (!source.isLocalFile()) {
-		qWarning() << "ZShellIo::copyFile: source"
-		           << source
-		           << "is not a local file";
+		qWarning() << "ZShellIo::copyFile: source" << source << "is not a local file";
 		return false;
 	}
-
 	if (!target.isLocalFile()) {
-		qWarning() << "ZShellIo::copyFile: target"
-		           << target
-		           << "is not a local file";
+		qWarning() << "ZShellIo::copyFile: target" << target << "is not a local file";
 		return false;
 	}
 
@@ -337,18 +331,12 @@ bool ZShellIo::copyFile(const QUrl& source, const QUrl& target, bool overwrite) 
 		QFile::remove(target.toLocalFile());
 	}
 
-	return QFile::copy(
-		source.toLocalFile(),
-		target.toLocalFile()
-		);
+	return QFile::copy(source.toLocalFile(), target.toLocalFile());
 }
 
 bool ZShellIo::deleteFile(const QUrl& path) const {
-
 	if (!path.isLocalFile()) {
-		qWarning() << "ZShellIo::deleteFile: path"
-		           << path
-		           << "is not a local file";
+		qWarning() << "ZShellIo::deleteFile: path" << path << "is not a local file";
 		return false;
 	}
 
@@ -356,10 +344,8 @@ bool ZShellIo::deleteFile(const QUrl& path) const {
 }
 
 QString ZShellIo::toLocalFile(const QUrl& url) const {
-
 	if (!url.isLocalFile()) {
-		qWarning() << "ZShellIo::toLocalFile: given url is not a local file"
-		           << url;
+		qWarning() << "ZShellIo::toLocalFile: given url is not a local file" << url;
 		return QString();
 	}
 

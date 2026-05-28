@@ -44,11 +44,10 @@ Item {
 	Loader {
 		id: icon
 
-		active: Qt.binding(() => root.shouldBeActive || root.visible)
+		active: root.shouldBeActive || root.visible
 		anchors.right: parent.right
 		anchors.verticalCenter: parent.verticalCenter
 		asynchronous: true
-		height: content.contentItem.height
 		opacity: root.expanded ? 0 : 1
 
 		Behavior on opacity {
@@ -64,6 +63,7 @@ Item {
 	Loader {
 		id: content
 
+		active: root.shouldBeActive || root.visible
 		anchors.right: parent.right
 		anchors.verticalCenter: parent.verticalCenter
 		asynchronous: true
@@ -77,7 +77,5 @@ Item {
 			drawing: root.drawing
 			visibilities: root.visibilities
 		}
-
-		Component.onCompleted: active = Qt.binding(() => root.shouldBeActive || root.visible)
 	}
 }
