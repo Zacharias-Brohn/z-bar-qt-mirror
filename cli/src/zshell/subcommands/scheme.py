@@ -25,7 +25,7 @@ from materialyoucolor.utils.math_utils import (
 app = typer.Typer()
 
 
-def _complete_scheme_name(ctx, incomplete):
+def _complete_scheme_name(incomplete):
     schemes = [
         "fruit-salad",
         "expressive",
@@ -40,7 +40,7 @@ def _complete_scheme_name(ctx, incomplete):
     return [s for s in schemes if incomplete in s]
 
 
-def _complete_preset(ctx, incomplete):
+def _complete_preset(incomplete):
     results = []
     for sid, meta in list_schemes().items():
         for v in meta.variants:
@@ -50,7 +50,7 @@ def _complete_preset(ctx, incomplete):
     return results
 
 
-def _complete_mode(ctx, incomplete):
+def _complete_mode(incomplete):
     return [m for m in ("dark", "light") if incomplete in m]
 
 
