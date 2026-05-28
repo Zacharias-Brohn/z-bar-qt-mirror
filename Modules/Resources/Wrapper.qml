@@ -8,7 +8,7 @@ import qs.Config
 Item {
 	id: root
 
-	readonly property real nonAnimHeight: state === "visible" ? (content.item?.nonAnimHeight ?? 0) : 0
+	readonly property real nonAnimHeight: content.item?.nonAnimHeight ?? 0
 	property real offsetScale: shouldBeActive ? 0 : 1
 	readonly property bool shouldBeActive: root.visibilities.resources
 	required property PersistentProperties visibilities
@@ -31,8 +31,7 @@ Item {
 		id: content
 
 		active: root.shouldBeActive || root.visible
-		anchors.bottom: parent.bottom
-		anchors.horizontalCenter: parent.horizontalCenter
+		anchors.centerIn: parent
 
 		sourceComponent: Content {
 			padding: Appearance.padding.normal

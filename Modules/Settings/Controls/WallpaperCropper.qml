@@ -80,12 +80,26 @@ Item {
 				required property ShellScreen modelData
 
 				function applyCrop(): void {
-					const croprect = cropRect.mapToItem(scaledImg, 0, 0, cropRect.width, cropRect.height);
-					const upscaledRect = Qt.rect((croprect.x - cropRect.imageX) / scaledImg.paintedWidth, (croprect.y - cropRect.imageY) / scaledImg.paintedHeight, croprect.width / scaledImg.paintedWidth, croprect.height / scaledImg.paintedHeight);
-					Wallpapers.setCrop(delegate.modelData.name, upscaledRect, croprect, cropRect.zoom);
+					if (!cropRectLoader.item) return;
+					const cropRect = cropRectLoader.item;
+					
+					// We need to calculate the exact percentage coordinates that map perfectly 
+					// to our C++ backend, regardless of current display scaling
+					const cropXPercent = (cropRect.x - cropRect.imageX) / scaledImg.paintedWidth;
+					const cropYPercent = (cropRect.y - cropRect.imageY) / scaledImg.paintedHeight;
+					const cropWidthPercent = cropRect.width / scaledImg.paintedWidth;
+					const cropHeightPercent = cropRect.height / scaledImg.paintedHeight;
+					
+					const finalRect = Qt.rect(cropXPercent, cropYPercent, cropWidthPercent, cropHeightPercent);
+					
+					// We just pass the percentages directly to the backend
+					Wallpapers.setCrop(delegate.modelData.name, finalRect, finalRect, cropRect.zoom);
 				}
 
 				function zoomClipRect(zoom: real): void {
+					if (!cropRectLoader.item) return;
+					const cropRect = cropRectLoader.item;
+					
 					let oldCenterX = cropRect.x + cropRect.width * 0.5;
 					let oldCenterY = cropRect.y + cropRect.height * 0.5;
 
@@ -128,7 +142,7 @@ Item {
 						Layout.preferredHeight: 10
 						from: 1.0
 						to: 5.0
-						value: cropRect.zoom
+						value: cropRectLoader.item ? cropRectLoader.item.zoom : 1.0
 
 						onMoved: {
 							delegate.zoomClipRect(value);
@@ -156,15 +170,20 @@ Item {
 					sourceSize.width: parent.width
 
 					onPaintedWidthChanged: {
-						if (paintedWidth > 0) {
-							scaledImg.displayData = Wallpapers.getCrop(delegate.modelData.name);
-							cropRect.zoom = Wallpapers.getCrop(delegate.modelData.name).zoom;
-							cropRect.restoreFromData();
+						if (paintedWidth > 0 && cropRectLoader.item) {
+							cropRectLoader.item.restoreFromData();
 						}
 					}
-					onSourceChanged: cropRect.clampToBounds()
-					onStatusChanged: if (scaledImg.status == Image.Ready)
-						cropRect.clampToBounds()
+					onSourceChanged: {
+						if (cropRectLoader.item) {
+							cropRectLoader.item.restoreFromData();
+						}
+					}
+					onStatusChanged: {
+						if (scaledImg.status == Image.Ready && cropRectLoader.item) {
+							cropRectLoader.item.restoreFromData();
+						}
+					}
 
 					CustomText {
 						id: monitorId
@@ -177,72 +196,85 @@ Item {
 						text: delegate.modelData.name
 					}
 
-					CustomRect {
-						id: cropRect
+					Loader {
+						id: cropRectLoader
+						active: scaledImg.paintedWidth > 0 && scaledImg.status == Image.Ready
+						
+						sourceComponent: Component {
+							CustomRect {
+								id: cropRect
 
-						property real aspectRatio: delegate.modelData.width / delegate.modelData.height
-						readonly property real baseHeight: baseWidth / aspectRatio
-						readonly property real baseWidth: {
-							let fittedHeight = scaledImg.paintedHeight;
-							let fittedWidth = fittedHeight * aspectRatio;
+								property real aspectRatio: delegate.modelData.width / delegate.modelData.height
+								readonly property real baseHeight: baseWidth / aspectRatio
+								readonly property real baseWidth: {
+									let fittedHeight = scaledImg.paintedHeight;
+									let fittedWidth = fittedHeight * aspectRatio;
 
-							if (fittedWidth > scaledImg.paintedWidth) {
-								fittedWidth = scaledImg.paintedWidth;
-								fittedHeight = fittedWidth / aspectRatio;
+									if (fittedWidth > scaledImg.paintedWidth) {
+										fittedWidth = scaledImg.paintedWidth;
+										fittedHeight = fittedWidth / aspectRatio;
+									}
+
+									return fittedWidth;
+								}
+								readonly property real imageX: (scaledImg.width - scaledImg.paintedWidth) / 2
+								readonly property real imageY: (scaledImg.height - scaledImg.paintedHeight) / 2
+								property real imgAspectRatio: scaledImg.paintedWidth / scaledImg.paintedHeight
+								property real zoom: 1.0
+
+								function centerInImage() {
+									x = imageX + (scaledImg.paintedWidth - width) / 2;
+									y = imageY + (scaledImg.paintedHeight - height) / 2;
+								}
+
+								function clampToBounds() {
+									x = Math.max(imageX, Math.min(x, imageX + scaledImg.paintedWidth - width));
+
+									y = Math.max(imageY, Math.min(y, imageY + scaledImg.paintedHeight - height));
+								}
+
+								function restoreFromData() {
+									let data = Wallpapers.getCrop(delegate.modelData.name);
+
+									if (data && (Math.abs(data.x) > 0.001 || Math.abs(data.y) > 0.001 || Math.abs(data.width - 1.0) > 0.001 || Math.abs(data.height - 1.0) > 0.001)) {
+										zoom = data.zoom > 0 ? data.zoom : 1.0;
+										x = imageX + (data.x * scaledImg.paintedWidth);
+										y = imageY + (data.y * scaledImg.paintedHeight);
+										
+										clampToBounds();
+									} else {
+										zoom = 1.0;
+										centerInImage();
+									}
+								}
+
+								border.color: DynamicColors.palette.m3primary
+								border.width: 2
+								height: baseHeight / zoom
+								opacity: 1
+								width: baseWidth / zoom
+
+								Behavior on opacity {
+									Anim {
+									}
+								}
+
+								Component.onCompleted: {
+									restoreFromData();
+								}
+								onHeightChanged: clampToBounds()
+								onWidthChanged: clampToBounds()
 							}
-
-							return fittedWidth;
 						}
-						readonly property real imageX: (scaledImg.width - scaledImg.paintedWidth) / 2
-						readonly property real imageY: (scaledImg.height - scaledImg.paintedHeight) / 2
-						property real imgAspectRatio: scaledImg.paintedWidth / scaledImg.paintedHeight
-						property real zoom: scaledImg.displayData.zoom
-
-						function centerInImage() {
-							x = imageX + (scaledImg.paintedWidth - width) / 2;
-							y = imageY + (scaledImg.paintedHeight - height) / 2;
-						}
-
-						function clampToBounds() {
-							x = Math.max(imageX, Math.min(x, imageX + scaledImg.paintedWidth - width));
-
-							y = Math.max(imageY, Math.min(y, imageY + scaledImg.paintedHeight - height));
-						}
-
-						function restoreFromData() {
-							let data = scaledImg.displayData;
-
-							if (data && data.scaledX !== 0 || data.scaledY !== 0 || data.scaledWidth !== 0 || data.scaledHeight !== 0) {
-								x = data.scaledX;
-								y = data.scaledY;
-
-								clampToBounds();
-							} else {
-								zoom = 1.0;
-								centerInImage();
-							}
-						}
-
-						border.color: DynamicColors.palette.m3primary
-						border.width: 2
-						height: baseHeight / zoom
-						opacity: 1
-						width: baseWidth / zoom
-
-						Behavior on opacity {
-							Anim {
-							}
-						}
-
-						Component.onCompleted: clampToBounds()
-						onHeightChanged: clampToBounds()
-						onWidthChanged: clampToBounds()
 					}
 
 					MouseArea {
 						id: mouse
 
 						function updateCrop(mouseX, mouseY) {
+							if (!cropRectLoader.item) return;
+							const cropRect = cropRectLoader.item;
+							
 							let nx = mouseX - cropRect.width * 0.5;
 							let ny = mouseY - cropRect.height * 0.5;
 

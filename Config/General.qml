@@ -27,7 +27,7 @@ JsonObject {
 			{
 				perc: 20,
 				name: qsTr("Low battery"),
-				message: qsTr("Battery at %1%").arg(Battery.currentPerc * 100),
+				message: qsTr("Battery is low"),
 				icon: "battery_android_frame_2"
 			},
 		]

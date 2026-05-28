@@ -57,6 +57,21 @@ SettingsPage {
 	}
 
 	SettingsSection {
+		sectionId: "Tray"
+
+		SettingsHeader {
+			name: "System tray"
+		}
+
+		SettingSpinBox {
+			min: 16
+			name: "Tray icon size"
+			object: Config.barConfig.tray
+			setting: "trayIconSize"
+		}
+	}
+
+	SettingsSection {
 		sectionId: "Popouts"
 
 		SettingsHeader {

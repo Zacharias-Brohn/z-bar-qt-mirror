@@ -23,6 +23,7 @@ Canvas {
 		ctx.save();
 		ctx.lineWidth = root.penWidth;
 		ctx.strokeStyle = root.penColor;
+		ctx.lineJoin = "round";
 		ctx.lineCap = "round";
 		ctx.beginPath();
 		ctx.moveTo(points[0].x, points[0].y);
