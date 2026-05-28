@@ -5,15 +5,15 @@ use tiny_skia::{
 };
 
 pub fn apply_effects(img: RgbaImage, cfg: &EffectsConfig) -> RgbaImage {
-    let img = if cfg.rounded_corners {
-        apply_rounded_corners(img, cfg.corner_radius)
+    let img = if cfg.rounding {
+        apply_rounding(img, cfg.radius)
     } else {
         img
     };
-    if cfg.drop_shadow {
-        apply_drop_shadow(
+    if cfg.shadow {
+        apply_shadow(
             img,
-            cfg.shadow_blur_radius,
+            cfg.shadow_blur,
             cfg.shadow_offset_x,
             cfg.shadow_offset_y,
             cfg.shadow_color,
@@ -23,7 +23,7 @@ pub fn apply_effects(img: RgbaImage, cfg: &EffectsConfig) -> RgbaImage {
     }
 }
 
-pub fn apply_rounded_corners(img: RgbaImage, radius: f32) -> RgbaImage {
+pub fn apply_rounding(img: RgbaImage, radius: f32) -> RgbaImage {
     let (w, h) = img.dimensions();
     let mut mask = Pixmap::new(w, h).expect("mask pixmap");
     let path = rounded_rect_path(0.0, 0.0, w as f32, h as f32, radius);
@@ -47,16 +47,16 @@ pub fn apply_rounded_corners(img: RgbaImage, radius: f32) -> RgbaImage {
     pixmap_to_rgba_image(pixmap)
 }
 
-pub fn apply_drop_shadow(
+pub fn apply_shadow(
     img: RgbaImage,
-    blur_radius: f32,
+    blur: f32,
     offset_x: f32,
     offset_y: f32,
     // blur_passes: u32,
     shadow_color: [u8; 4],
 ) -> RgbaImage {
     let (iw, ih) = img.dimensions();
-    let br = blur_radius.ceil() as u32;
+    let br = blur.ceil() as u32;
     let bp = 1;
     // Original idea
     // let spread = br * bp;

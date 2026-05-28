@@ -7,10 +7,10 @@ use std::process::{Command, Stdio};
 
 #[derive(Default)]
 struct CliOverrides {
-    rounded_corners: Option<bool>,
-    corner_radius: Option<f32>,
-    drop_shadow: Option<bool>,
-    shadow_blur_radius: Option<f32>,
+    rounding: Option<bool>,
+    radius: Option<f32>,
+    shadow: Option<bool>,
+    shadow_blur: Option<f32>,
     shadow_offset_x: Option<f32>,
     shadow_offset_y: Option<f32>,
     // Accepted as four comma-separated u8 values, e.g. `255,0,0,200`
@@ -57,12 +57,9 @@ fn extract_image_path() -> Option<String> {
 }
 
 fn main() {
-    let image_path = extract_image_path();
-    if let Some(path) = image_path {
-        if let Err(e) = run() {
-            eprintln!("Error: {}", e);
-            push_image(&path).ok();
-        }
+    if let Some(path) = extract_image_path() && let Err(e) = run() {
+        eprintln!("Error: {}", e);
+        push_image(&path).ok();
     }
 }
 
@@ -79,26 +76,23 @@ fn run() -> Result<()> {
             "--image" => {
                 image_path = Some(next_arg(&args, &mut i, "--image")?);
             }
-            "--corner" => {
-                let val = next_arg(&args, &mut i, "--corner")?;
-                overrides.rounded_corners = Some(parse_bool(&val)?);
+            "--rounding" => {
+                let val = next_arg(&args, &mut i, "--rounding")?;
+                overrides.rounding = Some(parse_bool(&val)?);
             }
-            "--corner-radius" => {
-                let val = next_arg(&args, &mut i, "--corner-radius")?;
-                overrides.corner_radius = Some(
-                    val.parse::<f32>()
-                        .context("--corner-radius must be a number")?,
-                );
+            "--radius" => {
+                let val = next_arg(&args, &mut i, "--radius")?;
+                overrides.radius = Some(val.parse::<f32>().context("--radius must be a number")?);
             }
             "--shadow" => {
                 let val = next_arg(&args, &mut i, "--shadow")?;
-                overrides.drop_shadow = Some(parse_bool(&val)?);
+                overrides.shadow = Some(parse_bool(&val)?);
             }
             "--shadow-blur" => {
                 let val = next_arg(&args, &mut i, "--shadow-blur")?;
-                overrides.shadow_blur_radius = Some(
+                overrides.shadow_blur = Some(
                     val.parse::<f32>()
-                        .context("--shadow-blur-radius must be a number")?,
+                        .context("--shadow-blur must be a number")?,
                 );
             }
             "--shadow-offset-x" => {
@@ -132,21 +126,19 @@ fn run() -> Result<()> {
     let image_path = image_path.context("Missing --image <path>")?;
 
     // Check if any arguments were provided
-    let cli_args_provided = overrides.rounded_corners.is_some()
-        || overrides.corner_radius.is_some()
-        || overrides.drop_shadow.is_some()
-        || overrides.shadow_blur_radius.is_some()
+    let cli_args_provided = overrides.rounding.is_some()
+        || overrides.radius.is_some()
+        || overrides.shadow.is_some()
+        || overrides.shadow_blur.is_some()
         || overrides.shadow_offset_x.is_some()
         || overrides.shadow_offset_y.is_some()
         || overrides.shadow_color.is_some();
     let mut effects = if cli_args_provided {
         // If all args provided
-        let rounded_corners = overrides.rounded_corners.context("Missing --corner")?;
-        let corner_radius = overrides.corner_radius.context("Missing --corner-radius")?;
-        let drop_shadow = overrides.drop_shadow.context("Missing --shadow")?;
-        let shadow_blur_radius = overrides
-            .shadow_blur_radius
-            .context("Missing --shadow-blur")?;
+        let rounding = overrides.rounding.context("Missing --rounding")?;
+        let radius = overrides.radius.context("Missing --radius")?;
+        let shadow = overrides.shadow.context("Missing --shadow")?;
+        let shadow_blur = overrides.shadow_blur.context("Missing --shadow-blur")?;
         let shadow_offset_x = overrides
             .shadow_offset_x
             .context("Missing --shadow-offset-x")?;
@@ -155,10 +147,10 @@ fn run() -> Result<()> {
             .context("Missing --shadow-offset-y")?;
         let shadow_color = overrides.shadow_color.context("Missing --shadow-color")?;
         config::EffectsConfig {
-            rounded_corners,
-            corner_radius,
-            drop_shadow,
-            shadow_blur_radius,
+            rounding,
+            radius,
+            shadow,
+            shadow_blur,
             shadow_offset_x,
             shadow_offset_y,
             shadow_color,
@@ -171,8 +163,8 @@ fn run() -> Result<()> {
 
     // if scale is set do
     if let Some(scale) = scale.filter(|&s| s != 1.0) {
-        effects.corner_radius *= scale;
-        effects.shadow_blur_radius *= scale;
+        effects.radius *= scale;
+        effects.shadow_blur *= scale;
         effects.shadow_offset_x *= scale;
         effects.shadow_offset_y *= scale;
     }
