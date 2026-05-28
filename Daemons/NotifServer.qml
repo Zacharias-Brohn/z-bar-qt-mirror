@@ -218,7 +218,7 @@ Singleton {
 			function onImageChanged(): void {
 				notif.imageSource = notif.notification.image || "";
 				notif.image = notif.imageSource;
-				notif.cacheImageIfNeeded(notif.imageSource);
+				notif.cacheImageIfNeeded();
 			}
 
 			function onResidentChanged(): void {
@@ -283,7 +283,9 @@ Singleton {
 		}
 		property int urgency: NotificationUrgency.Normal
 
-		function cacheImageIfNeeded(source: string): void {
+		function cacheImageIfNeeded(): void {
+			const source = imageSource;
+
 			if (!source || cachingImage)
 				return;
 
