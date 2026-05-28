@@ -132,6 +132,8 @@ CustomMouseArea {
 				if (!inDashboardArea) {
 					root.dashboardShortcutActive = true;
 				}
+				if (root.panels.launcher.x + root.panels.launcher.width > root.panels.dashboardWrapper.x)
+					root.visibilities.launcher = false;
 
 				root.visibilities.settings = false;
 				root.visibilities.sidebar = false;
@@ -161,6 +163,11 @@ CustomMouseArea {
 			}
 
 			if (root.visibilities.launcher) {
+				if (root.panels.dashboardWrapper.x < root.panels.launcher.x + root.panels.launcher.width) {
+					console.log("true");
+					root.visibilities.dashboard = false;
+				}
+
 				root.visibilities.dock = false;
 				root.visibilities.settings = false;
 			}
