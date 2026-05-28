@@ -13,7 +13,6 @@ Item {
 
 	property bool current: popouts.currentName.startsWith(`traymenu${ind}`) && popouts.hasCurrent
 	readonly property real dpr: Hypr.monitorFor(loader.screen).scale
-	property bool hasLoaded: false
 	required property int ind
 	required property SystemTrayItem item
 	required property RowLayout loader
@@ -36,6 +35,8 @@ Item {
 				return Quickshell.iconPath("telegram-attention-panel");
 			else if (icon === Quickshell.iconPath("org.telegram.desktop-mute-symbolic"))
 				return Quickshell.iconPath("telegram-mute-panel");
+		} else if (app === "steam") {
+			return Quickshell.iconPath("steam_tray_mono");
 		}
 
 		return root.item.icon;
@@ -75,7 +76,7 @@ Item {
 		anchors.centerIn: parent
 		antialiasing: true
 		color: root.current ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3onSurface
-		implicitSize: 24 * root.dpr
+		implicitSize: Config.barConfig.tray.trayIconSize * root.dpr
 		layer.enabled: Config.general.color.smart || Config.general.color.scheduleDark
 		scale: 1 / root.dpr
 		source: root.resolveIcon(root.item.id, root.item.icon)

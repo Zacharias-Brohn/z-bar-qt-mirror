@@ -100,6 +100,9 @@ Singleton {
 			border: barConfig.border,
 			smoothing: barConfig.smoothing,
 			height: barConfig.height,
+			tray: {
+				trayIconSize: barConfig.tray.trayIconSize
+			},
 			popouts: {
 				tray: barConfig.popouts.tray,
 				audio: barConfig.popouts.audio,

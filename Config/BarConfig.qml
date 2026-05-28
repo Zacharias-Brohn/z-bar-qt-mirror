@@ -59,6 +59,8 @@ JsonObject {
 	}
 	property int rounding: 8
 	property int smoothing: 32
+	property Tray tray: Tray {
+	}
 
 	component Popouts: JsonObject {
 		property bool activeWindow: true
@@ -68,5 +70,8 @@ JsonObject {
 		property bool resources: true
 		property bool tray: true
 		property bool upower: true
+	}
+	component Tray: JsonObject {
+		property int trayIconSize: 24
 	}
 }
