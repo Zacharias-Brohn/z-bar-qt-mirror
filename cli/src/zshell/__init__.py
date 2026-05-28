@@ -4,6 +4,7 @@ from pathlib import Path
 
 import typer
 from typer._completion_shared import install, _get_shell_name
+from typer._completion_classes import completion_init
 from zshell.subcommands import shell, scheme, screenshot, wallpaper, record
 
 app = typer.Typer(name="zshell-cli", add_completion=False)
@@ -39,14 +40,16 @@ def _install_completion() -> None:
         _, path = install(prog_name="zshell-cli")
         print(f"zshell-cli: Shell completion installed ({shell}: {path})")
         print("zshell-cli: Restart your shell or source the file to enable tab-completion.")
-    except Exception:
-        pass
+    except Exception as e:
+        print(f"zshell-cli: Failed to install shell completion: {e}", file=sys.stderr)
+        raise typer.Exit(code=1)
 
 
 def main() -> None:
     if "--install-autocomplete" in sys.argv:
         _install_completion()
         return
+    completion_init()
     if sys.stdout.isatty() and not _completion_installed():
         print("zshell-cli: Tip: run with --install-autocomplete for tab completion.", file=sys.stderr)
     app()
