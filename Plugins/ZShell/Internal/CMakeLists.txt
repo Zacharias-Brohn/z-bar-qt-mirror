@@ -8,6 +8,7 @@ qml_module(ZShell-internal
 		circularbuffer.hpp circularbuffer.cpp
 		sparklineitem.hpp sparklineitem.cpp
 		arcgauge.hpp arcgauge.cpp
+		wallpaperimage.hpp wallpaperimage.cpp
     LIBRARIES
         Qt::Gui
         Qt::Quick

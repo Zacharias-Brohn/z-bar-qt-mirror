@@ -12,12 +12,11 @@ Item {
 	property int contentHeight
 	readonly property real maxHeight: {
 		let max = screen.height - Appearance.spacing.large * 2;
-		if (visibilities.resources)
+		if (visibilities.resources && panels.resourcesWrapper.x + panels.resourcesWrapper.width > root.x)
 			max -= panels.resources.nonAnimHeight;
-		if (visibilities.dashboard && panels.dashboard.x < root.x + root.implicitWidth)
-			max -= panels.dashboard.nonAnimHeight;
-		if (panels.popouts.currentName.startsWith("updates"))
-			max -= panels.popouts.nonAnimHeight;
+		if (panels.popouts.hasCurrent)
+			if (panels.popouts.current.x + panels.popouts.current.width > root.x && panels.popouts.current.x < root.x + root.width)
+				max -= panels.popouts.nonAnimHeight;
 		return max;
 	}
 	property real offsetScale: shouldBeActive ? 0 : 1

@@ -53,14 +53,12 @@ Searcher {
 		};
 
 		root.crops = updated;
-		monitorCrops.writeAdapter();
-		monitorCrops.reload();
 	}
 
 	function setWallpaper(path: string): void {
 		actualCurrent = path;
 		WallpaperPath.currentWallpaperPath = path;
-		Quickshell.screens.forEach(n => setCrop(n.name, Qt.rect(0, 0, 0, 0), Qt.rect(0, 0, 0, 0), 1.0));
+		Quickshell.screens.forEach(n => setCrop(n.name, Qt.rect(0, 0, 1, 1), Qt.rect(0, 0, 0, 0), 1.0));
 		Quickshell.execDetached(["zshell-cli", "wallpaper", "lockscreen", "--input-image", `${root.actualCurrent}`, "--output-path", `${Paths.state}/lockscreen_bg.png`, "--blur-amount", `${Config.lock.blurAmount}`]);
 		if (Config.general.color.schemeGeneration)
 			Quickshell.execDetached(["zshell-cli", "scheme", "generate", "--image-path", `${root.actualCurrent}`, "--scheme", `${Config.colors.schemeType}`, "--mode", `${Config.general.color.mode}`]);
