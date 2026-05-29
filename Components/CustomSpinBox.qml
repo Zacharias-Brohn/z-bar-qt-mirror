@@ -28,6 +28,7 @@ RowLayout {
 	CustomTextField {
 		id: textField
 
+		color: root.enabled ? DynamicColors.palette.m3onSurface : Qt.alpha(DynamicColors.palette.m3onSurface, 0.5)
 		implicitHeight: upButton.implicitHeight
 		inputMethodHints: Qt.ImhFormattedNumbersOnly
 		leftPadding: Appearance.padding.normal
@@ -36,7 +37,7 @@ RowLayout {
 		text: root.isEditing ? text : root.displayText
 
 		background: CustomRect {
-			color: DynamicColors.tPalette.m3surfaceContainerHigh
+			color: root.enabled ? DynamicColors.tPalette.m3surfaceContainerHigh : DynamicColors.tPalette.m3surfaceContainerLow
 			implicitWidth: 100
 			radius: Appearance.rounding.full
 		}
@@ -85,7 +86,7 @@ RowLayout {
 	CustomRect {
 		id: upButton
 
-		color: DynamicColors.palette.m3primary
+		color: root.enabled ? DynamicColors.palette.m3primary : DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHighest, 1)
 		implicitHeight: upIcon.implicitHeight + Appearance.padding.small * 2
 		implicitWidth: implicitHeight
 		radius: Appearance.rounding.full
@@ -113,13 +114,13 @@ RowLayout {
 			id: upIcon
 
 			anchors.centerIn: parent
-			color: DynamicColors.palette.m3onPrimary
+			color: root.enabled ? DynamicColors.palette.m3onPrimary : Qt.alpha(DynamicColors.palette.m3onSurface, 0.5)
 			text: "keyboard_arrow_up"
 		}
 	}
 
 	CustomRect {
-		color: DynamicColors.palette.m3primary
+		color: root.enabled ? DynamicColors.palette.m3primary : DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHighest, 1)
 		implicitHeight: downIcon.implicitHeight + Appearance.padding.small * 2
 		implicitWidth: implicitHeight
 		radius: Appearance.rounding.full
@@ -147,7 +148,7 @@ RowLayout {
 			id: downIcon
 
 			anchors.centerIn: parent
-			color: DynamicColors.palette.m3onPrimary
+			color: root.enabled ? DynamicColors.palette.m3onPrimary : Qt.alpha(DynamicColors.palette.m3onSurface, 0.5)
 			text: "keyboard_arrow_down"
 		}
 	}
