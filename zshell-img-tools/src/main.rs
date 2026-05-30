@@ -77,22 +77,6 @@ fn run() -> Result<()> {
     let mut i = 0;
     while i < args.len() {
         match args[i].as_str() {
-            "--help" => {
-                println!();
-                println!("Usage: zshell-img-tools [options]");
-                println!();
-                println!("All options are required");
-                println!("Options:");
-                println!("  --rounding <true|false>       Enable or disable rounded corners");
-                println!("  --radius <number>             Set the radius for rounded corners");
-                println!("  --shadow <true|false>         Enable or disable shadow");
-                println!("  --shadow-blur <number>        Set the blur radius for the shadow");
-                println!("  --shadow-offset-x <number>    Set the horizontal offset for the shadow");
-                println!("  --shadow-offset-y <number>    Set the vertical offset for the shadow");
-                println!("  --shadow-color <r,g,b,a>      Set the color of the shadow as comma-separated RGBA values (0-255)");
-                println!("  --scale <number>              Scale all effects by this factor (e.g. 2.0 for display scale)");
-                return Ok(());
-            }
             "--image" => {
                 image_path = Some(next_arg(&args, &mut i, "--image")?);
             }
