@@ -12,7 +12,7 @@ Switch {
 	implicitWidth: implicitIndicatorWidth
 
 	indicator: CustomRect {
-		color: root.checked ? DynamicColors.palette.m3primary : DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHighest, root.cLayer)
+		color: root.checked && root.enabled ? DynamicColors.palette.m3primary : DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHighest, root.cLayer)
 		implicitHeight: 13 + 7 * 2
 		implicitWidth: implicitHeight * 1.7
 		radius: Appearance.rounding.full
@@ -21,7 +21,7 @@ Switch {
 			readonly property real nonAnimWidth: root.pressed ? implicitHeight * 1.3 : implicitHeight
 
 			anchors.verticalCenter: parent.verticalCenter
-			color: root.checked ? DynamicColors.palette.m3onPrimary : DynamicColors.layer(DynamicColors.palette.m3outline, root.cLayer + 1)
+			color: root.checked && root.enabled ? DynamicColors.palette.m3onPrimary : DynamicColors.layer(DynamicColors.palette.m3outline, root.cLayer + 1)
 			implicitHeight: parent.implicitHeight - 10
 			implicitWidth: nonAnimWidth
 			radius: Appearance.rounding.full
@@ -38,7 +38,7 @@ Switch {
 
 			CustomRect {
 				anchors.fill: parent
-				color: root.checked ? DynamicColors.palette.m3primary : DynamicColors.palette.m3onSurface
+				color: root.checked && root.enabled ? DynamicColors.palette.m3primary : DynamicColors.palette.m3onSurface
 				opacity: root.pressed ? 0.1 : root.hovered ? 0.08 : 0
 				radius: parent.radius
 
@@ -114,7 +114,7 @@ Switch {
 					fillColor: "transparent"
 					startX: icon.start1.x
 					startY: icon.start1.y
-					strokeColor: root.checked ? DynamicColors.palette.m3primary : DynamicColors.palette.m3surfaceContainerHighest
+					strokeColor: root.checked && root.enabled ? DynamicColors.palette.m3primary : DynamicColors.palette.m3surfaceContainerHighest
 					strokeWidth: Appearance.font.size.larger * 0.15
 
 					Behavior on strokeColor {

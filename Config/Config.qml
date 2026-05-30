@@ -300,10 +300,10 @@ Singleton {
 		return {
 			enable_pp: screenshot.enable_pp,
 			mode: screenshot.mode,
-			corner_radius: screenshot.corner_radius,
-			drop_shadow: screenshot.drop_shadow,
-			rounded_corners: screenshot.rounded_corners,
-			shadow_blur_radius: screenshot.shadow_blur_radius,
+			radius: screenshot.radius,
+			shadow: screenshot.shadow,
+			rounding: screenshot.rounding,
+			shadow_blur: screenshot.shadow_blur,
 			shadow_color: screenshot.shadow_color,
 			shadow_offset_x: screenshot.shadow_offset_x,
 			shadow_offset_y: screenshot.shadow_offset_y

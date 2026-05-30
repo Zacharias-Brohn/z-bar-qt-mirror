@@ -69,7 +69,7 @@ SettingsPage {
 
 		CustomSplitButtonRow {
 			active: Config.general.color.mode === "light" ? menuItems[0] : menuItems[1]
-			buttonAlias.disabled: !Config.general.color.schemeGeneration
+			enabled: Config.general.color.schemeGeneration
 			label: qsTr("Scheme mode")
 
 			menuItems: [
@@ -103,7 +103,7 @@ SettingsPage {
 			id: schemeType
 
 			active: root.schemeTypeItem(menuItems, Config.colors.schemeType)
-			buttonAlias.disabled: !Config.general.color.schemeGeneration
+			enabled: Config.general.color.schemeGeneration
 			label: qsTr("Scheme type")
 			z: 2
 

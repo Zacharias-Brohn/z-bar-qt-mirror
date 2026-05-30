@@ -158,6 +158,5 @@ Singleton {
 
 	HyprExtras {
 		id: extras
-
 	}
 }

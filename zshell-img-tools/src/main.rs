@@ -5,17 +5,14 @@ use anyhow::{Context, Result, bail};
 use std::io::Write as _;
 use std::process::{Command, Stdio};
 
-/// CLI overrides that map 1:1 to `EffectsConfig` fields.
-/// All fields are `Option<T>` so we can tell "not supplied" from any concrete value.
 #[derive(Default)]
 struct CliOverrides {
-    rounded_corners: Option<bool>,
-    corner_radius: Option<f32>,
-    drop_shadow: Option<bool>,
-    shadow_blur_radius: Option<f32>,
+    rounding: Option<bool>,
+    radius: Option<f32>,
+    shadow: Option<bool>,
+    shadow_blur: Option<f32>,
     shadow_offset_x: Option<f32>,
     shadow_offset_y: Option<f32>,
-    /// Accepted as four comma-separated u8 values, e.g. `255,0,0,200`
     shadow_color: Option<[u8; 4]>,
 }
 
@@ -30,141 +27,196 @@ fn parse_bool(s: &str) -> Result<bool> {
 fn parse_shadow_color(s: &str) -> Result<[u8; 4]> {
     let parts: Vec<&str> = s.split(',').collect();
     if parts.len() != 4 {
-        bail!("--shadow_color expects four comma-separated u8 values, e.g. 255,0,0,200");
+        bail!("--shadow-color expects four comma-separated u8 values, e.g. 255,0,0,200");
     }
     let r = parts[0]
         .trim()
         .parse::<u8>()
-        .context("shadow_color red channel")?;
+        .context("shadow-color red channel")?;
     let g = parts[1]
         .trim()
         .parse::<u8>()
-        .context("shadow_color green channel")?;
+        .context("shadow-color green channel")?;
     let b = parts[2]
         .trim()
         .parse::<u8>()
-        .context("shadow_color blue channel")?;
+        .context("shadow-color blue channel")?;
     let a = parts[3]
         .trim()
         .parse::<u8>()
-        .context("shadow_color alpha channel")?;
+        .context("shadow-color alpha channel")?;
     Ok([r, g, b, a])
 }
 
-fn main() -> Result<()> {
+fn extract_image_path() -> Option<String> {
+    let args: Vec<String> = std::env::args().skip(1).collect();
+    args.windows(2)
+        .find(|w| w[0] == "--image")
+        .map(|w| w[1].clone())
+}
+
+fn main() {
+    // Fundamental issue when supplying args it won't give output unless --image is used.
+    // Will have to be fixed in a later patch upcoming week
+    if let Some(path) = extract_image_path()
+        && let Err(e) = run()
+    {
+        eprintln!("Error: {}", e);
+        push_image(&path).ok();
+    }
+}
+
+fn run() -> Result<()> {
     let args: Vec<String> = std::env::args().skip(1).collect();
 
     let mut image_path: Option<String> = None;
     let mut overrides = CliOverrides::default();
+    let mut scale: Option<f32> = None;
 
     let mut i = 0;
     while i < args.len() {
         match args[i].as_str() {
             "--image" => {
-                i += 1;
-                image_path = Some(
-                    args.get(i)
-                        .cloned()
-                        .context("Expected a path after --image")?,
-                );
+                image_path = Some(next_arg(&args, &mut i, "--image")?);
             }
-            "--rounded_corners" => {
-                i += 1;
-                let val = args
-                    .get(i)
-                    .context("Expected true/false after --rounded_corners")?;
-                overrides.rounded_corners = Some(parse_bool(val)?);
+            "--rounding" => {
+                let val = next_arg(&args, &mut i, "--rounding")?;
+                overrides.rounding = Some(parse_bool(&val)?);
             }
-            "--corner_radius" => {
-                i += 1;
-                let val = args
-                    .get(i)
-                    .context("Expected a number after --corner_radius")?;
-                overrides.corner_radius = Some(
+            "--radius" => {
+                let val = next_arg(&args, &mut i, "--radius")?;
+                overrides.radius = Some(val.parse::<f32>().context("--radius must be a number")?);
+            }
+            "--shadow" => {
+                let val = next_arg(&args, &mut i, "--shadow")?;
+                overrides.shadow = Some(parse_bool(&val)?);
+            }
+            "--shadow-blur" => {
+                let val = next_arg(&args, &mut i, "--shadow-blur")?;
+                overrides.shadow_blur = Some(
                     val.parse::<f32>()
-                        .context("--corner_radius must be a number")?,
+                        .context("--shadow-blur must be a number")?,
                 );
             }
-            "--drop_shadow" => {
-                i += 1;
-                let val = args
-                    .get(i)
-                    .context("Expected true/false after --drop_shadow")?;
-                overrides.drop_shadow = Some(parse_bool(val)?);
-            }
-            "--shadow_blur_radius" => {
-                i += 1;
-                let val = args
-                    .get(i)
-                    .context("Expected a number after --shadow_blur_radius")?;
-                overrides.shadow_blur_radius = Some(
-                    val.parse::<f32>()
-                        .context("--shadow_blur_radius must be a number")?,
-                );
-            }
-            "--shadow_offset_x" => {
-                i += 1;
-                let val = args
-                    .get(i)
-                    .context("Expected a number after --shadow_offset_x")?;
+            "--shadow-offset-x" => {
+                let val = next_arg(&args, &mut i, "--shadow-offset-x")?;
                 overrides.shadow_offset_x = Some(
                     val.parse::<f32>()
-                        .context("--shadow_offset_x must be a number")?,
+                        .context("--shadow-offset-x must be a number")?,
                 );
             }
-            "--shadow_offset_y" => {
-                i += 1;
-                let val = args
-                    .get(i)
-                    .context("Expected a number after --shadow_offset_y")?;
+            "--shadow-offset-y" => {
+                let val = next_arg(&args, &mut i, "--shadow-offset-y")?;
                 overrides.shadow_offset_y = Some(
                     val.parse::<f32>()
-                        .context("--shadow_offset_y must be a number")?,
+                        .context("--shadow-offset-y must be a number")?,
                 );
             }
-            "--shadow_color" => {
-                i += 1;
-                let val = args
-                    .get(i)
-                    .context("Expected r,g,b,a after --shadow_color")?;
-                overrides.shadow_color = Some(parse_shadow_color(val)?);
+            "--shadow-color" => {
+                let val = next_arg(&args, &mut i, "--shadow-color")?;
+                overrides.shadow_color = Some(parse_shadow_color(&val)?);
             }
-            unknown => bail!("Unknown argument: {unknown}"),
+            "--scale" => {
+                let val = next_arg(&args, &mut i, "--scale")?;
+                scale = Some(val.parse::<f32>().context("--scale must be a number")?);
+            }
+            unknown => {
+                let unknown_args = unknown.to_string();
+                println!("Warning: Unknown argument '{}'", unknown);
+                next_arg(&args, &mut i, &unknown_args)?;
+            }
         }
+
         i += 1;
     }
 
     let image_path = image_path.context("Missing --image <path>")?;
 
-    let config = config::Config::load().context("Failed to load config")?;
+    let cli_args_provided = overrides.rounding.is_some()
+        || overrides.radius.is_some()
+        || overrides.shadow.is_some()
+        || overrides.shadow_blur.is_some()
+        || overrides.shadow_offset_x.is_some()
+        || overrides.shadow_offset_y.is_some()
+        || overrides.shadow_color.is_some();
+    let mut effects = if cli_args_provided {
+        let rounding = overrides.rounding.context("Missing --rounding")?;
+        let radius = overrides.radius.context("Missing --radius")?;
+        let shadow = overrides.shadow.context("Missing --shadow")?;
+        let shadow_blur = overrides.shadow_blur.context("Missing --shadow-blur")?;
+        let shadow_offset_x = overrides
+            .shadow_offset_x
+            .context("Missing --shadow-offset-x")?;
+        let shadow_offset_y = overrides
+            .shadow_offset_y
+            .context("Missing --shadow-offset-y")?;
+        let shadow_color = overrides.shadow_color.context("Missing --shadow-color")?;
+        config::EffectsConfig {
+            rounding,
+            radius,
+            shadow,
+            shadow_blur,
+            shadow_offset_x,
+            shadow_offset_y,
+            shadow_color,
+        }
+    } else {
+        let config = config::Config::load()?;
+        config.screenshot
+    };
 
-    let mut effects = config.screenshot;
-    if effects.mode == "auto" {
-        if let Some(v) = overrides.rounded_corners {
-            effects.rounded_corners = v;
-        }
-        if let Some(v) = overrides.corner_radius {
-            effects.corner_radius = v;
-        }
-        if let Some(v) = overrides.drop_shadow {
-            effects.drop_shadow = v;
-        }
-        if let Some(v) = overrides.shadow_blur_radius {
-            effects.shadow_blur_radius = v;
-        }
-        if let Some(v) = overrides.shadow_offset_x {
-            effects.shadow_offset_x = v;
-        }
-        if let Some(v) = overrides.shadow_offset_y {
-            effects.shadow_offset_y = v;
-        }
-        if let Some(v) = overrides.shadow_color {
-            effects.shadow_color = v;
-        }
+    if let Some(scale) = scale.filter(|&s| s != 1.0) {
+        effects.radius *= scale;
+        effects.shadow_blur *= scale;
+        effects.shadow_offset_x *= scale;
+        effects.shadow_offset_y *= scale;
     }
 
     if let Err(e) = process_image(&image_path, &effects) {
         eprintln!("Error processing '{}': {e:#}", image_path);
+    }
+
+    Ok(())
+}
+
+fn next_arg(args: &[String], i: &mut usize, flag: &str) -> Result<String> {
+    *i += 1;
+
+    let val = args
+        .get(*i)
+        .context(format!("Expected value after {}", flag))?;
+
+    if val.starts_with('-') {
+        bail!("Expected value after {}, found flag {}", flag, val);
+    }
+
+    Ok(val.clone())
+}
+
+fn push_image(path: &str) -> Result<()> {
+    let img = image::open(path)
+        .with_context(|| format!("Failed to open image '{path}'"))?
+        .into_rgba8();
+
+    let mut png_bytes: Vec<u8> = Vec::new();
+    image::DynamicImage::ImageRgba8(img)
+        .write_to(
+            &mut std::io::Cursor::new(&mut png_bytes),
+            image::ImageFormat::Png,
+        )
+        .context("Failed to encode processed image as PNG")?;
+
+    let mut child = Command::new("swappy")
+        .args(["-f", "-"])
+        .stdin(Stdio::piped())
+        .spawn()
+        .context("Failed to spawn swappy. Is it installed and in PATH?")?;
+
+    // Writes the PNG bytes to swappy's stdin and then closes
+    if let Some(mut stdin) = child.stdin.take() {
+        stdin
+            .write_all(&png_bytes)
+            .context("Failed to write image data to swappy")?;
     }
 
     Ok(())
@@ -191,20 +243,11 @@ fn process_image(path: &str, effects: &config::EffectsConfig) -> Result<()> {
         .spawn()
         .context("Failed to spawn swappy. Is it installed and in PATH?")?;
 
-    child
-        .stdin
-        .take()
-        .context("Failed to get swappy stdin")?
-        .write_all(&png_bytes)
-        .context("Failed to write image data to swappy")?;
-
-    let status = child.wait().context("Failed to wait for swappy")?;
-
-    if !status.success() {
-        eprintln!(
-            "swappy exited with non-zero status for '{}': {}",
-            path, status
-        );
+    // Writes the PNG bytes to swappy's stdin and then closes
+    if let Some(mut stdin) = child.stdin.take() {
+        stdin
+            .write_all(&png_bytes)
+            .context("Failed to write image data to swappy")?;
     }
 
     Ok(())

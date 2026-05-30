@@ -35,14 +35,10 @@ Row {
 	}
 
 	function openDropdown(): void {
-		if (root.disabled)
-			return;
 		SettingsDropdowns.open(menu, root);
 	}
 
 	function toggleDropdown(): void {
-		if (root.disabled)
-			return;
 		SettingsDropdowns.toggle(menu, root);
 	}
 
@@ -55,7 +51,7 @@ Row {
 
 	CustomRect {
 		bottomRightRadius: Appearance.rounding.small / 2
-		color: root.disabled ? root.disabledColor : root.color
+		color: !root.enabled ? root.disabledColor : root.color
 		implicitHeight: expandBtn.implicitHeight
 		implicitWidth: textRow.implicitWidth + root.horizontalPadding * 2
 		radius: implicitHeight / 2 * Math.min(1, Appearance.rounding.scale)
@@ -69,7 +65,7 @@ Row {
 			}
 
 			color: root.textColor
-			disabled: root.disabled
+			disabled: !root.enabled
 			rect.bottomRightRadius: parent.bottomRightRadius
 			rect.topRightRadius: parent.topRightRadius
 		}
@@ -86,7 +82,7 @@ Row {
 
 				Layout.alignment: Qt.AlignVCenter
 				animate: true
-				color: root.disabled ? root.disabledTextColor : root.textColor
+				color: !root.enabled ? root.disabledTextColor : root.textColor
 				fill: 1
 				text: root.active?.activeIcon ?? root.fallbackIcon
 			}
@@ -98,7 +94,7 @@ Row {
 				Layout.preferredWidth: implicitWidth
 				animate: true
 				clip: true
-				color: root.disabled ? root.disabledTextColor : root.textColor
+				color: !root.enabled ? root.disabledTextColor : root.textColor
 				text: root.active?.activeText ?? root.fallbackText
 
 				Behavior on Layout.preferredWidth {
@@ -116,7 +112,7 @@ Row {
 		property real rad: root.expanded ? implicitHeight / 2 * Math.min(1, Appearance.rounding.scale) : Appearance.rounding.small / 2
 
 		bottomLeftRadius: rad
-		color: root.disabled ? root.disabledColor : root.color
+		color: !root.enabled ? root.disabledColor : root.color
 		implicitHeight: expandIcon.implicitHeight + root.verticalPadding * 2
 		implicitWidth: implicitHeight
 		radius: implicitHeight / 2 * Math.min(1, Appearance.rounding.scale)
@@ -135,7 +131,7 @@ Row {
 			}
 
 			color: root.textColor
-			disabled: root.disabled
+			disabled: !root.enabled
 			rect.bottomLeftRadius: parent.bottomLeftRadius
 			rect.topLeftRadius: parent.topLeftRadius
 		}
@@ -145,7 +141,7 @@ Row {
 
 			anchors.centerIn: parent
 			anchors.horizontalCenterOffset: root.expanded ? 0 : -Math.floor(root.verticalPadding / 4)
-			color: root.disabled ? root.disabledTextColor : root.textColor
+			color: !root.enabled ? root.disabledTextColor : root.textColor
 			rotation: root.expanded ? 180 : 0
 			text: "expand_more"
 

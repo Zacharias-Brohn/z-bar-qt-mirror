@@ -1,9 +1,13 @@
 #pragma once
 
+#include <functional>
+
+#include <qjsondocument.h>
 #include <qlocalsocket.h>
 #include <qobject.h>
 #include <qqmlintegration.h>
 #include <qsharedpointer.h>
+#include <qstringlist.h>
 #include <qvariant.h>
 
 namespace ZShell::internal::hypr {
@@ -15,13 +19,13 @@ Q_OBJECT
 QML_ELEMENT
         Q_MOC_INCLUDE("hyprdevices.hpp")
 
-Q_PROPERTY(QVariantHash options READ options NOTIFY optionsChanged)
+Q_PROPERTY(QVariantMap options READ options NOTIFY optionsChanged)
 Q_PROPERTY(ZShell::internal::hypr::HyprDevices* devices READ devices CONSTANT)
 
 public:
 explicit HyprExtras(QObject* parent = nullptr);
 
-[[nodiscard]] QVariantHash options() const;
+[[nodiscard]] QVariantMap options() const;
 [[nodiscard]] HyprDevices* devices() const;
 
 Q_INVOKABLE void message(const QString& message);
@@ -42,11 +46,12 @@ QString m_eventSocket;
 QLocalSocket* m_socket;
 bool m_socketValid;
 
-QVariantHash m_options;
+QVariantMap m_options;
 HyprDevices* const m_devices;
 
 SocketPtr m_optionsRefresh;
 SocketPtr m_devicesRefresh;
+quint64 m_optionsRefreshGeneration = 0;
 
 void socketError(QLocalSocket::LocalSocketError error) const;
 void socketStateChanged(QLocalSocket::LocalSocketState state);

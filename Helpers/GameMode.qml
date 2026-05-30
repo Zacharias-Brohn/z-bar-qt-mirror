@@ -36,7 +36,7 @@ Singleton {
 	PersistentProperties {
 		id: props
 
-		property bool enabled: Hypr.options["animations:enabled"] === 0
+		property bool enabled: Hypr.options.animations.enabled === 0
 
 		reloadableId: "gamemode"
 	}
