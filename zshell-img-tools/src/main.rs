@@ -13,7 +13,6 @@ struct CliOverrides {
     shadow_blur: Option<f32>,
     shadow_offset_x: Option<f32>,
     shadow_offset_y: Option<f32>,
-    // Accepted as four comma-separated u8 values, e.g. `255,0,0,200`
     shadow_color: Option<[u8; 4]>,
 }
 
@@ -141,7 +140,6 @@ fn run() -> Result<()> {
         || overrides.shadow_offset_y.is_some()
         || overrides.shadow_color.is_some();
     let mut effects = if cli_args_provided {
-        // If all args provided
         let rounding = overrides.rounding.context("Missing --rounding")?;
         let radius = overrides.radius.context("Missing --radius")?;
         let shadow = overrides.shadow.context("Missing --shadow")?;
@@ -163,12 +161,10 @@ fn run() -> Result<()> {
             shadow_color,
         }
     } else {
-        // If not all args were provided use config file
         let config = config::Config::load()?;
         config.screenshot
     };
 
-    // if scale is set do
     if let Some(scale) = scale.filter(|&s| s != 1.0) {
         effects.radius *= scale;
         effects.shadow_blur *= scale;
