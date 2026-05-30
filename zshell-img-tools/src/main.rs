@@ -1,7 +1,7 @@
 mod config;
 mod effects;
 
-use anyhow::{bail, Context, Result};
+use anyhow::{Context, Result, bail};
 use std::io::Write as _;
 use std::process::{Command, Stdio};
 
@@ -57,7 +57,11 @@ fn extract_image_path() -> Option<String> {
 }
 
 fn main() {
-    if let Some(path) = extract_image_path() && let Err(e) = run() {
+    // Fundamental issue when supplying args it won't give output unless --image is used.
+    // Will have to be fixed in a later patch upcoming week
+    if let Some(path) = extract_image_path()
+        && let Err(e) = run()
+    {
         eprintln!("Error: {}", e);
         push_image(&path).ok();
     }
@@ -73,6 +77,22 @@ fn run() -> Result<()> {
     let mut i = 0;
     while i < args.len() {
         match args[i].as_str() {
+            "--help" => {
+                println!();
+                println!("Usage: zshell-img-tools [options]");
+                println!();
+                println!("All options are required");
+                println!("Options:");
+                println!("  --rounding <true|false>       Enable or disable rounded corners");
+                println!("  --radius <number>             Set the radius for rounded corners");
+                println!("  --shadow <true|false>         Enable or disable shadow");
+                println!("  --shadow-blur <number>        Set the blur radius for the shadow");
+                println!("  --shadow-offset-x <number>    Set the horizontal offset for the shadow");
+                println!("  --shadow-offset-y <number>    Set the vertical offset for the shadow");
+                println!("  --shadow-color <r,g,b,a>      Set the color of the shadow as comma-separated RGBA values (0-255)");
+                println!("  --scale <number>              Scale all effects by this factor (e.g. 2.0 for display scale)");
+                return Ok(());
+            }
             "--image" => {
                 image_path = Some(next_arg(&args, &mut i, "--image")?);
             }
@@ -117,7 +137,11 @@ fn run() -> Result<()> {
                 let val = next_arg(&args, &mut i, "--scale")?;
                 scale = Some(val.parse::<f32>().context("--scale must be a number")?);
             }
-            unknown => bail!("Unknown argument: {}", unknown),
+            unknown => {
+                let unknown_args = unknown.to_string();
+                println!("Warning: Unknown argument '{}'", unknown);
+                next_arg(&args, &mut i, &unknown_args)?;
+            }
         }
 
         i += 1;
@@ -125,7 +149,6 @@ fn run() -> Result<()> {
 
     let image_path = image_path.context("Missing --image <path>")?;
 
-    // Check if any arguments were provided
     let cli_args_provided = overrides.rounding.is_some()
         || overrides.radius.is_some()
         || overrides.shadow.is_some()

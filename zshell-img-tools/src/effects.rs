@@ -52,15 +52,11 @@ pub fn apply_shadow(
     blur: f32,
     offset_x: f32,
     offset_y: f32,
-    // blur_passes: u32,
     shadow_color: [u8; 4],
 ) -> RgbaImage {
     let (iw, ih) = img.dimensions();
     let br = blur.ceil() as u32;
     let bp = 1;
-    // Original idea
-    // let spread = br * bp;
-    // Claude is hallucinating but let's try it **Worked btw**
     let spread = (br as f32 * (bp as f32).sqrt() * 2.0).ceil() as u32;
 
     let extra_left = spread + (-offset_x).max(0.0).ceil() as u32;
@@ -91,11 +87,8 @@ pub fn apply_shadow(
 
     tint_pixmap_as_shadow(&mut shadow_pixmap, shadow_color);
 
-    // Shadow
     let shadow_img = pixmap_to_rgba_image(shadow_pixmap);
-    // Shadow blur
     let blurred = box_blur_rgba(&shadow_img, br, bp);
-    // Shadow pos
     let blurred_pixmap = rgba_image_to_pixmap(&blurred);
 
     let mut canvas = Pixmap::new(canvas_w, canvas_h).expect("canvas pixmap");
