@@ -99,10 +99,8 @@ Item {
 				root.singleGestureTriggered = false;
 		}
 		onCentroidChanged: {
-			if (root.singleGestureTriggered) {
-				console.log(root.singleGestureTriggered);
+			if (root.singleGestureTriggered)
 				return;
-			}
 
 			const x = centroid.position.x;
 			const y = centroid.position.y;
