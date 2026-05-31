@@ -56,7 +56,8 @@ Item {
 	DragHandler {
 		id: multiHandler
 
-		grabPermissions: PointerHandler.CanTakeOverFromAnything
+		dragThreshold: 0
+		grabPermissions: PointerHandler.CanTakeOverFromHandlersOfDifferentType | PointerHandler.ApprovesTakeOverByAnything
 		maximumPointCount: 2
 		minimumPointCount: 2
 		target: null
@@ -77,6 +78,7 @@ Item {
 
 		cursorShape: (active && centroid.pressPosition.y < root.bar.implicitHeight) ? Qt.ClosedHandCursor : undefined
 		dragThreshold: 0
+		grabPermissions: PointerHandler.CanTakeOverFromHandlersOfDifferentType | PointerHandler.ApprovesTakeOverByAnything
 		maximumPointCount: 1
 		minimumPointCount: 1
 		target: null
