@@ -9,7 +9,6 @@
 #include <cmath>
 
 static float deformPadding(const QMatrix4x4& dm, float hw, float hh) {
-	// Bounding box of the deformed shape: |M * corners|
 	const float dm00 = dm(0, 0), dm01 = dm(0, 1);
 	const float dm10 = dm(1, 0), dm11 = dm(1, 1);
 	const float boundX = std::abs(dm00) * hw + std::abs(dm01) * hh;
@@ -69,16 +68,17 @@ void BlobShape::geometryChange(const QRectF& newGeometry, const QRectF& oldGeome
 	QQuickItem::geometryChange(newGeometry, oldGeometry);
 	updateCenteredDeformMatrix();
 	if (m_group) {
-		// Accumulate sub-pixel drift so slow movements don't desync the shader
 		m_pendingDx += static_cast<float>(newGeometry.x() - oldGeometry.x());
 		m_pendingDy += static_cast<float>(newGeometry.y() - oldGeometry.y());
-		// Accumulate size delta across multiple frames so incremental size
-		// changes that are each below the threshold still trigger a dirty
-		// mark once their accumulated delta exceeds it.
 		m_pendingDw += static_cast<float>(newGeometry.width() - oldGeometry.width());
 		m_pendingDh += static_cast<float>(newGeometry.height() - oldGeometry.height());
-		if (std::abs(m_pendingDx) > 0.5f || std::abs(m_pendingDy) > 0.5f ||
-		    std::abs(m_pendingDw) > 0.5f || std::abs(m_pendingDh) > 0.5f) {
+
+		const float deformMag = std::abs(m_deformMatrix(0, 0) - 1.0f) + std::abs(m_deformMatrix(0, 1)) +
+		                        std::abs(m_deformMatrix(1, 0)) + std::abs(m_deformMatrix(1, 1) - 1.0f);
+		const float syncThreshold = deformMag > 0.001f ? 0.05f : 0.5f;
+
+		if (std::abs(m_pendingDx) > syncThreshold || std::abs(m_pendingDy) > syncThreshold ||
+		    std::abs(m_pendingDw) > syncThreshold || std::abs(m_pendingDh) > syncThreshold) {
 			m_pendingDx = 0;
 			m_pendingDy = 0;
 			m_pendingDw = 0;
@@ -124,7 +124,6 @@ void BlobShape::updatePolish() {
 	if (!m_group)
 		return;
 
-	// Ensure all shapes have up-to-date physics (only once per frame)
 	m_group->ensurePhysicsUpdated();
 
 	const QPointF scenePos = mapToScene(QPointF(0, 0));
@@ -149,13 +148,11 @@ void BlobShape::updatePolish() {
 		                           width() + 2.0 * static_cast<double>(totalPad), height() + 2.0 * static_cast<double>(totalPad));
 	}
 
-	// Filter nearby normal rects
 	m_cachedRects.clear();
 	m_cachedMyIndex = -2;
 	const QRectF myPadded(static_cast<double>(m_cachedPaddedX), static_cast<double>(m_cachedPaddedY),
 	                      static_cast<double>(m_cachedPaddedW), static_cast<double>(m_cachedPaddedH));
 
-	// Track shape pointers parallel to m_cachedRects for pairwise exclusion lookups
 	QVector<BlobShape*> rectShapes;
 	rectShapes.reserve(m_group->shapes().size());
 
@@ -163,7 +160,6 @@ void BlobShape::updatePolish() {
 		if (other->isInvertedRect())
 			continue;
 
-		// Skip zero-size rects
 		if (other->width() <= 0 || other->height() <= 0)
 			continue;
 
@@ -202,7 +198,6 @@ void BlobShape::updatePolish() {
 			r.offsetX = dm(0, 3);
 			r.offsetY = dm(1, 3);
 
-			// Pre-compute inverse deformation matrix
 			const float det = a * d - c * b;
 			const float invDet = std::abs(det) > 1e-6f ? 1.0f / det : 1.0f;
 			r.invDeform[0] = d * invDet;
@@ -210,12 +205,10 @@ void BlobShape::updatePolish() {
 			r.invDeform[2] = -c * invDet;
 			r.invDeform[3] = a * invDet;
 
-			// Pre-compute minimum eigenvalue (avoids per-pixel sqrt)
 			const float halfTr = 0.5f * (a + d);
 			const float halfDiff = 0.5f * (a - d);
 			r.minEig = halfTr - std::sqrt(halfDiff * halfDiff + c * c);
 
-			// Pre-compute screen-space AABB half-extents
 			r.screenHalfX = std::abs(a) * r.hw + std::abs(c) * r.hh;
 			r.screenHalfY = std::abs(b) * r.hw + std::abs(d) * r.hh;
 
@@ -227,8 +220,6 @@ void BlobShape::updatePolish() {
 	if (isInvertedRect())
 		m_cachedMyIndex = -1;
 
-	// Compute pairwise exclude masks. Bit j in entry i is set iff rect i excludes rect j
-	// or rect j excludes rect i. The shader uses this to avoid smin between excluded pairs.
 	const auto cachedCount = m_cachedRects.size();
 	for (qsizetype i = 0; i < cachedCount; ++i) {
 		int mask = 0;
@@ -243,7 +234,6 @@ void BlobShape::updatePolish() {
 		m_cachedRects[i].excludeMask = mask;
 	}
 
-	// Cache inverted rect data
 	m_cachedHasInverted = false;
 	m_cachedInvertedRadius = 0;
 	memset(m_cachedInvertedOuter, 0, sizeof(m_cachedInvertedOuter));
@@ -262,7 +252,6 @@ void BlobShape::updatePolish() {
 		const float innerHW = outerHW - static_cast<float>((inv->borderLeft() + inv->borderRight()) / 2.0);
 		const float innerHH = outerHH - static_cast<float>((inv->borderTop() + inv->borderBottom()) / 2.0);
 
-		// Check if this rect is near the border (within 2x smoothing of inner edge)
 		bool nearBorder = isInvertedRect();
 		if (!nearBorder) {
 			const float margin = pad * 2.0f;
@@ -270,7 +259,6 @@ void BlobShape::updatePolish() {
 			const float myCY = m_cachedPaddedY + m_cachedPaddedH * 0.5f;
 			const float myHW = m_cachedPaddedW * 0.5f;
 			const float myHH = m_cachedPaddedH * 0.5f;
-			// Near border if any edge of padded rect is within margin of inner edge
 			nearBorder = (myCX - myHW < innerCX - innerHW + margin) || (myCX + myHW > innerCX + innerHW - margin) ||
 			             (myCY - myHH < innerCY - innerHH + margin) || (myCY + myHH > innerCY + innerHH - margin);
 		}
@@ -291,7 +279,6 @@ void BlobShape::updatePolish() {
 		}
 	}
 
-	// Pre-compute effective per-corner radii (moves O(N²) work from GPU to CPU)
 	const float smoothFactor = pad;
 	constexpr float minR = 2.0f;
 	const auto rectCount = m_cachedRects.size();
@@ -328,7 +315,6 @@ void BlobShape::updatePolish() {
 			fTl = std::min(fTl, cpuSmoothstep(0.0f, smoothFactor, -cpuSdBox(cTlX, cTlY, icx, icy, ihw, ihh)));
 		}
 
-		// Combine base radii with fill factors into effective per-corner radii
 		ri.radius[0] = std::max(ri.radius[0] * fTr, minR);
 		ri.radius[1] = std::max(ri.radius[1] * fBr, minR);
 		ri.radius[2] = std::max(ri.radius[2] * fBl, minR);
@@ -357,7 +343,6 @@ QSGNode* BlobShape::updatePaintNode(QSGNode* oldNode, UpdatePaintNodeData*) {
 		node->setFlag(QSGNode::OwnsMaterial);
 	}
 
-	// Update geometry
 	auto* geometry = node->geometry();
 	auto* v = geometry->vertexDataAsTexturedPoint2D();
 
@@ -373,7 +358,6 @@ QSGNode* BlobShape::updatePaintNode(QSGNode* oldNode, UpdatePaintNodeData*) {
 
 	node->markDirty(QSGNode::DirtyGeometry);
 
-	// Update material
 	auto* material = static_cast<BlobMaterial*>(node->material());
 	material->m_paddedX = m_cachedPaddedX;
 	material->m_paddedY = m_cachedPaddedY;

@@ -14,15 +14,11 @@ BlobRect::~BlobRect() {
 }
 
 void BlobRect::updatePolish() {
-	BlobShape::updatePolish();
-
 	if (m_physicsActive) {
-		// Check if deformation is visually imperceptible
 		float totalDelta = std::abs(m_dm00 - 1.0f) + std::abs(m_dm01) + std::abs(m_dm11 - 1.0f);
 		float totalVel = std::abs(m_dmVel00) + std::abs(m_dmVel01) + std::abs(m_dmVel11);
 
 		if (totalDelta < 0.004f && totalVel < 0.05f) {
-			// Snap to rest, no visible deformation
 			m_dm00 = 1.0f;
 			m_dm01 = 0.0f;
 			m_dm11 = 1.0f;
@@ -31,6 +27,16 @@ void BlobRect::updatePolish() {
 			emit rawDeformMatrixChanged();
 			updateCenteredDeformMatrix();
 			m_physicsActive = false;
+
+			if (m_group) {
+				QMetaObject::invokeMethod(
+					this,
+					[this]() {
+					if (m_group)
+						m_group->markDirty();
+				},
+					Qt::QueuedConnection);
+			}
 		} else {
 			QMetaObject::invokeMethod(
 				this,
@@ -41,6 +47,8 @@ void BlobRect::updatePolish() {
 				Qt::QueuedConnection);
 		}
 	}
+
+	BlobShape::updatePolish();
 }
 
 void BlobRect::updatePhysics() {
@@ -56,7 +64,6 @@ void BlobRect::updatePhysics() {
 	const float dt = static_cast<float>(m_elapsed.restart()) / 1000.0f;
 	if (dt > 0.1f || dt < 0.001f) {
 		m_prevScenePos = scenePos;
-		// Still check atRest on skipped frames to avoid getting stuck
 		if (m_physicsActive)
 			checkAtRest(0.0f);
 		return;
@@ -74,8 +81,6 @@ void BlobRect::updatePhysics() {
 		m_physicsActive = true;
 	}
 
-	// Compute target deformation matrix from velocity
-	// R(θ) * diag(stretch, compress) * R(θ)^T
 	const float kStretchFactor = static_cast<float>(m_deformScale);
 	constexpr float kMaxStretch = 0.35f;
 
@@ -98,7 +103,6 @@ void BlobRect::updatePhysics() {
 		target11 = targetStretch * sin2 + targetCompress * cos2;
 	}
 
-	// Underdamped spring on each matrix component
 	const float kStiffness = static_cast<float>(m_stiffness);
 	const float kDamping = static_cast<float>(m_damping);
 
@@ -238,9 +242,19 @@ void BlobRect::checkAtRest(float speed) {
 		m_dmVel00 = 0.0f;
 		m_dmVel01 = 0.0f;
 		m_dmVel11 = 0.0f;
-		m_deformMatrix = QMatrix4x4(); // identity
+		m_deformMatrix = QMatrix4x4();
 		emit rawDeformMatrixChanged();
 		updateCenteredDeformMatrix();
 		m_physicsActive = false;
+
+		if (m_group) {
+			QMetaObject::invokeMethod(
+				this,
+				[this]() {
+				if (m_group)
+					m_group->markDirty();
+			},
+				Qt::QueuedConnection);
+		}
 	}
 }
