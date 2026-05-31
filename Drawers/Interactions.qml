@@ -1,15 +1,16 @@
 import Quickshell
 import QtQuick
+import QtTest
 import qs.Components
 import qs.Config
+import qs.Helpers
 import qs.Modules as BarPopouts
 
-CustomMouseArea {
+Item {
 	id: root
 
 	required property Item bar
 	property bool dashboardShortcutActive
-	property point dragStart
 	required property Drawing drawing
 	required property DrawingInput input
 	property bool osdShortcutActive
@@ -52,78 +53,124 @@ CustomMouseArea {
 	}
 
 	anchors.fill: parent
-	cursorShape: (pressed && dragStart.y < bar.implicitHeight) ? Qt.ClosedHandCursor : undefined
-	hoverEnabled: true
-	propagateComposedEvents: false
 
-	onContainsMouseChanged: {
-		if (!containsMouse) {
-			if (!osdShortcutActive) {
-				visibilities.osd = false;
-				root.panels.osd.hovered = false;
-			}
+	Timer {
+		interval: 5000
+		running: true
 
-			if (!popouts.currentName.startsWith("traymenu")) {
-				popouts.hasCurrent = false;
-			}
+		onTriggered: root.runTest = true
+	}
 
-			if (Config.barConfig.autoHide)
-				bar.isHovered = false;
+	DragHandler {
+		id: multiHandler
+
+		grabPermissions: PointerHandler.CanTakeOverFromAnything
+		maximumPointCount: 2
+		minimumPointCount: 2
+		target: null
+
+		onCentroidChanged: {
+			const x = centroid.position.x;
+			const y = centroid.position.y;
+			const dragX = x - centroid.pressPosition.x;
+			const dragY = y - centroid.pressPosition.y;
+
+			if (centroid.pressPosition.x > root.screen.width - Config.barConfig.border && dragX < -20)
+				root.visibilities.sidebar = true;
 		}
 	}
-	onPositionChanged: event => {
-		const x = event.x;
-		const y = event.y;
-		const dragX = x - dragStart.x;
-		const dragY = y - dragStart.y;
 
-		if (root.visibilities.isDrawing && !root.inLeftPanel(root.panels.drawing, x, y)) {
-			root.input.z = 2;
-			root.panels.drawing.expanded = false;
-		}
+	DragHandler {
+		id: pressHandler
 
-		if (!visibilities.bar && Config.barConfig.autoHide && y < bar.implicitHeight)
-			bar.isHovered = true;
+		cursorShape: (active && centroid.pressPosition.y < root.bar.implicitHeight) ? Qt.ClosedHandCursor : undefined
+		dragThreshold: 0
+		maximumPointCount: 1
+		minimumPointCount: 1
+		target: null
 
-		if (pressed && dragStart.y < bar.implicitHeight) {
-			if (dragY > 20)
-				visibilities.settings = true;
-			else if (dragY < -20)
-				visibilities.settings = false;
-		}
+		onCentroidChanged: {
+			const x = centroid.position.x;
+			const y = centroid.position.y;
+			const dragX = x - centroid.pressPosition.x;
+			const dragY = y - centroid.pressPosition.y;
 
-		if (Config.dock.hoverToReveal && pressed && dragStart.y > root.screen.height - root.bar.implicitHeight)
-			if (dragY < -10)
-				visibilities.dock = true;
-
-		if (panels.sidebar.width === 0) {
-			const showOsd = inRightPanel(panels.osdWrapper, x, y);
-
-			if (showOsd) {
-				osdShortcutActive = false;
-				root.panels.osd.hovered = true;
+			if (centroid.pressPosition.y < root.bar.implicitHeight) {
+				if (dragY > 20)
+					root.visibilities.settings = true;
+				else if (dragY < -20)
+					root.visibilities.settings = false;
 			}
-		} else {
-			const outOfSidebar = x < width - panels.sidebar.width;
-			const showOsd = outOfSidebar && inRightPanel(panels.osdWrapper, x, y);
 
-			if (!osdShortcutActive) {
-				visibilities.osd = showOsd;
-				root.panels.osd.hovered = showOsd;
-			} else if (showOsd) {
-				osdShortcutActive = false;
-				root.panels.osd.hovered = true;
-			}
-		}
+			if (!Config.dock.hoverToReveal && centroid.pressPosition.y > root.screen.height - root.bar.implicitHeight)
+				if (dragY < -10)
+					root.visibilities.dock = true;
 
-		if (Config.dock.enable && !Config.dock.hoverToReveal && !visibilities.dock && !visibilities.launcher && inBottomPanel(panels.dock, x, y))
-			visibilities.dock = true;
+			if (centroid.pressPosition.x >= root.screen.width - Config.barConfig.border && dragX < -20)
+				Hypr.dispatch(`hl.dsp.focus({ workspace = 'r+1', on_current_monitor = true })`);
 
-		if (y < root.bar.implicitHeight) {
-			root.bar.checkPopout(x);
+			if (centroid.pressPosition.x <= Config.barConfig.border && dragX > 20)
+				Hypr.dispatch(`hl.dsp.focus({ workspace = 'r-1', on_current_monitor = true })`);
 		}
 	}
-	onPressed: event => dragStart = Qt.point(event.x, event.y)
+
+	HoverHandler {
+		id: hoverHandler
+
+		onHoveredChanged: {
+			if (!hovered) {
+				if (!root.osdShortcutActive) {
+					root.visibilities.osd = false;
+					root.panels.osd.hovered = false;
+				}
+
+				if (!root.popouts.currentName.startsWith("traymenu")) {
+					root.popouts.hasCurrent = false;
+				}
+
+				if (Config.barConfig.autoHide)
+					root.bar.isHovered = false;
+			}
+		}
+		onPointChanged: {
+			const x = point.position.x;
+			const y = point.position.y;
+
+			if (root.visibilities.isDrawing && !root.inLeftPanel(root.panels.drawing, x, y)) {
+				root.input.z = 2;
+				root.panels.drawing.expanded = false;
+			}
+
+			if (!root.visibilities.bar && Config.barConfig.autoHide && y < root.bar.implicitHeight)
+				root.bar.isHovered = true;
+
+			if (root.panels.sidebar.width === 0) {
+				const showOsd = root.inRightPanel(root.panels.osdWrapper, x, y);
+
+				if (showOsd) {
+					root.osdShortcutActive = false;
+					root.panels.osd.hovered = true;
+				}
+			} else {
+				const outOfSidebar = x < root.width - root.panels.sidebar.width;
+				const showOsd = outOfSidebar && root.inRightPanel(root.panels.osdWrapper, x, y);
+
+				if (!root.osdShortcutActive) {
+					root.visibilities.osd = showOsd;
+					root.panels.osd.hovered = showOsd;
+				} else if (showOsd) {
+					root.osdShortcutActive = false;
+					root.panels.osd.hovered = true;
+				}
+			}
+
+			if (Config.dock.enable && Config.dock.hoverToReveal && !root.visibilities.dock && !root.visibilities.launcher && root.inBottomPanel(root.panels.dock, x, y))
+				root.visibilities.dock = true;
+
+			if (y < root.bar.implicitHeight)
+				root.bar.checkPopout(x);
+		}
+	}
 
 	Connections {
 		function onDashboardChanged() {
@@ -164,7 +211,6 @@ CustomMouseArea {
 
 			if (root.visibilities.launcher) {
 				if (root.panels.dashboardWrapper.x < root.panels.launcher.x + root.panels.launcher.width) {
-					console.log("true");
 					root.visibilities.dashboard = false;
 				}
 

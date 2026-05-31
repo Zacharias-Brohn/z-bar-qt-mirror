@@ -341,6 +341,7 @@ Variants {
 				anchors.fill: parent
 				bar: bar
 				drawing: drawingLoader.item
+				enabled: true
 				input: inputLoader.item
 				panels: panels
 				popouts: panels.popouts
