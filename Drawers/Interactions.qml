@@ -1,6 +1,5 @@
 import Quickshell
 import QtQuick
-import QtTest
 import qs.Components
 import qs.Config
 import qs.Helpers
@@ -53,13 +52,6 @@ Item {
 	}
 
 	anchors.fill: parent
-
-	Timer {
-		interval: 5000
-		running: true
-
-		onTriggered: root.runTest = true
-	}
 
 	DragHandler {
 		id: multiHandler
