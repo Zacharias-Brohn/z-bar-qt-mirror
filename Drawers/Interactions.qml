@@ -12,7 +12,6 @@ Item {
 	property bool dashboardShortcutActive
 	required property Drawing drawing
 	required property DrawingInput input
-	property bool multiGestureTriggered: false
 	property bool osdShortcutActive
 	required property Panels panels
 	required property BarPopouts.Wrapper popouts
@@ -56,35 +55,6 @@ Item {
 	anchors.fill: parent
 
 	DragHandler {
-		id: multiHandler
-
-		dragThreshold: 0
-		grabPermissions: PointerHandler.CanTakeOverFromHandlersOfDifferentType | PointerHandler.ApprovesTakeOverByAnything
-		maximumPointCount: 2
-		minimumPointCount: 2
-		target: null
-
-		onActiveChanged: {
-			if (!active)
-				root.multiGestureTriggered = false;
-		}
-		onCentroidChanged: {
-			if (root.multiGestureTriggered)
-				return;
-
-			const x = centroid.position.x;
-			const y = centroid.position.y;
-			const dragX = x - centroid.pressPosition.x;
-			const dragY = y - centroid.pressPosition.y;
-
-			if (centroid.pressPosition.x > root.screen.width - Config.barConfig.border && dragX < -20) {
-				root.visibilities.sidebar = true;
-				root.multiGestureTriggered = true;
-			}
-		}
-	}
-
-	DragHandler {
 		id: singleHandler
 
 		cursorShape: (active && centroid.pressPosition.y < root.bar.implicitHeight) ? Qt.ClosedHandCursor : undefined
@@ -123,7 +93,12 @@ Item {
 					root.singleGestureTriggered = true;
 				}
 
-			if (centroid.pressPosition.x >= root.screen.width - Config.barConfig.border && dragX < -20) {
+			if (centroid.pressPosition.x > root.screen.width - Config.barConfig.border && centroid.pressPosition.y < (root.screen.height / 2) && dragX < -20) {
+				root.visibilities.sidebar = true;
+				root.singleGestureTriggered = true;
+			}
+
+			if (centroid.pressPosition.x >= root.screen.width - Config.barConfig.border && centroid.pressPosition.y > (root.screen.height / 2) && dragX < -20) {
 				Hypr.dispatch(`hl.dsp.focus({ workspace = 'r+1', on_current_monitor = true })`);
 				root.singleGestureTriggered = true;
 			}
