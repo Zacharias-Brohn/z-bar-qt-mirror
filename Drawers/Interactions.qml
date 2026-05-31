@@ -12,10 +12,12 @@ Item {
 	property bool dashboardShortcutActive
 	required property Drawing drawing
 	required property DrawingInput input
+	property bool multiGestureTriggered: false
 	property bool osdShortcutActive
 	required property Panels panels
 	required property BarPopouts.Wrapper popouts
 	required property ShellScreen screen
+	property bool singleGestureTriggered: false
 	property bool utilitiesShortcutActive
 	required property PersistentProperties visibilities
 
@@ -62,19 +64,28 @@ Item {
 		minimumPointCount: 2
 		target: null
 
+		onActiveChanged: {
+			if (!active)
+				root.multiGestureTriggered = false;
+		}
 		onCentroidChanged: {
+			if (root.multiGestureTriggered)
+				return;
+
 			const x = centroid.position.x;
 			const y = centroid.position.y;
 			const dragX = x - centroid.pressPosition.x;
 			const dragY = y - centroid.pressPosition.y;
 
-			if (centroid.pressPosition.x > root.screen.width - Config.barConfig.border && dragX < -20)
+			if (centroid.pressPosition.x > root.screen.width - Config.barConfig.border && dragX < -20) {
 				root.visibilities.sidebar = true;
+				root.multiGestureTriggered = true;
+			}
 		}
 	}
 
 	DragHandler {
-		id: pressHandler
+		id: singleHandler
 
 		cursorShape: (active && centroid.pressPosition.y < root.bar.implicitHeight) ? Qt.ClosedHandCursor : undefined
 		dragThreshold: 0
@@ -83,28 +94,46 @@ Item {
 		minimumPointCount: 1
 		target: null
 
+		onActiveChanged: {
+			if (!active)
+				root.singleGestureTriggered = false;
+		}
 		onCentroidChanged: {
+			if (root.singleGestureTriggered) {
+				console.log(root.singleGestureTriggered);
+				return;
+			}
+
 			const x = centroid.position.x;
 			const y = centroid.position.y;
 			const dragX = x - centroid.pressPosition.x;
 			const dragY = y - centroid.pressPosition.y;
 
 			if (centroid.pressPosition.y < root.bar.implicitHeight) {
-				if (dragY > 20)
+				if (dragY > 20) {
 					root.visibilities.settings = true;
-				else if (dragY < -20)
+					root.singleGestureTriggered = true;
+				} else if (dragY < -20) {
 					root.visibilities.settings = false;
+					root.singleGestureTriggered = true;
+				}
 			}
 
 			if (!Config.dock.hoverToReveal && centroid.pressPosition.y > root.screen.height - root.bar.implicitHeight)
-				if (dragY < -10)
+				if (dragY < -10) {
 					root.visibilities.dock = true;
+					root.singleGestureTriggered = true;
+				}
 
-			if (centroid.pressPosition.x >= root.screen.width - Config.barConfig.border && dragX < -20)
+			if (centroid.pressPosition.x >= root.screen.width - Config.barConfig.border && dragX < -20) {
 				Hypr.dispatch(`hl.dsp.focus({ workspace = 'r+1', on_current_monitor = true })`);
+				root.singleGestureTriggered = true;
+			}
 
-			if (centroid.pressPosition.x <= Config.barConfig.border && dragX > 20)
+			if (centroid.pressPosition.x <= Config.barConfig.border && dragX > 20) {
 				Hypr.dispatch(`hl.dsp.focus({ workspace = 'r-1', on_current_monitor = true })`);
+				root.singleGestureTriggered = true;
+			}
 		}
 	}
 
