@@ -327,6 +327,13 @@ export const settingsIndex = [
         keywords: ["notification", "hide", "icon"],
     },
     {
+        name: "Laptop lid watch to lock session",
+        category: "lockscreen",
+        categoryName: "Lockscreen",
+        section: "Lockscreen",
+        keywords: ["lid", "lcck", "watch", "session", "laptop"],
+    },
+    {
         name: "Blur amount",
         category: "lockscreen",
         categoryName: "Lockscreen",

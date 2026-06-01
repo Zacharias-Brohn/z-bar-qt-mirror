@@ -8,7 +8,6 @@
 import Quickshell
 import Quickshell.Services.UPower
 import QtQuick
-import ZShell
 import qs.Modules
 import qs.Modules.Wallpaper
 import qs.Modules.Lock
@@ -38,15 +37,6 @@ ShellRoot {
 		id: lock
 	}
 
-	Connections {
-		enabled: Config.lock.lidWatch
-		function onLidClosing(): void {
-			lock.lock.locked = true;
-		}
-
-		target: LidWatcher
-	}
-
 	Shortcuts {
 	}
 
@@ -56,6 +46,13 @@ ShellRoot {
 
 	Polkit {
 	}
+
+    LazyLoader {
+        activeAsync: Config.lock.lidWatch && Battery.isLaptop
+        component: LidService {
+            lock: lock
+        }
+    }
 
 	LazyLoader {
 		activeAsync: root.laptop

@@ -1,5 +1,6 @@
 import qs.Modules.Settings.Categories.Lockscreen
 import qs.Modules.Settings.Controls
+import qs.Helpers
 import qs.Config
 
 SettingsPage {
@@ -63,9 +64,11 @@ SettingsPage {
 			name: "Laptop lid watch to lock session"
 			object: Config.lock
 			setting: "lidWatch"
+            shouldBeActive: Battery.isLaptop
 		}
 
 		Separator {
+            shouldBeActive: Battery.isLaptop
 		}
 
 		SettingSpinBox {
