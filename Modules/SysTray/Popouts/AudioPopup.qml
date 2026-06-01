@@ -52,25 +52,25 @@ Item {
 
 		CustomRect {
 			Layout.fillWidth: true
-			Layout.preferredHeight: 42 + Appearance.spacing.smaller * 2
+			Layout.preferredHeight: 50 + Appearance.spacing.smaller * 2
 			Layout.topMargin: root.topMargin
 			color: DynamicColors.tPalette.m3surfaceContainer
 			radius: root.rounding
 
-			RowLayout {
-				id: outputVolume
+			Item {
+				id: sinkIcon
 
+				anchors.bottom: parent.bottom
 				anchors.left: parent.left
-				anchors.margins: Appearance.spacing.smaller
-				anchors.right: parent.right
-				anchors.verticalCenter: parent.verticalCenter
-				spacing: 15
+				anchors.leftMargin: Appearance.padding.normal
+				anchors.top: parent.top
+				implicitWidth: childrenRect.width
 
 				CustomRect {
-					Layout.alignment: Qt.AlignVCenter
-					Layout.preferredHeight: 40
-					Layout.preferredWidth: 40
+					anchors.centerIn: parent
 					color: Audio.muted ? DynamicColors.palette.m3error : DynamicColors.palette.m3primary
+					implicitHeight: 40
+					implicitWidth: 40
 					radius: Appearance.rounding.full
 
 					MaterialIcon {
@@ -92,45 +92,53 @@ Item {
 						}
 					}
 				}
+			}
 
-				ColumnLayout {
+			ColumnLayout {
+				anchors.bottom: parent.bottom
+				anchors.bottomMargin: Appearance.padding.smallest
+				anchors.left: sinkIcon.right
+				anchors.leftMargin: Appearance.spacing.normal
+				anchors.right: parent.right
+				anchors.rightMargin: Appearance.padding.large
+				anchors.top: parent.top
+				anchors.topMargin: Appearance.padding.smaller
+
+				RowLayout {
+					Layout.fillHeight: true
 					Layout.fillWidth: true
 
-					RowLayout {
+					CustomText {
+						Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
 						Layout.fillWidth: true
-
-						CustomText {
-							Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
-							Layout.fillWidth: true
-							text: "Output Volume"
-						}
-
-						CustomText {
-							Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
-							font.bold: true
-							text: qsTr("%1").arg(Audio.muted ? qsTr("Muted") : `${Math.round(Audio.volume * 100)}%`)
-						}
+						text: "Output Volume"
 					}
 
-					CustomMouseArea {
-						Layout.bottomMargin: 5
-						Layout.fillWidth: true
-						Layout.preferredHeight: 10
+					CustomText {
+						Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
+						font.bold: true
+						text: qsTr("%1").arg(Audio.muted ? qsTr("Muted") : `${Math.round(Audio.volume * 100)}%`)
+					}
+				}
 
-						CustomSlider {
-							anchors.left: parent.left
-							anchors.right: parent.right
-							color: Audio.muted ? DynamicColors.palette.m3error : DynamicColors.palette.m3primary
-							implicitHeight: 10
-							value: Audio.volume
+				CustomMouseArea {
+					Layout.bottomMargin: 5
+					Layout.fillHeight: true
+					Layout.fillWidth: true
 
-							Behavior on value {
-								Anim {
-								}
+					CustomSlider {
+						anchors.left: parent.left
+						anchors.right: parent.right
+						color: Audio.muted ? DynamicColors.palette.m3error : DynamicColors.palette.m3primary
+						implicitHeight: parent.height
+						value: Audio.volume
+
+						Behavior on value {
+							Anim {
 							}
-
-							onMoved: Audio.setVolume(value)
 						}
+
+						onMoved: Audio.setVolume(value)
 					}
 				}
 			}
@@ -138,7 +146,7 @@ Item {
 
 		CustomClippingRect {
 			Layout.fillWidth: true
-			Layout.preferredHeight: 42 + Appearance.spacing.smaller * 2
+			Layout.preferredHeight: 50 + Appearance.spacing.smaller * 2
 			Layout.topMargin: root.topMargin
 			color: DynamicColors.tPalette.m3surfaceContainer
 			radius: root.rounding
@@ -165,20 +173,20 @@ Item {
 				}
 			}
 
-			RowLayout {
-				id: inputVolume
+			Item {
+				id: sourceIcon
 
+				anchors.bottom: parent.bottom
 				anchors.left: parent.left
-				anchors.margins: Appearance.spacing.smaller
-				anchors.right: parent.right
-				anchors.verticalCenter: parent.verticalCenter
-				spacing: 15
+				anchors.leftMargin: Appearance.padding.normal
+				anchors.top: parent.top
+				implicitWidth: childrenRect.width
 
 				CustomRect {
-					Layout.alignment: Qt.AlignVCenter
-					Layout.preferredHeight: 40
-					Layout.preferredWidth: 40
+					anchors.centerIn: parent
 					color: Audio.sourceMuted ? DynamicColors.palette.m3error : DynamicColors.palette.m3primary
+					implicitHeight: 40
+					implicitWidth: 40
 					radius: Appearance.rounding.full
 
 					MaterialIcon {
@@ -200,46 +208,53 @@ Item {
 						}
 					}
 				}
+			}
 
-				ColumnLayout {
+			ColumnLayout {
+				anchors.bottom: parent.bottom
+				anchors.bottomMargin: Appearance.padding.smallest
+				anchors.left: sourceIcon.right
+				anchors.leftMargin: Appearance.spacing.normal
+				anchors.right: parent.right
+				anchors.rightMargin: Appearance.padding.large
+				anchors.top: parent.top
+				anchors.topMargin: Appearance.padding.smaller
+
+				RowLayout {
+					Layout.fillHeight: true
 					Layout.fillWidth: true
 
-					RowLayout {
-						Layout.fillHeight: true
+					CustomText {
+						Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
 						Layout.fillWidth: true
-
-						CustomText {
-							Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
-							Layout.fillWidth: true
-							text: "Input Volume"
-						}
-
-						CustomText {
-							Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
-							font.bold: true
-							text: qsTr("%1").arg(Audio.sourceMuted ? qsTr("Muted") : `${Math.round(Audio.sourceVolume * 100)}%`)
-						}
+						text: "Input Volume"
 					}
 
-					CustomMouseArea {
-						Layout.bottomMargin: 5
-						Layout.fillWidth: true
-						implicitHeight: 10
+					CustomText {
+						Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
+						font.bold: true
+						text: qsTr("%1").arg(Audio.sourceMuted ? qsTr("Muted") : `${Math.round(Audio.sourceVolume * 100)}%`)
+					}
+				}
 
-						CustomSlider {
-							anchors.left: parent.left
-							anchors.right: parent.right
-							color: Audio.sourceMuted ? DynamicColors.palette.m3error : DynamicColors.palette.m3primary
-							implicitHeight: 10
-							value: Audio.sourceVolume
+				CustomMouseArea {
+					Layout.bottomMargin: 5
+					Layout.fillHeight: true
+					Layout.fillWidth: true
 
-							Behavior on value {
-								Anim {
-								}
+					CustomSlider {
+						anchors.left: parent.left
+						anchors.right: parent.right
+						color: Audio.sourceMuted ? DynamicColors.palette.m3error : DynamicColors.palette.m3primary
+						implicitHeight: parent.height
+						value: Audio.sourceVolume
+
+						Behavior on value {
+							Anim {
 							}
-
-							onMoved: Audio.setSourceVolume(value)
 						}
+
+						onMoved: Audio.setSourceVolume(value)
 					}
 				}
 			}
@@ -265,7 +280,7 @@ Item {
 				required property var modelData
 
 				Layout.fillWidth: true
-				Layout.preferredHeight: 42 + Appearance.spacing.smaller * 2
+				Layout.preferredHeight: 50 + Appearance.spacing.smaller * 2
 				Layout.topMargin: root.topMargin
 				color: DynamicColors.tPalette.m3surfaceContainer
 				radius: root.rounding
@@ -292,18 +307,20 @@ Item {
 					}
 				}
 
-				RowLayout {
-					id: layoutVolume
+				Item {
+					id: appBoxIcon
 
-					anchors.fill: parent
-					anchors.margins: Appearance.spacing.smaller
-					spacing: 15
+					anchors.bottom: parent.bottom
+					anchors.left: parent.left
+					anchors.leftMargin: Appearance.padding.normal
+					anchors.top: parent.top
+					implicitWidth: childrenRect.width
 
 					CustomRect {
-						Layout.alignment: Qt.AlignVCenter
-						Layout.preferredHeight: 40
-						Layout.preferredWidth: 40
+						anchors.centerIn: parent
 						color: appBox.modelData.audio.muted ? DynamicColors.palette.m3error : DynamicColors.palette.m3primary
+						implicitHeight: 40
+						implicitWidth: 40
 						radius: Appearance.rounding.full
 
 						MaterialIcon {
@@ -325,55 +342,58 @@ Item {
 							}
 						}
 					}
+				}
 
-					ColumnLayout {
-						Layout.alignment: Qt.AlignLeft | Qt.AlignTop
+				TextMetrics {
+					id: metrics
+
+					elide: Text.ElideRight
+					elideWidth: root.width - 50
+					text: Audio.getStreamName(appBox.modelData)
+				}
+
+				ColumnLayout {
+					anchors.bottom: parent.bottom
+					anchors.bottomMargin: Appearance.padding.smallest
+					anchors.left: appBoxIcon.right
+					anchors.leftMargin: Appearance.spacing.normal
+					anchors.right: parent.right
+					anchors.rightMargin: Appearance.padding.large
+					anchors.top: parent.top
+					anchors.topMargin: Appearance.padding.smaller
+
+					RowLayout {
 						Layout.fillHeight: true
+						Layout.fillWidth: true
 
-						TextMetrics {
-							id: metrics
-
-							elide: Text.ElideRight
-							elideWidth: root.width - 50
-							text: Audio.getStreamName(appBox.modelData)
-						}
-
-						RowLayout {
-							Layout.fillHeight: true
-							Layout.fillWidth: true
-
-							CustomText {
-								Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
-								Layout.fillHeight: true
-								Layout.fillWidth: true
-								elide: Text.ElideRight
-								text: metrics.elidedText
-							}
-
-							CustomText {
-								Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
-								Layout.fillHeight: true
-								font.bold: true
-								text: qsTr("%1").arg(appBox.modelData.audio.muted ? qsTr("Muted") : `${Math.round(appBox.modelData.audio.volume * 100)}%`)
-							}
-						}
-
-						CustomMouseArea {
+						CustomText {
 							Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
-							Layout.fillHeight: true
 							Layout.fillWidth: true
-							implicitHeight: 10
+							elide: Text.ElideRight
+							text: metrics.elidedText
+						}
 
-							CustomSlider {
-								anchors.left: parent.left
-								anchors.right: parent.right
-								color: appBox.modelData.audio.muted ? DynamicColors.palette.m3error : DynamicColors.palette.m3primary
-								implicitHeight: 10
-								value: appBox.modelData.audio.volume
+						CustomText {
+							Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
+							font.bold: true
+							text: qsTr("%1").arg(appBox.modelData.audio.muted ? qsTr("Muted") : `${Math.round(appBox.modelData.audio.volume * 100)}%`)
+						}
+					}
 
-								onMoved: {
-									Audio.setStreamVolume(appBox.modelData, value);
-								}
+					CustomMouseArea {
+						Layout.bottomMargin: 5
+						Layout.fillHeight: true
+						Layout.fillWidth: true
+
+						CustomSlider {
+							anchors.left: parent.left
+							anchors.right: parent.right
+							color: appBox.modelData.audio.muted ? DynamicColors.palette.m3error : DynamicColors.palette.m3primary
+							implicitHeight: parent.height
+							value: appBox.modelData.audio.volume
+
+							onMoved: {
+								Audio.setStreamVolume(appBox.modelData, value);
 							}
 						}
 					}

@@ -164,7 +164,6 @@ CustomMouseArea {
 
 			if (root.visibilities.launcher) {
 				if (root.panels.dashboardWrapper.x < root.panels.launcher.x + root.panels.launcher.width) {
-					console.log("true");
 					root.visibilities.dashboard = false;
 				}
 

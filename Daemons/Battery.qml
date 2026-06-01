@@ -14,7 +14,6 @@ Scope {
 	function nearestThresholdAbove(p: real): var {
 		const thresholds = [...root.popupThresholds];
 		for (const perc of thresholds) {
-			console.log(perc.message);
 			if (p < perc.perc)
 				return perc;
 		}

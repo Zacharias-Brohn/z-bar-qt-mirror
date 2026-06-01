@@ -80,26 +80,28 @@ Item {
 				required property ShellScreen modelData
 
 				function applyCrop(): void {
-					if (!cropRectLoader.item) return;
+					if (!cropRectLoader.item)
+						return;
 					const cropRect = cropRectLoader.item;
-					
-					// We need to calculate the exact percentage coordinates that map perfectly 
+
+					// We need to calculate the exact percentage coordinates that map perfectly
 					// to our C++ backend, regardless of current display scaling
 					const cropXPercent = (cropRect.x - cropRect.imageX) / scaledImg.paintedWidth;
 					const cropYPercent = (cropRect.y - cropRect.imageY) / scaledImg.paintedHeight;
 					const cropWidthPercent = cropRect.width / scaledImg.paintedWidth;
 					const cropHeightPercent = cropRect.height / scaledImg.paintedHeight;
-					
+
 					const finalRect = Qt.rect(cropXPercent, cropYPercent, cropWidthPercent, cropHeightPercent);
-					
+
 					// We just pass the percentages directly to the backend
 					Wallpapers.setCrop(delegate.modelData.name, finalRect, finalRect, cropRect.zoom);
 				}
 
 				function zoomClipRect(zoom: real): void {
-					if (!cropRectLoader.item) return;
+					if (!cropRectLoader.item)
+						return;
 					const cropRect = cropRectLoader.item;
-					
+
 					let oldCenterX = cropRect.x + cropRect.width * 0.5;
 					let oldCenterY = cropRect.y + cropRect.height * 0.5;
 
@@ -139,8 +141,9 @@ Item {
 						id: zoomSlider
 
 						Layout.fillWidth: true
-						Layout.preferredHeight: 10
+						Layout.preferredHeight: 30
 						from: 1.0
+						implicitHeight: 30
 						to: 5.0
 						value: cropRectLoader.item ? cropRectLoader.item.zoom : 1.0
 
@@ -198,8 +201,9 @@ Item {
 
 					Loader {
 						id: cropRectLoader
+
 						active: scaledImg.paintedWidth > 0 && scaledImg.status == Image.Ready
-						
+
 						sourceComponent: Component {
 							CustomRect {
 								id: cropRect
@@ -240,7 +244,7 @@ Item {
 										zoom = data.zoom > 0 ? data.zoom : 1.0;
 										x = imageX + (data.x * scaledImg.paintedWidth);
 										y = imageY + (data.y * scaledImg.paintedHeight);
-										
+
 										clampToBounds();
 									} else {
 										zoom = 1.0;
@@ -272,9 +276,10 @@ Item {
 						id: mouse
 
 						function updateCrop(mouseX, mouseY) {
-							if (!cropRectLoader.item) return;
+							if (!cropRectLoader.item)
+								return;
 							const cropRect = cropRectLoader.item;
-							
+
 							let nx = mouseX - cropRect.width * 0.5;
 							let ny = mouseY - cropRect.height * 0.5;
 
