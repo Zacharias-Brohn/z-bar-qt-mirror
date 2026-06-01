@@ -14,6 +14,7 @@ import qs.Modules.Wallpaper
 import qs.Modules.Lock
 import qs.Drawers
 import qs.Helpers
+import qs.Config
 import qs.Modules.Polkit
 import qs.Daemons
 
@@ -38,6 +39,7 @@ ShellRoot {
 	}
 
 	Connections {
+		enabled: Config.general.lidWatch
 		function onLidClosing(): void {
 			lock.lock.locked = true;
 		}

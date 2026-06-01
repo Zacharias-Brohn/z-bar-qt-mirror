@@ -196,6 +196,7 @@ Singleton {
 			wallpaperPath: general.wallpaperPath,
 			desktopIcons: general.desktopIcons,
 			dateFormat: general.dateFormat,
+			lidWatch: general.lidWatch,
 			color: {
 				mode: general.color.mode,
 				smart: general.color.smart,

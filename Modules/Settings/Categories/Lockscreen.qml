@@ -59,6 +59,15 @@ SettingsPage {
 		Separator {
 		}
 
+		SettingSwitch {
+			name: "Lid watch"
+			object: Config.general
+			setting: "lidWatch"
+		}
+
+		Separator {
+		}
+
 		SettingSpinBox {
 			min: 0
 			name: "Blur amount"
