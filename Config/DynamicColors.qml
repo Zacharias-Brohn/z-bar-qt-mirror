@@ -115,6 +115,10 @@ Singleton {
 		Config.save();
 	}
 
+	function swapRG(c: color): color {
+		return Qt.rgba(c.g, c.r, c.b, c.a);
+	}
+
 	Component.onCompleted: debounceTimer.triggered()
 
 	Connections {

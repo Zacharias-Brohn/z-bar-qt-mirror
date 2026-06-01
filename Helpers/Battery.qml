@@ -10,8 +10,8 @@ Singleton {
 	readonly property var colors: {
 		if (deviceState === UPowerDeviceState.Charging || deviceState === UPowerDeviceState.FullyCharged)
 			return {
-				fg: DynamicColors.palette.m3primary,
-				bg: DynamicColors.palette.m3onPrimary
+				fg: DynamicColors.swapRG(DynamicColors.palette.m3error),
+				bg: DynamicColors.swapRG(DynamicColors.palette.m3onError)
 			};
 		else if (currentPerc <= 0.2)
 			return {
