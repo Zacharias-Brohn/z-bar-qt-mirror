@@ -39,7 +39,7 @@ ShellRoot {
 
 	Connections {
 		function onLidClosing(): void {
-			lock.locked = true;
+			lock.lock.locked = true;
 		}
 
 		target: LidWatcher
