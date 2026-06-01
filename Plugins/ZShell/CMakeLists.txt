@@ -45,11 +45,13 @@ qml_module(ZShell
 		requests.hpp requests.cpp
 		toaster.hpp toaster.cpp
 		qalculator.hpp qalculator.cpp
+		lidwatcher.hpp lidwatcher.cpp
     LIBRARIES
         Qt::Gui
         Qt::Quick
         Qt::Concurrent
         Qt::Sql
+		Qt::DBus
 		PkgConfig::Qalculate
 )
 

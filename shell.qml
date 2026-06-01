@@ -7,6 +7,7 @@
 //@ pragma DropExpensiveFonts
 import Quickshell
 import Quickshell.Services.UPower
+import ZShell
 import qs.Modules
 import qs.Modules.Wallpaper
 import qs.Modules.Lock
@@ -33,6 +34,14 @@ ShellRoot {
 
 	Lock {
 		id: lock
+	}
+
+	Connections {
+		function onLidClosing(): void {
+			lock.locked = true;
+		}
+
+		target: LidWatcher
 	}
 
 	Shortcuts {
