@@ -4,11 +4,11 @@ import QtQuick
 import ZShell
 import qs.Config
 import qs.Components.Toast
+import qs.Helpers
 
 Scope {
 	id: root
 
-	readonly property real currentPerc: UPower.displayDevice.percentage
 	readonly property list<var> popupThresholds: [...Config.general.battery.popupThresholds].sort((a, b) => b.perc - a.perc)
 
 	function nearestThresholdAbove(p: real): var {
@@ -23,13 +23,13 @@ Scope {
 
 	Connections {
 		function onOnBatteryChanged(): void {
-			if (!UPower.displayDevice.ready)
+			if (!Battery.ready)
 				return;
 
-			if (UPower.onBattery) {
+			if (Battery.onBattery) {
 				if (Config.utilities.toasts.chargingChanged)
 					Toaster.toast(qsTr("Charger unplugged"), qsTr("Battery is discharging"), "power_off");
-				const p = root.currentPerc * 100;
+				const p = Battery.currentPerc * 100;
 				const perc = root.nearestThresholdAbove(p);
 				if (perc)
 					Toaster.toast(perc.title ?? qsTr("Battery warning"), perc.message ?? qsTr("Battery is low"), perc.icon ?? "battery_android_alert", perc.critical ? Toast.Error : Toast.Warning);
@@ -39,15 +39,15 @@ Scope {
 			}
 		}
 
-		target: UPower
+		target: Battery
 	}
 
 	Connections {
-		function onPercentageChanged(): void {
-			if (!UPower.onBattery)
+		function onCurrentPercChanged(): void {
+			if (!Battery.onBattery)
 				return;
 
-			const p = root.currentPerc * 100;
+			const p = Battery.currentPerc * 100;
 			for (const perc of root.popupThresholds) {
 				if (p == perc.perc) {
 					Toaster.toast(perc.title ?? qsTr("Battery warning"), perc.message ?? qsTr("Battery perc is low"), perc.icon ?? "battery_android_alert", perc.critical ? Toast.Error : Toast.Warning);
@@ -56,15 +56,15 @@ Scope {
 		}
 
 		function onReadyChanged(): void {
-			if (!UPower.displayDevice.ready)
+			if (!Battery.ready)
 				return;
 
-			const p = root.currentPerc * 100;
+			const p = Battery.currentPerc * 100;
 			const perc = root.nearestThresholdAbove(p);
 			if (perc)
 				Toaster.toast(perc.title ?? qsTr("Battery warning"), perc.message ?? qsTr("Battery is low"), perc.icon ?? "battery_android_alert", perc.critical ? Toast.Error : Toast.Warning);
 		}
 
-		target: UPower.displayDevice
+		target: Battery
 	}
 }
