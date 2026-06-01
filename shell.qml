@@ -48,7 +48,7 @@ ShellRoot {
 	LazyLoader {
 		activeAsync: root.laptop
 
-		component: Battery {
+		component: BatteryService {
 		}
 	}
 }
