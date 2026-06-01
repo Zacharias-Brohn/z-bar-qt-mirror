@@ -7,6 +7,7 @@
 //@ pragma DropExpensiveFonts
 import Quickshell
 import Quickshell.Services.UPower
+import QtQuick
 import ZShell
 import qs.Modules
 import qs.Modules.Wallpaper
