@@ -2,20 +2,21 @@ import Quickshell
 import QtQuick
 import qs.Components
 import qs.Config
+import qs.Helpers
 import qs.Modules as BarPopouts
 
-CustomMouseArea {
+Item {
 	id: root
 
 	required property Item bar
 	property bool dashboardShortcutActive
-	property point dragStart
 	required property Drawing drawing
 	required property DrawingInput input
 	property bool osdShortcutActive
 	required property Panels panels
 	required property BarPopouts.Wrapper popouts
 	required property ShellScreen screen
+	property bool singleGestureTriggered: false
 	property bool utilitiesShortcutActive
 	required property PersistentProperties visibilities
 
@@ -52,78 +53,120 @@ CustomMouseArea {
 	}
 
 	anchors.fill: parent
-	cursorShape: (pressed && dragStart.y < bar.implicitHeight) ? Qt.ClosedHandCursor : undefined
-	hoverEnabled: true
-	propagateComposedEvents: false
 
-	onContainsMouseChanged: {
-		if (!containsMouse) {
-			if (!osdShortcutActive) {
-				visibilities.osd = false;
-				root.panels.osd.hovered = false;
+	DragHandler {
+		id: singleHandler
+
+		cursorShape: (active && centroid.pressPosition.y < root.bar.implicitHeight) ? Qt.ClosedHandCursor : undefined
+		dragThreshold: 0
+		grabPermissions: PointerHandler.CanTakeOverFromHandlersOfDifferentType | PointerHandler.ApprovesTakeOverByAnything
+		maximumPointCount: 1
+		minimumPointCount: 1
+		target: null
+
+		onActiveChanged: {
+			if (!active)
+				root.singleGestureTriggered = false;
+		}
+		onCentroidChanged: {
+			if (root.singleGestureTriggered)
+				return;
+
+			const x = centroid.position.x;
+			const y = centroid.position.y;
+			const dragX = x - centroid.pressPosition.x;
+			const dragY = y - centroid.pressPosition.y;
+
+			if (centroid.pressPosition.y < root.bar.implicitHeight) {
+				if (dragY > 20) {
+					root.visibilities.settings = true;
+					root.singleGestureTriggered = true;
+				} else if (dragY < -20) {
+					root.visibilities.settings = false;
+					root.singleGestureTriggered = true;
+				}
 			}
 
-			if (!popouts.currentName.startsWith("traymenu")) {
-				popouts.hasCurrent = false;
+			if (!Config.dock.hoverToReveal && centroid.pressPosition.y > root.screen.height - root.bar.implicitHeight)
+				if (dragY < -10) {
+					root.visibilities.dock = true;
+					root.singleGestureTriggered = true;
+				}
+
+			if (centroid.pressPosition.x > root.screen.width - Config.barConfig.border && centroid.pressPosition.y < (root.screen.height / 2) && dragX < -20) {
+				root.visibilities.sidebar = true;
+				root.singleGestureTriggered = true;
 			}
 
-			if (Config.barConfig.autoHide)
-				bar.isHovered = false;
+			if (centroid.pressPosition.x >= root.screen.width - Config.barConfig.border && centroid.pressPosition.y > (root.screen.height / 2) && dragX < -20) {
+				Hypr.dispatch(`hl.dsp.focus({ workspace = 'r+1', on_current_monitor = true })`);
+				root.singleGestureTriggered = true;
+			}
+
+			if (centroid.pressPosition.x <= Config.barConfig.border && dragX > 20) {
+				Hypr.dispatch(`hl.dsp.focus({ workspace = 'r-1', on_current_monitor = true })`);
+				root.singleGestureTriggered = true;
+			}
 		}
 	}
-	onPositionChanged: event => {
-		const x = event.x;
-		const y = event.y;
-		const dragX = x - dragStart.x;
-		const dragY = y - dragStart.y;
 
-		if (root.visibilities.isDrawing && !root.inLeftPanel(root.panels.drawing, x, y)) {
-			root.input.z = 2;
-			root.panels.drawing.expanded = false;
-		}
+	HoverHandler {
+		id: hoverHandler
 
-		if (!visibilities.bar && Config.barConfig.autoHide && y < bar.implicitHeight)
-			bar.isHovered = true;
+		onHoveredChanged: {
+			if (!hovered) {
+				if (!root.osdShortcutActive) {
+					root.visibilities.osd = false;
+					root.panels.osd.hovered = false;
+				}
 
-		if (pressed && dragStart.y < bar.implicitHeight) {
-			if (dragY > 20)
-				visibilities.settings = true;
-			else if (dragY < -20)
-				visibilities.settings = false;
-		}
+				if (!root.popouts.currentName.startsWith("traymenu")) {
+					root.popouts.hasCurrent = false;
+				}
 
-		if (Config.dock.hoverToReveal && pressed && dragStart.y > root.screen.height - root.bar.implicitHeight)
-			if (dragY < -10)
-				visibilities.dock = true;
-
-		if (panels.sidebar.width === 0) {
-			const showOsd = inRightPanel(panels.osdWrapper, x, y);
-
-			if (showOsd) {
-				osdShortcutActive = false;
-				root.panels.osd.hovered = true;
-			}
-		} else {
-			const outOfSidebar = x < width - panels.sidebar.width;
-			const showOsd = outOfSidebar && inRightPanel(panels.osdWrapper, x, y);
-
-			if (!osdShortcutActive) {
-				visibilities.osd = showOsd;
-				root.panels.osd.hovered = showOsd;
-			} else if (showOsd) {
-				osdShortcutActive = false;
-				root.panels.osd.hovered = true;
+				if (Config.barConfig.autoHide)
+					root.bar.isHovered = false;
 			}
 		}
+		onPointChanged: {
+			const x = point.position.x;
+			const y = point.position.y;
 
-		if (Config.dock.enable && !Config.dock.hoverToReveal && !visibilities.dock && !visibilities.launcher && inBottomPanel(panels.dock, x, y))
-			visibilities.dock = true;
+			if (root.visibilities.isDrawing && !root.inLeftPanel(root.panels.drawing, x, y)) {
+				root.input.z = 2;
+				root.panels.drawing.expanded = false;
+			}
 
-		if (y < root.bar.implicitHeight) {
-			root.bar.checkPopout(x);
+			if (!root.visibilities.bar && Config.barConfig.autoHide && y < root.bar.implicitHeight)
+				root.bar.isHovered = true;
+
+			if (root.panels.sidebar.width === 0) {
+				const showOsd = root.inRightPanel(root.panels.osdWrapper, x, y);
+
+				if (showOsd) {
+					root.osdShortcutActive = false;
+					root.panels.osd.hovered = true;
+				}
+			} else {
+				const outOfSidebar = x < root.width - root.panels.sidebar.width;
+				const showOsd = outOfSidebar && root.inRightPanel(root.panels.osdWrapper, x, y);
+
+				if (!root.osdShortcutActive) {
+					root.visibilities.osd = showOsd;
+					root.panels.osd.hovered = showOsd;
+				} else if (showOsd) {
+					root.osdShortcutActive = false;
+					root.panels.osd.hovered = true;
+				}
+			}
+
+			if (Config.dock.enable && Config.dock.hoverToReveal && !root.visibilities.dock && !root.visibilities.launcher && root.inBottomPanel(root.panels.dock, x, y))
+				root.visibilities.dock = true;
+
+			if (y < root.bar.implicitHeight)
+				root.bar.checkPopout(x);
 		}
 	}
-	onPressed: event => dragStart = Qt.point(event.x, event.y)
 
 	Connections {
 		function onDashboardChanged() {
