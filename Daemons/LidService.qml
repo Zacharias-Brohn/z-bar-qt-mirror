@@ -2,10 +2,9 @@ import Quickshell
 import ZShell
 
 Scope {
-    id: root
+	id: root
 
-    required property var lock
-    
+	required property var lock
 
 	Connections {
 		function onLidClosing(): void {
@@ -14,5 +13,4 @@ Scope {
 
 		target: LidWatcher
 	}
-
 }
