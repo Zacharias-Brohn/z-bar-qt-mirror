@@ -39,7 +39,7 @@ ShellRoot {
 	}
 
 	Connections {
-		enabled: Config.general.lidWatch
+		enabled: Config.lock.lidWatch
 		function onLidClosing(): void {
 			lock.lock.locked = true;
 		}

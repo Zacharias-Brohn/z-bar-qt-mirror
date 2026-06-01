@@ -10,7 +10,6 @@ JsonObject {
 	}
 	property string dateFormat: "ddd d MMM - hh:mm:ss"
 	property bool desktopIcons: false
-	property bool lidWatch: true
 	property Idle idle: Idle {
 	}
 	property string logo: ""

@@ -4,6 +4,7 @@ JsonObject {
 	property int blurAmount: 40
 	property bool enableFprint: true
 	property int maxFprintTries: 3
+	property bool lidWatch: true
 	property bool recolorLogo: false
 	property bool showNotifContent: false
 	property bool showNotifIcon: true

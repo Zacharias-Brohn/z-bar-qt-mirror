@@ -60,8 +60,8 @@ SettingsPage {
 		}
 
 		SettingSwitch {
-			name: "Lid watch"
-			object: Config.general
+			name: "Laptop lid watch to lock session"
+			object: Config.lock
 			setting: "lidWatch"
 		}
 

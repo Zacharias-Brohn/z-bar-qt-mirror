@@ -196,7 +196,6 @@ Singleton {
 			wallpaperPath: general.wallpaperPath,
 			desktopIcons: general.desktopIcons,
 			dateFormat: general.dateFormat,
-			lidWatch: general.lidWatch,
 			color: {
 				mode: general.color.mode,
 				smart: general.color.smart,
@@ -254,6 +253,7 @@ Singleton {
 		return {
 			recolorLogo: lock.recolorLogo,
 			enableFprint: lock.enableFprint,
+			lidWatch: lock.lidWatch,
 			showNotifContent: lock.showNotifContent,
 			showNotifIcon: lock.showNotifIcon,
 			maxFprintTries: lock.maxFprintTries,
