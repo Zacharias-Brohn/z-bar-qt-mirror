@@ -18,6 +18,9 @@ Scope {
 		signal requestLock
 		signal unlock
 
+		onRequestLock: lock.locked = true
+		onUnlock: lock.locked = false
+
 		LockSurface {
 			id: lockSurface
 

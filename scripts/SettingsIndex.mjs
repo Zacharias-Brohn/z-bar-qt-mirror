@@ -331,7 +331,7 @@ export const settingsIndex = [
         category: "lockscreen",
         categoryName: "Lockscreen",
         section: "Lockscreen",
-        keywords: ["lid", "lcck", "watch", "session", "laptop"],
+        keywords: ["lid", "lock", "watch", "session", "laptop"],
     },
     {
         name: "Blur amount",

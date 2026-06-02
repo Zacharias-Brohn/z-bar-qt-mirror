@@ -5,11 +5,12 @@ import QtQuick
 Scope {
 	id: root
 
-	required property var lock
+	signal requestLock
 
 	Connections {
-		function onLidClosing(): void {
-			root.lock.lock.locked = true;
+		function onStateChanged(): void {
+			if (LidWatcher.state === LidWatcher.Closed)
+				root.requestLock();
 		}
 
 		target: LidWatcher

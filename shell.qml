@@ -47,12 +47,12 @@ ShellRoot {
 	Polkit {
 	}
 
-    LazyLoader {
-        activeAsync: Config.lock.lidWatch && Battery.isLaptop
-        component: LidService {
-            lock: lock
-        }
-    }
+	LazyLoader {
+		activeAsync: Config.lock.lidWatch && Battery.isLaptop
+		component: LidService {
+			onRequestLock: lock.requestLock()
+		}
+	}
 
 	LazyLoader {
 		activeAsync: root.laptop
