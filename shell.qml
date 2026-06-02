@@ -50,7 +50,7 @@ ShellRoot {
 	LazyLoader {
 		activeAsync: Config.lock.lidWatch && Battery.isLaptop
 		component: LidService {
-			onRequestLock: lock.requestLock()
+			onRequestLock: lock.lock.requestLock()
 		}
 	}
 
