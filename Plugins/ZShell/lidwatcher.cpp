@@ -49,7 +49,7 @@ LidWatcher::LidState LidWatcher::state() const {
 }
 
 void LidWatcher::queryInitialState() {
-	const auto msg = QDBusMessage::createMethodCall(
+	auto msg = QDBusMessage::createMethodCall(
 		kLogin1Service, kLogin1Path,
 		kDBusPropertiesInterface, "Get");
 	msg << kLogin1Interface << "LidClosed";
