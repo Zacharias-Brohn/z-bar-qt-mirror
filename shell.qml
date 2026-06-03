@@ -7,13 +7,11 @@
 //@ pragma DropExpensiveFonts
 import Quickshell
 import Quickshell.Services.UPower
-import QtQuick
 import qs.Modules
 import qs.Modules.Wallpaper
 import qs.Modules.Lock
 import qs.Drawers
 import qs.Helpers
-import qs.Config
 import qs.Modules.Polkit
 import qs.Daemons
 
