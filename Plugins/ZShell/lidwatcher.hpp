@@ -6,6 +6,9 @@
 #include <cstdint>
 #include <qqmlintegration.h>
 
+class QDBusServiceWatcher;
+class QTimer;
+
 namespace ZShell {
 
 class LidWatcher : public QObject {
@@ -26,15 +29,16 @@ class LidWatcher : public QObject {
 	[[nodiscard]] LidState state() const;
 
 	private:
-	void queryInitialState();
-
-	bool m_available;
-	LidState m_state = Opened;
-
-
+	void tryConnect();
+	void queryLidState();
 	void onPropertiesChanged(const QString& interface,
 							 const QVariantMap& changed,
 							 const QStringList& invalidated);
+
+	QDBusServiceWatcher* m_watcher;
+	QTimer* m_pollTimer;
+	bool m_available;
+	LidState m_state = Opened;
 
 	Q_SIGNALS:
 	void availableChanged();
