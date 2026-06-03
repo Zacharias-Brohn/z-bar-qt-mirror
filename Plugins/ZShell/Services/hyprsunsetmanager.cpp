@@ -24,8 +24,6 @@ HyprsunsetManager::HyprsunsetManager(QObject* parent) : QObject(parent) {
 
 	m_process.setStandardInputFile(QProcess::nullDevice());
 	m_process.setStandardOutputFile(QProcess::nullDevice());
-
-	apply();
 }
 
 int HyprsunsetManager::startTime() const {
