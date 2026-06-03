@@ -35,6 +35,8 @@ ShellRoot {
 
 	Lock {
 		id: lock
+
+        lid: lid
 	}
 
 	Shortcuts {
@@ -48,7 +50,10 @@ ShellRoot {
 	}
 
 	LazyLoader {
+		id: lid
+
 		activeAsync: Config.lock.lidWatch && Battery.isLaptop
+
 		component: LidService {
 			onRequestLock: lock.lock.requestLock()
 		}

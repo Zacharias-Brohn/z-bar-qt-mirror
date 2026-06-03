@@ -26,8 +26,6 @@ add_compile_options(
 if("plugin" IN_LIST ENABLE_MODULES)
 	add_subdirectory(Plugins)
 
-	add_custom_target(fix-cc
-		COMMAND sed -i "s/-mno-direct-extern-access/-fno-direct-access-external-data/g" "${CMAKE_BINARY_DIR}/compile_commands.json")
 endif()
 
 if("shell" IN_LIST ENABLE_MODULES)

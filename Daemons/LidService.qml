@@ -1,5 +1,4 @@
 import Quickshell
-import ZShell
 import QtQuick
 
 Scope {

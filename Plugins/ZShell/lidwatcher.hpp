@@ -32,7 +32,6 @@ class LidWatcher : public QObject {
 	LidState m_state = Opened;
 
 
-	void extracted();
 	void onPropertiesChanged(const QString& interface,
 							 const QVariantMap& changed,
 							 const QStringList& invalidated);
