@@ -1,6 +1,7 @@
 #include "lidwatcher.hpp"
 
 #include <QtDBus/QDBusConnection>
+#include <QtDBus/QDBusConnectionInterface>
 #include <QtDBus/QDBusMessage>
 #include <QtDBus/QDBusReply>
 #include <QtDBus/QDBusServiceWatcher>
@@ -56,8 +57,34 @@ LidWatcher::LidState LidWatcher::state() const {
 void LidWatcher::tryConnect() {
 	QDBusConnection bus = QDBusConnection::systemBus();
 
+	const auto iface = bus.interface();
+	if (!iface) {
+		queryLidState();
+		if (!m_available) {
+			m_available = true;
+			emit availableChanged();
+		}
+		if (!m_pollTimer->isActive()) {
+			m_pollTimer->start();
+}
+		return;
+	}
+	const auto reply = iface->isServiceRegistered(kLogin1Service);
+	if (!reply.isValid() || !reply.value()) {
+		queryLidState();
+		qCInfo(lcLidWatcher) << "login1 not available, polling";
+		if (!m_available) {
+			m_available = true;
+			emit availableChanged();
+		}
+		if (!m_pollTimer->isActive()) {
+			m_pollTimer->start();
+}
+		return;
+	}
+
 	const auto connected = bus.connect(
-		QString(),
+		kLogin1Service,
 		kLogin1Path,
 		kDBusPropertiesInterface,
 		"PropertiesChanged",
