@@ -57,7 +57,7 @@ void LidWatcher::tryConnect() {
 	QDBusConnection bus = QDBusConnection::systemBus();
 
 	const auto connected = bus.connect(
-		kLogin1Service,
+		QString(),
 		kLogin1Path,
 		kDBusPropertiesInterface,
 		"PropertiesChanged",

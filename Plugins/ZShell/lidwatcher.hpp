@@ -31,14 +31,16 @@ class LidWatcher : public QObject {
 	private:
 	void tryConnect();
 	void queryLidState();
-	void onPropertiesChanged(const QString& interface,
-							 const QVariantMap& changed,
-							 const QStringList& invalidated);
 
 	QDBusServiceWatcher* m_watcher;
 	QTimer* m_pollTimer;
 	bool m_available;
 	LidState m_state = Opened;
+
+	private Q_SLOTS:
+	void onPropertiesChanged(const QString& interface,
+							 const QVariantMap& changed,
+							 const QStringList& invalidated);
 
 	Q_SIGNALS:
 	void availableChanged();
