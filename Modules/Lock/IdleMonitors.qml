@@ -2,6 +2,7 @@ pragma ComponentBehavior: Bound
 
 import Quickshell
 import Quickshell.Wayland
+import ZShell.Internal
 import qs.Config
 import qs.Helpers
 
@@ -28,6 +29,10 @@ Scope {
 		else
 			Quickshell.execDetached(action);
 	}
+
+    LidWatcher {
+        onAboutToSleep: root.lock.lock.locked = true
+    }
 
 	Variants {
 		model: Config.general.idle.timeouts

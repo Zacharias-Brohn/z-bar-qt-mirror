@@ -1,5 +1,6 @@
 import qs.Modules.Settings.Categories.Lockscreen
 import qs.Modules.Settings.Controls
+import qs.Helpers
 import qs.Config
 
 SettingsPage {
