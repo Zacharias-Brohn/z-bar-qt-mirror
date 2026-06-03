@@ -60,17 +60,6 @@ SettingsPage {
 		Separator {
 		}
 
-		SettingSwitch {
-			name: "Laptop lid watch to lock session"
-			object: Config.lock
-			setting: "lidWatch"
-            shouldBeActive: Battery.isLaptop
-		}
-
-		Separator {
-            shouldBeActive: Battery.isLaptop
-		}
-
 		SettingSpinBox {
 			min: 0
 			name: "Blur amount"

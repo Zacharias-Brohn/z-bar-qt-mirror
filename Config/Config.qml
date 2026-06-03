@@ -253,7 +253,6 @@ Singleton {
 		return {
 			recolorLogo: lock.recolorLogo,
 			enableFprint: lock.enableFprint,
-			lidWatch: lock.lidWatch,
 			showNotifContent: lock.showNotifContent,
 			showNotifIcon: lock.showNotifIcon,
 			maxFprintTries: lock.maxFprintTries,
