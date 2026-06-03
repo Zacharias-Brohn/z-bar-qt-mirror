@@ -9,7 +9,6 @@ import qs.Components
 Scope {
 	id: root
 
-	required property var lid
 	property alias lock: lock
 	property int seenOnce: 0
 
@@ -21,13 +20,6 @@ Scope {
 
 		onRequestLock: lock.locked = true
 		onUnlock: lock.locked = false
-
-		Connections {
-			target: root.lid
-            function onRequestLock(): void {
-                lock.locked = true
-            }
-		}
 
 		LockSurface {
 			id: lockSurface

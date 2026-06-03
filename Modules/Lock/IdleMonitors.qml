@@ -29,6 +29,10 @@ Scope {
 			Quickshell.execDetached(action);
 	}
 
+    LidWatcher {
+        onAboutToSleep: root.lock.lock.locked = true
+    }
+
 	Variants {
 		model: Config.general.idle.timeouts
 

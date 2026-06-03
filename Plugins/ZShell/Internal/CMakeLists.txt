@@ -9,6 +9,7 @@ qml_module(ZShell-internal
 		sparklineitem.hpp sparklineitem.cpp
 		arcgauge.hpp arcgauge.cpp
 		wallpaperimage.hpp wallpaperimage.cpp
+		lidwatcher.hpp lidwatcher.cpp
     LIBRARIES
         Qt::Gui
         Qt::Quick

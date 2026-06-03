@@ -35,8 +35,6 @@ ShellRoot {
 
 	Lock {
 		id: lock
-
-        lid: lid
 	}
 
 	Shortcuts {
@@ -47,16 +45,6 @@ ShellRoot {
 	}
 
 	Polkit {
-	}
-
-	LazyLoader {
-		id: lid
-
-		activeAsync: Config.lock.lidWatch && Battery.isLaptop
-
-		component: LidService {
-			onRequestLock: lock.lock.requestLock()
-		}
 	}
 
 	LazyLoader {
