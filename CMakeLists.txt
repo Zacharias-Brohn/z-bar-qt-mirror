@@ -25,6 +25,7 @@ add_compile_options(
 
 if("plugin" IN_LIST ENABLE_MODULES)
 	add_subdirectory(Plugins)
+
 endif()
 
 if("shell" IN_LIST ENABLE_MODULES)

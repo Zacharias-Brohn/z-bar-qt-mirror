@@ -50,6 +50,7 @@ qml_module(ZShell
         Qt::Quick
         Qt::Concurrent
         Qt::Sql
+		Qt::DBus
 		PkgConfig::Qalculate
 )
 
