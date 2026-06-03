@@ -2,7 +2,7 @@ pragma ComponentBehavior: Bound
 
 import Quickshell
 import Quickshell.Wayland
-import ZShell.internal
+import ZShell.Internal
 import qs.Config
 import qs.Helpers
 
