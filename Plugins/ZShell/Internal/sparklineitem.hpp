@@ -7,7 +7,7 @@
 
 #include "circularbuffer.hpp"
 
-namespace caelestia::internal {
+namespace ZShell::internal {
 
 class SparklineItem : public QQuickPaintedItem {
 Q_OBJECT
@@ -87,4 +87,4 @@ int m_historyLength = 30;
 qreal m_lineWidth = 2.0;
 };
 
-} // namespace caelestia::internal
+} // namespace ZShell::internal
