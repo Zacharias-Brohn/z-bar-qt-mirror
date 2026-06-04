@@ -23,7 +23,7 @@ CustomRect {
 
 		anchors.centerIn: parent
 		color: root.visibilities.dashboard ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3onSurface
-		font: Appearance.font.family.mono
+		font: Appearance.font.family.mono // qmllint disable incompatible-type
 		text: Time.dateStr
 
 		Behavior on color {
