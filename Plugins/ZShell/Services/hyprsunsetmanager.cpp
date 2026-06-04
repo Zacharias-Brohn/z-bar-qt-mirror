@@ -104,10 +104,12 @@ void HyprsunsetManager::toggle() {
 }
 
 void HyprsunsetManager::start() {
-	if (m_enabled)
+	if (m_enabled && m_initialized)
 		return;
 
+	m_initialized = true;
 	m_enabled = true;
+
 	emit enabledChanged();
 
 	m_process.setProgram("hyprctl");
@@ -116,10 +118,12 @@ void HyprsunsetManager::start() {
 }
 
 void HyprsunsetManager::end() {
-	if (!m_enabled)
+	if (!m_enabled && m_initialized)
 		return;
 
+	m_initialized = true;
 	m_enabled = false;
+
 	emit enabledChanged();
 
 	m_process.setProgram("hyprctl");

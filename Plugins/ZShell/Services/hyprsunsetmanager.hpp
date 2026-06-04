@@ -48,10 +48,11 @@ void manualToggleChanged();
 private:
 int m_startTime;
 int m_endTime;
-bool m_enabled;
+bool m_enabled = false;
 bool m_manualToggle = false;
 bool m_activeAuto;
-bool m_startAllowed;
+bool m_startAllowed = false;
+bool m_initialized = false;
 QTimer m_startCooldown;
 int m_temp;
 QProcess m_process;
