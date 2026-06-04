@@ -69,13 +69,16 @@ Item {
 				root.singleGestureTriggered = false;
 		}
 		onCentroidChanged: {
-			if (root.singleGestureTriggered)
-				return;
-
 			const x = centroid.position.x;
 			const y = centroid.position.y;
 			const dragX = x - centroid.pressPosition.x;
 			const dragY = y - centroid.pressPosition.y;
+
+			if (centroid.pressPosition.y >= root.screen.height - Config.barConfig.border && dragY < -200)
+				root.visibilities.launcher = true;
+
+			if (root.singleGestureTriggered)
+				return;
 
 			if (centroid.pressPosition.y < root.bar.implicitHeight) {
 				if (dragY > 20) {
