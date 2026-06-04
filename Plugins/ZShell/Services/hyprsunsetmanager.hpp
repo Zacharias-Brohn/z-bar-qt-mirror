@@ -7,7 +7,7 @@
 #include <qqmlintegration.h>
 #include <qtmetamacros.h>
 
-namespace ZShell::services {
+namespace ZShell::Services {
 
 class HyprsunsetManager : public QObject {
 Q_OBJECT

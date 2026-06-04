@@ -21,23 +21,23 @@ public:
 explicit BlobShape(QQuickItem* parent = nullptr);
 ~BlobShape() override = default;
 
-BlobGroup* group() const {
+[[nodiscard]] BlobGroup* group() const {
 	return m_group;
 }
 
 void setGroup(BlobGroup* g);
 
-qreal radius() const {
+[[nodiscard]] qreal radius() const {
 	return m_radius;
 }
 
 void setRadius(qreal r);
 
-QMatrix4x4 deformMatrix() const {
+[[nodiscard]] QMatrix4x4 deformMatrix() const {
 	return m_centeredDeformMatrix;
 }
 
-QMatrix4x4 rawDeformMatrix() const {
+[[nodiscard]] QMatrix4x4 rawDeformMatrix() const {
 	return m_deformMatrix;
 }
 
@@ -53,7 +53,7 @@ void geometryChange(const QRectF& newGeometry, const QRectF& oldGeometry) overri
 void updatePolish() override;
 QSGNode* updatePaintNode(QSGNode* oldNode, UpdatePaintNodeData*) override;
 
-virtual bool isInvertedRect() const {
+[[nodiscard]] virtual bool isInvertedRect() const {
 	return false;
 }
 
@@ -72,10 +72,9 @@ void updateCenteredDeformMatrix();
 
 BlobGroup* m_group = nullptr;
 qreal m_radius = 0;
-QMatrix4x4 m_deformMatrix;     // identity by default
+QMatrix4x4 m_deformMatrix;
 QMatrix4x4 m_centeredDeformMatrix;
 
-// Cached data from updatePolish
 float m_cachedPaddedX = 0;
 float m_cachedPaddedY = 0;
 float m_cachedPaddedW = 0;
@@ -84,10 +83,10 @@ QRectF m_localPaddedRect;
 QVector<BlobRectData> m_cachedRects;
 int m_cachedMyIndex = -2;
 float m_pendingDx = 0;
-	float m_pendingDy = 0;
-	float m_pendingDw = 0;
-	float m_pendingDh = 0;
-	bool m_cachedHasInverted = false;
+float m_pendingDy = 0;
+float m_pendingDw = 0;
+float m_pendingDh = 0;
+bool m_cachedHasInverted = false;
 float m_cachedInvertedRadius = 0;
 float m_cachedInvertedOuter[4] = {};
 float m_cachedInvertedInner[4] = {};

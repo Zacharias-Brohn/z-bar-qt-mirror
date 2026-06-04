@@ -16,25 +16,25 @@ public:
 explicit BlobInvertedRect(QQuickItem* parent = nullptr);
 ~BlobInvertedRect() override;
 
-qreal borderLeft() const {
+[[nodiscard]] qreal borderLeft() const {
 	return m_borderLeft;
 }
 
 void setBorderLeft(qreal v);
 
-qreal borderRight() const {
+[[nodiscard]] qreal borderRight() const {
 	return m_borderRight;
 }
 
 void setBorderRight(qreal v);
 
-qreal borderTop() const {
+[[nodiscard]] qreal borderTop() const {
 	return m_borderTop;
 }
 
 void setBorderTop(qreal v);
 
-qreal borderBottom() const {
+[[nodiscard]] qreal borderBottom() const {
 	return m_borderBottom;
 }
 
@@ -47,7 +47,7 @@ void borderTopChanged();
 void borderBottomChanged();
 
 protected:
-bool isInvertedRect() const override {
+[[nodiscard]] bool isInvertedRect() const override {
 	return true;
 }
 

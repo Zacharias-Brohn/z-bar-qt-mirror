@@ -24,7 +24,7 @@ public:
 explicit BlobRect(QQuickItem* parent = nullptr);
 ~BlobRect() override;
 
-qreal stiffness() const {
+[[nodiscard]] qreal stiffness() const {
 	return m_stiffness;
 }
 
@@ -35,7 +35,7 @@ void setStiffness(qreal s) {
 	}
 }
 
-qreal damping() const {
+[[nodiscard]] qreal damping() const {
 	return m_damping;
 }
 
@@ -46,7 +46,7 @@ void setDamping(qreal d) {
 	}
 }
 
-qreal deformScale() const {
+[[nodiscard]] qreal deformScale() const {
 	return m_deformScale;
 }
 
@@ -62,25 +62,25 @@ QQmlListProperty<BlobRect> exclude();
 bool isExcluded(const BlobShape* other) const override;
 void cornerRadii(float out[4]) const override;
 
-qreal topLeftRadius() const {
+[[nodiscard]] qreal topLeftRadius() const {
 	return m_topLeftRadius;
 }
 
 void setTopLeftRadius(qreal r);
 
-qreal topRightRadius() const {
+[[nodiscard]] qreal topRightRadius() const {
 	return m_topRightRadius;
 }
 
 void setTopRightRadius(qreal r);
 
-qreal bottomLeftRadius() const {
+[[nodiscard]] qreal bottomLeftRadius() const {
 	return m_bottomLeftRadius;
 }
 
 void setBottomLeftRadius(qreal r);
 
-qreal bottomRightRadius() const {
+[[nodiscard]] qreal bottomRightRadius() const {
 	return m_bottomRightRadius;
 }
 

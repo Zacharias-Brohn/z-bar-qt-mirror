@@ -13,7 +13,7 @@ QML_SINGLETON
 public:
 explicit Qalculator(QObject* parent = nullptr);
 
-Q_INVOKABLE QString eval(const QString& expr, bool printExpr = true) const;
+Q_INVOKABLE [[nodiscard]] QString eval(const QString& expr, bool printExpr = true) const;
 };
 
 } // namespace ZShell

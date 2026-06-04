@@ -3,7 +3,7 @@
 #include <qobject.h>
 #include <qqmlintegration.h>
 
-namespace ZShell::internal {
+namespace ZShell::Internal {
 
 class LidWatcher : public QObject {
 Q_OBJECT

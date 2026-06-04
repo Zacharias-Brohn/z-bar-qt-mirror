@@ -29,9 +29,9 @@ Q_INVOKABLE void cacheImage(const QUrl& source, const QString& cacheDir, QJSValu
 Q_INVOKABLE void cacheImage(const QUrl& source, const QString& cacheDir, QJSValue onSaved, QJSValue onFailed);
 // clang-format on
 
-Q_INVOKABLE bool copyFile(const QUrl& source, const QUrl& target, bool overwrite = true) const;
-Q_INVOKABLE bool deleteFile(const QUrl& path) const;
-Q_INVOKABLE QString toLocalFile(const QUrl& url) const;
+Q_INVOKABLE [[nodiscard]] bool copyFile(const QUrl& source, const QUrl& target, bool overwrite = true) const;
+Q_INVOKABLE [[nodiscard]] bool deleteFile(const QUrl& path) const;
+Q_INVOKABLE [[nodiscard]] QString toLocalFile(const QUrl& url) const;
 
 private:
 bool loadSourceImage(const QUrl& source, QImage& image) const;

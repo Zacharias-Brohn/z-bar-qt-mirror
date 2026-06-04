@@ -11,7 +11,7 @@ Q_OBJECT
 
 public:
 explicit CavaProcessor(QObject* parent = nullptr);
-~CavaProcessor();
+~CavaProcessor() override;
 
 void setBars(int bars);
 

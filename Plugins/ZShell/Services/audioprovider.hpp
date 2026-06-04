@@ -4,18 +4,17 @@
 #include <qqmlintegration.h>
 #include <qtimer.h>
 
-namespace ZShell::services {
+namespace ZShell::Services {
 
 class AudioProcessor : public QObject {
 Q_OBJECT
 
 public:
 explicit AudioProcessor(QObject* parent = nullptr);
-~AudioProcessor();
+~AudioProcessor() override;
 
 void init();
 
-public slots:
 void start();
 void stop();
 
@@ -31,7 +30,7 @@ Q_OBJECT
 
 public:
 explicit AudioProvider(QObject* parent = nullptr);
-~AudioProvider();
+~AudioProvider() override;
 
 protected:
 AudioProcessor* m_processor;

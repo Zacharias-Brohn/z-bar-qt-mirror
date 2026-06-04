@@ -4,8 +4,9 @@
 #include <QList>
 #include <QString>
 #include <QQmlEngine>
+#include <cstdint>
 
-namespace ZShell::services {
+namespace ZShell::Services {
 
 struct DesktopItem {
 	QString fileName;
@@ -20,7 +21,7 @@ Q_OBJECT
 QML_ELEMENT
 
 public:
-enum DesktopRoles {
+enum DesktopRoles: std::uint16_t {
 	FileNameRole = Qt::UserRole + 1,
 	FilePathRole,
 	IsDirRole,
@@ -30,9 +31,9 @@ enum DesktopRoles {
 
 explicit DesktopModel(QObject *parent = nullptr);
 
-int rowCount(const QModelIndex &parent = QModelIndex()) const override;
-QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
-QHash<int, QByteArray> roleNames() const override;
+[[nodiscard]] int rowCount(const QModelIndex &parent = QModelIndex()) const override;
+[[nodiscard]] QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
+[[nodiscard]] QHash<int, QByteArray> roleNames() const override;
 
 Q_INVOKABLE void loadDirectory(const QString &path);
 Q_INVOKABLE void moveIcon(int index, int newX, int newY);
@@ -43,4 +44,4 @@ QList<DesktopItem> m_items;
 void saveCurrentLayout();
 };
 
-} // namespace ZShell::services
+} // namespace ZShell::Services

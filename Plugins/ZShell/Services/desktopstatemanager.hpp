@@ -4,7 +4,7 @@
 #include <QVariantMap>
 #include <QQmlEngine>
 
-namespace ZShell::services {
+namespace ZShell::Services {
 
 class DesktopStateManager : public QObject {
 Q_OBJECT
@@ -18,7 +18,7 @@ Q_INVOKABLE void saveLayout(const QVariantMap& layout);
 Q_INVOKABLE QVariantMap getLayout();
 
 private:
-QString getConfigFilePath() const;
+[[nodiscard]] QString getConfigFilePath() const;
 };
 
 } // namespace ZShell::services

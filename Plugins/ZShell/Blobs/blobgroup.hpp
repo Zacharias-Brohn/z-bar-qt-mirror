@@ -18,13 +18,13 @@ public:
 explicit BlobGroup(QObject* parent = nullptr);
 ~BlobGroup() override;
 
-qreal smoothing() const {
+[[nodiscard]] qreal smoothing() const {
 	return m_smoothing;
 }
 
 void setSmoothing(qreal s);
 
-QColor color() const {
+[[nodiscard]] QColor color() const {
 	return m_color;
 }
 
@@ -36,11 +36,11 @@ void removeShape(BlobShape* shape);
 void setInvertedRect(BlobInvertedRect* rect);
 void clearInvertedRect(BlobInvertedRect* rect);
 
-const QList<BlobShape*>& shapes() const {
+[[nodiscard]] const QList<BlobShape*>& shapes() const {
 	return m_shapes;
 }
 
-BlobInvertedRect* invertedRect() const {
+[[nodiscard]] BlobInvertedRect* invertedRect() const {
 	return m_invertedRect;
 }
 

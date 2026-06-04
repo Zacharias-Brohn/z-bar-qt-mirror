@@ -10,7 +10,7 @@
 #include <qstringlist.h>
 #include <qvariant.h>
 
-namespace ZShell::internal::hypr {
+namespace ZShell::Internal::Hypr {
 
 class HyprDevices;
 

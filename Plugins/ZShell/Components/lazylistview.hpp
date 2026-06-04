@@ -9,7 +9,7 @@
 #include <qrect.h>
 #include <qvector.h>
 
-namespace ZShell::components {
+namespace ZShell::Components {
 
 class LazyListViewAttached : public QObject {
 Q_OBJECT

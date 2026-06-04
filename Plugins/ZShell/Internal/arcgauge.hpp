@@ -5,7 +5,7 @@
 #include <qqmlintegration.h>
 #include <qquickpainteditem.h>
 
-namespace ZShell::internal {
+namespace ZShell::Internal {
 
 class ArcGauge : public QQuickPaintedItem {
 Q_OBJECT
@@ -58,4 +58,4 @@ qreal m_sweepAngle = 1.5 * M_PI;
 qreal m_lineWidth = 10.0;
 };
 
-} // namespace ZShell::internal
+} // namespace ZShell::Internal

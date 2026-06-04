@@ -10,7 +10,7 @@
 #include <thread>
 #include <vector>
 
-namespace ZShell::services {
+namespace ZShell::Services {
 
 namespace ac {
 
@@ -59,7 +59,7 @@ quint32 readChunk(double* out, quint32 count = 0);
 
 private:
 explicit AudioCollector(QObject* parent = nullptr);
-~AudioCollector();
+~AudioCollector() override;
 
 std::jthread m_thread;
 std::vector<float> m_buffer1;
