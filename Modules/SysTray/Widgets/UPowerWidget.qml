@@ -28,8 +28,6 @@ Item {
 
 			spacing: 1
 
-			Component.onCompleted: console.log(Battery.isLaptop)
-
 			CustomRect {
 				id: track
 
