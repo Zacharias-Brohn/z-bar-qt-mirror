@@ -2,12 +2,13 @@ pragma Singleton
 
 import Quickshell
 import QtQuick
+import ZShell.Services
 import qs.Config
 
 Singleton {
 	id: root
 
-	property bool enabled
+	readonly property bool enabled: service.enabled
 	readonly property int end: Config.general.color.scheduleHyprsunsetEnd
 	property bool manualToggle: false
 	readonly property int start: Config.general.color.scheduleHyprsunsetStart
@@ -17,69 +18,20 @@ Singleton {
 		if (!Config.general.color.scheduleHyprsunset)
 			return;
 
-		var now = new Date();
-		if (now.getHours() >= root.start || now.getHours() < root.end) {
-			root.startNightLight(root.temp);
-		} else {
-			root.stopNightLight();
-		}
-	}
-
-	function startNightLight(temp: int): void {
-		Quickshell.execDetached(["hyprctl", "hyprsunset", "temperature", `${temp}`]);
-		root.enabled = true;
-	}
-
-	function stopNightLight(): void {
-		Quickshell.execDetached(["hyprctl", "hyprsunset", "identity"]);
-		root.enabled = false;
+		service.apply();
 	}
 
 	function toggleNightLight(): void {
-		if (enabled)
-			stopNightLight();
-		else
-			startNightLight(temp);
+		service.manualToggle = true;
+		service.toggle();
 	}
 
-	onManualToggleChanged: {
-		if (root.manualToggle)
-			manualTimer.start();
-	}
+	HyprsunsetManager {
+		id: service
 
-	Timer {
-		id: manualTimer
-
-		interval: 60000 * 60
-		repeat: false
-		running: false
-
-		onTriggered: {
-			root.manualToggle = false;
-		}
-	}
-
-	Timer {
-		interval: 5000
-		repeat: true
-		running: true
-		triggeredOnStart: true
-
-		onTriggered: {
-			if (!Config.general.color.scheduleHyprsunset)
-				return;
-
-			if (root.manualToggle)
-				return;
-
-			var now = new Date();
-			if (now.getHours() >= root.start || now.getHours() < root.end) {
-				if (!root.enabled)
-					root.startNightLight(root.temp);
-			} else {
-				if (root.enabled)
-					root.stopNightLight();
-			}
-		}
+		activeAuto: Config.general.color.scheduleHyprsunset
+		endTime: root.end
+		startTime: root.start
+		temp: root.temp
 	}
 }
