@@ -22,12 +22,13 @@ Q_PROPERTY(bool manualToggle READ manualToggle WRITE setManualToggle NOTIFY manu
 public:
 explicit HyprsunsetManager(QObject* parent = nullptr);
 
-int startTime() const;
-int endTime() const;
-bool enabled() const;
-int temp() const;
-bool activeAuto() const;
-bool manualToggle() const;
+[[nodiscard]] int startTime() const;
+[[nodiscard]] int endTime() const;
+[[nodiscard]] bool enabled() const;
+[[nodiscard]] int temp() const;
+[[nodiscard]] bool activeAuto() const;
+[[nodiscard]] bool manualToggle() const;
+
 Q_INVOKABLE void toggle();
 Q_INVOKABLE void apply();
 
