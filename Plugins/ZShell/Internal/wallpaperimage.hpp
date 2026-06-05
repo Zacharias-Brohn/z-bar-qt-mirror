@@ -7,7 +7,7 @@
 #include <QFutureWatcher>
 #include <QtQml/qqml.h>
 
-namespace ZShell::Internal {
+namespace ZShell::internal {
 
 class WallpaperImage : public QQuickItem {
 Q_OBJECT

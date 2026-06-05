@@ -5,7 +5,7 @@
 #include <qobject.h>
 #include <qqmlintegration.h>
 
-namespace ZShell::Internal {
+namespace ZShell::internal {
 
 class CircularIndicatorManager : public QObject {
 Q_OBJECT
@@ -25,7 +25,7 @@ Q_PROPERTY(IndeterminateAnimationType indeterminateAnimationType READ indetermin
 public:
 explicit CircularIndicatorManager(QObject* parent = nullptr);
 
-enum IndeterminateAnimationType: std::uint8_t {
+enum IndeterminateAnimationType {
 	Advance = 0,
 	Retreat
 };

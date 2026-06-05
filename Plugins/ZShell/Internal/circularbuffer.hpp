@@ -4,7 +4,7 @@
 #include <qqmlintegration.h>
 #include <qvector.h>
 
-namespace ZShell::Internal {
+namespace ZShell::internal {
 
 class CircularBuffer : public QObject {
 Q_OBJECT

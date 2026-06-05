@@ -7,7 +7,7 @@
 
 #include "circularbuffer.hpp"
 
-namespace ZShell::Internal {
+namespace ZShell::internal {
 
 class SparklineItem : public QQuickPaintedItem {
 Q_OBJECT

@@ -4,7 +4,7 @@
 #include <qobject.h>
 #include <qqmlintegration.h>
 
-namespace ZShell::Internal {
+namespace ZShell::internal {
 
 class CachingImageManager : public QObject {
 Q_OBJECT

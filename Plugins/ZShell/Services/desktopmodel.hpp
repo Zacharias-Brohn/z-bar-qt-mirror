@@ -6,7 +6,7 @@
 #include <QQmlEngine>
 #include <cstdint>
 
-namespace ZShell::Services {
+namespace ZShell::services {
 
 struct DesktopItem {
 	QString fileName;
@@ -21,7 +21,7 @@ Q_OBJECT
 QML_ELEMENT
 
 public:
-enum DesktopRoles: std::uint16_t {
+enum DesktopRoles {
 	FileNameRole = Qt::UserRole + 1,
 	FilePathRole,
 	IsDirRole,

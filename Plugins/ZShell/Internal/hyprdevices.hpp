@@ -5,7 +5,7 @@
 #include <qqmlintegration.h>
 #include <qqmllist.h>
 
-namespace ZShell::Internal::Hypr {
+namespace ZShell::internal::hypr {
 
 class HyprKeyboard : public QObject {
 Q_OBJECT

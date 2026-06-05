@@ -11,7 +11,7 @@
 #include <qqmlintegration.h>
 #include <qqmllist.h>
 
-namespace ZShell::Models {
+namespace ZShell::models {
 
 class FileSystemEntry : public QObject {
 Q_OBJECT
@@ -76,7 +76,7 @@ Q_PROPERTY(QStringList nameFilters READ nameFilters WRITE setNameFilters NOTIFY 
 Q_PROPERTY(QQmlListProperty<ZShell::models::FileSystemEntry> entries READ entries NOTIFY entriesChanged)
 
 public:
-enum Filter: std::uint8_t {
+enum Filter {
 	NoFilter,
 	Images,
 	Files,

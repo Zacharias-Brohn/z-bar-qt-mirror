@@ -4,7 +4,7 @@
 #include <QVariantMap>
 #include <QQmlEngine>
 
-namespace ZShell::Services {
+namespace ZShell::services {
 
 class DesktopStateManager : public QObject {
 Q_OBJECT

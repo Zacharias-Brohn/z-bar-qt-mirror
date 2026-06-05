@@ -5,7 +5,7 @@
 #include <qqmlintegration.h>
 #include <qquickpainteditem.h>
 
-namespace ZShell::Internal {
+namespace ZShell::internal {
 
 class ArcGauge : public QQuickPaintedItem {
 Q_OBJECT

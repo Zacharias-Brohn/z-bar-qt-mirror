@@ -10,7 +10,7 @@
 #include <thread>
 #include <vector>
 
-namespace ZShell::Services {
+namespace ZShell::services {
 
 namespace ac {
 

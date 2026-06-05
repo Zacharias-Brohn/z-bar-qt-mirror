@@ -4,7 +4,7 @@
 #include <qqmlintegration.h>
 #include <qtimer.h>
 
-namespace ZShell::Services {
+namespace ZShell::services {
 
 class AudioProcessor : public QObject {
 Q_OBJECT

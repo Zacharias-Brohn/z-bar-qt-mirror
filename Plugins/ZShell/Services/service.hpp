@@ -3,7 +3,7 @@
 #include <qobject.h>
 #include <qset.h>
 
-namespace ZShell::Services {
+namespace ZShell::services {
 
 class Service : public QObject {
 Q_OBJECT
