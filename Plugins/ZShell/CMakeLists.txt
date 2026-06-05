@@ -45,6 +45,7 @@ qml_module(ZShell
 		requests.hpp requests.cpp
 		toaster.hpp toaster.cpp
 		qalculator.hpp qalculator.cpp
+		zutils.hpp zutils.cpp
     LIBRARIES
         Qt::Gui
         Qt::Quick

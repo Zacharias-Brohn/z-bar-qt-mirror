@@ -141,14 +141,14 @@ Item {
 						id: zoomSlider
 
 						Layout.fillWidth: true
-						Layout.preferredHeight: 30
+						Layout.preferredHeight: Appearance.padding.larger * 3
 						from: 1.0
-						implicitHeight: 30
+						implicitHeight: Appearance.padding.larger * 3
 						to: 5.0
 						value: cropRectLoader.item ? cropRectLoader.item.zoom : 1.0
 
-						onMoved: {
-							delegate.zoomClipRect(value);
+						onInteraction: value => {
+							delegate.zoomClipRect(1 + (value * 4));
 							wrapper.changesMade = true;
 						}
 					}

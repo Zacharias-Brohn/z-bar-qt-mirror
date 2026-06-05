@@ -19,7 +19,7 @@ Item {
 	required property var wrapper
 
 	implicitHeight: vol.implicitHeight + Appearance.padding.small * 2
-	implicitWidth: 400 + Appearance.padding.small * 2
+	implicitWidth: 600 + Appearance.padding.small * 2
 
 	CustomRect {
 		anchors.left: parent.left
@@ -52,7 +52,7 @@ Item {
 
 		CustomRect {
 			Layout.fillWidth: true
-			Layout.preferredHeight: 50 + Appearance.spacing.smaller * 2
+			Layout.preferredHeight: 65 + Appearance.spacing.smaller * 2
 			Layout.topMargin: root.topMargin
 			color: DynamicColors.tPalette.m3surfaceContainer
 			radius: root.rounding
@@ -62,15 +62,15 @@ Item {
 
 				anchors.bottom: parent.bottom
 				anchors.left: parent.left
-				anchors.leftMargin: Appearance.padding.normal
+				anchors.leftMargin: Appearance.padding.larger
 				anchors.top: parent.top
 				implicitWidth: childrenRect.width
 
 				CustomRect {
 					anchors.centerIn: parent
 					color: Audio.muted ? DynamicColors.palette.m3error : DynamicColors.palette.m3primary
-					implicitHeight: 40
-					implicitWidth: 40
+					implicitHeight: 54
+					implicitWidth: 54
 					radius: Appearance.rounding.full
 
 					MaterialIcon {
@@ -78,7 +78,7 @@ Item {
 						anchors.centerIn: parent
 						animate: true
 						color: Audio.muted ? DynamicColors.palette.m3onError : DynamicColors.palette.m3onPrimary
-						font.pointSize: 22
+						font.pointSize: Appearance.font.size.extraLarge
 						text: Audio.muted ? "volume_off" : "volume_up"
 					}
 
@@ -98,7 +98,7 @@ Item {
 				anchors.bottom: parent.bottom
 				anchors.bottomMargin: Appearance.padding.smallest
 				anchors.left: sinkIcon.right
-				anchors.leftMargin: Appearance.spacing.normal
+				anchors.leftMargin: Appearance.spacing.larger
 				anchors.right: parent.right
 				anchors.rightMargin: Appearance.padding.large
 				anchors.top: parent.top
@@ -122,14 +122,14 @@ Item {
 				}
 
 				CustomMouseArea {
-					Layout.bottomMargin: 5
-					Layout.fillHeight: true
+					Layout.bottomMargin: Appearance.padding.normal
 					Layout.fillWidth: true
+					Layout.preferredHeight: Appearance.padding.larger * 3
 
 					CustomSlider {
 						anchors.left: parent.left
 						anchors.right: parent.right
-						color: Audio.muted ? DynamicColors.palette.m3error : DynamicColors.palette.m3primary
+						fgColor: Audio.muted ? DynamicColors.palette.m3error : DynamicColors.palette.m3primary
 						implicitHeight: parent.height
 						value: Audio.volume
 
@@ -138,7 +138,7 @@ Item {
 							}
 						}
 
-						onMoved: Audio.setVolume(value)
+						onInteraction: value => Audio.setVolume(value)
 					}
 				}
 			}
@@ -146,7 +146,7 @@ Item {
 
 		CustomClippingRect {
 			Layout.fillWidth: true
-			Layout.preferredHeight: 50 + Appearance.spacing.smaller * 2
+			Layout.preferredHeight: 65 + Appearance.spacing.smaller * 2
 			Layout.topMargin: root.topMargin
 			color: DynamicColors.tPalette.m3surfaceContainer
 			radius: root.rounding
@@ -178,15 +178,15 @@ Item {
 
 				anchors.bottom: parent.bottom
 				anchors.left: parent.left
-				anchors.leftMargin: Appearance.padding.normal
+				anchors.leftMargin: Appearance.padding.larger
 				anchors.top: parent.top
 				implicitWidth: childrenRect.width
 
 				CustomRect {
 					anchors.centerIn: parent
 					color: Audio.sourceMuted ? DynamicColors.palette.m3error : DynamicColors.palette.m3primary
-					implicitHeight: 40
-					implicitWidth: 40
+					implicitHeight: 54
+					implicitWidth: 54
 					radius: Appearance.rounding.full
 
 					MaterialIcon {
@@ -194,7 +194,7 @@ Item {
 						anchors.centerIn: parent
 						animate: true
 						color: Audio.sourceMuted ? DynamicColors.palette.m3onError : DynamicColors.palette.m3onPrimary
-						font.pointSize: 22
+						font.pointSize: Appearance.font.size.extraLarge
 						text: Audio.sourceMuted ? "mic_off" : "mic"
 					}
 
@@ -214,7 +214,7 @@ Item {
 				anchors.bottom: parent.bottom
 				anchors.bottomMargin: Appearance.padding.smallest
 				anchors.left: sourceIcon.right
-				anchors.leftMargin: Appearance.spacing.normal
+				anchors.leftMargin: Appearance.spacing.larger
 				anchors.right: parent.right
 				anchors.rightMargin: Appearance.padding.large
 				anchors.top: parent.top
@@ -238,14 +238,14 @@ Item {
 				}
 
 				CustomMouseArea {
-					Layout.bottomMargin: 5
-					Layout.fillHeight: true
+					Layout.bottomMargin: Appearance.padding.normal
 					Layout.fillWidth: true
+					Layout.preferredHeight: Appearance.padding.larger * 3
 
 					CustomSlider {
 						anchors.left: parent.left
 						anchors.right: parent.right
-						color: Audio.sourceMuted ? DynamicColors.palette.m3error : DynamicColors.palette.m3primary
+						fgColor: Audio.sourceMuted ? DynamicColors.palette.m3error : DynamicColors.palette.m3primary
 						implicitHeight: parent.height
 						value: Audio.sourceVolume
 
@@ -254,7 +254,7 @@ Item {
 							}
 						}
 
-						onMoved: Audio.setSourceVolume(value)
+						onInteraction: value => Audio.setSourceVolume(value)
 					}
 				}
 			}
@@ -280,7 +280,7 @@ Item {
 				required property var modelData
 
 				Layout.fillWidth: true
-				Layout.preferredHeight: 50 + Appearance.spacing.smaller * 2
+				Layout.preferredHeight: 65 + Appearance.spacing.smaller * 2
 				Layout.topMargin: root.topMargin
 				color: DynamicColors.tPalette.m3surfaceContainer
 				radius: root.rounding
@@ -312,15 +312,15 @@ Item {
 
 					anchors.bottom: parent.bottom
 					anchors.left: parent.left
-					anchors.leftMargin: Appearance.padding.normal
+					anchors.leftMargin: Appearance.padding.larger
 					anchors.top: parent.top
 					implicitWidth: childrenRect.width
 
 					CustomRect {
 						anchors.centerIn: parent
 						color: appBox.modelData.audio.muted ? DynamicColors.palette.m3error : DynamicColors.palette.m3primary
-						implicitHeight: 40
-						implicitWidth: 40
+						implicitHeight: 54
+						implicitWidth: 54
 						radius: Appearance.rounding.full
 
 						MaterialIcon {
@@ -329,7 +329,7 @@ Item {
 							anchors.centerIn: parent
 							animate: true
 							color: appBox.modelData.audio.muted ? DynamicColors.palette.m3onError : DynamicColors.palette.m3onPrimary
-							font.pointSize: 22
+							font.pointSize: Appearance.font.size.extraLarge
 							text: appBox.modelData.audio.muted ? "volume_off" : "volume_up"
 						}
 
@@ -356,7 +356,7 @@ Item {
 					anchors.bottom: parent.bottom
 					anchors.bottomMargin: Appearance.padding.smallest
 					anchors.left: appBoxIcon.right
-					anchors.leftMargin: Appearance.spacing.normal
+					anchors.leftMargin: Appearance.spacing.larger
 					anchors.right: parent.right
 					anchors.rightMargin: Appearance.padding.large
 					anchors.top: parent.top
@@ -381,18 +381,18 @@ Item {
 					}
 
 					CustomMouseArea {
-						Layout.bottomMargin: 5
-						Layout.fillHeight: true
+						Layout.bottomMargin: Appearance.padding.normal
 						Layout.fillWidth: true
+						Layout.preferredHeight: Appearance.padding.larger * 3
 
 						CustomSlider {
 							anchors.left: parent.left
 							anchors.right: parent.right
-							color: appBox.modelData.audio.muted ? DynamicColors.palette.m3error : DynamicColors.palette.m3primary
+							fgColor: appBox.modelData.audio.muted ? DynamicColors.palette.m3error : DynamicColors.palette.m3primary
 							implicitHeight: parent.height
 							value: appBox.modelData.audio.volume
 
-							onMoved: {
+							onInteraction: value => {
 								Audio.setStreamVolume(appBox.modelData, value);
 							}
 						}
