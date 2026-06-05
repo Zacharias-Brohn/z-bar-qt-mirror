@@ -1,6 +1,5 @@
 #pragma once
 
-#include <cstdint>
 #include <qobject.h>
 #include <qqmlintegration.h>
 #include <qqmllist.h>
@@ -21,7 +20,7 @@ Q_PROPERTY(int timeout READ timeout CONSTANT)
 Q_PROPERTY(Type type READ type CONSTANT)
 
 public:
-enum class Type: std::uint8_t {
+enum class Type {
 	Info = 0,
 	Success,
 	Warning,
