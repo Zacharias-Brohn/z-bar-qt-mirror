@@ -1,6 +1,6 @@
-import qs.Config
 import QtQuick
 import QtQuick.Effects
+import qs.Config
 
 RectangularShadow {
 	property real dp: [0, 1, 3, 6, 8, 12][level]
@@ -13,6 +13,7 @@ RectangularShadow {
 
 	Behavior on dp {
 		Anim {
+			type: Anim.SlowEffects
 		}
 	}
 }

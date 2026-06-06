@@ -63,7 +63,8 @@ JsonObject {
 	component FontSize: JsonObject {
 		property int extraLarge: 28 * scale
 		property int large: 18 * scale
-		property int larger: 15 * scale
+		property int larger: 16 * scale
+		property int medium: 14 * scale
 		property int normal: 13 * scale
 		property real scale: 1
 		property int small: 11 * scale
@@ -76,9 +77,11 @@ JsonObject {
 		}
 	}
 	component Padding: JsonObject {
-		property int large: 15 * scale
+		property int extraLargeIncreased: 32 * scale
+		property int extraSmall: 4 * scale
+		property int large: 16 * scale
 		property int larger: 12 * scale
-		property int normal: 9 * scale
+		property int normal: 8 * scale
 		property real scale: 1
 		property int small: 5 * scale
 		property int smaller: 7 * scale
@@ -88,6 +91,7 @@ JsonObject {
 		property int extraSmall: 4 * scale
 		property int full: 1000 * scale
 		property int large: 24 * scale
+		property int medium: 16 * scale
 		property int normal: 18 * scale
 		property real scale: 1
 		property int small: 12 * scale

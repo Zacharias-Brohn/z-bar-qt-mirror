@@ -9,7 +9,6 @@ Item {
 
 	property alias active: splitButton.active
 	property alias buttonAlias: splitButton
-	property bool enabled: true
 	property alias expanded: splitButton.expanded
 	property int expandedZ: 100
 	required property string label
@@ -25,7 +24,7 @@ Item {
 	implicitHeight: row.implicitHeight + Appearance.padding.smaller * 2
 	opacity: shouldBeActive ? 1 : 0
 	scale: shouldBeActive ? 1 : 0.8
-	z: root.expanded ? expandedZ : -1
+	z: splitButton.menu.implicitHeight > 0 ? expandedZ : 1
 
 	Behavior on opacity {
 		Anim {
@@ -50,7 +49,6 @@ Item {
 			color: root.enabled ? DynamicColors.palette.m3onSurface : DynamicColors.palette.m3onSurfaceVariant
 			font.pointSize: Appearance.font.size.larger
 			text: root.label
-			z: root.expanded ? root.expandedZ : -1
 		}
 
 		CustomSplitButton {
@@ -58,14 +56,16 @@ Item {
 
 			enabled: root.enabled
 			type: CustomSplitButton.Filled
-			z: root.expanded ? root.expandedZ : -1
+			z: 2
 
 			menu.onItemSelected: item => {
 				root.selected(item);
-				splitButton.closeDropdown();
+			// splitButton.closeDropdown();
 			}
 			stateLayer.onClicked: {
-				splitButton.toggleDropdown();
+				// splitButton.toggleDropdown();
+				splitButton.expanded = !splitButton.expanded;
+				console.log(root.z);
 			}
 		}
 	}

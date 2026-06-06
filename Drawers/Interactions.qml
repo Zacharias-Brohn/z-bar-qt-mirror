@@ -59,7 +59,7 @@ Item {
 
 		cursorShape: (active && centroid.pressPosition.y < root.bar.implicitHeight) ? Qt.ClosedHandCursor : undefined
 		dragThreshold: 0
-		grabPermissions: PointerHandler.CanTakeOverFromHandlersOfDifferentType | PointerHandler.ApprovesTakeOverByAnything
+		grabPermissions: PointerHandler.CanTakeOverFromHandlersOfSameType | PointerHandler.ApprovesTakeOverByAnything
 		maximumPointCount: 1
 		minimumPointCount: 1
 		target: null

@@ -62,6 +62,7 @@ SettingsPage {
 
 	SettingsSection {
 		sectionId: "Color"
+		z: 1
 
 		SettingsHeader {
 			name: "Color"
@@ -105,7 +106,6 @@ SettingsPage {
 			active: root.schemeTypeItem(menuItems, Config.colors.schemeType)
 			enabled: Config.general.color.schemeGeneration
 			label: qsTr("Scheme type")
-			z: 2
 
 			menuItems: [
 				MenuItem {
@@ -250,7 +250,6 @@ SettingsPage {
 
 	SettingsSection {
 		sectionId: "Default Apps"
-		z: -1
 
 		SettingsHeader {
 			name: "Default Apps"

@@ -22,7 +22,7 @@ ShellRoot {
 
 	settings.watchFiles: true
 
-	Windows {
+	Drawers {
 	}
 
 	Wallpaper {

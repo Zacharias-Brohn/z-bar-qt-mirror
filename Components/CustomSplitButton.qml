@@ -1,7 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
 import qs.Config
-import qs.Helpers
 
 Row {
 	id: root
@@ -12,62 +11,46 @@ Row {
 	}
 
 	property alias active: menu.active
-	property color color: type == CustomSplitButton.Filled ? DynamicColors.palette.m3primary : DynamicColors.palette.m3secondaryContainer
+	property color colour: type == CustomSplitButton.Filled ? DynamicColors.palette.m3primary : DynamicColors.palette.m3secondaryContainer
 	property bool disabled
-	property color disabledColor: Qt.alpha(DynamicColors.palette.m3onSurface, 0.1)
-	property color disabledTextColor: Qt.alpha(DynamicColors.palette.m3onSurface, 0.38)
+	property color disabledColour: Qt.alpha(DynamicColors.palette.m3onSurface, 0.1)
+	property color disabledTextColour: Qt.alpha(DynamicColors.palette.m3onSurface, 0.38)
+	readonly property alias expandBtn: expandBtn
 	property alias expanded: menu.expanded
 	property string fallbackIcon
 	property string fallbackText
-	property real horizontalPadding: Appearance.padding.normal
-	property alias iconLabel: iconLabel
-	property alias label: label
-	property alias menu: menu
+	property real horizontalPadding: Appearance.padding.larger
+	readonly property alias iconLabel: iconLabel
+	readonly property alias label: label
+	readonly property alias menu: menu
 	property alias menuItems: menu.items
 	property bool menuOnTop
-	property alias stateLayer: stateLayer
-	property color textColor: type == CustomSplitButton.Filled ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3onSecondaryContainer
+	property real minLeftWidth
+	readonly property alias stateLayer: stateLayer
+	property color textColour: type == CustomSplitButton.Filled ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3onSecondaryContainer
+	readonly property alias textRow: textRow
 	property int type: CustomSplitButton.Filled
-	property real verticalPadding: Appearance.padding.smaller
+	property real verticalPadding: Appearance.padding.small
 
-	function closeDropdown(): void {
-		SettingsDropdowns.close(menu);
-	}
-
-	function openDropdown(): void {
-		SettingsDropdowns.open(menu, root);
-	}
-
-	function toggleDropdown(): void {
-		SettingsDropdowns.toggle(menu, root);
-	}
-
-	spacing: Math.floor(Appearance.spacing.small / 2)
-
-	onExpandedChanged: {
-		if (!expanded)
-			SettingsDropdowns.forget(menu);
-	}
+	spacing: Math.floor(Appearance.spacing.extraSmall)
 
 	CustomRect {
 		bottomRightRadius: Appearance.rounding.small / 2
-		color: !root.enabled ? root.disabledColor : root.color
+		color: root.disabled ? root.disabledColour : root.colour
 		implicitHeight: expandBtn.implicitHeight
-		implicitWidth: textRow.implicitWidth + root.horizontalPadding * 2
+		implicitWidth: Math.max(root.minLeftWidth, textRow.implicitWidth + root.horizontalPadding * 2)
 		radius: implicitHeight / 2 * Math.min(1, Appearance.rounding.scale)
 		topRightRadius: Appearance.rounding.small / 2
 
 		StateLayer {
 			id: stateLayer
 
-			function onClicked(): void {
-				root.active?.clicked();
-			}
+			bottomRightRadius: parent.bottomRightRadius
+			color: root.textColour
+			disabled: root.disabled
+			topRightRadius: parent.topRightRadius
 
-			color: root.textColor
-			disabled: !root.enabled
-			rect.bottomRightRadius: parent.bottomRightRadius
-			rect.topRightRadius: parent.topRightRadius
+			onClicked: root.active?.clicked()
 		}
 
 		RowLayout {
@@ -82,7 +65,7 @@ Row {
 
 				Layout.alignment: Qt.AlignVCenter
 				animate: true
-				color: !root.enabled ? root.disabledTextColor : root.textColor
+				color: root.disabled ? root.disabledTextColour : root.textColour
 				fill: 1
 				text: root.active?.activeIcon ?? root.fallbackIcon
 			}
@@ -94,12 +77,12 @@ Row {
 				Layout.preferredWidth: implicitWidth
 				animate: true
 				clip: true
-				color: !root.enabled ? root.disabledTextColor : root.textColor
+				color: root.disabled ? root.disabledTextColour : root.textColour
 				text: root.active?.activeText ?? root.fallbackText
 
 				Behavior on Layout.preferredWidth {
 					Anim {
-						easing.bezierCurve: Appearance.anim.curves.emphasized
+						type: Anim.Emphasized
 					}
 				}
 			}
@@ -112,7 +95,7 @@ Row {
 		property real rad: root.expanded ? implicitHeight / 2 * Math.min(1, Appearance.rounding.scale) : Appearance.rounding.small / 2
 
 		bottomLeftRadius: rad
-		color: !root.enabled ? root.disabledColor : root.color
+		color: root.disabled ? root.disabledColour : root.colour
 		implicitHeight: expandIcon.implicitHeight + root.verticalPadding * 2
 		implicitWidth: implicitHeight
 		radius: implicitHeight / 2 * Math.min(1, Appearance.rounding.scale)
@@ -126,14 +109,12 @@ Row {
 		StateLayer {
 			id: expandStateLayer
 
-			function onClicked(): void {
-				root.toggleDropdown();
-			}
-
-			color: root.textColor
-			disabled: !root.enabled
+			color: root.textColour
+			disabled: root.disabled
 			rect.bottomLeftRadius: parent.bottomLeftRadius
 			rect.topLeftRadius: parent.topLeftRadius
+
+			onClicked: root.expanded = !root.expanded
 		}
 
 		MaterialIcon {
@@ -141,7 +122,7 @@ Row {
 
 			anchors.centerIn: parent
 			anchors.horizontalCenterOffset: root.expanded ? 0 : -Math.floor(root.verticalPadding / 4)
-			color: !root.enabled ? root.disabledTextColor : root.textColor
+			color: root.disabled ? root.disabledTextColour : root.textColour
 			rotation: root.expanded ? 180 : 0
 			text: "expand_more"
 
@@ -154,24 +135,14 @@ Row {
 				}
 			}
 		}
+	}
 
-		Menu {
-			id: menu
+	Menu {
+		id: menu
 
-			anchors.bottomMargin: Appearance.spacing.small
-			anchors.right: parent.right
-			anchors.top: parent.bottom
-			anchors.topMargin: Appearance.spacing.small
-
-			states: State {
-				when: root.menuOnTop
-
-				AnchorChanges {
-					anchors.bottom: expandBtn.top
-					anchors.top: undefined
-					target: menu
-				}
-			}
-		}
+		attachSideY: root.menuOnTop ? Menu.Top : Menu.Bottom
+		attachTo: expandBtn
+		marginY: Appearance.spacing.small * (root.menuOnTop ? -1 : 1)
+		thisSideY: root.menuOnTop ? Menu.Bottom : Menu.Top
 	}
 }
