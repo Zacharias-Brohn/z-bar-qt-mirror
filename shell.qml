@@ -4,6 +4,7 @@
 //@ pragma Env QSG_NO_VSYNC=1
 //@ pragma Env QS_NO_RELOAD_POPUP=1
 //@ pragma Env QT_SCALE_FACTOR_ROUNDING_POLICY=Round
+//@ pragma DefaultEnv QT_QUICK_FLICKABLE_WHEEL_DECELERATION=10000
 //@ pragma DropExpensiveFonts
 import Quickshell
 import Quickshell.Services.UPower
