@@ -1,6 +1,6 @@
-import qs.Config
 import QtQuick
 import QtQuick.Templates
+import qs.Config
 
 ScrollBar {
 	id: root
@@ -12,7 +12,7 @@ ScrollBar {
 	property real nonAnimPosition
 	property bool shouldBeActive
 
-	implicitWidth: 8
+	implicitWidth: mouse.containsMouse ? Appearance.padding.extraSmall * 2 : Appearance.padding.extraSmall
 
 	contentItem: CustomRect {
 		anchors.left: parent.left
@@ -33,6 +33,7 @@ ScrollBar {
 
 		Behavior on opacity {
 			Anim {
+				type: Anim.DefaultEffects
 			}
 		}
 
@@ -40,9 +41,16 @@ ScrollBar {
 			id: mouse
 
 			acceptedButtons: Qt.NoButton
-			anchors.fill: parent
+			anchors.bottom: parent.bottom
+			anchors.right: parent.right
+			anchors.top: parent.top
 			cursorShape: Qt.PointingHandCursor
 			hoverEnabled: true
+			implicitWidth: Appearance.padding.extraSmall * 2
+		}
+	}
+	Behavior on implicitWidth {
+		Anim {
 		}
 	}
 	Behavior on position {
@@ -86,23 +94,19 @@ ScrollBar {
 	// Sync nonAnimPosition with flickable when not animating
 	Connections {
 		function onContentYChanged() {
-			if (!animating && !fullMouse.pressed) {
-				_updatingFromFlickable = true;
-				const contentHeight = flickable.contentHeight;
-				const height = flickable.height;
+			if (!root.animating && !fullMouse.pressed) {
+				root._updatingFromFlickable = true;
+				const contentHeight = root.flickable.contentHeight;
+				const height = root.flickable.height;
 				if (contentHeight > height) {
-					nonAnimPosition = Math.max(0, Math.min(1, flickable.contentY / (contentHeight - height)));
+					root.nonAnimPosition = Math.max(0, Math.min(1, root.flickable.contentY / (contentHeight - height)));
 				} else {
-					nonAnimPosition = 0;
+					root.nonAnimPosition = 0;
 				}
-				_updatingFromFlickable = false;
+				root._updatingFromFlickable = false;
 			}
 		}
 
-		target: flickable
-	}
-
-	Connections {
 		function onMovingChanged(): void {
 			if (root.flickable.moving)
 				root.shouldBeActive = true;

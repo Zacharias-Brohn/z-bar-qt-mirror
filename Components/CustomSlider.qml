@@ -14,7 +14,11 @@ Slider {
 	property color bgColor: enabled ? DynamicColors.palette.m3secondaryContainer : Qt.alpha(DynamicColors.palette.m3onSurface, 0.1)
 	property color fgColor: enabled ? DynamicColors.palette.m3primary : Qt.alpha(DynamicColors.palette.m3onSurface, 0.38)
 	property real filledWidth
+	property alias inset: inset
+	property color insetColor: enabled ? (inset.attached ? DynamicColors.palette.m3onSecondaryContainer : DynamicColors.palette.m3onPrimary) : DynamicColors.palette.m3onSurface
+	property string insetIcon: ""
 	property real pos: visualPosition
+	property int radius: Appearance.rounding.small
 	property int waveDuration: 1000
 	property real waveFrequency: 6
 	property bool wavy
@@ -38,7 +42,7 @@ Slider {
 			color: root.bgColor
 			implicitHeight: parent.height * (parent.height <= 12 ? opacity : Math.min(opacity * 2, 1))
 			opacity: Math.min(width, 12) / 12
-			radius: Appearance.rounding.small
+			radius: root.radius
 			topLeftRadius: Appearance.rounding.extraSmall / 2
 		}
 
@@ -61,9 +65,9 @@ Slider {
 			anchors.verticalCenter: parent.verticalCenter
 			color: root.fgColor
 			implicitHeight: {
-				const mult = parent.height <= 12 ? 3 : 1.2;
-				const pressMult = parent.height <= 12 ? 4 : 1.5;
-				return parent.height * (mouse.pressed ? pressMult : mult);
+				const t = ZUtils.clamp((parent.height - 12) / 16, 0, 1);
+				const lerp = (a, b) => a + (b - a) * t;
+				return parent.height * (mouse.pressed ? lerp(3.5, 1.5) : lerp(3, 1.2));
 			}
 			implicitWidth: 4
 			radius: Appearance.rounding.full
@@ -84,6 +88,27 @@ Slider {
 			sourceComponent: root.wavy ? waveComp : lineComp
 		}
 
+		MaterialIcon {
+			id: inset
+
+			readonly property bool attached: root.pos < 0.1
+			property real dockT: attached ? 1 : 0
+
+			anchors.bottom: parent.bottom
+			anchors.top: parent.top
+			color: root.insetColor
+			font.pixelSize: Appearance.font.size.smaller * 2
+			text: root.insetIcon
+			verticalAlignment: Text.AlignVCenter
+			visible: !root.wavy && root.insetIcon !== ""
+			x: Appearance.spacing.extraSmall + dockT * (handle.x + Appearance.spacing.small)
+
+			Behavior on dockT {
+				Anim {
+				}
+			}
+		}
+
 		Component {
 			id: lineComp
 
@@ -92,7 +117,7 @@ Slider {
 				color: root.fgColor
 				implicitHeight: root.height
 				implicitWidth: root.filledWidth
-				radius: Appearance.rounding.small
+				radius: root.radius
 				topRightRadius: Appearance.rounding.extraSmall / 2
 			}
 		}

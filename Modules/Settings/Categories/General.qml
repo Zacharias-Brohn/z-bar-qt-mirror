@@ -1,6 +1,7 @@
 import Quickshell
 import QtQuick
 import QtQuick.Layouts
+import QtQuick.Controls
 import qs.Modules.Settings.Controls
 import qs.Config
 import qs.Components
@@ -237,6 +238,162 @@ SettingsPage {
 			settings: ["scheduleDarkStart", "scheduleDarkEnd", "scheduleDark"]
 			shouldBeActive: Config.general.color.schemeGeneration ? 1 : 0
 		}
+
+		// Item {
+		// 	id: timeInput
+		//
+		// 	readonly property bool highlighted: SettingsHighlight.highlightedSetting === name
+		// 	property string name
+		// 	property var object
+		// 	property list<string> settings
+		// 	property bool shouldBeActive: true
+		//
+		// 	function commitChoice(choice: int, setting: string): void {
+		// 		timeInput.object[setting] = choice;
+		// 		Config.save();
+		// 	}
+		//
+		// 	function formattedValue(setting: string): string {
+		// 		const value = timeInput.object[setting];
+		//
+		// 		if (value === null || value === undefined)
+		// 			return "";
+		//
+		// 		return String(value);
+		// 	}
+		//
+		// 	function hourToAmPm(hour) {
+		// 		var h = Number(hour) % 24;
+		// 		var d = new Date(2000, 0, 1, h, 0, 0);
+		// 		return Qt.formatTime(d, "h AP");
+		// 	}
+		//
+		// 	anchors.left: parent.left
+		// 	anchors.right: parent.right
+		// 	implicitHeight: shouldBeActive ? row.implicitHeight + Appearance.padding.smaller * 2 : 0
+		// 	opacity: shouldBeActive ? 1 : 0
+		// 	scale: shouldBeActive ? 1 : 0.8
+		// 	visible: opacity > 0
+		//
+		// 	Behavior on opacity {
+		// 		Anim {
+		// 		}
+		// 	}
+		// 	Behavior on scale {
+		// 		Anim {
+		// 		}
+		// 	}
+		// 	Behavior on y {
+		// 		Anim {
+		// 		}
+		// 	}
+		//
+		// 	Rectangle {
+		// 		anchors.fill: parent
+		// 		anchors.margins: -Appearance.padding.smaller
+		// 		color: DynamicColors.palette.m3primaryContainer
+		// 		opacity: timeInput.highlighted ? 0.5 : 0
+		// 		radius: Appearance.rounding.small
+		//
+		// 		Behavior on opacity {
+		// 			Anim {
+		// 				duration: Appearance.anim.durations.normal
+		// 			}
+		// 		}
+		// 	}
+		//
+		// 	RowLayout {
+		// 		id: row
+		//
+		// 		anchors.left: parent.left
+		// 		anchors.margins: Appearance.padding.small
+		// 		anchors.right: parent.right
+		// 		anchors.verticalCenter: parent.verticalCenter
+		//
+		// 		ColumnLayout {
+		// 			Layout.fillHeight: true
+		// 			Layout.fillWidth: true
+		//
+		// 			CustomText {
+		// 				id: text
+		//
+		// 				Layout.alignment: Qt.AlignLeft
+		// 				Layout.fillWidth: true
+		// 				font.pointSize: Appearance.font.size.larger
+		// 				text: timeInput.name
+		// 			}
+		//
+		// 			CustomText {
+		// 				Layout.alignment: Qt.AlignLeft
+		// 				color: DynamicColors.palette.m3onSurfaceVariant
+		// 				font.pointSize: Appearance.font.size.normal
+		// 				text: qsTr("Dark mode will turn on at %1, and turn off at %2.").arg(timeInput.hourToAmPm(timeInput.object[timeInput.settings[0]])).arg(timeInput.hourToAmPm(timeInput.object[timeInput.settings[1]]))
+		// 			}
+		// 		}
+		//
+		// 		ColumnLayout {
+		// 			id: optionLayout
+		//
+		// 			Layout.fillHeight: true
+		// 			Layout.preferredWidth: 100
+		//
+		// 			RowLayout {
+		// 				Layout.preferredWidth: optionLayout.width
+		//
+		// 				CustomText {
+		// 					Layout.alignment: Qt.AlignLeft | Qt.AlignHCenter
+		// 					Layout.fillWidth: true
+		// 					text: qsTr("Enabled: ")
+		// 				}
+		//
+		// 				CustomSwitch {
+		// 					id: enabledSwitch
+		//
+		// 					Layout.alignment: Qt.AlignRight | Qt.AlignHCenter
+		// 					checked: timeInput.object[timeInput.settings[2]]
+		//
+		// 					onToggled: {
+		// 						timeInput.object[timeInput.settings[2]] = checked;
+		// 						Config.save();
+		// 					}
+		// 				}
+		// 			}
+		//
+		// 			RowLayout {
+		// 				Layout.preferredWidth: optionLayout.width
+		//
+		// 				CustomText {
+		// 					Layout.alignment: Qt.AlignLeft | Qt.AlignHCenter
+		// 					Layout.fillWidth: true
+		// 					text: qsTr("Start: ")
+		// 				}
+		//
+		// 				CustomRect {
+		// 					Layout.preferredHeight: 72
+		// 					Layout.preferredWidth: 96
+		// 					color: startHourField.focus ? DynamicColors.palette.m3primaryContainer : DynamicColors.palette.m3surfaceContainer
+		//
+		// 					CustomTextField {
+		// 						id: startHourField
+		//
+		// 						function convertHour(timeValue: int): int {
+		// 							return Math.floor(timeValue / 60);
+		// 						}
+		//
+		// 						function convertMinute(timeValue: int): int {
+		// 							return timeValue % 60;
+		// 						}
+		//
+		// 						anchors.fill: parent
+		// 						font.family: "Roboto"
+		// 						font.pixelSize: 57
+		// 						text: convertHour(Config.general.color.scheduleDarkStart)
+		// 					}
+		// 				}
+		// 			}
+		// 		}
+		// 	}
+		// }
 
 		Separator {
 		}
