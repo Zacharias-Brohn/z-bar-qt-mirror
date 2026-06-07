@@ -94,7 +94,9 @@ RowLayout {
 		StateLayer {
 			id: upState
 
-			function onClicked(): void {
+			color: DynamicColors.palette.m3onPrimary
+
+			onClicked: {
 				let newValue = Math.min(root.max, root.value + root.step);
 				// Round to avoid floating point precision errors
 				const decimals = root.step < 1 ? Math.max(1, Math.ceil(-Math.log10(root.step))) : 0;
@@ -103,9 +105,6 @@ RowLayout {
 				root.displayText = newValue.toString();
 				root.valueModified(newValue);
 			}
-
-			color: DynamicColors.palette.m3onPrimary
-
 			onPressAndHold: timer.start()
 			onReleased: timer.stop()
 		}
@@ -128,7 +127,9 @@ RowLayout {
 		StateLayer {
 			id: downState
 
-			function onClicked(): void {
+			color: DynamicColors.palette.m3onPrimary
+
+			onClicked: {
 				let newValue = Math.max(root.min, root.value - root.step);
 				// Round to avoid floating point precision errors
 				const decimals = root.step < 1 ? Math.max(1, Math.ceil(-Math.log10(root.step))) : 0;
@@ -137,9 +138,6 @@ RowLayout {
 				root.displayText = newValue.toString();
 				root.valueModified(newValue);
 			}
-
-			color: DynamicColors.palette.m3onPrimary
-
 			onPressAndHold: timer.start()
 			onReleased: timer.stop()
 		}

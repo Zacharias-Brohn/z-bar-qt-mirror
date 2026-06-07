@@ -102,6 +102,7 @@ Item {
 				animate: root.animate
 				animateProp: "opacity"
 				color: root.color
+				font.pointSize: elideText.font.pointSize
 				text: elideText.text
 			}
 
@@ -111,6 +112,7 @@ Item {
 				animate: root.animate
 				animateProp: "opacity"
 				color: root.color
+				font.pointSize: elideText.font.pointSize
 				text: t1.text
 				x: t1.width + root.gap
 			}

@@ -54,14 +54,14 @@ CustomRect {
 	StateLayer {
 		id: stateLayer
 
-		function onClicked(): void {
+		color: root.internalChecked ? root.activeOnColour : root.inactiveOnColour
+		disabled: root.disabled
+
+		onClicked: {
 			if (root.toggle)
 				root.internalChecked = !root.internalChecked;
 			root.clicked();
 		}
-
-		color: root.internalChecked ? root.activeOnColour : root.inactiveOnColour
-		disabled: root.disabled
 	}
 
 	MaterialIcon {

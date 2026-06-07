@@ -9,10 +9,6 @@ JsonObject {
 			enabled: true
 		},
 		{
-			id: "audio",
-			enabled: true
-		},
-		{
 			id: "media",
 			enabled: true
 		},
@@ -22,10 +18,6 @@ JsonObject {
 		},
 		{
 			id: "updates",
-			enabled: true
-		},
-		{
-			id: "dash",
 			enabled: true
 		},
 		{
@@ -41,12 +33,12 @@ JsonObject {
 			enabled: true
 		},
 		{
-			id: "tray",
+			id: "hyprsunset",
 			enabled: true
 		},
 		{
-			id: "upower",
-			enabled: false
+			id: "tray",
+			enabled: true
 		},
 		{
 			id: "network",
@@ -62,9 +54,13 @@ JsonObject {
 		},
 	]
 	property int height: 34
+	property bool hideWhenNotif: false
 	property Popouts popouts: Popouts {
 	}
 	property int rounding: 8
+	property int smoothing: 32
+	property Tray tray: Tray {
+	}
 
 	component Popouts: JsonObject {
 		property bool activeWindow: true
@@ -74,5 +70,8 @@ JsonObject {
 		property bool resources: true
 		property bool tray: true
 		property bool upower: true
+	}
+	component Tray: JsonObject {
+		property int trayIconSize: 24
 	}
 }

@@ -91,6 +91,7 @@ JsonObject {
 	property string specialPrefix: "@"
 	property UseFuzzy useFuzzy: UseFuzzy {
 	}
+	property bool uwsm: true
 
 	component Sizes: JsonObject {
 		property int itemHeight: 50

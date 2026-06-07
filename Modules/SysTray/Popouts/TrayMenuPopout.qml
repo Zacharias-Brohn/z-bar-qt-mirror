@@ -103,7 +103,10 @@ StackView {
 						implicitHeight: 30
 
 						StateLayer {
-							function onClicked(): void {
+							disabled: !item.modelData.enabled
+							radius: item.radius
+
+							onClicked: {
 								const entry = item.modelData;
 								if (entry.hasChildren) {
 									root.rootWidth = root.biggestWidth;
@@ -117,9 +120,6 @@ StackView {
 									root.popouts.hasCurrent = false;
 								}
 							}
-
-							disabled: !item.modelData.enabled
-							radius: item.radius
 						}
 
 						Loader {
@@ -217,13 +217,13 @@ StackView {
 						radius: Appearance.rounding.full
 
 						StateLayer {
-							function onClicked(): void {
+							color: DynamicColors.palette.m3onSecondaryContainer
+							radius: parent.radius
+
+							onClicked: {
 								root.pop();
 								root.biggestWidth = root.rootWidth;
 							}
-
-							color: DynamicColors.palette.m3onSecondaryContainer
-							radius: parent.radius
 						}
 					}
 

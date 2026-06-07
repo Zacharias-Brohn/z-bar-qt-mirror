@@ -178,11 +178,11 @@ Item {
 		StateLayer {
 			id: controlState
 
-			function onClicked(): void {
+			color: control.active ? DynamicColors.palette[`m3on${control.set_color}`] : DynamicColors.palette[`m3on${control.set_color}Container`]
+
+			onClicked: {
 				control.onClicked();
 			}
-
-			color: control.active ? DynamicColors.palette[`m3on${control.set_color}`] : DynamicColors.palette[`m3on${control.set_color}Container`]
 		}
 
 		MaterialIcon {

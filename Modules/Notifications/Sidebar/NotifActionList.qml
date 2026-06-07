@@ -78,7 +78,7 @@ Item {
 					StateLayer {
 						id: actionStateLayer
 
-						function onClicked(): void {
+						onClicked: {
 							if (action.modelData.isClose) {
 								root.notif.close();
 							} else if (action.modelData.isCopy) {

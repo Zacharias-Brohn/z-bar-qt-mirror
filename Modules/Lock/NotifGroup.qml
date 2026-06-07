@@ -161,11 +161,11 @@ CustomRect {
 					}
 
 					StateLayer {
-						function onClicked(): void {
+						color: root.urgency === "critical" ? DynamicColors.palette.m3onError : DynamicColors.palette.m3onSurface
+
+						onClicked: {
 							root.expanded = !root.expanded;
 						}
-
-						color: root.urgency === "critical" ? DynamicColors.palette.m3onError : DynamicColors.palette.m3onSurface
 					}
 
 					RowLayout {

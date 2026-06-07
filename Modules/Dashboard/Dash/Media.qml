@@ -295,12 +295,12 @@ Item {
 		StateLayer {
 			id: controlState
 
-			function onClicked(): void {
-				control.onClicked();
-			}
-
 			color: control.canUse ? DynamicColors.palette[`m3on${control.set_color}`] : DynamicColors.palette[`m3on${control.set_color}Container`]
 			disabled: !control.canUse
+
+			onClicked: {
+				control.onClicked();
+			}
 			// radius: Appearance.rounding.full
 		}
 

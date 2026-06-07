@@ -33,12 +33,12 @@ Item {
 	}
 
 	StateLayer {
-		function onClicked(): void {
+		radius: Appearance.rounding.normal
+
+		onClicked: {
 			Wallpapers.setWallpaper(root.modelData.path);
 			root.visibilities.launcher = false;
 		}
-
-		radius: Appearance.rounding.normal
 	}
 
 	Elevation {

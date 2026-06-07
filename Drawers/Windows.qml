@@ -297,7 +297,6 @@ CustomWindow {
 
 		active: visibilities.isDrawing
 		anchors.fill: parent
-		z: 2
 
 		sourceComponent: Drawing {
 			id: drawing
@@ -334,7 +333,6 @@ CustomWindow {
 		popouts: panels.popouts
 		screen: root.screen
 		visibilities: visibilities
-		z: 1
 
 		Panels {
 			id: panels

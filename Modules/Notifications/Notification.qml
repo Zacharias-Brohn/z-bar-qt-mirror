@@ -307,12 +307,12 @@ CustomRect {
 				implicitWidth: expandIcon.height
 
 				StateLayer {
-					function onClicked() {
-						root.expanded = !root.expanded;
-					}
-
 					color: root.modelData.urgency === NotificationUrgency.Critical ? DynamicColors.palette.m3onSecondaryContainer : DynamicColors.palette.m3onSurface
 					radius: Appearance.rounding.full
+
+					onClicked: {
+						root.expanded = !root.expanded;
+					}
 				}
 
 				MaterialIcon {
@@ -434,12 +434,12 @@ CustomRect {
 		radius: Appearance.rounding.full
 
 		StateLayer {
-			function onClicked(): void {
-				action.modelData.invoke();
-			}
-
 			color: root.modelData.urgency === NotificationUrgency.Critical ? DynamicColors.palette.m3onSecondary : DynamicColors.palette.m3onSurface
 			radius: Appearance.rounding.full
+
+			onClicked: {
+				action.modelData.invoke();
+			}
 		}
 
 		CustomText {

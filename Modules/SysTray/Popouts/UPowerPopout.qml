@@ -153,12 +153,12 @@ Item {
 		implicitWidth: icon.implicitHeight + 5 * 2
 
 		StateLayer {
-			function onClicked(): void {
-				PowerProfiles.profile = parent.profile;
-			}
-
 			color: profiles.current === parent.icon ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3onSurface
 			radius: Appearance.rounding.full
+
+			onClicked: {
+				PowerProfiles.profile = parent.profile;
+			}
 		}
 
 		MaterialIcon {

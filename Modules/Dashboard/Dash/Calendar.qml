@@ -49,11 +49,11 @@ CustomMouseArea {
 				StateLayer {
 					id: prevMonthStateLayer
 
-					function onClicked(): void {
+					radius: Appearance.rounding.full
+
+					onClicked: {
 						root.state.currentDate = new Date(root.currYear, root.currMonth - 1, 1);
 					}
-
-					radius: Appearance.rounding.full
 				}
 
 				MaterialIcon {
@@ -73,10 +73,6 @@ CustomMouseArea {
 				implicitWidth: monthYearDisplay.implicitWidth + Appearance.padding.small * 2
 
 				StateLayer {
-					function onClicked(): void {
-						root.state.currentDate = new Date();
-					}
-
 					anchors.fill: monthYearDisplay
 					anchors.leftMargin: -Appearance.padding.normal
 					anchors.margins: -Appearance.padding.small
@@ -86,6 +82,10 @@ CustomMouseArea {
 						return root.currMonth === now.getMonth() && root.currYear === now.getFullYear();
 					}
 					radius: Appearance.rounding.full
+
+					onClicked: {
+						root.state.currentDate = new Date();
+					}
 				}
 
 				CustomText {
@@ -107,11 +107,11 @@ CustomMouseArea {
 				StateLayer {
 					id: nextMonthStateLayer
 
-					function onClicked(): void {
+					radius: Appearance.rounding.full
+
+					onClicked: {
 						root.state.currentDate = new Date(root.currYear, root.currMonth + 1, 1);
 					}
-
-					radius: Appearance.rounding.full
 				}
 
 				MaterialIcon {

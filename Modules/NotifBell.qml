@@ -32,8 +32,6 @@ CustomRect {
 	}
 
 	StateLayer {
-		cursorShape: Qt.PointingHandCursor
-
 		onClicked: {
 			root.visibilities.sidebar = !root.visibilities.sidebar;
 		}

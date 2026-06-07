@@ -2,109 +2,169 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
+import Quickshell
 import qs.Config
+import qs.Drawers
 
-Elevation {
+MouseArea {
 	id: root
 
+	enum Side {
+		Top,
+		Bottom,
+		Left,
+		Right
+	}
+
 	property MenuItem active: items[0] ?? null
+	property int attachSideX: Menu.Right
+	property int attachSideY: Menu.Bottom
+	required property Item attachTo
 	property bool expanded
 	property list<MenuItem> items
+	property real marginX
+	property real marginY
+	property int thisSideX: Menu.Right
+	property int thisSideY: Menu.Top
 
 	signal itemSelected(item: MenuItem)
 
-	implicitHeight: root.expanded ? column.implicitHeight + Appearance.padding.small * 2 : 0
-	implicitWidth: Math.max(200, column.implicitWidth)
-	level: 2
-	opacity: root.expanded ? 1 : 0
-	radius: Appearance.rounding.normal
-
-	Behavior on implicitHeight {
-		Anim {
-			duration: Appearance.anim.durations.expressiveDefaultSpatial
-			easing.bezierCurve: Appearance.anim.curves.expressiveDefaultSpatial
-		}
+	anchors.fill: parent
+	enabled: expanded
+	layer.enabled: opacity < 1
+	opacity: expanded ? 1 : 0
+	parent: {
+		const win = QsWindow.window;
+		const contentWin = win as Windows;
+		return contentWin ? contentWin.interactionWrapper : (win as QsWindow).contentItem;
 	}
+
 	Behavior on opacity {
 		Anim {
-			duration: Appearance.anim.durations.expressiveDefaultSpatial
+			type: Anim.DefaultEffects
 		}
 	}
 
-	CustomClippingRect {
-		anchors.fill: parent
-		color: DynamicColors.palette.m3surfaceContainer
-		radius: parent.radius
+	onClicked: expanded = false
 
-		ColumnLayout {
-			id: column
+	TransformWatcher {
+		id: watcher
 
-			anchors.left: parent.left
-			anchors.right: parent.right
-			anchors.verticalCenter: parent.verticalCenter
-			spacing: 5
+		a: root.parent
+		b: root.attachTo
+	}
 
-			Repeater {
-				model: root.items
+	Elevation {
+		id: menu
 
-				CustomRect {
-					id: item
+		implicitHeight: column.implicitHeight + column.anchors.margins * 2
+		implicitWidth: Math.max(200, column.implicitWidth + column.anchors.margins * 2)
+		level: 2
+		radius: Appearance.rounding.medium
+		x: {
+			watcher.transform;
+			const item = root.attachTo;
+			let off = root.attachSideX === Menu.Left ? 0 : item.width;
+			if (root.thisSideX === Menu.Right)
+				off -= width;
+			return item.mapToItem(root.parent, off, 0).x + root.marginX;
+		}
+		y: {
+			watcher.transform;
+			const item = root.attachTo;
+			let off = root.attachSideY === Menu.Top ? 0 : item.height;
+			if (root.thisSideY === Menu.Bottom)
+				off -= height;
+			return item.mapToItem(root.parent, 0, off).y + root.marginY;
+		}
 
-					readonly property bool active: modelData === root.active
-					required property int index
-					required property MenuItem modelData
+		transform: Scale {
+			origin.y: root.thisSideY === Menu.Bottom ? menu.height : 0
+			yScale: root.expanded ? 1 : 0.1
 
-					Layout.fillWidth: true
-					implicitHeight: menuOptionRow.implicitHeight + Appearance.padding.normal * 2
-					implicitWidth: menuOptionRow.implicitWidth + Appearance.padding.normal * 2
+			Behavior on yScale {
+				Anim {
+				}
+			}
+		}
+
+		CustomRect {
+			anchors.fill: parent
+			color: DynamicColors.palette.m3surfaceContainerLow
+			radius: parent.radius
+
+			ColumnLayout {
+				id: column
+
+				anchors.fill: parent
+				anchors.margins: Appearance.padding.extraSmall
+				spacing: Appearance.spacing.extraSmall
+
+				Repeater {
+					id: repeater
+
+					model: root.items
 
 					CustomRect {
-						anchors.fill: parent
-						anchors.leftMargin: Appearance.padding.small
-						anchors.rightMargin: Appearance.padding.small
-						color: Qt.alpha(DynamicColors.palette.m3secondaryContainer, active ? 1 : 0)
-						radius: Appearance.rounding.normal - Appearance.padding.small
+						id: item
+
+						readonly property bool active: modelData === root.active
+						required property int index
+						required property MenuItem modelData
+
+						Layout.fillWidth: true
+						color: Qt.alpha(DynamicColors.palette.m3tertiaryContainer, active ? 1 : 0)
+						implicitHeight: menuOptionRow.implicitHeight + Appearance.padding.larger * 2
+						implicitWidth: menuOptionRow.implicitWidth + Appearance.padding.larger * 2
+						radius: Appearance.rounding.small
+
+						Behavior on radius {
+							Anim {
+							}
+						}
 
 						StateLayer {
-							function onClicked(): void {
+							color: item.active ? DynamicColors.palette.m3onTertiaryContainer : DynamicColors.palette.m3onSurface
+							disabled: !root.expanded
+
+							onClicked: {
 								root.itemSelected(item.modelData);
 								root.active = item.modelData;
+								item.modelData.clicked();
 								root.expanded = false;
 							}
-
-							color: item.active ? DynamicColors.palette.m3onSecondaryContainer : DynamicColors.palette.m3onSurface
-							disabled: !root.expanded
-						}
-					}
-
-					RowLayout {
-						id: menuOptionRow
-
-						anchors.fill: parent
-						anchors.margins: Appearance.padding.normal
-						spacing: Appearance.spacing.small
-
-						MaterialIcon {
-							Layout.alignment: Qt.AlignVCenter
-							color: item.active ? DynamicColors.palette.m3onSecondaryContainer : DynamicColors.palette.m3onSurfaceVariant
-							text: item.modelData.icon
 						}
 
-						CustomText {
-							Layout.alignment: Qt.AlignVCenter
-							Layout.fillWidth: true
-							color: item.active ? DynamicColors.palette.m3onSecondaryContainer : DynamicColors.palette.m3onSurface
-							text: item.modelData.text
-						}
+						RowLayout {
+							id: menuOptionRow
 
-						Loader {
-							Layout.alignment: Qt.AlignVCenter
-							active: item.modelData.trailingIcon.length > 0
-							visible: active
+							anchors.fill: parent
+							anchors.margins: Appearance.padding.larger
+							spacing: Appearance.spacing.small
 
-							sourceComponent: MaterialIcon {
-								color: item.active ? DynamicColors.palette.m3onSecondaryContainer : DynamicColors.palette.m3onSurface
-								text: item.modelData.trailingIcon
+							MaterialIcon {
+								Layout.alignment: Qt.AlignVCenter
+								color: item.active ? DynamicColors.palette.m3onTertiaryContainer : DynamicColors.palette.m3onSurfaceVariant
+								text: item.modelData.icon
+							}
+
+							CustomText {
+								Layout.alignment: Qt.AlignVCenter
+								Layout.fillWidth: true
+								color: item.active ? DynamicColors.palette.m3onTertiaryContainer : DynamicColors.palette.m3onSurface
+								text: item.modelData.text
+							}
+
+							Loader {
+								Layout.alignment: Qt.AlignVCenter
+								active: item.modelData.trailingIcon.length > 0
+								asynchronous: true
+								visible: active
+
+								sourceComponent: MaterialIcon {
+									color: item.active ? DynamicColors.palette.m3onTertiaryContainer : DynamicColors.palette.m3onSurfaceVariant
+									text: item.modelData.trailingIcon
+								}
 							}
 						}
 					}
