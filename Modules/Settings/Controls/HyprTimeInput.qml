@@ -167,6 +167,14 @@ Item {
 					CustomTextField {
 						id: startHourField
 
+						function setConfigText(setting: string): string {
+							var val = root.convertHour(root.object[setting]);
+							if (val === 0) {
+								return "00";
+							}
+							return String(val);
+						}
+
 						anchors.left: parent.left
 						anchors.right: parent.right
 						anchors.verticalCenter: parent.verticalCenter
@@ -178,13 +186,7 @@ Item {
 						font.pixelSize: 56
 						font.weight: 400
 						horizontalAlignment: TextInput.AlignHCenter
-						text: {
-							var val = root.convertHour(root.object[root.settings[1]]);
-							if (val === 0) {
-								return "00";
-							}
-							return String(val);
-						}
+						text: setConfigText(root.settings[1])
 						verticalAlignment: TextInput.AlignVCenter
 
 						Keys.onPressed: event => {
@@ -198,11 +200,15 @@ Item {
 								return;
 							} else if (event.key === Qt.Key_Escape) {
 								event.accepted = true;
-								startHourField.text = String(root.convertHour(root.object[root.settings[1]]));
+								startHourField.text = setConfigText(root.settings[1]);
 								startHourField.focus = false;
 							} else if (event.key === Qt.Key_Return) {
 								startHourField.focus = false;
 								return;
+							} else if (event.key === Qt.Key_Tab) {
+								startMinuteField.focus = true;
+							} else if (event.key === Qt.Key_Backtab) {
+								endMinuteField.focus = true;
 							}
 
 							if (event.text.length === 1 && event.text >= "0" && event.text <= "9") {
@@ -284,6 +290,14 @@ Item {
 					CustomTextField {
 						id: startMinuteField
 
+						function setConfigText(setting: string): string {
+							var val = root.convertMinute(root.object[setting]);
+							if (val === 0) {
+								return "00";
+							}
+							return String(val);
+						}
+
 						anchors.left: parent.left
 						anchors.right: parent.right
 						anchors.verticalCenter: parent.verticalCenter
@@ -295,13 +309,7 @@ Item {
 						font.pixelSize: 56
 						font.weight: 400
 						horizontalAlignment: TextInput.AlignHCenter
-						text: {
-							var val = root.convertMinute(root.object[root.settings[1]]);
-							if (val === 0) {
-								return "00";
-							}
-							return String(val);
-						}
+						text: setConfigText(root.settings[1])
 						verticalAlignment: TextInput.AlignVCenter
 
 						Keys.onPressed: event => {
@@ -315,11 +323,15 @@ Item {
 								return;
 							} else if (event.key === Qt.Key_Escape) {
 								event.accepted = true;
-								startMinuteField.text = String(root.convertMinute(root.object[root.settings[1]]));
+								startMinuteField.text = setConfigText(root.settings[1]);
 								startMinuteField.focus = false;
 							} else if (event.key === Qt.Key_Return) {
 								startMinuteField.focus = false;
 								return;
+							} else if (event.key === Qt.Key_Tab) {
+								endHourField.focus = true;
+							} else if (event.key === Qt.Key_Backtab) {
+								startHourField.focus = true;
 							}
 
 							if (event.text.length === 1 && event.text >= "0" && event.text <= "9") {
@@ -400,6 +412,14 @@ Item {
 					CustomTextField {
 						id: endHourField
 
+						function setConfigText(setting: string): string {
+							var val = root.convertHour(root.object[setting]);
+							if (val === 0) {
+								return "00";
+							}
+							return String(val);
+						}
+
 						anchors.left: parent.left
 						anchors.right: parent.right
 						anchors.verticalCenter: parent.verticalCenter
@@ -411,13 +431,7 @@ Item {
 						font.pixelSize: 56
 						font.weight: 400
 						horizontalAlignment: TextInput.AlignHCenter
-						text: {
-							var val = root.convertHour(root.object[root.settings[2]]);
-							if (val === 0) {
-								return "00";
-							}
-							return String(val);
-						}
+						text: setConfigText(root.settings[2])
 						verticalAlignment: TextInput.AlignVCenter
 
 						Keys.onPressed: event => {
@@ -431,11 +445,15 @@ Item {
 								return;
 							} else if (event.key === Qt.Key_Escape) {
 								event.accepted = true;
-								endHourField.text = String(root.convertHour(root.object[root.settings[2]]));
+								endHourField.text = setConfigText(root.settings[2]);
 								endHourField.focus = false;
 							} else if (event.key === Qt.Key_Return) {
 								endHourField.focus = false;
 								return;
+							} else if (event.key === Qt.Key_Tab) {
+								endMinuteField.focus = true;
+							} else if (event.key === Qt.Key_Backtab) {
+								startMinuteField.focus = true;
 							}
 
 							if (event.text.length === 1 && event.text >= "0" && event.text <= "9") {
@@ -517,6 +535,14 @@ Item {
 					CustomTextField {
 						id: endMinuteField
 
+						function setConfigText(setting: string): string {
+							var val = root.convertMinute(root.object[setting]);
+							if (val === 0) {
+								return "00";
+							}
+							return String(val);
+						}
+
 						anchors.left: parent.left
 						anchors.right: parent.right
 						anchors.verticalCenter: parent.verticalCenter
@@ -528,13 +554,7 @@ Item {
 						font.pixelSize: 56
 						font.weight: 400
 						horizontalAlignment: TextInput.AlignHCenter
-						text: {
-							var val = root.convertMinute(root.object[root.settings[2]]);
-							if (val === 0) {
-								return "00";
-							}
-							return String(val);
-						}
+						text: setConfigText(root.settings[2])
 						verticalAlignment: TextInput.AlignVCenter
 
 						Keys.onPressed: event => {
@@ -548,11 +568,15 @@ Item {
 								return;
 							} else if (event.key === Qt.Key_Escape) {
 								event.accepted = true;
-								endMinuteField.text = String(root.convertMinute(root.object[root.settings[2]]));
+								endMinuteField.text = setConfigText(root.settings[2]);
 								endMinuteField.focus = false;
 							} else if (event.key === Qt.Key_Return) {
 								endMinuteField.focus = false;
 								return;
+							} else if (event.key === Qt.Key_Tab) {
+								startHourField.focus = true;
+							} else if (event.key === Qt.Key_Backtab) {
+								endHourField.focus = true;
 							}
 
 							if (event.text.length === 1 && event.text >= "0" && event.text <= "9") {
