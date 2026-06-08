@@ -46,6 +46,21 @@ MouseArea {
 	}
 
 	onClicked: expanded = false
+	onExpandedChanged: {
+		const win = QsWindow.window;
+		const contentWin = win as Windows;
+		if (expanded) {
+			contentWin.menuRegion.x = menu.x;
+			contentWin.menuRegion.y = menu.y;
+			contentWin.menuRegion.width = menu.width;
+			contentWin.menuRegion.height = menu.height;
+		} else {
+			contentWin.menuRegion.x = 0;
+			contentWin.menuRegion.y = 0;
+			contentWin.menuRegion.width = 0;
+			contentWin.menuRegion.height = 0;
+		}
+	}
 
 	TransformWatcher {
 		id: watcher

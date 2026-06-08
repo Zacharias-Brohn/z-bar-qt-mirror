@@ -20,6 +20,7 @@ CustomWindow {
 	readonly property alias bar: bar
 	readonly property bool hasFullscreen: Hypr.monitorFor(screen)?.activeWorkspace?.toplevels.values.some(t => t.lastIpcObject.fullscreen === 2)
 	readonly property alias interactionWrapper: interactions
+	readonly property alias menuRegion: menuPopoutRegion
 	property var root: Quickshell.shellDir
 
 	WlrLayershell.exclusionMode: ExclusionMode.Ignore
@@ -47,11 +48,17 @@ CustomWindow {
 	}
 
 	Region {
+		id: menuPopoutRegion
+
+		intersection: Intersection.Subtract
+	}
+
+	Region {
 		id: region
 
 		height: root.height - bar.implicitHeight - Config.barConfig.border
 		intersection: Intersection.Xor
-		regions: popoutRegions.instances
+		regions: [...popoutRegions.instances, menuPopoutRegion]
 		width: root.width - Config.barConfig.border * 2
 		x: Config.barConfig.border
 		y: bar.implicitHeight
