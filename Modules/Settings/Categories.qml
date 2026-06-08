@@ -210,6 +210,8 @@ Item {
 		StateLayer {
 			id: layer
 
+			color: categoryItem.index === clayout.currentIndex ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3onSurface
+
 			onClicked: {
 				root.content.currentCategory = categoryItem.key;
 				clayout.currentIndex = categoryItem.index;

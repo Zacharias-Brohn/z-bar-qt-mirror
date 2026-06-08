@@ -20,6 +20,8 @@ CustomRect {
 	radius: Appearance.rounding.full
 
 	StateLayer {
+		color: root.visibilities.resources ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3onSurface
+
 		onClicked: root.visibilities.resources = !root.visibilities.resources
 	}
 

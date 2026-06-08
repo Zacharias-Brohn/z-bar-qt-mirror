@@ -32,6 +32,8 @@ CustomRect {
 	}
 
 	StateLayer {
+		color: root.visibilities.sidebar ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3onSurface
+
 		onClicked: {
 			root.visibilities.sidebar = !root.visibilities.sidebar;
 		}

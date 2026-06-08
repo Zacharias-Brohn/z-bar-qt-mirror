@@ -34,6 +34,7 @@ CustomRect {
 
 	StateLayer {
 		acceptedButtons: Qt.LeftButton
+		color: root.visibilities.dashboard ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3onSurface
 
 		onClicked: {
 			root.visibilities.dashboard = !root.visibilities.dashboard;
