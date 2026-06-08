@@ -7,6 +7,8 @@ import qs.Config
 TextField {
 	id: root
 
+	property int cursorHeight: root.height
+
 	background: null
 	color: DynamicColors.palette.m3onSurface
 	cursorVisible: !readOnly
@@ -25,6 +27,7 @@ TextField {
 		property bool disableBlink
 
 		color: DynamicColors.palette.m3primary
+		height: root.cursorHeight
 		implicitWidth: 2
 		radius: Appearance.rounding.normal
 
