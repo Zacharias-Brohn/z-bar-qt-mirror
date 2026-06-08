@@ -130,7 +130,7 @@ Item {
 					id: enabledSwitch
 
 					Layout.alignment: Qt.AlignRight | Qt.AlignHCenter
-					checked: Config.general.color.scheduleDark
+					checked: root.object[root.settings[0]]
 
 					onToggled: {
 						root.object[root.settings[0]] = checked;
