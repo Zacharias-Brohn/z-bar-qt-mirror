@@ -100,7 +100,7 @@ Item {
 				Layout.alignment: Qt.AlignLeft
 				color: DynamicColors.palette.m3onSurfaceVariant
 				font.pointSize: Appearance.font.size.normal
-				text: qsTr("Dark mode will turn on at %1, and turn off at %2.").arg(root.startTime).arg(root.endTime)
+				text: qsTr("Hyprsunset will turn on at %1, and turn off at %2.").arg(root.startTime).arg(root.endTime)
 			}
 		}
 
