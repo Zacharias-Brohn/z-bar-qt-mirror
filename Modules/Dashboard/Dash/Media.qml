@@ -296,7 +296,7 @@ Item {
 			id: controlState
 
 			color: control.canUse ? DynamicColors.palette[`m3on${control.set_color}`] : DynamicColors.palette[`m3on${control.set_color}Container`]
-			disabled: !control.canUse
+			enabled: control.canUse
 
 			onClicked: {
 				control.onClicked();

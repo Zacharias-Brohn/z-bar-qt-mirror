@@ -131,19 +131,17 @@ Item {
 					anchors.left: parent.left
 					anchors.right: parent.right
 					implicitHeight: 30
-					spacing: Appearance.spacing.large
-
-					CustomText {
-						text: qsTr("Crop scale")
-					}
 
 					CustomSlider {
 						id: zoomSlider
 
 						Layout.fillWidth: true
+						Layout.leftMargin: Appearance.padding.normal
 						Layout.preferredHeight: Appearance.padding.larger * 3
+						Layout.rightMargin: Appearance.padding.normal
 						from: 1.0
 						implicitHeight: Appearance.padding.larger * 3
+						insetIcon: "crop"
 						to: 5.0
 						value: cropRectLoader.item ? cropRectLoader.item.zoom : 1.0
 

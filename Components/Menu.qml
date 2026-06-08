@@ -125,7 +125,7 @@ MouseArea {
 
 						StateLayer {
 							color: item.active ? DynamicColors.palette.m3onTertiaryContainer : DynamicColors.palette.m3onSurface
-							disabled: !root.expanded
+							enabled: root.expanded
 
 							onClicked: {
 								root.itemSelected(item.modelData);

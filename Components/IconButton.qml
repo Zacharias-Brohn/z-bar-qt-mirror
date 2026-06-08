@@ -13,7 +13,6 @@ CustomRect {
 	property color activeColour: type === IconButton.Filled ? DynamicColors.palette.m3primary : DynamicColors.palette.m3secondary
 	property color activeOnColour: type === IconButton.Filled ? DynamicColors.palette.m3onPrimary : type === IconButton.Tonal ? DynamicColors.palette.m3onSecondary : DynamicColors.palette.m3primary
 	property bool checked
-	property bool disabled
 	property color disabledColour: Qt.alpha(DynamicColors.palette.m3onSurface, 0.1)
 	property color disabledOnColour: Qt.alpha(DynamicColors.palette.m3onSurface, 0.38)
 	property alias font: label.font
@@ -38,7 +37,7 @@ CustomRect {
 
 	signal clicked
 
-	color: type === IconButton.Text ? "transparent" : disabled ? disabledColour : internalChecked ? activeColour : inactiveColour
+	color: type === IconButton.Text ? "transparent" : !enabled ? disabledColour : internalChecked ? activeColour : inactiveColour
 	implicitHeight: label.implicitHeight + padding * 2
 	implicitWidth: implicitHeight
 	radius: internalChecked ? 6 : (implicitHeight / 2 * Math.min(1, 1)) * Appearance.rounding.scale
@@ -55,7 +54,6 @@ CustomRect {
 		id: stateLayer
 
 		color: root.internalChecked ? root.activeOnColour : root.inactiveOnColour
-		disabled: root.disabled
 
 		onClicked: {
 			if (root.toggle)
@@ -68,7 +66,7 @@ CustomRect {
 		id: label
 
 		anchors.centerIn: parent
-		color: root.disabled ? root.disabledOnColour : root.internalChecked ? root.activeOnColour : root.inactiveOnColour
+		color: !root.enabled ? root.disabledOnColour : root.internalChecked ? root.activeOnColour : root.inactiveOnColour
 		fill: !root.toggle || root.internalChecked ? 1 : 0
 
 		Behavior on fill {

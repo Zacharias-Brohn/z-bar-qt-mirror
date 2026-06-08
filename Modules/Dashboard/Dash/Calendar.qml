@@ -77,9 +77,9 @@ CustomMouseArea {
 					anchors.leftMargin: -Appearance.padding.normal
 					anchors.margins: -Appearance.padding.small
 					anchors.rightMargin: -Appearance.padding.normal
-					disabled: {
+					enabled: {
 						const now = new Date();
-						return root.currMonth === now.getMonth() && root.currYear === now.getFullYear();
+						return root.currMonth !== now.getMonth() || root.currYear !== now.getFullYear();
 					}
 					radius: Appearance.rounding.full
 

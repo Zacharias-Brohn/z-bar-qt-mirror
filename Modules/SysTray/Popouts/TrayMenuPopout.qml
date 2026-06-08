@@ -103,7 +103,7 @@ StackView {
 						implicitHeight: 30
 
 						StateLayer {
-							disabled: !item.modelData.enabled
+							enabled: item.modelData.enabled
 							radius: item.radius
 
 							onClicked: {

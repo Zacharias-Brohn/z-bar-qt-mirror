@@ -12,7 +12,6 @@ MouseArea {
 	property alias bottomRightRadius: base.bottomRightRadius
 	property real circleRadius
 	property alias color: base.color
-	property bool disabled
 	readonly property real endRadius: {
 		const d1 = distSq(0, 0);
 		const d2 = distSq(width, 0);
@@ -51,8 +50,7 @@ MouseArea {
 	}
 
 	anchors.fill: parent
-	cursorShape: disabled ? undefined : Qt.PointingHandCursor
-	enabled: !disabled
+	cursorShape: !enabled ? undefined : Qt.PointingHandCursor
 	hoverEnabled: true
 
 	Behavior on stateOpacity {
@@ -65,7 +63,6 @@ MouseArea {
 		if (!(pressed || manualPressOverride) && circleRadius > endRadiusAtPress * 0.99 && !fadeAnim.running)
 			fadeAnim.start();
 	}
-	onClicked: event => !disabled && onClicked(event)
 	onManualPressOverrideChanged: {
 		if (!(pressed || manualPressOverride) && circleRadius > endRadiusAtPress * 0.99 && !fadeAnim.running)
 			fadeAnim.start();

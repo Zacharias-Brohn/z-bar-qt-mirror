@@ -11,10 +11,9 @@ Row {
 	}
 
 	property alias active: menu.active
-	property color colour: type == CustomSplitButton.Filled ? DynamicColors.palette.m3primary : DynamicColors.palette.m3secondaryContainer
-	property bool disabled
-	property color disabledColour: Qt.alpha(DynamicColors.palette.m3onSurface, 0.1)
-	property color disabledTextColour: Qt.alpha(DynamicColors.palette.m3onSurface, 0.38)
+	property color color: type == CustomSplitButton.Filled ? DynamicColors.palette.m3primary : DynamicColors.palette.m3secondaryContainer
+	property color disabledColor: Qt.alpha(DynamicColors.palette.m3onSurface, 0.1)
+	property color disabledTextColor: Qt.alpha(DynamicColors.palette.m3onSurface, 0.38)
 	readonly property alias expandBtn: expandBtn
 	property alias expanded: menu.expanded
 	property string fallbackIcon
@@ -27,7 +26,7 @@ Row {
 	property bool menuOnTop
 	property real minLeftWidth
 	readonly property alias stateLayer: stateLayer
-	property color textColour: type == CustomSplitButton.Filled ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3onSecondaryContainer
+	property color textColor: type == CustomSplitButton.Filled ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3onSecondaryContainer
 	readonly property alias textRow: textRow
 	property int type: CustomSplitButton.Filled
 	property real verticalPadding: Appearance.padding.small
@@ -36,7 +35,7 @@ Row {
 
 	CustomRect {
 		bottomRightRadius: Appearance.rounding.small / 2
-		color: root.disabled ? root.disabledColour : root.colour
+		color: !root.enabled ? root.disabledColor : root.color
 		implicitHeight: expandBtn.implicitHeight
 		implicitWidth: Math.max(root.minLeftWidth, textRow.implicitWidth + root.horizontalPadding * 2)
 		radius: implicitHeight / 2 * Math.min(1, Appearance.rounding.scale)
@@ -46,8 +45,8 @@ Row {
 			id: stateLayer
 
 			bottomRightRadius: parent.bottomRightRadius
-			color: root.textColour
-			disabled: root.disabled
+			color: root.textColor
+			enabled: root.enabled
 			topRightRadius: parent.topRightRadius
 
 			onClicked: root.active?.clicked()
@@ -65,7 +64,7 @@ Row {
 
 				Layout.alignment: Qt.AlignVCenter
 				animate: true
-				color: root.disabled ? root.disabledTextColour : root.textColour
+				color: !root.enabled ? root.disabledTextColor : root.textColor
 				fill: 1
 				text: root.active?.activeIcon ?? root.fallbackIcon
 			}
@@ -77,7 +76,7 @@ Row {
 				Layout.preferredWidth: implicitWidth
 				animate: true
 				clip: true
-				color: root.disabled ? root.disabledTextColour : root.textColour
+				color: !root.enabled ? root.disabledTextColor : root.textColor
 				text: root.active?.activeText ?? root.fallbackText
 
 				Behavior on Layout.preferredWidth {
@@ -95,7 +94,7 @@ Row {
 		property real rad: root.expanded ? implicitHeight / 2 * Math.min(1, Appearance.rounding.scale) : Appearance.rounding.small / 2
 
 		bottomLeftRadius: rad
-		color: root.disabled ? root.disabledColour : root.colour
+		color: !root.enabled ? root.disabledColor : root.color
 		implicitHeight: expandIcon.implicitHeight + root.verticalPadding * 2
 		implicitWidth: implicitHeight
 		radius: implicitHeight / 2 * Math.min(1, Appearance.rounding.scale)
@@ -109,8 +108,8 @@ Row {
 		StateLayer {
 			id: expandStateLayer
 
-			color: root.textColour
-			disabled: root.disabled
+			color: root.textColor
+			enabled: root.enabled
 			rect.bottomLeftRadius: parent.bottomLeftRadius
 			rect.topLeftRadius: parent.topLeftRadius
 
@@ -122,7 +121,7 @@ Row {
 
 			anchors.centerIn: parent
 			anchors.horizontalCenterOffset: root.expanded ? 0 : -Math.floor(root.verticalPadding / 4)
-			color: root.disabled ? root.disabledTextColour : root.textColour
+			color: !root.enabled ? root.disabledTextColor : root.textColor
 			rotation: root.expanded ? 180 : 0
 			text: "expand_more"
 

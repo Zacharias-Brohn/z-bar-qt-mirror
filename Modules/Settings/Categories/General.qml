@@ -243,7 +243,7 @@ SettingsPage {
 		// 	id: timeInput
 		//
 		// 	readonly property bool highlighted: SettingsHighlight.highlightedSetting === name
-		// 	property string name
+		// 	property string name: "Schedule dark mode"
 		// 	property var object
 		// 	property list<string> settings
 		// 	property bool shouldBeActive: true
@@ -371,7 +371,20 @@ SettingsPage {
 		// 				CustomRect {
 		// 					Layout.preferredHeight: 72
 		// 					Layout.preferredWidth: 96
-		// 					color: startHourField.focus ? DynamicColors.palette.m3primaryContainer : DynamicColors.palette.m3surfaceContainer
+		// 					color: startHourField.focus ? DynamicColors.palette.m3primaryContainer : DynamicColors.palette.m3surfaceContainerHighest
+		// 					radius: Appearance.rounding.small
+		//
+		// 					CustomRect {
+		// 						anchors.fill: parent
+		// 						border.color: startHourField.focus ? DynamicColors.palette.m3onPrimaryContainer : DynamicColors.palette.m3surfaceContainerHighest
+		// 						border.width: startHourField.focus ? 2 : 0
+		// 						radius: parent.radius - border.width
+		//
+		// 						Behavior on border.width {
+		// 							Anim {
+		// 							}
+		// 						}
+		// 					}
 		//
 		// 					CustomTextField {
 		// 						id: startHourField
@@ -384,9 +397,13 @@ SettingsPage {
 		// 							return timeValue % 60;
 		// 						}
 		//
-		// 						anchors.fill: parent
+		// 						anchors.centerIn: parent
 		// 						font.family: "Roboto"
-		// 						font.pixelSize: 57
+		// 						font.letterSpacing: -0.25
+		// 						font.pixelSize: 50
+		// 						font.weight: 400
+		// 						implicitHeight: contentHeight
+		// 						implicitWidth: parent.width
 		// 						text: convertHour(Config.general.color.scheduleDarkStart)
 		// 					}
 		// 				}
