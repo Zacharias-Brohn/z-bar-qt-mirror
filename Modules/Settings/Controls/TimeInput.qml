@@ -98,9 +98,11 @@ Item {
 
 			CustomText {
 				Layout.alignment: Qt.AlignLeft
+				Layout.preferredWidth: Math.min(contentWidth, optionLayout.x - Appearance.spacing.normal)
 				color: DynamicColors.palette.m3onSurfaceVariant
 				font.pointSize: Appearance.font.size.normal
 				text: qsTr("Dark mode will turn on at %1, and turn off at %2.").arg(root.startTime).arg(root.endTime)
+				wrapMode: Text.WordWrap
 			}
 		}
 
@@ -108,7 +110,7 @@ Item {
 			id: optionLayout
 
 			Layout.fillHeight: true
-			Layout.preferredWidth: childrenRect.width
+			Layout.fillWidth: true
 
 			RowLayout {
 				CustomText {
