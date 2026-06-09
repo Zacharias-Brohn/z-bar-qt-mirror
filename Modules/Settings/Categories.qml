@@ -19,23 +19,26 @@ Item {
 	// Function to select category by key
 	function selectCategory(categoryKey: string) {
 		for (let i = 0; i < appearanceCats.count; i++) {
-			if (appearanceCats.get(i).key === categoryKey) {
-				clayout.currentIndex = i;
-				root.content.currentCategory = categoryKey;
+			const item = appearanceCats.get(i);
+			if (item.key === categoryKey) {
+				appearanceView.currentIndex = i;
+				root.content.setCategory(item.key, item._index);
 				return;
 			}
 		}
 		for (let i = 0; i < systemCats.count; i++) {
-			if (systemCats.get(i).key === categoryKey) {
-				clayout.currentIndex = i;
-				root.content.currentCategory = categoryKey;
+			const item = systemCats.get(i);
+			if (item.key === categoryKey) {
+				sysView.currentIndex = i;
+				root.content.setCategory(item.key, item._index);
 				return;
 			}
 		}
 		for (let i = 0; i < panelCats.count; i++) {
-			if (panelCats.get(i).key === categoryKey) {
-				clayout.currentIndex = i;
-				root.content.currentCategory = categoryKey;
+			const item = panelCats.get(i);
+			if (item.key === categoryKey) {
+				panelsView.currentIndex = i;
+				root.content.setCategory(item.key, item._index);
 				return;
 			}
 		}
@@ -45,55 +48,38 @@ Item {
 	implicitWidth: clayout.contentWidth + clayout.anchors.margins * 2
 
 	ListModel {
-		id: appearanceCats
-
-		ListElement {
-			icon: "wallpaper"
-			key: "wallpaper"
-			name: "Wallpaper"
-		}
-
-		ListElement {
-			icon: "screenshot_region"
-			key: "screenshot"
-			name: "Screenshot"
-		}
-
-		ListElement {
-			icon: "colors"
-			key: "appearance"
-			name: "Appearance"
-		}
-	}
-
-	ListModel {
 		id: systemCats
 
 		ListElement {
+			_index: 0
 			icon: "settings"
 			key: "general"
 			name: "General"
 		}
 
 		ListElement {
+			_index: 1
 			icon: "build_circle"
 			key: "services"
 			name: "Services"
 		}
 
 		ListElement {
+			_index: 2
 			icon: "notifications"
 			key: "notifications"
 			name: "Notifications"
 		}
 
 		ListElement {
+			_index: 3
 			icon: "handyman"
 			key: "utilities"
 			name: "Utilities"
 		}
 
 		ListElement {
+			_index: 4
 			icon: "cached"
 			key: "updates"
 			name: "Updates"
@@ -104,39 +90,70 @@ Item {
 		id: panelCats
 
 		ListElement {
+			_index: 5
 			icon: "settop_component"
 			key: "bar"
 			name: "Bar"
 		}
 
 		ListElement {
+			_index: 6
 			icon: "lock"
 			key: "lockscreen"
 			name: "Lockscreen"
 		}
 
 		ListElement {
+			_index: 7
 			icon: "view_sidebar"
 			key: "sidebar"
 			name: "Sidebar"
 		}
 
 		ListElement {
+			_index: 8
 			icon: "dashboard"
 			key: "dashboard"
 			name: "Dashboard"
 		}
 
 		ListElement {
+			_index: 9
 			icon: "display_settings"
 			key: "osd"
 			name: "On screen display"
 		}
 
 		ListElement {
+			_index: 10
 			icon: "rocket_launch"
 			key: "launcher"
 			name: "Launcher"
+		}
+	}
+
+	ListModel {
+		id: appearanceCats
+
+		ListElement {
+			_index: 11
+			icon: "wallpaper"
+			key: "wallpaper"
+			name: "Wallpaper"
+		}
+
+		ListElement {
+			_index: 12
+			icon: "screenshot_region"
+			key: "screenshot"
+			name: "Screenshot"
+		}
+
+		ListElement {
+			_index: 13
+			icon: "colors"
+			key: "appearance"
+			name: "Appearance"
 		}
 	}
 
@@ -259,19 +276,23 @@ Item {
 	component Category: CustomRect {
 		id: categoryItem
 
+		required property int _index
+		readonly property bool first: index === 0
 		required property string icon
 		required property int index
 		required property string key
+		readonly property bool last: index === view.model.count - 1
 		required property string name
+		readonly property bool selected: key === root.content.currentCategory
 		required property ListView view
 
-		bottomLeftRadius: key === root.content.currentCategory || index === view.model.count - 1 ? (layer.pressed ? (Appearance.rounding.extraSmall / 2) : Appearance.rounding.normal - clayout.anchors.margins) : (layer.pressed ? (Appearance.rounding.extraSmall / 2) : Appearance.rounding.extraSmall)
-		bottomRightRadius: key === root.content.currentCategory || index === view.model.count - 1 ? (layer.pressed ? (Appearance.rounding.extraSmall / 2) : Appearance.rounding.normal - clayout.anchors.margins) : (layer.pressed ? (Appearance.rounding.extraSmall / 2) : Appearance.rounding.extraSmall)
-		color: key === root.content.currentCategory ? DynamicColors.palette.m3primary : DynamicColors.tPalette.m3surfaceContainer
-		implicitHeight: 42
+		bottomLeftRadius: layer.pressed ? Appearance.rounding.smallest : selected || last ? Appearance.rounding.normal - clayout.anchors.margins : Appearance.rounding.extraSmall
+		bottomRightRadius: layer.pressed ? Appearance.rounding.smallest : selected || last ? Appearance.rounding.normal - clayout.anchors.margins : Appearance.rounding.extraSmall
+		color: selected ? DynamicColors.palette.m3primary : DynamicColors.tPalette.m3surfaceContainer
+		implicitHeight: 50
 		implicitWidth: 256
-		topLeftRadius: key === root.content.currentCategory || index === 0 ? (layer.pressed ? (Appearance.rounding.extraSmall / 2) : Appearance.rounding.normal - clayout.anchors.margins) : (layer.pressed ? (Appearance.rounding.extraSmall / 2) : Appearance.rounding.extraSmall)
-		topRightRadius: key === root.content.currentCategory || index === 0 ? (layer.pressed ? (Appearance.rounding.extraSmall / 2) : Appearance.rounding.normal - clayout.anchors.margins) : (layer.pressed ? (Appearance.rounding.extraSmall / 2) : Appearance.rounding.extraSmall)
+		topLeftRadius: layer.pressed ? Appearance.rounding.smallest : selected || first ? Appearance.rounding.normal - clayout.anchors.margins : Appearance.rounding.extraSmall
+		topRightRadius: layer.pressed ? Appearance.rounding.smallest : selected || first ? Appearance.rounding.normal - clayout.anchors.margins : Appearance.rounding.extraSmall
 
 		Behavior on bottomLeftRadius {
 			Anim {
@@ -307,6 +328,7 @@ Item {
 
 				Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
 				Layout.fillHeight: true
+				Layout.leftMargin: Appearance.padding.small
 				Layout.preferredWidth: icon.contentWidth
 				color: categoryItem.key === root.content.currentCategory ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3onSurface
 				fill: categoryItem.key === root.content.currentCategory ? 1 : 0
@@ -339,7 +361,7 @@ Item {
 			color: categoryItem.key === root.content.currentCategory ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3onSurface
 
 			onClicked: {
-				root.content.currentCategory = categoryItem.key;
+				root.content.setCategory(categoryItem.key, categoryItem._index);
 				categoryItem.view.currentIndex = categoryItem.index;
 			}
 		}
