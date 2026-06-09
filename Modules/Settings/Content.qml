@@ -141,7 +141,7 @@ Item {
 				id: stack
 
 				anchors.fill: parent
-				anchors.margins: Appearance.padding.smaller
+				anchors.margins: Appearance.padding.extraSmall
 				initialItem: general
 			}
 		}

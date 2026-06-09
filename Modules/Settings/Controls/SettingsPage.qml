@@ -27,7 +27,7 @@ CustomClippingRect {
 		return false;
 	}
 
-	radius: Appearance.rounding.normal - Appearance.padding.smaller
+	radius: Appearance.rounding.normal - Appearance.padding.extraSmall
 
 	CustomFlickable {
 		id: flickable
