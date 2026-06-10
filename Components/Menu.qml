@@ -30,6 +30,7 @@ MouseArea {
 	signal itemSelected(item: MenuItem)
 
 	anchors.fill: parent
+	cursorShape: undefined
 	enabled: expanded
 	layer.enabled: opacity < 1
 	opacity: expanded ? 1 : 0

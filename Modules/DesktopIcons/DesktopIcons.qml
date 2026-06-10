@@ -1,11 +1,12 @@
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import Quickshell
-import qs.Modules
+import ZShell.Services
 import qs.Helpers
 import qs.Config
 import qs.Components
 import qs.Paths
-import ZShell.Services
 
 Item {
 	id: root
@@ -23,7 +24,34 @@ Item {
 	property real startY: 0
 
 	function exec(filePath, isDir) {
-		const cmd = ["xdg-open", filePath];
+		let type = DesktopUtils.getFileType(filePath, isDir);
+		let cmd = [];
+		switch (type) {
+		case "image":
+			cmd = [Config.options.apps.imageViewer, filePath];
+			break;
+		case "video":
+			cmd = [Config.options.apps.videoPlayer, filePath];
+			break;
+		case "audio":
+			cmd = [Config.options.apps.audioPlayer, filePath];
+			break;
+		case "archive":
+			cmd = [Config.options.apps.archiveManager, filePath];
+			break;
+		case "directory":
+			cmd = [Config.options.apps.fileManager, filePath];
+			break;
+		case "code":
+		case "text":
+			cmd = [Config.options.apps.textEditor, filePath];
+			break;
+		case "document":
+			cmd = [Config.options.apps.documentViewer, filePath];
+			break;
+		default:
+			cmd = ["xdg-open", filePath];
+		}
 		Quickshell.execDetached(cmd);
 	}
 
@@ -57,6 +85,7 @@ Item {
 		root.groupDragY = 0;
 	}
 
+	anchors.fill: parent
 	focus: true
 
 	Keys.onPressed: event => {
@@ -66,6 +95,8 @@ Item {
 
 	DesktopModel {
 		id: desktopModel
+
+		rows: Math.max(1, Math.floor(gridArea.height / root.cellHeight))
 
 		Component.onCompleted: loadDirectory(FileUtils.trimFileProtocol(Paths.desktop))
 	}
@@ -133,10 +164,10 @@ Item {
 				lasso.width = Math.abs(mouse.x - root.startX);
 				lasso.height = Math.abs(mouse.y - root.startY);
 
-				let minCol = Math.floor((lasso.x - gridArea.x) / cellWidth);
-				let maxCol = Math.floor((lasso.x + lasso.width - gridArea.x) / cellWidth);
-				let minRow = Math.floor((lasso.y - gridArea.y) / cellHeight);
-				let maxRow = Math.floor((lasso.y + lasso.height - gridArea.y) / cellHeight);
+				let minCol = Math.floor((lasso.x - gridArea.x) / root.cellWidth);
+				let maxCol = Math.floor((lasso.x + lasso.width - gridArea.x) / root.cellWidth);
+				let minRow = Math.floor((lasso.y - gridArea.y) / root.cellHeight);
+				let maxRow = Math.floor((lasso.y + lasso.height - gridArea.y) / root.cellHeight);
 
 				let newSelection = [];
 				for (let i = 0; i < gridArea.children.length; i++) {
@@ -158,10 +189,10 @@ Item {
 			} else {
 				bgContextMenu.close();
 				root.selectedIcons = [];
-				root.startX = Math.floor(mouse.x);
-				root.startY = Math.floor(mouse.y);
-				lasso.x = Math.floor(mouse.x);
-				lasso.y = Math.floor(mouse.y);
+				root.startX = mouse.x;
+				root.startY = mouse.y;
+				lasso.x = mouse.x;
+				lasso.y = mouse.y;
 				lasso.width = 0;
 				lasso.height = 0;
 				lasso.showLasso();
@@ -178,15 +209,15 @@ Item {
 		anchors.fill: parent
 		anchors.margins: 20
 		anchors.topMargin: 40
-		visible: true
 
 		Repeater {
 			model: desktopModel
 
 			delegate: DesktopIconDelegate {
-				property int itemIndex: index
+				required property int index
 
-				lassoActive: root.lassoActive
+				contextMenu: desktopMenu
+				iconsRoot: root
 			}
 		}
 	}
@@ -202,6 +233,5 @@ Item {
 
 	BackgroundContextMenu {
 		id: bgContextMenu
-
 	}
 }

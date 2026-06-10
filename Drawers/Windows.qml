@@ -26,25 +26,30 @@ CustomWindow {
 	WlrLayershell.exclusionMode: ExclusionMode.Ignore
 	// WlrLayershell.keyboardFocus: visibilities.dock || visibilities.launcher || visibilities.sidebar || visibilities.dashboard || visibilities.settings || visibilities.resources ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
 	color: "transparent"
-	contentItem.focus: true
 	mask: visibilities.isDrawing ? null : region
 	name: "Bar"
 
 	contentItem.Keys.onEscapePressed: {
 		if (Config.barConfig.autoHide)
 			visibilities.bar = false;
+		visibilities.launcher = false;
 		visibilities.sidebar = false;
 		visibilities.dashboard = false;
 		visibilities.osd = false;
 		visibilities.settings = false;
 		visibilities.resources = false;
+		visibilities.dock = false;
+		panels.popouts.hasCurrent = false;
 	}
 	onHasFullscreenChanged: {
 		visibilities.launcher = false;
+		visibilities.sidebar = false;
 		visibilities.dashboard = false;
 		visibilities.osd = false;
 		visibilities.settings = false;
 		visibilities.resources = false;
+		visibilities.dock = false;
+		panels.popouts.hasCurrent = false;
 	}
 
 	Region {
@@ -229,7 +234,7 @@ CustomWindow {
 		PanelBg {
 			id: utilsBg
 
-			deformAmount: panels.sidebar.visible ? (0.1) : (0.1)
+			deformAmount: 0.1
 			exclude: panels.sidebar.offsetScale > 0.08 ? [] : [sidebarBg]
 			panel: panels.utilities
 			topLeftRadius: 0
@@ -238,9 +243,9 @@ CustomWindow {
 		PanelBg {
 			id: popoutBg
 
-			property real extraHeight: panels.popouts.isDetached ? 0 : 0.2
+			property real extraHeight: 0.2
 
-			deformAmount: panels.popouts.isDetached ? 0.05 : panels.popouts.hasCurrent ? 0.15 : 0.1
+			deformAmount: panels.popouts.currentName.startsWith("traymenu") ? 0.15 : 0.08
 			implicitHeight: panels.popouts.height * (1 + extraHeight)
 			implicitWidth: panels.popouts.width
 			panel: panels.popoutsWrapper
