@@ -28,26 +28,25 @@ Item {
 		let cmd = [];
 		switch (type) {
 		case "image":
-			cmd = [Config.options.apps.imageViewer, filePath];
+			cmd = [Config.general.apps.image, filePath];
 			break;
 		case "video":
-			cmd = [Config.options.apps.videoPlayer, filePath];
+			cmd = [Config.general.apps.playback, filePath];
 			break;
 		case "audio":
-			cmd = [Config.options.apps.audioPlayer, filePath];
+			cmd = [Config.general.apps.audio, filePath];
 			break;
 		case "archive":
-			cmd = [Config.options.apps.archiveManager, filePath];
+			cmd = [Config.general.apps.archiver, filePath];
 			break;
 		case "directory":
-			cmd = [Config.options.apps.fileManager, filePath];
+			cmd = [Config.general.apps.explorer, filePath];
 			break;
-		case "code":
 		case "text":
-			cmd = [Config.options.apps.textEditor, filePath];
+			cmd = [Config.general.apps.editor, filePath];
 			break;
 		case "document":
-			cmd = [Config.options.apps.documentViewer, filePath];
+			cmd = [Config.general.apps.document, filePath];
 			break;
 		default:
 			cmd = ["xdg-open", filePath];

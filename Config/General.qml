@@ -16,8 +16,12 @@ JsonObject {
 	property string wallpaperPath: Quickshell.env("HOME") + "/Pictures/Wallpapers"
 
 	component Apps: JsonObject {
+		property list<string> archiver: ["ark"]
 		property list<string> audio: ["pavucontrol"]
+		property list<string> document: ["libreoffice"]
+		property list<string> editor: ["kate"]
 		property list<string> explorer: ["dolphin"]
+		property list<string> image: ["imv"]
 		property list<string> playback: ["mpv"]
 		property list<string> terminal: ["kitty"]
 	}

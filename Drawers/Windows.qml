@@ -26,6 +26,7 @@ CustomWindow {
 	WlrLayershell.exclusionMode: ExclusionMode.Ignore
 	// WlrLayershell.keyboardFocus: visibilities.dock || visibilities.launcher || visibilities.sidebar || visibilities.dashboard || visibilities.settings || visibilities.resources ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
 	color: "transparent"
+	contentItem.focus: true
 	mask: visibilities.isDrawing ? null : region
 	name: "Bar"
 

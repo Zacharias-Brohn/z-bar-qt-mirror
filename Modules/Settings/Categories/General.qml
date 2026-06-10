@@ -247,6 +247,18 @@ SettingsPage {
 			object: Config.general.color
 			settings: ["scheduleHyprsunset", "scheduleHyprsunsetStart", "scheduleHyprsunsetEnd", "hyprsunsetTemp"]
 		}
+
+		Separator {
+		}
+
+		SettingSpinBox {
+			max: 20000
+			min: 1000
+			name: "Hyprsunset temperature"
+			object: Config.general.color
+			setting: "hyprsunsetTemp"
+			step: 200
+		}
 	}
 
 	SettingsSection {

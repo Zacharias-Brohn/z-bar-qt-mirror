@@ -15,7 +15,7 @@ Item {
 
 	property real playerProgress: {
 		const active = Players.active;
-		return active?.length ? active.position / active.length : 0;
+		return active?.length ? (active.position % active.length) / active.length : 0;
 	}
 	property int rowHeight: Appearance.padding.large + Config.dashboard.sizes.mediaProgressThickness + Appearance.spacing.small
 
