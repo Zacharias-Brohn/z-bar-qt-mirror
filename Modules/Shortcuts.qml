@@ -59,4 +59,13 @@ Scope {
 			visibilities.settings = !visibilities.settings;
 		}
 	}
+
+	CustomShortcut {
+		name: "toggle-clipboard"
+
+		onPressed: {
+			const visibilities = Visibilities.getForActive();
+			visibilities.clipboard = !visibilities.clipboard;
+		}
+	}
 }

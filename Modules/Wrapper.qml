@@ -27,7 +27,6 @@ Item {
 		detachedMode = "";
 	}
 
-	focus: hasCurrent
 	implicitHeight: nonAnimHeight
 	implicitWidth: nonAnimWidth
 

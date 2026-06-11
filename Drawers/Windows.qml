@@ -40,6 +40,7 @@ CustomWindow {
 		visibilities.settings = false;
 		visibilities.resources = false;
 		visibilities.dock = false;
+		visibilities.clipboard = false;
 		panels.popouts.hasCurrent = false;
 	}
 	onHasFullscreenChanged: {
@@ -49,6 +50,7 @@ CustomWindow {
 		visibilities.osd = false;
 		visibilities.settings = false;
 		visibilities.resources = false;
+		visibilities.clipboard = false;
 		visibilities.dock = false;
 		panels.popouts.hasCurrent = false;
 	}
@@ -96,7 +98,7 @@ CustomWindow {
 	HyprlandFocusGrab {
 		id: focusGrab
 
-		active: visibilities.dock || visibilities.resources || visibilities.launcher || visibilities.sidebar || visibilities.dashboard || visibilities.settings || (panels.popouts.hasCurrent && panels.popouts.currentName.startsWith("traymenu"))
+		active: visibilities.dock || visibilities.resources || visibilities.launcher || visibilities.sidebar || visibilities.dashboard || visibilities.settings || visibilities.clipboard || (panels.popouts.hasCurrent && panels.popouts.currentName.startsWith("traymenu"))
 		windows: [root]
 
 		onCleared: {
@@ -106,6 +108,7 @@ CustomWindow {
 			visibilities.osd = false;
 			visibilities.settings = false;
 			visibilities.resources = false;
+			visibilities.clipboard = false;
 			visibilities.dock = false;
 			panels.popouts.hasCurrent = false;
 		}
@@ -115,6 +118,7 @@ CustomWindow {
 		id: visibilities
 
 		property bool bar
+		property bool clipboard
 		property bool dashboard
 		property bool dock
 		property bool isDrawing
@@ -303,6 +307,14 @@ CustomWindow {
 			panel: panels.drawing
 			radius: Appearance.rounding.normal
 		}
+
+		PanelBg {
+			id: clipboardBg
+
+			deformAmount: 0.03
+			panel: panels.clipboard
+			radius: 29
+		}
 	}
 
 	Loader {
@@ -355,6 +367,9 @@ CustomWindow {
 			screen: root.screen
 			visibilities: visibilities
 
+			clipboard.transform: Matrix4x4 {
+				matrix: clipboardBg.deformMatrix
+			}
 			dashboard.transform: Matrix4x4 {
 				matrix: dashBg.deformMatrix
 			}

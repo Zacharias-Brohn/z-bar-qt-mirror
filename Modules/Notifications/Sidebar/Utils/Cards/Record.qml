@@ -267,8 +267,8 @@ CustomRect {
 				checked: Recorder.paused
 				font.pointSize: Appearance.font.size.large
 				icon: Recorder.paused ? "play_arrow" : "pause"
+				isToggle: true
 				label.animate: true
-				toggle: true
 				type: IconButton.Tonal
 
 				onClicked: {
@@ -280,8 +280,8 @@ CustomRect {
 			IconButton {
 				font.pointSize: Appearance.font.size.large
 				icon: "stop"
-				inactiveColour: DynamicColors.palette.m3error
-				inactiveOnColour: DynamicColors.palette.m3onError
+				inactiveColor: DynamicColors.palette.m3error
+				inactiveOnColor: DynamicColors.palette.m3onError
 
 				onClicked: Recorder.stop()
 			}

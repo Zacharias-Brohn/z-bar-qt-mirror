@@ -101,11 +101,11 @@ CustomRect {
 	component Toggle: IconButton {
 		Layout.fillWidth: true
 		Layout.preferredWidth: implicitWidth + (stateLayer.pressed ? 18 : internalChecked ? 7 : 0)
-		inactiveColour: DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHighest, 2)
+		inactiveColor: DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHighest, 2)
+		isToggle: true
 		radius: stateLayer.pressed ? 6 / 2 : internalChecked ? 6 : 8
 		radiusAnim.duration: MaterialEasing.expressiveEffectsTime
 		radiusAnim.easing.bezierCurve: MaterialEasing.expressiveEffects
-		toggle: true
 
 		Behavior on Layout.preferredWidth {
 			Anim {

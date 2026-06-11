@@ -17,21 +17,15 @@ Item {
 	implicitWidth: content.implicitWidth
 	visible: width > 0 && height > 0
 	x: {
-		if (content.isDetached)
-			return (parent.width - content.nonAnimWidth) / 2;
-
 		const off = content.currentCenter - Config.barConfig.border - content.nonAnimWidth / 2;
 		const diff = parent.width - Math.floor(off + content.nonAnimWidth);
 		if (diff < 0)
 			return off + diff;
 		return Math.floor(Math.max(off, 0));
 	}
-	y: content.isDetached ? (parent.height - content.nonAnimHeight) / 2 : 0
 
 	Behavior on offsetScale {
 		Anim {
-			duration: Appearance.anim.durations.expressiveDefaultSpatial
-			easing.bezierCurve: Appearance.anim.curves.expressiveDefaultSpatial
 		}
 	}
 	Behavior on x {

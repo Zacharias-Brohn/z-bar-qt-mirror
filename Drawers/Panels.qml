@@ -13,12 +13,14 @@ import qs.Modules.Resources as Resources
 import qs.Modules.Settings as Settings
 import qs.Modules.Drawing as Drawing
 import qs.Modules.Dock as Dock
+import qs.Modules.Clipboard as Clipboard
 import qs.Config
 
 Item {
 	id: root
 
 	required property Item bar
+	readonly property alias clipboard: clipboard
 	readonly property alias dashboard: dashboard
 	readonly property alias dashboardWrapper: dashboardWrapper
 	readonly property alias dock: dock
@@ -204,6 +206,15 @@ Item {
 		anchors.bottom: parent.bottom
 		anchors.horizontalCenter: parent.horizontalCenter
 		panels: root
+		screen: root.screen
+		visibilities: root.visibilities
+	}
+
+	Clipboard.Wrapper {
+		id: clipboard
+
+		anchors.bottom: parent.bottom
+		anchors.left: parent.left
 		screen: root.screen
 		visibilities: root.visibilities
 	}

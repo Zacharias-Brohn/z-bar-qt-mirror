@@ -74,7 +74,7 @@ Item {
 			const dragX = x - centroid.pressPosition.x;
 			const dragY = y - centroid.pressPosition.y;
 
-			if (centroid.pressPosition.y >= root.screen.height - Config.barConfig.border && dragY < -200)
+			if (centroid.pressPosition.y >= root.screen.height - Config.barConfig.border && centroid.pressPosition.x > root.screen.width / 5 && dragY < -200)
 				root.visibilities.launcher = true;
 
 			if (root.singleGestureTriggered)
@@ -90,7 +90,10 @@ Item {
 				}
 			}
 
-			if (!Config.dock.hoverToReveal && centroid.pressPosition.y > root.screen.height - root.bar.implicitHeight)
+			if (centroid.pressPosition.y > root.screen.height - Config.barConfig.border && centroid.pressPosition.x < root.screen.width / 5 && dragY < -50)
+				root.visibilities.clipboard = true;
+
+			if (!Config.dock.hoverToReveal && centroid.pressPosition.y > root.screen.height - root.bar.implicitHeight && centroid.pressPosition.x > root.screen.width / 5)
 				if (dragY < -10) {
 					root.visibilities.dock = true;
 					root.singleGestureTriggered = true;
