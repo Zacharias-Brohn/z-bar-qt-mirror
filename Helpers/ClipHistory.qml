@@ -17,16 +17,10 @@ Singleton {
 				name: Fuzzy.prepare(`${a.replace(/^\s*\S+\s+/, "")}`),
 				entry: a
 			}))
-	property string pressPasteCommand: "ydotool key -d 1 29:1 47:1 47:0 29:0"
 	property real scoreThreshold: 0.2
 
 	function copy(entry) {
-		if (root.cliphistBinary.includes("cliphist"))
-			Quickshell.execDetached(["bash", "-c", `printf '${shellSingleQuoteEscape(entry)}' | ${root.cliphistBinary} decode | wl-copy`]);
-		else {
-			const entryNumber = entry.split("\t")[0];
-			Quickshell.execDetached(["bash", "-c", `${root.cliphistBinary} decode ${entryNumber} | wl-copy`]);
-		}
+		Quickshell.execDetached(["bash", "-c", `printf '${shellSingleQuoteEscape(entry)}' | ${root.cliphistBinary} decode | wl-copy`]);
 	}
 
 	function deleteEntry(entry) {
@@ -50,12 +44,7 @@ Singleton {
 	}
 
 	function paste(entry) {
-		if (root.cliphistBinary.includes("cliphist"))
-			Quickshell.execDetached(["bash", "-c", `printf '${shellSingleQuoteEscape(entry)}' | ${root.cliphistBinary} decode | wl-copy && wl-paste`]);
-		else {
-			const entryNumber = entry.split("\t")[0];
-			Quickshell.execDetached(["bash", "-c", `${root.cliphistBinary} decode ${entryNumber} | wl-copy; ${root.pressPasteCommand}`]);
-		}
+		Quickshell.execDetached(["bash", "-c", `printf '${shellSingleQuoteEscape(entry)}' | ${root.cliphistBinary} decode | wl-copy && wl-paste`]);
 	}
 
 	function refresh() {

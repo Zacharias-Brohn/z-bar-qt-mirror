@@ -10,11 +10,12 @@ import qs.Config
 Item {
 	id: root
 
+	readonly property int itemHeight: Config.clipboard.sizes.itemHeight
 	required property ShellScreen screen
 	required property PersistentProperties visibilities
 
-	implicitHeight: screen.height / 2
-	implicitWidth: 500
+	implicitHeight: search.implicitHeight + entries.anchors.topMargin + ((view.spacing + itemHeight) * Config.clipboard.maxEntriesShown) - view.spacing
+	implicitWidth: Config.clipboard.sizes.width
 
 	Component.onCompleted: {
 		if (!ClipHistory.entries.length > 0)
@@ -51,6 +52,13 @@ Item {
 			anchors.top: parent.top
 			color: DynamicColors.palette.m3onSurface
 			placeholderText: "Search clipboard history..."
+
+			Keys.onDownPressed: view.incrementCurrentIndex()
+			Keys.onUpPressed: view.decrementCurrentIndex()
+			onAccepted: {
+				ClipHistory.copy(view.currentItem.modelData);
+				root.visibilities.clipboard = false;
+			}
 		}
 	}
 
@@ -62,20 +70,28 @@ Item {
 		anchors.right: parent.right
 		anchors.top: search.bottom
 		anchors.topMargin: Appearance.spacing.normal
-		radius: Appearance.rounding.normal
+		radius: Appearance.rounding.small
 
-		ListView {
+		CustomListView {
 			id: view
 
 			anchors.fill: parent
+			highlightFollowsCurrentItem: false
+			highlightRangeMode: ListView.ApplyRange
+			preferredHighlightBegin: 0
+			preferredHighlightEnd: height
 			spacing: Appearance.spacing.normal
 
+			CustomScrollBar.vertical: CustomScrollBar {
+				flickable: view
+			}
 			delegate: RowLayout {
 				id: clipItem
 
 				required property string modelData
 
-				height: 50
+				height: root.itemHeight
+				spacing: Appearance.spacing.small
 				width: view.width
 
 				CustomClippingRect {
@@ -83,8 +99,6 @@ Item {
 
 					Layout.fillHeight: true
 					Layout.fillWidth: true
-					// Layout.preferredWidth: implicitWidth + (textLayer.pressed ? 18 : 0)
-					// implicitWidth: 250
 					radius: textLayer.pressed ? (Appearance.rounding.small / 2) : Appearance.rounding.small
 
 					Behavior on Layout.preferredWidth {
@@ -98,14 +112,47 @@ Item {
 						}
 					}
 
-					CustomText {
-						id: text
+					Item {
+						id: textWrapper
 
-						anchors.left: parent.left
-						anchors.margins: Appearance.padding.normal
-						anchors.verticalCenter: parent.verticalCenter
-						elide: Text.ElideRight
-						text: clipItem.modelData
+						anchors.fill: parent
+						layer.enabled: true
+
+						layer.effect: OpacityMask {
+							maskSource: fadeMask
+						}
+
+						CustomText {
+							id: text
+
+							anchors.left: parent.left
+							anchors.margins: Appearance.padding.normal
+							anchors.verticalCenter: parent.verticalCenter
+							elide: Text.ElideRight
+							text: clipItem.modelData
+						}
+					}
+
+					CustomRect {
+						id: fadeMask
+
+						anchors.fill: parent
+						layer.enabled: true
+						visible: false
+
+						gradient: Gradient {
+							orientation: Gradient.Horizontal
+
+							GradientStop {
+								color: Qt.rgba(1, 1, 1, 1.0)
+								position: 0.85
+							}
+
+							GradientStop {
+								color: Qt.rgba(1, 1, 1, 0)
+								position: 1.0
+							}
+						}
 					}
 
 					StateLayer {
@@ -116,17 +163,17 @@ Item {
 				}
 
 				IconButton {
+					Layout.bottomMargin: Appearance.padding.normal
 					Layout.fillHeight: true
-					Layout.margins: Appearance.padding.smallest
 					Layout.preferredWidth: height
+					Layout.topMargin: Appearance.padding.normal
 					icon: "content_copy"
 					isToggle: false
-					// implicitWidth: 30
 				}
 
 				IconButton {
 					Layout.fillHeight: true
-					Layout.margins: Appearance.padding.smallest
+					Layout.margins: Appearance.padding.normal
 					Layout.preferredWidth: height
 					icon: "delete"
 					inactiveColor: Qt.alpha(DynamicColors.palette.m3error, 0.8)
@@ -134,14 +181,23 @@ Item {
 					isToggle: false
 				}
 			}
-			model: ScriptModel {
-				values: {
-					const entries = ClipHistory.entries;
-					const search = searchField.text;
-					var regex = new RegExp(search, "i");
+			highlight: CustomRect {
+				color: DynamicColors.palette.m3onSurface
+				implicitHeight: view.currentItem?.height ?? 0
+				implicitWidth: view.width
+				opacity: 0.08
+				radius: Appearance.rounding.small
+				y: view.currentItem?.y ?? 0
 
-					return entries.filter(n => regex.test(n));
+				Behavior on y {
+					Anim {
+						duration: Appearance.anim.durations.small
+						easing.bezierCurve: Appearance.anim.curves.expressiveEffects
+					}
 				}
+			}
+			model: ScriptModel {
+				values: ClipHistory.fuzzyQuery(searchField.text)
 			}
 		}
 	}

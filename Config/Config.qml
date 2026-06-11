@@ -13,6 +13,7 @@ Singleton {
 	property alias appearance: adapter.appearance
 	property alias background: adapter.background
 	property alias barConfig: adapter.barConfig
+	property alias clipboard: adapter.clipboard
 	property alias colors: adapter.colors
 	property alias dashboard: adapter.dashboard
 	property alias dock: adapter.dock
@@ -116,6 +117,17 @@ Singleton {
 		};
 	}
 
+	function serializeClipboard(): var {
+		return {
+			enabled: clipboard.enabled,
+			maxEntriesShown: clipboard.maxEntriesShown,
+			sizes: {
+				width: clipboard.sizes.width,
+				itemHeight: clipboard.sizes.itemHeight
+			}
+		};
+	}
+
 	function serializeColors(): var {
 		return {
 			schemeType: colors.schemeType,
@@ -143,7 +155,8 @@ Singleton {
 			launcher: serializeLauncher(),
 			colors: serializeColors(),
 			dock: serializeDock(),
-			screenshot: serializeScreenshot()
+			screenshot: serializeScreenshot(),
+			clipboard: serializeClipboard()
 		};
 	}
 
@@ -446,6 +459,8 @@ Singleton {
 			property BackgroundConfig background: BackgroundConfig {
 			}
 			property BarConfig barConfig: BarConfig {
+			}
+			property ClipboardConfig clipboard: ClipboardConfig {
 			}
 			property Colors colors: Colors {
 			}
