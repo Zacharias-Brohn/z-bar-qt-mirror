@@ -167,6 +167,7 @@ Item {
 
 			anchors.fill: parent
 			anchors.margins: Appearance.padding.extraSmall
+			contentHeight: contentItem.childrenRect.height
 			contentWidth: contentItem.childrenRect.width
 			flickableDirection: Flickable.VerticalFlick
 
