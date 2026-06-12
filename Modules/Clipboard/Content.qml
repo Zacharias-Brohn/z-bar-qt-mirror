@@ -2,6 +2,7 @@ pragma ComponentBehavior: Bound
 
 import Quickshell
 import QtQuick
+import QtQuick.Controls
 import QtQuick.Layouts
 import qs.Components
 import qs.Helpers
@@ -15,10 +16,10 @@ Item {
 	required property PersistentProperties visibilities
 
 	implicitHeight: search.implicitHeight + entries.anchors.topMargin + ((view.spacing + itemHeight) * Config.clipboard.maxEntriesShown) - view.spacing
-	implicitWidth: Config.clipboard.sizes.width
+	implicitWidth: Config.clipboard.sizes.width + 500
 
 	Component.onCompleted: {
-		if (!ClipHistory.entries.length > 0)
+		if (ClipHistory.entries.length === 0)
 			ClipHistory.refresh();
 		searchField.forceActiveFocus();
 	}
@@ -27,7 +28,7 @@ Item {
 		id: search
 
 		anchors.left: parent.left
-		anchors.right: parent.right
+		anchors.right: entries.right
 		anchors.top: parent.top
 		color: DynamicColors.tPalette.m3surfaceContainer
 		implicitHeight: 50
@@ -63,13 +64,49 @@ Item {
 	}
 
 	CustomClippingRect {
+		id: preview
+
+		anchors.bottom: parent.bottom
+		anchors.left: entries.right
+		anchors.leftMargin: Appearance.spacing.normal
+		anchors.right: parent.right
+		anchors.top: parent.top
+		color: DynamicColors.tPalette.m3surfaceContainer
+		radius: 25
+
+		CustomText {
+			anchors.left: parent.left
+			anchors.margins: Appearance.padding.large
+			anchors.top: parent.top
+			text: ClipHistory.previewText
+			textFormat: Text.PlainText
+			visible: !ClipHistory.previewIsImage
+			width: preview.width - Appearance.padding.large * 2
+			wrapMode: Text.Wrap
+		}
+
+		Image {
+			anchors.fill: parent
+			anchors.margins: Appearance.padding.large
+			asynchronous: true
+			cache: false
+			fillMode: Image.PreserveAspectFit
+			mipmap: true
+			retainWhileLoading: true
+			smooth: true
+			source: ClipHistory.previewImageSource
+			visible: ClipHistory.previewIsImage
+		}
+	}
+
+	CustomClippingRect {
 		id: entries
 
 		anchors.bottom: parent.bottom
 		anchors.left: parent.left
-		anchors.right: parent.right
 		anchors.top: search.bottom
 		anchors.topMargin: Appearance.spacing.normal
+		implicitWidth: Config.clipboard.sizes.width
 		radius: Appearance.rounding.small
 
 		CustomListView {
@@ -88,6 +125,7 @@ Item {
 			delegate: RowLayout {
 				id: clipItem
 
+				readonly property bool isImage: ClipHistory.entryIsImage(modelData)
 				required property string modelData
 
 				height: root.itemHeight
@@ -122,14 +160,24 @@ Item {
 							maskSource: fadeMask
 						}
 
-						CustomText {
-							id: text
+						MaterialIcon {
+							id: icon
 
 							anchors.left: parent.left
 							anchors.margins: Appearance.padding.normal
 							anchors.verticalCenter: parent.verticalCenter
+							font.pointSize: Appearance.font.size.large
+							text: clipItem.isImage ? "image" : "text_fields"
+						}
+
+						CustomText {
+							id: text
+
+							anchors.left: icon.right
+							anchors.margins: Appearance.spacing.normal
+							anchors.verticalCenter: parent.verticalCenter
 							elide: Text.ElideRight
-							text: clipItem.modelData
+							text: clipItem.isImage ? qsTr("Image") : ClipHistory.displayText(clipItem.modelData)
 						}
 					}
 
@@ -198,6 +246,14 @@ Item {
 			}
 			model: ScriptModel {
 				values: ClipHistory.fuzzyQuery(searchField.text)
+			}
+
+			onCurrentItemChanged: {
+				if (!currentItem)
+					return;
+
+				ClipHistory.currentEntry = currentItem.modelData;
+				ClipHistory.refreshPreview();
 			}
 		}
 	}

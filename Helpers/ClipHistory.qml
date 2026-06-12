@@ -11,23 +11,33 @@ Singleton {
 	id: root
 
 	property string cliphistBinary: "cliphist"
+	property string currentEntry: ""
 	property list<string> entries: []
 	property real pasteDelay: 0.05
 	readonly property var preparedEntries: entries.map(a => ({
-				name: Fuzzy.prepare(`${a.replace(/^\s*\S+\s+/, "")}`),
+				name: Fuzzy.prepare(displayText(a)),
 				entry: a
 			}))
+	property string previewImageFile: "/tmp/qs-cliphist-preview.img"
+	property string previewImageSource: ""
+	property bool previewIsImage: false
+	property string previewText: ""
+	property int previewToken: 0
 	property real scoreThreshold: 0.2
 
-	function copy(entry) {
+	function copy(entry): void {
 		Quickshell.execDetached(["bash", "-c", `printf '${shellSingleQuoteEscape(entry)}' | ${root.cliphistBinary} decode | wl-copy`]);
 	}
 
-	function deleteEntry(entry) {
+	function deleteEntry(entry): void {
 		deleteProc.deleteEntry(entry);
 	}
 
-	function entryIsImage(entry) {
+	function displayText(entry): string {
+		return entry.replace(/^\s*\d+\s+/, "");
+	}
+
+	function entryIsImage(entry): bool {
 		return !!(/^\d+\t\[\[.*binary data.*\d+x\d+.*\]\]$/.test(entry));
 	}
 
@@ -43,20 +53,42 @@ Singleton {
 		});
 	}
 
-	function paste(entry) {
+	function paste(entry): void {
 		Quickshell.execDetached(["bash", "-c", `printf '${shellSingleQuoteEscape(entry)}' | ${root.cliphistBinary} decode | wl-copy && wl-paste`]);
 	}
 
-	function refresh() {
+	function refresh(): void {
 		readProc.buffer = [];
 		readProc.running = true;
 	}
 
-	function shellSingleQuoteEscape(str) {
+	function refreshPreview(): void {
+		previewToken += 1;
+		const token = previewToken;
+
+		if (!currentEntry) {
+			previewText = "";
+			previewImageSource = "";
+			previewIsImage = false;
+			return;
+		}
+
+		previewIsImage = entryIsImage(currentEntry);
+
+		if (previewIsImage) {
+			previewImageProc.token = token;
+			previewImageProc.running = true;
+		} else {
+			previewTextProc.token = token;
+			previewTextProc.running = true;
+		}
+	}
+
+	function shellSingleQuoteEscape(str): string {
 		return String(str).replace(/'/g, "'\\''");
 	}
 
-	function wipe() {
+	function wipe(): void {
 		wipeProc.running = true;
 	}
 
@@ -104,6 +136,52 @@ Singleton {
 
 		onTriggered: {
 			root.refresh();
+		}
+	}
+
+	Process {
+		id: previewTextProc
+
+		property int token: 0
+
+		command: ["bash", "-c", `
+            printf '%s' '${root.shellSingleQuoteEscape(root.currentEntry)}' | ${root.cliphistBinary} decode
+        `]
+		running: false
+
+		stdout: StdioCollector {
+			onStreamFinished: {
+				if (previewTextProc.token !== root.previewToken)
+					return;
+				root.previewText = this.text;
+			}
+		}
+	}
+
+	Process {
+		id: previewImageProc
+
+		property int token: 0
+
+		command: ["bash", "-c", `
+            set -euo pipefail
+            tmp='${root.shellSingleQuoteEscape(root.previewImageFile)}'
+            printf '%s' '${root.shellSingleQuoteEscape(root.currentEntry)}' | ${root.cliphistBinary} decode > "$tmp"
+        `]
+		running: false
+
+		onExited: (exitCode, exitStatus) => {
+			if (token !== root.previewToken)
+				return;
+			if (exitCode !== 0) {
+				console.error("[Cliphist] image preview failed", exitCode, exitStatus);
+				return;
+			}
+
+			root.previewImageSource = "";
+			Qt.callLater(() => {
+				root.previewImageSource = `file://${root.previewImageFile}`;
+			});
 		}
 	}
 
