@@ -67,7 +67,7 @@ ScrollBar {
 			implicitHeight: root.height * root.effectiveSize
 			implicitWidth: fullMouse.pressed || fullMouse.containsMouse ? Appearance.padding.extraSmall * 2 : Appearance.padding.extraSmall
 			opacity: {
-				if (root.effectiveSize === 1)
+				if (root.size === 1)
 					return 0;
 				if (fullMouse.pressed)
 					return 1;
