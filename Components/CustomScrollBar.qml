@@ -18,14 +18,6 @@ ScrollBar {
 	implicitWidth: Appearance.padding.extraSmall * 2
 
 	contentItem: Item {
-		MouseArea {
-			id: mouse
-
-			acceptedButtons: Qt.NoButton
-			anchors.fill: parent
-			cursorShape: Qt.PointingHandCursor
-			hoverEnabled: true
-		}
 	}
 	Behavior on position {
 		enabled: !fullMouse.pressed
@@ -88,6 +80,15 @@ ScrollBar {
 				Anim {
 					type: Anim.DefaultEffects
 				}
+			}
+
+			MouseArea {
+				id: mouse
+
+				acceptedButtons: Qt.NoButton
+				anchors.fill: parent
+				cursorShape: Qt.PointingHandCursor
+				hoverEnabled: true
 			}
 		}
 	}
