@@ -60,12 +60,9 @@ Item {
 
 			menu.onItemSelected: item => {
 				root.selected(item);
-			// splitButton.closeDropdown();
 			}
 			stateLayer.onClicked: {
-				// splitButton.toggleDropdown();
 				splitButton.expanded = !splitButton.expanded;
-				console.log(root.z);
 			}
 		}
 	}

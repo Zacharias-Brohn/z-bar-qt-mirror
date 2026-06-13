@@ -40,12 +40,6 @@ ScrollBar {
 		else
 			hideDelay.restart();
 	}
-	onPositionChanged: {
-		const handleY = handle.y;
-		const pos = position;
-
-		console.log("\n" + "handle y: " + handleY + "\n" + "pos: " + pos);
-	}
 
 	Connections {
 		function onMovingChanged() {
