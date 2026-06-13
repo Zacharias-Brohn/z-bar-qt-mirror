@@ -10,7 +10,6 @@ import qs.Config
 import qs.Helpers
 import qs.Modules.SysTray
 import qs.Modules.SysTray.Widgets
-import qs.Modules.Network
 
 Item {
 	id: root

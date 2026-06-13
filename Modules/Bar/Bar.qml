@@ -9,7 +9,6 @@ import qs.Config
 import qs.Helpers
 import qs.Modules.SysTray
 import qs.Modules.SysTray.Widgets
-import qs.Modules.Network
 import qs.Modules.Updates
 
 RowLayout {
@@ -172,15 +171,6 @@ RowLayout {
 				delegate: WrappedLoader {
 					sourceComponent: WindowTitle {
 						bar: root
-					}
-				}
-			}
-
-			DelegateChoice {
-				roleValue: "network"
-
-				delegate: WrappedLoader {
-					sourceComponent: NetworkWidget {
 					}
 				}
 			}

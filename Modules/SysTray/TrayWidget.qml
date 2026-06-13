@@ -28,6 +28,11 @@ RowLayout {
 						id: "audio",
 						item: child
 					};
+				if (child.objectName === "networkWidget" && Config.barConfig.popouts.network)
+					return {
+						id: "network",
+						item: child
+					};
 				if (child.objectName === "upowerWidget" && Config.barConfig.popouts.upower)
 					return {
 						id: "upower",
@@ -111,6 +116,10 @@ RowLayout {
 
 			AudioWidget {
 				objectName: "audioWidget"
+			}
+
+			NetworkWidget {
+				objectName: "networkWidget"
 			}
 
 			UPowerWidget {
