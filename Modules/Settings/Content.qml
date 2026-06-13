@@ -181,7 +181,7 @@ Item {
 			}
 		}
 
-		CustomClippingRect {
+		CustomRect {
 			id: categoryContent
 
 			anchors.bottom: parent.bottom

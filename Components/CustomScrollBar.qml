@@ -5,52 +5,26 @@ import qs.Config
 ScrollBar {
 	id: root
 
-	property bool _updatingFromFlickable: false
-	property bool _updatingFromUser: false
-	property bool animating
+	readonly property real effectiveSize: Math.max(nonAnimHeight, root.minimumSize)
+	readonly property real effectiveTravel: Math.max(0, 1 - root.effectiveSize)
 	required property Flickable flickable
-	property real nonAnimPosition
+	readonly property real nonAnimHeight: flickable.height / flickable.contentHeight
+	readonly property real nonAnimY: flickable.contentY / flickable.contentHeight
+	readonly property real rawTravel: Math.max(0, 1 - root.nonAnimHeight)
+	readonly property bool reversed: flickable instanceof ListView && flickable.verticalLayoutDirection === ListView.BottomToTop
 	property bool shouldBeActive
+	readonly property real travelScale: root.rawTravel > 0 ? root.effectiveTravel / root.rawTravel : 0
 
-	implicitWidth: mouse.containsMouse ? Appearance.padding.extraSmall * 2 : Appearance.padding.extraSmall
+	implicitWidth: Appearance.padding.extraSmall * 2
 
-	contentItem: CustomRect {
-		anchors.left: parent.left
-		anchors.right: parent.right
-		color: DynamicColors.palette.m3secondary
-		opacity: {
-			if (root.size === 1)
-				return 0;
-			if (fullMouse.pressed)
-				return 1;
-			if (mouse.containsMouse)
-				return 0.8;
-			if (root.policy === ScrollBar.AlwaysOn || root.shouldBeActive)
-				return 0.6;
-			return 0;
-		}
-		radius: Appearance.rounding.full
-
-		Behavior on opacity {
-			Anim {
-				type: Anim.DefaultEffects
-			}
-		}
-
+	contentItem: Item {
 		MouseArea {
 			id: mouse
 
 			acceptedButtons: Qt.NoButton
-			anchors.bottom: parent.bottom
-			anchors.right: parent.right
-			anchors.top: parent.top
+			anchors.fill: parent
 			cursorShape: Qt.PointingHandCursor
 			hoverEnabled: true
-			implicitWidth: Appearance.padding.extraSmall * 2
-		}
-	}
-	Behavior on implicitWidth {
-		Anim {
 		}
 	}
 	Behavior on position {
@@ -60,54 +34,21 @@ ScrollBar {
 		}
 	}
 
-	Component.onCompleted: {
-		if (flickable) {
-			const contentHeight = flickable.contentHeight;
-			const height = flickable.height;
-			if (contentHeight > height) {
-				nonAnimPosition = Math.max(0, Math.min(1, flickable.contentY / (contentHeight - height)));
-			}
-		}
-	}
 	onHoveredChanged: {
 		if (hovered)
-			shouldBeActive = true;
+			shouldBeActive = hovered;
 		else
-			shouldBeActive = flickable.moving;
+			hideDelay.restart();
 	}
-
-	// Sync nonAnimPosition with Qt's automatic position binding
 	onPositionChanged: {
-		if (_updatingFromUser) {
-			_updatingFromUser = false;
-			return;
-		}
-		if (position === nonAnimPosition) {
-			animating = false;
-			return;
-		}
-		if (!animating && !_updatingFromFlickable && !fullMouse.pressed) {
-			nonAnimPosition = position;
-		}
+		const handleY = handle.y;
+		const pos = position;
+
+		console.log("\n" + "handle y: " + handleY + "\n" + "pos: " + pos);
 	}
 
-	// Sync nonAnimPosition with flickable when not animating
 	Connections {
-		function onContentYChanged() {
-			if (!root.animating && !fullMouse.pressed) {
-				root._updatingFromFlickable = true;
-				const contentHeight = root.flickable.contentHeight;
-				const height = root.flickable.height;
-				if (contentHeight > height) {
-					root.nonAnimPosition = Math.max(0, Math.min(1, root.flickable.contentY / (contentHeight - height)));
-				} else {
-					root.nonAnimPosition = 0;
-				}
-				root._updatingFromFlickable = false;
-			}
-		}
-
-		function onMovingChanged(): void {
+		function onMovingChanged() {
 			if (root.flickable.moving)
 				root.shouldBeActive = true;
 			else
@@ -115,6 +56,46 @@ ScrollBar {
 		}
 
 		target: root.flickable
+	}
+
+	CustomClippingRect {
+		anchors.bottom: parent.bottom
+		anchors.right: parent.right
+		anchors.top: parent.top
+		implicitWidth: handle.implicitWidth
+		radius: Appearance.rounding.full
+
+		CustomRect {
+			id: handle
+
+			anchors.right: parent.right
+			color: DynamicColors.palette.m3secondary
+			implicitHeight: root.height * root.effectiveSize
+			implicitWidth: fullMouse.pressed || fullMouse.containsMouse ? Appearance.padding.extraSmall * 2 : Appearance.padding.extraSmall
+			opacity: {
+				if (root.effectiveSize === 1)
+					return 0;
+				if (fullMouse.pressed)
+					return 1;
+				if (mouse.containsMouse)
+					return 0.8;
+				if (root.policy === ScrollBar.AlwaysOn || root.shouldBeActive)
+					return 0.6;
+				return 0;
+			}
+			radius: Appearance.rounding.full
+			y: root.reversed ? root.height * (1 + root.nonAnimY) * root.travelScale : root.height * root.nonAnimY * root.travelScale
+
+			Behavior on implicitWidth {
+				Anim {
+				}
+			}
+			Behavior on opacity {
+				Anim {
+					type: Anim.DefaultEffects
+				}
+			}
+		}
 	}
 
 	Timer {
@@ -128,66 +109,55 @@ ScrollBar {
 	CustomMouseArea {
 		id: fullMouse
 
-		function onWheel(event: WheelEvent): void {
-			root.animating = true;
-			root._updatingFromUser = true;
-			let newPos = root.nonAnimPosition;
-			if (event.angleDelta.y > 0)
-				newPos = Math.max(0, root.nonAnimPosition - 0.1);
-			else if (event.angleDelta.y < 0)
-				newPos = Math.min(1 - root.size, root.nonAnimPosition + 0.1);
-			root.nonAnimPosition = newPos;
-			// Update flickable position
-			// Map scrollbar position [0, 1-size] to contentY [0, maxContentY]
-			if (root.flickable) {
-				const contentHeight = root.flickable.contentHeight;
-				const height = root.flickable.height;
-				if (contentHeight > height) {
-					const maxContentY = contentHeight - height;
-					const maxPos = 1 - root.size;
-					const contentY = maxPos > 0 ? (newPos / maxPos) * maxContentY : 0;
-					root.flickable.contentY = Math.max(0, Math.min(maxContentY, contentY));
-				}
-			}
+		property real pressOffset: 0
+
+		function contentYFromThumbTop(thumbTop) {
+			var visualPos = root.effectiveTravel > 0 ? thumbTop / root.travelScale : 0;
+
+			return root.reversed ? (visualPos - 1) * root.flickable.contentHeight : visualPos * root.flickable.contentHeight;
+		}
+
+		function updateFromEvent(event) {
+			var posInTrack = event.y / root.height;
+			var thumbTop = posInTrack - pressOffset;
+			thumbTop = Math.max(0, Math.min(root.effectiveTravel, thumbTop));
+
+			root.flickable.contentY = contentYFromThumbTop(thumbTop);
+		}
+
+		function visualThumbTop() {
+			const visualPos = root.reversed ? (1 + root.nonAnimY) : root.nonAnimY;
+			return visualPos * root.travelScale;
 		}
 
 		anchors.fill: parent
+		cursorShape: undefined
+		hoverEnabled: true
 		preventStealing: true
 
 		onPositionChanged: event => {
-			root._updatingFromUser = true;
-			const newPos = Math.max(0, Math.min(1 - root.size, event.y / root.height - root.size / 2));
-			root.nonAnimPosition = newPos;
-			// Update flickable position
-			// Map scrollbar position [0, 1-size] to contentY [0, maxContentY]
-			if (root.flickable) {
-				const contentHeight = root.flickable.contentHeight;
-				const height = root.flickable.height;
-				if (contentHeight > height) {
-					const maxContentY = contentHeight - height;
-					const maxPos = 1 - root.size;
-					const contentY = maxPos > 0 ? (newPos / maxPos) * maxContentY : 0;
-					root.flickable.contentY = Math.max(0, Math.min(maxContentY, contentY));
-				}
-			}
+			if (pressed)
+				updateFromEvent(event);
 		}
 		onPressed: event => {
-			root.animating = true;
-			root._updatingFromUser = true;
-			const newPos = Math.max(0, Math.min(1 - root.size, event.y / root.height - root.size / 2));
-			root.nonAnimPosition = newPos;
-			// Update flickable position
-			// Map scrollbar position [0, 1-size] to contentY [0, maxContentY]
-			if (root.flickable) {
-				const contentHeight = root.flickable.contentHeight;
-				const height = root.flickable.height;
-				if (contentHeight > height) {
-					const maxContentY = contentHeight - height;
-					const maxPos = 1 - root.size;
-					const contentY = maxPos > 0 ? (newPos / maxPos) * maxContentY : 0;
-					root.flickable.contentY = Math.max(0, Math.min(maxContentY, contentY));
-				}
+			var currentTop = visualThumbTop();
+			var currentBottom = currentTop + root.effectiveSize;
+			var clickPos = event.y / root.height;
+
+			var clickedInsideThumb = clickPos >= currentTop && clickPos <= currentBottom;
+
+			if (clickedInsideThumb) {
+				pressOffset = clickPos - currentTop;
+			} else {
+				pressOffset = root.effectiveSize / 2;
 			}
+
+			updateFromEvent(event);
+		}
+		onWheel: event => {
+			var delta = event.angleDelta.y > 0 ? -0.1 : 0.1;
+			var newPos = Math.max(0, Math.min(1 - root.size, root.position + delta));
+			root.position = newPos;
 		}
 	}
 }

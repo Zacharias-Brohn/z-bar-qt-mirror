@@ -99,7 +99,7 @@ Item {
 		}
 	}
 
-	CustomClippingRect {
+	Item {
 		id: entries
 
 		anchors.bottom: parent.bottom
@@ -107,12 +107,12 @@ Item {
 		anchors.top: search.bottom
 		anchors.topMargin: Appearance.spacing.normal
 		implicitWidth: Config.clipboard.sizes.width
-		radius: Appearance.rounding.small
 
 		CustomListView {
 			id: view
 
 			anchors.fill: parent
+			cacheBuffer: (root.itemHeight + spacing) * 2
 			highlightFollowsCurrentItem: false
 			highlightRangeMode: ListView.ApplyRange
 			preferredHighlightBegin: 0
@@ -121,6 +121,7 @@ Item {
 
 			CustomScrollBar.vertical: CustomScrollBar {
 				flickable: view
+				minimumSize: 0.1
 			}
 			delegate: RowLayout {
 				id: clipItem
@@ -254,6 +255,12 @@ Item {
 
 				ClipHistory.currentEntry = currentItem.modelData;
 				ClipHistory.refreshPreview();
+			}
+
+			CustomClippingWrapperRect {
+				anchors.fill: parent
+				child: view.contentItem
+				radius: Appearance.rounding.small
 			}
 		}
 	}
