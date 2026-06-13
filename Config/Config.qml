@@ -123,6 +123,8 @@ Singleton {
 			maxEntriesShown: clipboard.maxEntriesShown,
 			sizes: {
 				width: clipboard.sizes.width,
+				previewWidth: clipboard.sizes.previewWidth,
+				minPreviewWidth: clipboard.sizes.minPreviewWidth,
 				itemHeight: clipboard.sizes.itemHeight
 			}
 		};

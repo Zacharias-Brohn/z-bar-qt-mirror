@@ -20,7 +20,9 @@ Singleton {
 			}))
 	property string previewImageFile: "/tmp/qs-cliphist-preview.img"
 	property string previewImageSource: ""
+	property bool previewIsCode: looksLikeCode(previewText)
 	property bool previewIsImage: false
+	readonly property string previewMarkup: previewIsCode ? generateHighlightedMarkup(previewText) : previewText
 	property string previewText: ""
 	property int previewToken: 0
 	property real scoreThreshold: 0.2
@@ -41,6 +43,10 @@ Singleton {
 		return !!(/^\d+\t\[\[.*binary data.*\d+x\d+.*\]\]$/.test(entry));
 	}
 
+	function escapeHtml(str): string {
+		return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+	}
+
 	function fuzzyQuery(search: string): var {
 		if (search.trim() === "") {
 			return entries;
@@ -51,6 +57,115 @@ Singleton {
 		}).map(r => {
 			return r.obj.entry;
 		});
+	}
+
+	function generateHighlightedMarkup(text): string {
+		const raw = String(text ?? "");
+		const lines = raw.split("\n").map(line => highlightCodeLine(line));
+		return `<div style="font-family:monospace; white-space:pre-wrap;">${lines.join("<br>")}</div>`;
+	}
+
+	function highlightCodeLine(rawLine): string {
+		const line = String(rawLine ?? "");
+
+		const kwColor = DynamicColors.palette.m3primary;
+		const strColor = DynamicColors.palette.m3tertiary;
+		const comColor = Qt.alpha(DynamicColors.palette.m3onSurface, 0.55);
+
+		const keywordRe = /\b(function|class|import|const|let|var|if|else|for|while|return|switch|case|break|continue|try|catch|throw|async|await|new|null|true|false|public|private|protected|static|extends|struct|enum)\b/g;
+
+		let out = "";
+		let i = 0;
+
+		while (i < line.length) {
+			const ch = line[i];
+
+			// Line comment
+			if (line.slice(i, i + 2) === "//") {
+				out += `<span style="color:${comColor};">${escapeHtml(line.slice(i))}</span>`;
+				break;
+			}
+
+			// Shell/Python-style comment
+			if (ch === "#" && i === 0) {
+				out += `<span style="color:${comColor};">${escapeHtml(line.slice(i))}</span>`;
+				break;
+			}
+
+			// Quoted string
+			if (ch === "'" || ch === '"' || ch === "`") {
+				const quote = ch;
+				let j = i + 1;
+				while (j < line.length) {
+					if (line[j] === "\\") {
+						j += 2;
+						continue;
+					}
+					if (line[j] === quote) {
+						j += 1;
+						break;
+					}
+					j += 1;
+				}
+
+				out += `<span style="color:${strColor};">${escapeHtml(line.slice(i, j))}</span>`;
+				i = j;
+				continue;
+			}
+
+			// Plain code text until next special token
+			let j = i;
+			while (j < line.length) {
+				const two = line.slice(j, j + 2);
+				const c = line[j];
+
+				if (two === "//")
+					break;
+				if (c === "'" || c === '"' || c === "`")
+					break;
+				if (c === "#" && j === 0)
+					break;
+
+				j += 1;
+			}
+
+			let segment = escapeHtml(line.slice(i, j));
+			segment = segment.replace(keywordRe, `<span style="color:${kwColor}; font-weight:600;">$1</span>`);
+			out += segment;
+			i = j;
+		}
+
+		return out === "" ? "&nbsp;" : out;
+	}
+
+	function looksLikeCode(text): bool {
+		const t = String(text ?? "").trim();
+
+		if (t === "")
+			return false;
+
+		const lines = t.split("\n");
+
+		if (lines.length < 2)
+			return false;
+
+		let score = 0;
+
+		for (const line of lines) {
+			if (/^\s{4,}|\t/.test(line))
+				score += 2;
+
+			if (/[{}()[\];]/.test(line))
+				score += 1;
+
+			if (/\b(function|class|import|const|let|var|if|else|for|while|return|switch|case|try|catch|async|await)\b/.test(line))
+				score += 2;
+
+			if (/=>|:=/.test(line))
+				score += 1;
+		}
+
+		return score >= 4;
 	}
 
 	function paste(entry): void {
@@ -73,6 +188,7 @@ Singleton {
 			return;
 		}
 
+		previewImageSource = "";
 		previewIsImage = entryIsImage(currentEntry);
 
 		if (previewIsImage) {

@@ -16,7 +16,7 @@ Item {
 	required property PersistentProperties visibilities
 
 	implicitHeight: search.implicitHeight + entries.anchors.topMargin + ((view.spacing + itemHeight) * Config.clipboard.maxEntriesShown) - view.spacing
-	implicitWidth: Config.clipboard.sizes.width + 500
+	implicitWidth: Config.clipboard.sizes.width + preview.width + preview.anchors.leftMargin
 
 	Component.onCompleted: {
 		if (ClipHistory.entries.length === 0)
@@ -69,23 +69,33 @@ Item {
 		anchors.bottom: parent.bottom
 		anchors.left: entries.right
 		anchors.leftMargin: Appearance.spacing.normal
-		anchors.right: parent.right
 		anchors.top: parent.top
 		color: DynamicColors.tPalette.m3surfaceContainer
+		implicitWidth: ClipHistory.previewIsImage ? Math.max(Math.min(imagePreview.sourceSize.width + imagePreview.anchors.margins * 2, Config.clipboard.sizes.previewWidth), Config.clipboard.sizes.minPreviewWidth) : Math.max(Math.min(textPreview.paintedWidth + textPreview.anchors.margins * 2, Config.clipboard.sizes.previewWidth), Config.clipboard.sizes.minPreviewWidth)
 		radius: 25
 
+		Behavior on implicitWidth {
+			Anim {
+			}
+		}
+
 		CustomText {
+			id: textPreview
+
 			anchors.left: parent.left
 			anchors.margins: Appearance.padding.large
 			anchors.top: parent.top
-			text: ClipHistory.previewText
-			textFormat: Text.PlainText
+			font.family: ClipHistory.previewIsCode ? Appearance.font.family.mono : Appearance.font.family.sans
+			text: ClipHistory.previewMarkup
+			textFormat: ClipHistory.previewIsCode ? Text.RichText : Text.PlainText
 			visible: !ClipHistory.previewIsImage
-			width: preview.width - Appearance.padding.large * 2
+			width: Config.clipboard.sizes.previewWidth - anchors.margins * 2
 			wrapMode: Text.Wrap
 		}
 
 		Image {
+			id: imagePreview
+
 			anchors.fill: parent
 			anchors.margins: Appearance.padding.large
 			asynchronous: true
@@ -95,7 +105,7 @@ Item {
 			retainWhileLoading: true
 			smooth: true
 			source: ClipHistory.previewImageSource
-			visible: ClipHistory.previewIsImage
+			visible: ClipHistory.previewIsImage && ClipHistory.previewImageSource !== ""
 		}
 	}
 

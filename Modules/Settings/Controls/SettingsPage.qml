@@ -25,7 +25,7 @@ Item {
 
 	CustomClippingWrapperRect {
 		anchors.fill: parent
-		child: flickable.contentItem
+		child: flickable
 		radius: Appearance.rounding.normal - Appearance.padding.extraSmall
 	}
 
