@@ -590,13 +590,35 @@ def generate(
                     raise typer.BadParameter(
                         f"Accent '{accent}' not available for '{p_scheme}:{p_variant}'. Available accents: {available}"
                     )
+
+            requested_mode = mode or config_mode
+            resolved_mode = requested_mode
+            if p_scheme in schemes:
+                meta = schemes[p_scheme]
+                variant = next(
+                    (vari for vari in meta.variants if vari.id == p_variant), None
+                )
+                if variant and requested_mode not in variant.modes and variant.modes:
+                    resolved_mode = sorted(variant.modes)[0]
+
             palette_obj = get_palette(
-                p_scheme, p_variant, mode or config_mode, accent=accent
+                p_scheme, p_variant, resolved_mode, accent=accent
             )
             colors = palette_obj.colors
             effective_mode = palette_obj.mode
             name = palette_obj.scheme
             flavor = palette_obj.variant
+
+            display_name = schemes[p_scheme].name
+            config["colors"]["presets"] = {
+                "name": display_name,
+                "variant": p_variant,
+                "accent": accent or "",
+            }
+            tmp = CONFIG.with_suffix(".json.tmp")
+            with tmp.open("w") as f:
+                json.dump(config, f, indent=4)
+            os.replace(tmp, CONFIG)
 
             seed = hex_to_hct(colors.get("primary", "#000000").lstrip("#"))
         else:
