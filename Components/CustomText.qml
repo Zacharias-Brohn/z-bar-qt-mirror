@@ -27,8 +27,7 @@ Text {
 		enabled: root.animate
 
 		SequentialAnimation {
-			Anim {
-				property: root.animateProp
+			TAnim {
 				target: root
 				to: root.animateFrom
 				type: Anim.FastEffects
@@ -37,12 +36,18 @@ Text {
 			PropertyAction {
 			}
 
-			Anim {
-				property: root.animateProp
+			TAnim {
 				target: root
 				to: root.animateTo
 				type: Anim.DefaultEffects
 			}
 		}
+	}
+
+	component TAnim: Anim {
+		duration: root.animateDuration / 2
+		properties: root.animateProp.split(",").length > 1 ? root.animateProp : ""
+		property: root.animateProp.split(",").length === 1 ? root.animateProp : ""
+		target: root
 	}
 }

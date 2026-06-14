@@ -71,7 +71,7 @@ Item {
 		anchors.leftMargin: Appearance.spacing.normal
 		anchors.top: parent.top
 		color: DynamicColors.tPalette.m3surfaceContainer
-		implicitWidth: ClipHistory.previewIsImage ? Math.max(Math.min(imagePreview.sourceSize.width + imagePreview.anchors.margins * 2, Config.clipboard.sizes.previewWidth), Config.clipboard.sizes.minPreviewWidth) : Math.max(Math.min(textPreview.paintedWidth + textPreview.anchors.margins * 2, Config.clipboard.sizes.previewWidth), Config.clipboard.sizes.minPreviewWidth)
+		implicitWidth: ClipHistory.previewIsImage ? Math.max(Math.min(imagePreview.sourceSize.width + Appearance.padding.large * 2, Config.clipboard.sizes.previewWidth), Config.clipboard.sizes.minPreviewWidth) : Math.max(Math.min(textPreview.paintedWidth + textPreview.anchors.margins * 2, Config.clipboard.sizes.previewWidth), Config.clipboard.sizes.minPreviewWidth)
 		radius: 25
 
 		Behavior on implicitWidth {
@@ -96,8 +96,7 @@ Item {
 		Image {
 			id: imagePreview
 
-			anchors.fill: parent
-			anchors.margins: Appearance.padding.large
+			anchors.centerIn: parent
 			asynchronous: true
 			cache: false
 			fillMode: Image.PreserveAspectFit
@@ -106,6 +105,7 @@ Item {
 			smooth: true
 			source: ClipHistory.previewImageSource
 			visible: ClipHistory.previewIsImage && ClipHistory.previewImageSource !== ""
+			width: Math.min(sourceSize.width, Config.clipboard.sizes.previewWidth)
 		}
 	}
 
@@ -133,111 +133,103 @@ Item {
 				flickable: view
 				minimumSize: 0.1
 			}
-			delegate: RowLayout {
+			delegate: CustomRect {
 				id: clipItem
 
 				readonly property bool isImage: ClipHistory.entryIsImage(modelData)
 				required property string modelData
 
-				height: root.itemHeight
-				spacing: Appearance.spacing.small
-				width: view.width
+				implicitHeight: root.itemHeight
+				implicitWidth: view.width
+				radius: textLayer.pressed ? (Appearance.rounding.small / 2) : Appearance.rounding.small
 
-				CustomClippingRect {
-					id: textRect
-
-					Layout.fillHeight: true
-					Layout.fillWidth: true
-					radius: textLayer.pressed ? (Appearance.rounding.small / 2) : Appearance.rounding.small
-
-					Behavior on Layout.preferredWidth {
-						Anim {
-							type: Anim.FastEffects
-						}
-					}
-					Behavior on radius {
-						Anim {
-							type: Anim.FastEffects
-						}
-					}
-
-					Item {
-						id: textWrapper
-
-						anchors.fill: parent
-						layer.enabled: true
-
-						layer.effect: OpacityMask {
-							maskSource: fadeMask
-						}
-
-						MaterialIcon {
-							id: icon
-
-							anchors.left: parent.left
-							anchors.margins: Appearance.padding.normal
-							anchors.verticalCenter: parent.verticalCenter
-							font.pointSize: Appearance.font.size.large
-							text: clipItem.isImage ? "image" : "text_fields"
-						}
-
-						CustomText {
-							id: text
-
-							anchors.left: icon.right
-							anchors.margins: Appearance.spacing.normal
-							anchors.verticalCenter: parent.verticalCenter
-							elide: Text.ElideRight
-							text: clipItem.isImage ? qsTr("Image") : ClipHistory.displayText(clipItem.modelData)
-						}
-					}
-
-					CustomRect {
-						id: fadeMask
-
-						anchors.fill: parent
-						layer.enabled: true
-						visible: false
-
-						gradient: Gradient {
-							orientation: Gradient.Horizontal
-
-							GradientStop {
-								color: Qt.rgba(1, 1, 1, 1.0)
-								position: 0.85
-							}
-
-							GradientStop {
-								color: Qt.rgba(1, 1, 1, 0)
-								position: 1.0
-							}
-						}
-					}
-
-					StateLayer {
-						id: textLayer
-
-						onClicked: ClipHistory.copy(clipItem.modelData)
+				Behavior on radius {
+					Anim {
+						type: Anim.FastEffects
 					}
 				}
 
-				IconButton {
-					Layout.bottomMargin: Appearance.padding.normal
-					Layout.fillHeight: true
-					Layout.preferredWidth: height
-					Layout.topMargin: Appearance.padding.normal
-					icon: "content_copy"
-					isToggle: false
+				RowLayout {
+					anchors.fill: parent
+					spacing: Appearance.spacing.small
+
+					CustomClippingRect {
+						id: textRect
+
+						Layout.fillHeight: true
+						Layout.fillWidth: true
+
+						Item {
+							id: textWrapper
+
+							anchors.fill: parent
+							layer.enabled: true
+
+							layer.effect: OpacityMask {
+								maskSource: fadeMask
+							}
+
+							MaterialIcon {
+								id: icon
+
+								anchors.left: parent.left
+								anchors.margins: Appearance.padding.normal
+								anchors.verticalCenter: parent.verticalCenter
+								font.pointSize: Appearance.font.size.large
+								text: clipItem.isImage ? "image" : "text_fields"
+							}
+
+							CustomText {
+								id: text
+
+								anchors.left: icon.right
+								anchors.margins: Appearance.spacing.normal
+								anchors.verticalCenter: parent.verticalCenter
+								elide: Text.ElideRight
+								text: clipItem.isImage ? qsTr("Image") : ClipHistory.displayText(clipItem.modelData)
+							}
+						}
+
+						CustomRect {
+							id: fadeMask
+
+							anchors.fill: parent
+							layer.enabled: true
+							visible: false
+
+							gradient: Gradient {
+								orientation: Gradient.Horizontal
+
+								GradientStop {
+									color: Qt.rgba(1, 1, 1, 1.0)
+									position: 0.85
+								}
+
+								GradientStop {
+									color: Qt.rgba(1, 1, 1, 0)
+									position: 1.0
+								}
+							}
+						}
+					}
+
+					IconButton {
+						Layout.fillHeight: true
+						Layout.margins: Appearance.padding.normal
+						Layout.preferredWidth: height
+						icon: "delete"
+						inactiveColor: Qt.alpha(DynamicColors.palette.m3error, 0.8)
+						inactiveOnColor: DynamicColors.palette.m3onError
+						isToggle: false
+
+						onClicked: ClipHistory.deleteEntry(clipItem.modelData)
+					}
 				}
 
-				IconButton {
-					Layout.fillHeight: true
-					Layout.margins: Appearance.padding.normal
-					Layout.preferredWidth: height
-					icon: "delete"
-					inactiveColor: Qt.alpha(DynamicColors.palette.m3error, 0.8)
-					inactiveOnColor: DynamicColors.palette.m3onError
-					isToggle: false
+				StateLayer {
+					id: textLayer
+
+					onClicked: ClipHistory.copy(clipItem.modelData)
 				}
 			}
 			highlight: CustomRect {
