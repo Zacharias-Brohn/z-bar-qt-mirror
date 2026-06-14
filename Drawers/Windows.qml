@@ -254,7 +254,7 @@ CustomWindow {
 			implicitHeight: panels.popouts.height * (1 + extraHeight)
 			implicitWidth: panels.popouts.width
 			panel: panels.popoutsWrapper
-			radius: (panels.popouts.currentName.startsWith("audio") || panels.popouts.currentName.startsWith("updates")) ? Appearance.rounding.normal : 20 * Appearance.rounding.scale
+			radius: panels.popouts.current?.panelRadius ?? Appearance.rounding.normal
 			x: panels.popoutsWrapper.x + panels.popouts.x + Config.barConfig.border
 			y: panels.popoutsWrapper.y + panels.popouts.y + bar.implicitHeight - panels.popouts.height * extraHeight
 

@@ -13,6 +13,8 @@ StackView {
 	id: root
 
 	property int biggestWidth: 0
+	readonly property int itemHeight: 30
+	readonly property int panelRadius: ((itemHeight / 2) + Appearance.padding.small) * Appearance.rounding.scale
 	required property PopoutState popouts
 	property int rootWidth: 0
 	required property QsMenuHandle trayItem
@@ -100,7 +102,7 @@ StackView {
 					asynchronous: true
 
 					sourceComponent: Item {
-						implicitHeight: 30
+						implicitHeight: root.itemHeight
 
 						StateLayer {
 							enabled: item.modelData.enabled

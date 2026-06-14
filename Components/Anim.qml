@@ -39,7 +39,7 @@ NumberAnimation {
 			return Appearance.anim.durations.expressiveSlowEffects;
 
 		const types = ["small", "normal", "large", "extraLarge"];
-		const idx = type % 4; // 0-7 are the 4 standard types
+		const idx = type % 4;
 		return Appearance.anim.durations[types[idx]];
 	}
 	easing.bezierCurve: {
