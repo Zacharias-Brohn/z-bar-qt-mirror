@@ -9,33 +9,13 @@ Singleton {
 	id: root
 
 	property string autoGpuType: "NONE"
-	property string cpuName: ""
-	property real cpuPerc
-	property real cpuTemp
-
-	// Individual disks: Array of { mount, used, total, free, perc }
-	property var disks: []
 	property real gpuMemTotal: 0
 	property real gpuMemUsed
 	property string gpuName
 	property real gpuPerc
 	property real gpuTemp
 	readonly property string gpuType: Config.services.gpuType.toUpperCase() || autoGpuType
-	property real lastCpuIdle
-	property real lastCpuTotal
-	readonly property real memPerc: memTotal > 0 ? memUsed / memTotal : 0
-	property real memTotal
-	property real memUsed
 	property int refCount
-	readonly property real storagePerc: {
-		let totalUsed = 0;
-		let totalSize = 0;
-		for (const disk of disks) {
-			totalUsed += disk.used;
-			totalSize += disk.total;
-		}
-		return totalSize > 0 ? totalUsed / totalSize : 0;
-	}
 
 	function cleanCpuName(name: string): string {
 		return name.replace(/\(R\)/gi, "").replace(/\(TM\)/gi, "").replace(/CPU/gi, "").replace(/\d+th Gen /gi, "").replace(/\d+nd Gen /gi, "").replace(/\d+rd Gen /gi, "").replace(/\d+st Gen /gi, "").replace(/Core /gi, "").replace(/Processor/gi, "").replace(/\s+/g, " ").trim();
@@ -78,177 +58,11 @@ Singleton {
 		triggeredOnStart: true
 
 		onTriggered: {
-			stat.reload();
-			meminfo.reload();
 			if (root.gpuType === "GENERIC")
 				gpuUsage.running = true;
 
 			if (root.gpuType === "GENERIC" && root.gpuMemTotal === 0)
 				oneshotMemAmd.running = true;
-		}
-	}
-
-	Timer {
-		interval: 60000 * 120
-		repeat: true
-		running: true
-		triggeredOnStart: true
-
-		onTriggered: {
-			storage.running = true;
-		}
-	}
-
-	Timer {
-		interval: Config.dashboard.resourceUpdateInterval * 5
-		repeat: true
-		running: root.refCount > 0
-		triggeredOnStart: true
-
-		onTriggered: {
-			sensors.running = true;
-		}
-	}
-
-	FileView {
-		id: cpuinfoInit
-
-		path: "/proc/cpuinfo"
-
-		onLoaded: {
-			const nameMatch = text().match(/model name\s*:\s*(.+)/);
-			if (nameMatch)
-				root.cpuName = root.cleanCpuName(nameMatch[1]);
-		}
-	}
-
-	FileView {
-		id: stat
-
-		path: "/proc/stat"
-
-		onLoaded: {
-			const data = text().match(/^cpu\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)/);
-			if (data) {
-				const stats = data.slice(1).map(n => parseInt(n, 10));
-				const total = stats.reduce((a, b) => a + b, 0);
-				const idle = stats[3] + (stats[4] ?? 0);
-
-				const totalDiff = total - root.lastCpuTotal;
-				const idleDiff = idle - root.lastCpuIdle;
-				const newCpuPerc = totalDiff > 0 ? (1 - idleDiff / totalDiff) : 0;
-
-				root.lastCpuTotal = total;
-				root.lastCpuIdle = idle;
-
-				if (Math.abs(newCpuPerc - root.cpuPerc) >= 0.01)
-					root.cpuPerc = newCpuPerc;
-			}
-		}
-	}
-
-	FileView {
-		id: meminfo
-
-		path: "/proc/meminfo"
-
-		onLoaded: {
-			const data = text();
-			const total = parseInt(data.match(/MemTotal: *(\d+)/)[1], 10) || 1;
-			const used = (root.memTotal - parseInt(data.match(/MemAvailable: *(\d+)/)[1], 10)) || 0;
-
-			if (root.memTotal !== total)
-				root.memTotal = total;
-
-			if (Math.abs(used - root.memUsed) >= 16384)
-				root.memUsed = used;
-		}
-	}
-
-	Process {
-		id: storage
-
-		command: ["lsblk", "-b", "-o", "NAME,SIZE,TYPE,FSUSED,FSSIZE", "-P"]
-
-		stdout: StdioCollector {
-			onStreamFinished: {
-				const diskMap = {};  // Map disk name -> { name, totalSize, used, fsTotal }
-				const lines = text.trim().split("\n");
-
-				for (const line of lines) {
-					if (line.trim() === "")
-						continue;
-					const nameMatch = line.match(/NAME="([^"]+)"/);
-					const sizeMatch = line.match(/SIZE="([^"]+)"/);
-					const typeMatch = line.match(/TYPE="([^"]+)"/);
-					const fsusedMatch = line.match(/FSUSED="([^"]*)"/);
-					const fssizeMatch = line.match(/FSSIZE="([^"]*)"/);
-
-					if (!nameMatch || !typeMatch)
-						continue;
-
-					const name = nameMatch[1];
-					const type = typeMatch[1];
-					const size = parseInt(sizeMatch?.[1] || "0", 10);
-					const fsused = parseInt(fsusedMatch?.[1] || "0", 10);
-					const fssize = parseInt(fssizeMatch?.[1] || "0", 10);
-
-					if (type === "disk") {
-						// Skip zram (swap) devices
-						if (name.startsWith("zram"))
-							continue;
-
-						// Initialize disk entry
-						if (!diskMap[name]) {
-							diskMap[name] = {
-								name: name,
-								totalSize: size,
-								used: 0,
-								fsTotal: 0
-							};
-						}
-					} else if (type === "part") {
-						// Find parent disk (remove trailing numbers/p+numbers)
-						let parentDisk = name.replace(/p?\d+$/, "");
-						// For nvme devices like nvme0n1p1, parent is nvme0n1
-						if (name.match(/nvme\d+n\d+p\d+/))
-							parentDisk = name.replace(/p\d+$/, "");
-
-						// Aggregate partition usage to parent disk
-						if (diskMap[parentDisk]) {
-							diskMap[parentDisk].used += fsused;
-							diskMap[parentDisk].fsTotal += fssize;
-						}
-					}
-				}
-
-				const diskList = [];
-				let totalUsed = 0;
-				let totalSize = 0;
-
-				for (const diskName of Object.keys(diskMap).sort()) {
-					const disk = diskMap[diskName];
-					// Use filesystem total if available, otherwise use disk size
-					const total = disk.fsTotal > 0 ? disk.fsTotal : disk.totalSize;
-					const used = disk.used;
-					const perc = total > 0 ? used / total : 0;
-
-					// Convert bytes to KiB for consistency with formatKib
-					diskList.push({
-						mount: disk.name  // Using 'mount' property for compatibility
-						,
-						used: used / 1024,
-						total: total / 1024,
-						free: (total - used) / 1024,
-						perc: perc
-					});
-
-					totalUsed += used;
-					totalSize += total;
-				}
-
-				root.disks = diskList;
-			}
 		}
 	}
 
@@ -409,55 +223,6 @@ Singleton {
 					root.gpuPerc = 0;
 					root.gpuTemp = 0;
 				}
-			}
-		}
-	}
-
-	Process {
-		id: sensors
-
-		command: ["sensors"]
-		environment: ({
-				LANG: "C.UTF-8",
-				LC_ALL: "C.UTF-8"
-			})
-
-		stdout: StdioCollector {
-			onStreamFinished: {
-				let cpuTemp = text.match(/(?:Package id [0-9]+|Tdie):\s+((\+|-)[0-9.]+)(°| )C/);
-				if (!cpuTemp)
-					// If AMD Tdie pattern failed, try fallback on Tctl
-					cpuTemp = text.match(/Tctl:\s+((\+|-)[0-9.]+)(°| )C/);
-
-				if (cpuTemp && Math.abs(parseFloat(cpuTemp[1]) - root.cpuTemp) >= 0.5)
-					root.cpuTemp = parseFloat(cpuTemp[1]);
-
-				if (root.gpuType !== "GENERIC")
-					return;
-
-				let eligible = false;
-				let sum = 0;
-				let count = 0;
-
-				for (const line of text.trim().split("\n")) {
-					if (line === "Adapter: PCI adapter")
-						eligible = true;
-					else if (line === "")
-						eligible = false;
-					else if (eligible) {
-						let match = line.match(/^(temp[0-9]+|GPU core|edge)+:\s+\+([0-9]+\.[0-9]+)(°| )C/);
-						if (!match)
-							// Fall back to junction/mem if GPU doesn't have edge temp (for AMD GPUs)
-							match = line.match(/^(junction|mem)+:\s+\+([0-9]+\.[0-9]+)(°| )C/);
-
-						if (match) {
-							sum += parseFloat(match[2]);
-							count++;
-						}
-					}
-				}
-
-				root.gpuTemp = count > 0 ? sum / count : 0;
 			}
 		}
 	}

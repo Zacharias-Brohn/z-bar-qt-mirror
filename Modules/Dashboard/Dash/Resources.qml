@@ -1,92 +1,89 @@
 import QtQuick
+import QtQuick.Layouts
+import ZShell.Services
 import qs.Components
 import qs.Helpers
 import qs.Config
 
-Row {
+Item {
 	id: root
 
 	anchors.bottom: parent.bottom
 	anchors.top: parent.top
-	padding: Appearance.padding.large
-	spacing: Appearance.spacing.large
+	implicitWidth: layout.implicitWidth + layout.anchors.margins * 4
+
+	ServiceRef {
+		service: Storage
+	}
+
+	ServiceRef {
+		service: Memory
+	}
+
+	ServiceRef {
+		service: Cpu
+	}
 
 	Ref {
 		service: SystemUsage
 	}
 
-	Resource {
-		color: DynamicColors.palette.m3primary
-		icon: "memory"
-		value: SystemUsage.cpuPerc
-	}
-
-	Resource {
-		color: DynamicColors.palette.m3secondary
-		icon: "memory_alt"
-		value: SystemUsage.memPerc
-	}
-
-	Resource {
-		color: DynamicColors.palette.m3tertiary
-		icon: "gamepad"
-		value: SystemUsage.gpuPerc
-	}
-
-	Resource {
-		color: DynamicColors.palette.m3primary
-		icon: "host"
-		value: SystemUsage.gpuMemUsed
-	}
-
-	Resource {
-		color: DynamicColors.palette.m3secondary
-		icon: "hard_disk"
-		value: SystemUsage.storagePerc
-	}
-
-	component Resource: Item {
-		id: res
-
-		required property color color
-		required property string icon
-		required property real value
+	ColumnLayout {
+		id: layout
 
 		anchors.bottom: parent.bottom
+		anchors.horizontalCenter: parent.horizontalCenter
 		anchors.margins: Appearance.padding.large
 		anchors.top: parent.top
-		implicitWidth: icon.implicitWidth
+		spacing: Appearance.spacing.normal
 
-		Behavior on value {
-			Anim {
-				duration: Appearance.anim.durations.large
-			}
+		Resource {
+			fgColor: DynamicColors.palette.m3primary
+			icon: "memory"
+			value: Cpu.percentage
 		}
 
-		CustomRect {
-			anchors.bottom: icon.top
-			anchors.bottomMargin: Appearance.spacing.small
-			anchors.horizontalCenter: parent.horizontalCenter
-			anchors.top: parent.top
-			color: DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHigh, 2)
-			implicitWidth: Config.dashboard.sizes.resourceProgessThickness
-			radius: Appearance.rounding.full
+		Resource {
+			fgColor: DynamicColors.palette.m3secondary
+			icon: "memory_alt"
+			value: Memory.percentage
+		}
 
-			CustomRect {
-				anchors.bottom: parent.bottom
-				anchors.left: parent.left
-				anchors.right: parent.right
-				color: res.color
-				implicitHeight: res.value * parent.height
-				radius: Appearance.rounding.full
+		Resource {
+			fgColor: DynamicColors.palette.m3tertiary
+			icon: "gamepad"
+			value: SystemUsage.gpuPerc
+		}
+
+		Resource {
+			fgColor: DynamicColors.palette.m3primary
+			icon: "host"
+			value: SystemUsage.gpuMemUsed
+		}
+
+		Resource {
+			fgColor: DynamicColors.palette.m3secondary
+			icon: "hard_disk"
+			value: Storage.percentage
+		}
+	}
+
+	component Resource: CircularProgress {
+		id: res
+
+		required property string icon
+
+		Layout.fillHeight: true
+		implicitSize: height
+
+		Behavior on clampedVal {
+			Anim {
 			}
 		}
 
 		MaterialIcon {
-			id: icon
-
-			anchors.bottom: parent.bottom
-			color: res.color
+			anchors.centerIn: parent
+			color: res.fgColor
 			text: res.icon
 		}
 	}

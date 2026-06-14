@@ -23,7 +23,7 @@ GridLayout {
 	Resource {
 		Layout.bottomMargin: Appearance.padding.large
 		Layout.topMargin: Appearance.padding.large
-		colour: DynamicColors.palette.m3primary
+		color: DynamicColors.palette.m3primary
 		icon: "memory"
 		value: SystemUsage.cpuPerc
 	}
@@ -31,7 +31,7 @@ GridLayout {
 	Resource {
 		Layout.bottomMargin: Appearance.padding.large
 		Layout.topMargin: Appearance.padding.large
-		colour: DynamicColors.palette.m3secondary
+		color: DynamicColors.palette.m3secondary
 		icon: "memory_alt"
 		value: SystemUsage.memPerc
 	}
@@ -39,7 +39,7 @@ GridLayout {
 	component Resource: CustomRect {
 		id: res
 
-		required property color colour
+		required property color color
 		required property string icon
 		required property real value
 
@@ -58,8 +58,8 @@ GridLayout {
 			id: circ
 
 			anchors.fill: parent
-			bgColour: DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHighest, 3)
-			fgColour: res.colour
+			bgColor: DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHighest, 3)
+			fgColor: res.color
 			padding: Appearance.padding.large * 3
 			strokeWidth: width < 200 ? Appearance.padding.smaller : Appearance.padding.normal
 			value: res.value
@@ -69,7 +69,7 @@ GridLayout {
 			id: icon
 
 			anchors.centerIn: parent
-			color: res.colour
+			color: res.color
 			font.pointSize: (circ.arcRadius * 0.7) || 1
 			font.weight: 600
 			text: res.icon

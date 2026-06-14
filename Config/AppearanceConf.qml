@@ -77,9 +77,11 @@ JsonObject {
 		}
 	}
 	component Padding: JsonObject {
+		property int extraLarge: 28 * scale
 		property int extraLargeIncreased: 32 * scale
 		property int extraSmall: 4 * scale
 		property int large: 16 * scale
+		property int largeIncreased: 20 * scale
 		property int larger: 12 * scale
 		property int normal: 8 * scale
 		property real scale: 1

@@ -271,7 +271,7 @@ CustomWindow {
 			implicitHeight: panels.resources.height
 			implicitWidth: panels.resources.width
 			panel: panels.resourcesWrapper
-			radius: Appearance.rounding.normal
+			radius: Appearance.rounding.large
 			x: panels.resourcesWrapper.x + panels.resources.x + Config.barConfig.border
 			y: panels.resourcesWrapper.y + panels.resources.y + bar.implicitHeight
 		}
