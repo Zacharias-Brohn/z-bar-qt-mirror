@@ -32,7 +32,6 @@ Item {
 
 		active: root.shouldBeActive || root.visible
 		anchors.centerIn: parent
-		asynchronous: true
 
 		sourceComponent: Content {
 			screen: root.screen

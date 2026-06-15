@@ -181,7 +181,7 @@ Item {
 			}
 		}
 
-		CustomRect {
+		CustomClippingRect {
 			id: categoryContent
 
 			anchors.bottom: parent.bottom
@@ -197,7 +197,6 @@ Item {
 				id: stack
 
 				anchors.fill: parent
-				anchors.margins: Appearance.padding.extraSmall
 				initialItem: general
 
 				popEnter: Transition {

@@ -23,18 +23,15 @@ Item {
 		return false;
 	}
 
-	CustomClippingWrapperRect {
-		anchors.fill: parent
-		child: flickable
-		radius: Appearance.rounding.normal - Appearance.padding.extraSmall
-	}
-
 	CustomFlickable {
 		id: flickable
 
 		anchors.fill: parent
+		// for future:
+		// anchors.leftMargin: Appearance.padding.extraLarge
+		// anchors.rightMargin: Appearance.padding.extraLarge
 		clip: true
-		contentHeight: clayout.implicitHeight
+		contentHeight: clayout.implicitHeight + clayout.anchors.margins * 2
 
 		CustomScrollBar.vertical: CustomScrollBar {
 			flickable: flickable
@@ -64,7 +61,9 @@ Item {
 			id: clayout
 
 			anchors.left: parent.left
+			anchors.margins: Appearance.padding.extraSmall
 			anchors.right: parent.right
+			anchors.top: parent.top
 			spacing: Appearance.spacing.small
 
 			// move: Transition {

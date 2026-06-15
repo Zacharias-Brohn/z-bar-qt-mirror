@@ -14,7 +14,7 @@ CustomRect {
 	anchors.right: parent.right
 	color: DynamicColors.tPalette.m3surfaceContainer
 	implicitHeight: layout.height + contentPadding * 2
-	radius: Appearance.rounding.normal - Appearance.padding.smaller
+	radius: Appearance.rounding.normal - Appearance.padding.extraSmall
 
 	Behavior on implicitHeight {
 		Anim {

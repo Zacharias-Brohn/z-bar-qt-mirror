@@ -91,7 +91,7 @@ Slider {
 		MaterialIcon {
 			id: inset
 
-			readonly property bool attached: root.pos < 0.1
+			readonly property bool attached: root.filledWidth < (inset.paintedWidth + Appearance.spacing.extraSmall * 2)
 			property real dockT: attached ? 1 : 0
 
 			anchors.bottom: parent.bottom

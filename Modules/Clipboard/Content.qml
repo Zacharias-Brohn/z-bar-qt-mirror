@@ -71,7 +71,7 @@ Item {
 		anchors.leftMargin: Appearance.spacing.normal
 		anchors.top: parent.top
 		color: DynamicColors.tPalette.m3surfaceContainer
-		implicitWidth: ClipHistory.previewIsImage ? Math.max(Math.min(imagePreview.sourceSize.width + Appearance.padding.large * 2, Config.clipboard.sizes.previewWidth), Config.clipboard.sizes.minPreviewWidth) : Math.max(Math.min(textPreview.paintedWidth + textPreview.anchors.margins * 2, Config.clipboard.sizes.previewWidth), Config.clipboard.sizes.minPreviewWidth)
+		implicitWidth: ClipHistory.previewIsImage ? Math.max(Math.min(imagePreview.sourceSize.width + Appearance.padding.large * 2, Config.clipboard.sizes.previewWidth), Config.clipboard.sizes.minPreviewWidth) : Math.max(Math.min(textPreviewColumn.width + textPreviewColumn.anchors.margins * 2, Config.clipboard.sizes.previewWidth), Config.clipboard.sizes.minPreviewWidth)
 		radius: 25
 
 		Behavior on implicitWidth {
@@ -79,18 +79,105 @@ Item {
 			}
 		}
 
-		CustomText {
-			id: textPreview
+		Column {
+			id: textPreviewColumn
 
 			anchors.left: parent.left
-			anchors.margins: Appearance.padding.large
+			anchors.leftMargin: 0
+			anchors.margins: Appearance.padding.normal
 			anchors.top: parent.top
-			font.family: ClipHistory.previewIsCode ? Appearance.font.family.mono : Appearance.font.family.sans
-			text: ClipHistory.previewMarkup
-			textFormat: ClipHistory.previewIsCode ? Text.RichText : Text.PlainText
 			visible: !ClipHistory.previewIsImage
-			width: Config.clipboard.sizes.previewWidth - anchors.margins * 2
-			wrapMode: Text.Wrap
+
+			Repeater {
+				id: processedLines
+
+				model: ClipHistory.previewText
+
+				Row {
+					id: lineRow
+
+					required property int index
+					required property var modelData
+
+					spacing: Appearance.spacing.normal
+
+					CustomRect {
+						color: lineRow.index % 2 ? DynamicColors.tPalette.m3surfaceContainer : "transparent"
+						implicitHeight: lineText.paintedHeight + Appearance.padding.extraSmall * 2
+						implicitWidth: 50
+
+						CustomText {
+							id: number
+
+							anchors.margins: Appearance.padding.large
+							anchors.right: parent.right
+							anchors.verticalCenter: parent.verticalCenter
+							color: DynamicColors.palette.m3onSurfaceVariant
+							font.pointSize: Appearance.font.size.small
+							text: lineRow.modelData.line
+						}
+					}
+
+					Repeater {
+						model: lineRow.modelData.text.split("\t").slice(1)
+
+						RowLayout {
+							height: lineText.height
+							width: lineText.height + Appearance.spacing.extraSmall
+
+							Item {
+								Layout.fillHeight: true
+								Layout.fillWidth: true
+
+								CustomRect {
+									anchors.centerIn: parent
+									color: DynamicColors.tPalette.m3surfaceContainer
+									implicitHeight: parent.height / 8
+									implicitWidth: parent.height / 8
+									radius: Appearance.rounding.full
+								}
+							}
+
+							Item {
+								Layout.fillHeight: true
+								Layout.fillWidth: true
+
+								CustomRect {
+									anchors.centerIn: parent
+									color: DynamicColors.tPalette.m3surfaceContainer
+									implicitHeight: parent.height / 8
+									implicitWidth: parent.height / 8
+									radius: Appearance.rounding.full
+								}
+							}
+
+							Item {
+								Layout.fillHeight: true
+								Layout.fillWidth: true
+
+								CustomRect {
+									anchors.centerIn: parent
+									color: DynamicColors.tPalette.m3surfaceContainer
+									implicitHeight: parent.height / 8
+									implicitWidth: parent.height / 8
+									radius: Appearance.rounding.full
+								}
+							}
+						}
+					}
+
+					CustomText {
+						id: lineText
+
+						color: DynamicColors.palette.m3onSurface
+						font.family: ClipHistory.previewIsCode ? Appearance.font.family.mono : Appearance.font.family.sans
+						height: lineText.paintedHeight + Appearance.padding.extraSmall * 2
+						text: lineRow.modelData.text.trim()
+						verticalAlignment: Text.AlignVCenter
+						wrapMode: Text.Wrap
+					}
+				}
+			}
 		}
 
 		Image {
@@ -258,6 +345,7 @@ Item {
 				ClipHistory.currentEntry = currentItem.modelData;
 				ClipHistory.refreshPreview();
 			}
+			onVisibleChanged: currentIndex = 0
 
 			CustomClippingWrapperRect {
 				anchors.fill: parent
