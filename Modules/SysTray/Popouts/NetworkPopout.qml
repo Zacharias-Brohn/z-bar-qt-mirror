@@ -1,41 +1,44 @@
 pragma ComponentBehavior: Bound
 
 import Quickshell
-import Quickshell.Networking
 import QtQuick
 import QtQuick.Layouts
 import qs.Components
 import qs.Config
 import qs.Modules
-import qs.Helpers as Helpers
+import qs.Helpers
 
-Item {
+CustomClippingRect {
 	id: root
 
 	required property var wrapper
 
-	implicitHeight: networkPop.implicitHeight
-	implicitWidth: networkPop.implicitWidth
+	anchors.horizontalCenter: parent.horizontalCenter
+	color: DynamicColors.tPalette.m3surfaceContainer
+	implicitHeight: 500 + 5 * 2
+	implicitWidth: 500 + 8 * 2
+	radius: (20 - Appearance.padding.small) * Appearance.rounding.scale
 
-	CustomRect {
-		id: networkPop
+	Item {
+		id: networkPopContent
 
-		anchors.horizontalCenter: parent.horizontalCenter
-		color: DynamicColors.tPalette.m3surfaceContainer
-		implicitHeight: 500 + 5 * 2
-		implicitWidth: 500 + 8 * 2
-		radius: (20 - Appearance.padding.small) * Appearance.rounding.scale
+		anchors.fill: parent
+		anchors.margins: Appearance.padding.small
 
-		Item {
-			id: networkPopContent
+		CustomText {
+			anchors.left: parent.left
+			anchors.margins: Appearance.padding.large
+			anchors.top: parent.top
+			font.pointSize: Appearance.font.size.large
+			text: qsTr("Network")
+		}
 
-			anchors.fill: parent
-			anchors.margins: Appearance.padding.small
+		StateLayer {
+			id: buttonScan
 
-			// text {
-			// 	font.pixelSize: 20
-			// 	text: qsTr("Network Settings")
-			// }
+			onClicked: {
+				console.log(Network.network.length);
+			}
 		}
 	}
 }

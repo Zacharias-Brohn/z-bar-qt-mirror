@@ -1,16 +1,10 @@
-pragma ComponentBehavior: Bound
+pragma Singleton
 
 import Quickshell
 import Quickshell.Networking
-import qs.Components
-import qs.Config
-import qs.Modules
-import qs.Helpers as Helpers
 
-item {
+Singleton {
 	id: root
 
-	function networkScan() {
-		Networking.scanForNetworks();
-	}
+	readonly property list<NetworkDevice> network: Networking.devices.values
 }

@@ -41,10 +41,6 @@ JsonObject {
 			enabled: true
 		},
 		{
-			id: "network",
-			enabled: false
-		},
-		{
 			id: "clock",
 			enabled: true
 		},
