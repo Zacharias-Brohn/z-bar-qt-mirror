@@ -63,6 +63,7 @@ CustomRect {
 					CustomText {
 						Layout.alignment: Qt.AlignHCenter
 						color: root.accent
+						font.pointSize: Appearance.font.size.large
 						text: Math.round(root.percentage * 100) + "%"
 					}
 

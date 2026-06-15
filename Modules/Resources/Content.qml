@@ -25,10 +25,10 @@ Item {
 			id: mainColumn
 
 			Layout.fillWidth: true
-			spacing: Appearance.spacing.larger
+			spacing: Appearance.spacing.normal
 
 			RowLayout {
-				spacing: Appearance.spacing.larger
+				spacing: Appearance.spacing.normal
 				visible: cpuCard.active || gpuCard.active
 
 				WrappedLoader {
@@ -71,7 +71,7 @@ Item {
 			}
 
 			RowLayout {
-				spacing: Appearance.spacing.larger
+				spacing: Appearance.spacing.normal
 				visible: storageCard.active || networkCard.active || memoryCard.active
 
 				WrappedLoader {
