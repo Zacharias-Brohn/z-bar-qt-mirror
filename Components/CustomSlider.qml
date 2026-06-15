@@ -91,7 +91,7 @@ Slider {
 		MaterialIcon {
 			id: inset
 
-			readonly property bool attached: root.filledWidth < (inset.paintedWidth + Appearance.spacing.extraSmall * 2)
+			readonly property bool attached: root.width ? (root.width - handle.implicitWidth - handle.anchors.leftMargin) * root.pos < inset.paintedWidth + Appearance.spacing.extraSmall * 2 : false
 			property real dockT: attached ? 1 : 0
 
 			anchors.bottom: parent.bottom
@@ -157,7 +157,9 @@ Slider {
 		}
 	}
 
-	Component.onCompleted: filledWidth = Qt.binding(() => (width - handle.implicitWidth - handle.anchors.leftMargin) * pos)
+	Component.onCompleted: {
+		filledWidth = Qt.binding(() => (width - handle.implicitWidth - handle.anchors.leftMargin) * pos);
+	}
 
 	Binding {
 		id: posBinding
