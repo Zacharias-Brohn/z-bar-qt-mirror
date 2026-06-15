@@ -11,82 +11,98 @@ import ZShell.Internal
 Item {
 	id: root
 
+	property bool completed
+	property real cropHeight: displayData.height ?? 1.0
+	property real cropWidth: displayData.width ?? 1.0
+	property real cropX: displayData.x ?? 0.0
+	property real cropY: displayData.y ?? 0.0
+	property WallpaperImage current
+	readonly property var displayData: Wallpapers.getCrop(screen.name)
 	required property ShellScreen screen
+	property size screenResolution: Qt.size(screen.width * screenScale, screen.height * screenScale)
+	property real screenScale: Hyprland.monitorFor(screen).scale
 	property string source: Wallpapers.current
-
-	function refreshData(): void {
-		Hyprland.refreshMonitors();
-		let scale = Hyprland.monitorFor(root.screen).scale;
-		if (scale <= 0)
-			scale = 1.0; // Fallback to avoid zeroes on initialization
-
-		if (root.screen.width > 0 && root.screen.height > 0) {
-			img.screenResolution = Qt.size(root.screen.width * scale, root.screen.height * scale);
-		}
-
-		const displayData = Wallpapers.getCrop(root.screen.name);
-
-		if (displayData) {
-			img.cropX = displayData.x !== undefined ? displayData.x : 0.0;
-			img.cropY = displayData.y !== undefined ? displayData.y : 0.0;
-			img.cropWidth = (displayData.width !== undefined && displayData.width > 0) ? displayData.width : 1.0;
-			img.cropHeight = (displayData.height !== undefined && displayData.height > 0) ? displayData.height : 1.0;
-		}
-	}
 
 	anchors.fill: parent
 
-	Component.onCompleted: root.refreshData()
+	Component.onCompleted: {
+		Hyprland.refreshMonitors();
 
-	Connections {
-		function onHeightChanged() {
-			root.refreshData();
-		}
-
-		function onWidthChanged() {
-			root.refreshData();
-		}
-
-		target: root.screen
+		if (source)
+			Qt.callLater(() => {
+				current = imgComp.createObject(this, {
+					source
+				});
+				completed = true;
+			});
+	}
+	onSourceChanged: {
+		if (!source)
+			current = null;
+		else
+			current = imgComp.createObject(this, {
+				source: source
+			});
 	}
 
-	WallpaperImage {
-		id: img
+	Component {
+		id: imgComp
 
-		anchors.fill: parent
-		source: root.source
+		WallpaperImage {
+			id: img
 
-		Behavior on cropHeight {
-			Anim {
-			}
-		}
-		Behavior on cropWidth {
-			Anim {
-			}
-		}
-		Behavior on cropX {
-			Anim {
-			}
-		}
-		Behavior on cropY {
-			Anim {
-			}
-		}
-		Behavior on zoom {
-			Anim {
-			}
-		}
+			anchors.fill: parent
+			cropHeight: root.cropHeight
+			cropWidth: root.cropWidth
+			cropX: root.cropX
+			cropY: root.cropY
+			opacity: 0
+			screenResolution: root.screenResolution
+			source: root.source
 
-		Connections {
-			function onAdapterUpdated(): void {
-				root.refreshData();
+			Behavior on cropHeight {
+				Anim {
+					id: heightAnim
+				}
+			}
+			Behavior on cropWidth {
+				Anim {
+					id: widthAnim
+				}
+			}
+			Behavior on cropX {
+				Anim {
+					id: xAnim
+				}
+			}
+			Behavior on cropY {
+				Anim {
+					id: yAnim
+				}
+			}
+			Anim on opacity {
+				id: anim
+
+				from: 0
+				running: false
+				to: 1
+				type: Anim.SlowEffects
 			}
 
-			function onLoaded(): void {
-				root.refreshData();
+			onStatusChanged: {
+				if (status === Image.Ready) {
+					anim.start();
+				}
 			}
 
-			target: Wallpapers.monitorCrops
+			Timer {
+				id: destroyTimer
+
+				interval: anim.duration * 2
+				running: root.current !== img && root.current?.status === Image.Ready
+
+				onTriggered: Qt.callLater(() => img.destroy())
+			}
 		}
 	}
 }

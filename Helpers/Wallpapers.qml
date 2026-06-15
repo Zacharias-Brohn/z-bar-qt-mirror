@@ -32,33 +32,26 @@ Searcher {
 		showPreview = true;
 	}
 
-	function setCrop(screen: string, rect: rect, scaledRect: rect, zoom: real): void {
-		let updated = Object.assign({}, root.crops);
-
+	function setCrop(screen: string, rect: rect, zoom: real): void {
 		if (zoom <= 0)
 			zoom = 1.0;
 		else if (zoom > 5.0)
 			zoom = 5.0;
 
-		updated[screen] = {
+		root.crops[screen] = {
 			x: rect.x,
 			y: rect.y,
 			width: rect.width,
 			height: rect.height,
-			scaledX: scaledRect.x,
-			scaledY: scaledRect.y,
-			scaledWidth: scaledRect.width,
-			scaledHeight: scaledRect.height,
 			zoom: zoom
 		};
-
-		root.crops = updated;
+		// root.crops = updated;
 	}
 
 	function setWallpaper(path: string): void {
 		actualCurrent = path;
 		WallpaperPath.currentWallpaperPath = path;
-		Quickshell.screens.forEach(n => setCrop(n.name, Qt.rect(0, 0, 1, 1), Qt.rect(0, 0, 0, 0), 1.0));
+		Quickshell.screens.forEach(n => setCrop(n.name, Qt.rect(0, 0, 1, 1), 1.0));
 		Quickshell.execDetached(["zshell-cli", "wallpaper", "lockscreen", "--input-image", `${root.actualCurrent}`, "--output-path", `${Paths.state}/lockscreen_bg.png`, "--blur-amount", `${Config.lock.blurAmount}`]);
 		if (Config.general.color.schemeGeneration)
 			Quickshell.execDetached(["zshell-cli", "scheme", "generate", "--image-path", `${root.actualCurrent}`, "--scheme", `${Config.colors.schemeType}`, "--mode", `${Config.general.color.mode}`]);
@@ -91,7 +84,7 @@ Searcher {
 		path: `${Paths.state}/wallpaper-crops.json`
 		watchChanges: true
 
-		onAdapterUpdated: writeAdapter()
+		onAdapterUpdated: cropWriteDelay.restart()
 		onFileChanged: reload()
 
 		JsonAdapter {
@@ -99,6 +92,16 @@ Searcher {
 
 			property var monitorCrops: ({})
 		}
+	}
+
+	Timer {
+		id: cropWriteDelay
+
+		interval: 100
+		repeat: false
+		running: false
+
+		onTriggered: monitorCrops.writeAdapter()
 	}
 
 	FileSystemModel {

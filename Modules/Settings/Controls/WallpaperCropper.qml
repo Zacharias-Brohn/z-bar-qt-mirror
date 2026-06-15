@@ -165,7 +165,7 @@ Item {
 					anchors.top: parent.top
 					asynchronous: true
 					fillMode: Image.PreserveAspectFit
-					// retainWhileLoading: true
+					retainWhileLoading: true
 					source: Wallpapers.current
 					sourceSize.height: parent.height
 					sourceSize.width: parent.width
@@ -200,7 +200,7 @@ Item {
 					Loader {
 						id: cropRectLoader
 
-						active: scaledImg.paintedWidth > 0 && scaledImg.status == Image.Ready
+						active: scaledImg.paintedWidth > 0
 
 						sourceComponent: Component {
 							CustomRect {
