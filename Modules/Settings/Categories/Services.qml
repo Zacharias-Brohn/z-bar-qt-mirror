@@ -93,6 +93,18 @@ SettingsPage {
 		}
 
 		SettingSpinBox {
+			max: 1.0
+			min: 0
+			name: "Minimum brightness"
+			object: Config.services
+			setting: "minBrightness"
+			step: 0.01
+		}
+
+		Separator {
+		}
+
+		SettingSpinBox {
 			max: 5
 			min: 0
 			name: "Max volume"

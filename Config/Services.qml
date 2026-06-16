@@ -8,6 +8,7 @@ JsonObject {
 	property string defaultPlayer: "Spotify"
 	property string gpuType: ""
 	property real maxVolume: 1.0
+	property real minBrightness: 0.01
 	property list<var> playerAliases: [
 		{
 			"from": "com.github.th_ch.youtube_music",

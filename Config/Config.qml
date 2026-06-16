@@ -330,6 +330,7 @@ Singleton {
 			weatherLocation: services.weatherLocation,
 			updates: services.updates,
 			useFahrenheit: services.useFahrenheit,
+			minBrightness: services.minBrightness,
 			ddcutilService: services.ddcutilService,
 			useTwelveHourClock: services.useTwelveHourClock,
 			gpuType: services.gpuType,

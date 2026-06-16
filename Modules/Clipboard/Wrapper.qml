@@ -11,7 +11,7 @@ Item {
 	property int contentHeight
 	property real offsetScale: shouldBeActive ? 0 : 1
 	required property ShellScreen screen
-	readonly property bool shouldBeActive: visibilities.clipboard
+	readonly property bool shouldBeActive: visibilities.clipboard && Config.clipboard.enabled
 	required property PersistentProperties visibilities
 
 	anchors.bottomMargin: (-implicitHeight - 5) * offsetScale
