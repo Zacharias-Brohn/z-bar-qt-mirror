@@ -1,12 +1,15 @@
 import QtQuick
 import QtQuick.Layouts
 import ZShell.Internal
+import qs.Modules.Resources
 import qs.Helpers
 import qs.Components
 import qs.Config
 
 CustomRect {
 	id: root
+
+	required property Wrapper wrapper
 
 	color: DynamicColors.tPalette.m3surfaceContainer
 	implicitHeight: 220
@@ -47,6 +50,7 @@ CustomRect {
 			SparklineItem {
 				id: sparkline
 
+				property bool initialized: false
 				property real smoothMax: targetMax
 				property real targetMax: 1024
 
@@ -59,10 +63,21 @@ CustomRect {
 				line2Color: DynamicColors.palette.m3tertiary
 				line2FillAlpha: 0.2
 				maxValue: smoothMax
+				slideProgress: 1
 
 				Behavior on smoothMax {
+					enabled: sparkline.initialized
+
 					Anim {
 					}
+				}
+
+				Component.onCompleted: {
+					sparkline.targetMax = Math.max(NetworkUsage.downloadBuffer.maximum, NetworkUsage.uploadBuffer.maximum, 1024);
+
+					sparkline.smoothMax = Qt.binding(() => sparkline.targetMax);
+
+					sparkline.initialized = true;
 				}
 
 				Connections {

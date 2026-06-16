@@ -34,6 +34,7 @@ Item {
 		anchors.centerIn: parent
 
 		sourceComponent: Content {
+			wrapper: root
 		}
 	}
 }

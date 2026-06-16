@@ -9,6 +9,8 @@ import qs.Config
 Item {
 	id: root
 
+	required property Wrapper wrapper
+
 	implicitHeight: content.implicitHeight + Appearance.padding.normal * 2
 	implicitWidth: content.implicitWidth
 
@@ -98,6 +100,7 @@ Item {
 					active: Config.dashboard.performance.showNetwork
 
 					sourceComponent: NetworkCard {
+						wrapper: root.wrapper
 					}
 				}
 			}
