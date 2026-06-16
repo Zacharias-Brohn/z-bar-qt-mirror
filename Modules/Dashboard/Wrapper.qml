@@ -32,7 +32,7 @@ Item {
 		anchors.horizontalCenter: parent.horizontalCenter
 
 		sourceComponent: Content {
-			state: root.dashState
+			dashState: root.dashState
 			visibilities: root.visibilities
 		}
 	}

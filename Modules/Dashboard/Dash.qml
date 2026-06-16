@@ -10,9 +10,9 @@ import qs.Modules.Dashboard.Dash
 GridLayout {
 	id: root
 
+	required property PersistentProperties dashState
 	readonly property bool dashboardVisible: visibilities.dashboard
 	property int radius: Appearance.rounding.smallest
-	required property PersistentProperties state
 	required property PersistentProperties visibilities
 
 	columnSpacing: Appearance.spacing.smaller
@@ -60,7 +60,7 @@ GridLayout {
 		User {
 			id: user
 
-			state: root.state
+			dashState: root.dashState
 		}
 	}
 
@@ -86,7 +86,7 @@ GridLayout {
 		Calendar {
 			id: calendar
 
-			state: root.state
+			dashState: root.dashState
 		}
 	}
 
