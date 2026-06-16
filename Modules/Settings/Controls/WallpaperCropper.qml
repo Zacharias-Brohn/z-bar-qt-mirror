@@ -94,7 +94,7 @@ Item {
 					const finalRect = Qt.rect(cropXPercent, cropYPercent, cropWidthPercent, cropHeightPercent);
 
 					// We just pass the percentages directly to the backend
-					Wallpapers.setCrop(delegate.modelData.name, finalRect, finalRect, cropRect.zoom);
+					Wallpapers.setCrop(delegate.modelData.name, finalRect, cropRect.zoom);
 				}
 
 				function zoomClipRect(zoom: real): void {
