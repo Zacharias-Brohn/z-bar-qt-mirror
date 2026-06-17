@@ -209,6 +209,7 @@ Singleton {
 		return {
 			logo: general.logo,
 			wallpaperPath: general.wallpaperPath,
+			showOverFullscreen: general.showOverFullscreen,
 			desktopIcons: general.desktopIcons,
 			dateFormat: general.dateFormat,
 			color: {

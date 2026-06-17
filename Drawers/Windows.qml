@@ -18,17 +18,46 @@ CustomWindow {
 	id: root
 
 	readonly property alias bar: bar
-	readonly property bool hasFullscreen: Hypr.monitorFor(screen)?.activeWorkspace?.toplevels.values.some(t => t.lastIpcObject.fullscreen === 2)
+	readonly property real borderLayoutThickness: hasFullscreen ? 0 : Config.barConfig.border
+	readonly property real borderRounding: Config.barConfig.rounding * (1 - fsTransitionProg)
+	readonly property real borderThickness: Config.barConfig.border * (1 - fsTransitionProg)
+	property real fsTransitionProg: hasFullscreen ? 1 : 0
+	readonly property bool hasFullscreen: {
+		if (hasSpecialWorkspace) {
+			const specialName = monitor?.lastIpcObject.specialWorkspace?.name;
+			if (!specialName)
+				return false;
+			const specialWs = Hypr.workspaces.values.find(ws => ws.name === specialName);
+			return specialWs?.toplevels.values.some(t => t.lastIpcObject.fullscreen > 1) ?? false;
+		}
+		return hasFullscreenOnNormalWs;
+	}
+	readonly property bool hasFullscreenOnNormalWs: monitor?.activeWorkspace?.toplevels.values.some(t => t.lastIpcObject.fullscreen > 1) ?? false
+	readonly property bool hasSpecialWorkspace: (monitor?.lastIpcObject.specialWorkspace?.name.length ?? 0) > 0
 	readonly property alias interactionWrapper: interactions
 	readonly property alias menuRegion: menuPopoutRegion
+	readonly property HyprlandMonitor monitor: Hypr.monitorFor(screen)
 	property var root: Quickshell.shellDir
+	readonly property real sdfBorderOffset: 2 * fsTransitionProg
+	readonly property real shadowOpacity: 0.7 * (1 - fsTransitionProg)
+	property color surfaceColor: DynamicColors.tPalette.m3surface
 
 	WlrLayershell.exclusionMode: ExclusionMode.Ignore
-	// WlrLayershell.keyboardFocus: visibilities.dock || visibilities.launcher || visibilities.sidebar || visibilities.dashboard || visibilities.settings || visibilities.resources ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
+	WlrLayershell.keyboardFocus: visibilities.launcher || visibilities.settings ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
+	WlrLayershell.layer: (fsTransitionProg > 0 && Config.general.showOverFullscreen) || (hasSpecialWorkspace && hasFullscreenOnNormalWs) ? WlrLayer.Overlay : WlrLayer.Top
 	color: "transparent"
 	contentItem.focus: true
-	mask: visibilities.isDrawing ? null : region
+	mask: visibilities.isDrawing ? null : (hasFullscreen ? emptyRegion : region)
 	name: "Bar"
+
+	Behavior on fsTransitionProg {
+		Anim {
+		}
+	}
+	Behavior on surfaceColor {
+		CAnim {
+		}
+	}
 
 	contentItem.Keys.onEscapePressed: {
 		if (Config.barConfig.autoHide)
@@ -59,6 +88,15 @@ CustomWindow {
 		id: menuPopoutRegion
 
 		intersection: Intersection.Subtract
+	}
+
+	Region {
+		id: emptyRegion
+
+		height: panels.notifications.height
+		width: panels.notifications.width
+		x: panels.notifications.x + root.borderThickness
+		y: panels.notifications.y + bar.implicitHeight
 	}
 
 	Region {
@@ -150,35 +188,30 @@ CustomWindow {
 	Item {
 		anchors.fill: parent
 		layer.enabled: true
-		opacity: Appearance.transparency.enabled ? DynamicColors.transparency.base : 1
+		opacity: root.surfaceColor.a
 
 		layer.effect: MultiEffect {
 			blurMax: 32
-			shadowColor: Qt.alpha(DynamicColors.palette.m3shadow, 1)
+			shadowColor: Qt.alpha(DynamicColors.palette.m3shadow, Math.max(0, root.shadowOpacity))
 			shadowEnabled: true
 		}
 
 		BlobGroup {
 			id: blobGroup
 
-			color: DynamicColors.palette.m3surface
+			color: root.surfaceColor
 			smoothing: Config.barConfig.smoothing
-
-			Behavior on color {
-				CAnim {
-				}
-			}
 		}
 
 		BlobInvertedRect {
 			anchors.fill: parent
 			anchors.margins: -50
-			borderBottom: Config.barConfig.border - anchors.margins
-			borderLeft: Config.barConfig.border - anchors.margins
-			borderRight: Config.barConfig.border - anchors.margins
-			borderTop: bar.implicitHeight - anchors.margins
+			borderBottom: root.borderThickness - anchors.margins - root.sdfBorderOffset
+			borderLeft: root.borderThickness - anchors.margins - root.sdfBorderOffset
+			borderRight: root.borderThickness - anchors.margins - root.sdfBorderOffset
+			borderTop: bar.implicitHeight - anchors.margins - root.sdfBorderOffset
 			group: blobGroup
-			radius: Config.barConfig.rounding
+			radius: root.borderRounding
 		}
 
 		PanelBg {
@@ -351,6 +384,7 @@ CustomWindow {
 
 		anchors.fill: parent
 		bar: bar
+		borderThickness: root.borderLayoutThickness
 		drawing: drawingLoader.item
 		enabled: true
 		input: inputLoader.item
@@ -363,6 +397,7 @@ CustomWindow {
 			id: panels
 
 			bar: bar
+			borderThickness: root.borderThickness
 			drawingItem: drawingLoader.item
 			screen: root.screen
 			visibilities: visibilities
@@ -407,6 +442,7 @@ CustomWindow {
 
 			anchors.left: parent.left
 			anchors.right: parent.right
+			fullscreen: root.hasFullscreen
 			popouts: panels.popouts
 			popoutsWrapper: panels.popoutsWrapper
 			screen: root.screen
@@ -423,7 +459,7 @@ CustomWindow {
 		implicitHeight: panel.height
 		implicitWidth: panel.width
 		radius: Appearance.rounding.smallest
-		x: panel.x + Config.barConfig.border
+		x: panel.x + root.borderThickness
 		y: panel.y + bar.implicitHeight
 	}
 }

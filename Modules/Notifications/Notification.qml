@@ -20,6 +20,7 @@ CustomRect {
 	required property NotifServer.Notif modelData
 	readonly property int nonAnimHeight: summary.implicitHeight + (root.expanded ? appName.height + body.height + actions.height + actions.anchors.topMargin : bodyPreview.height) + inner.anchors.margins * 2
 
+	clip: true
 	color: root.modelData.urgency === NotificationUrgency.Critical ? DynamicColors.palette.m3secondaryContainer : DynamicColors.tPalette.m3surfaceContainer
 	implicitHeight: inner.implicitHeight
 	implicitWidth: Config.notifs.sizes.width
@@ -435,6 +436,7 @@ CustomRect {
 
 		StateLayer {
 			color: root.modelData.urgency === NotificationUrgency.Critical ? DynamicColors.palette.m3onSecondary : DynamicColors.palette.m3onSurface
+			enabled: root.expanded
 			radius: Appearance.rounding.full
 
 			onClicked: {

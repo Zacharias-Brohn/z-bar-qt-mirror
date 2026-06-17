@@ -9,6 +9,7 @@ Item {
 	id: root
 
 	required property Item bar
+	required property real borderThickness
 	property bool dashboardShortcutActive
 	required property Drawing drawing
 	required property DrawingInput input
@@ -48,7 +49,7 @@ Item {
 	}
 
 	function withinPanelWidth(panel: Item, x: real, y: real): bool {
-		const panelX = panel.x;
+		const panelX = panel.x + root.borderThickness;
 		return x >= panelX && x <= panelX + panel.width;
 	}
 

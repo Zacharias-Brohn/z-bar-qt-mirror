@@ -8,6 +8,7 @@ import qs.Config
 Item {
 	id: root
 
+	required property real borderThickness
 	readonly property alias content: content
 	property real offsetScale: y > 0 || content.hasCurrent ? 0 : 1
 	required property ShellScreen screen
@@ -17,7 +18,7 @@ Item {
 	implicitWidth: content.implicitWidth
 	visible: width > 0 && height > 0
 	x: {
-		const off = content.currentCenter - Config.barConfig.border - content.nonAnimWidth / 2;
+		const off = content.currentCenter - borderThickness - content.nonAnimWidth / 2;
 		const diff = parent.width - Math.floor(off + content.nonAnimWidth);
 		if (diff < 0)
 			return off + diff;
