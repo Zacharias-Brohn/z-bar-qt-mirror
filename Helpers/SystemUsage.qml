@@ -58,8 +58,10 @@ Singleton {
 		triggeredOnStart: true
 
 		onTriggered: {
-			if (root.gpuType === "GENERIC")
+			if (root.gpuType === "GENERIC") {
 				gpuUsage.running = true;
+				sensors.running = true;
+			}
 
 			if (root.gpuType === "GENERIC" && root.gpuMemTotal === 0)
 				oneshotMemAmd.running = true;
@@ -223,6 +225,44 @@ Singleton {
 					root.gpuPerc = 0;
 					root.gpuTemp = 0;
 				}
+			}
+		}
+	}
+
+	Process {
+		id: sensors
+
+		command: ["sensors"]
+		environment: ({
+				LANG: "C.UTF-8",
+				LC_ALL: "C.UTF-8"
+			})
+
+		stdout: StdioCollector {
+			onStreamFinished: {
+				let eligible = false;
+				let sum = 0;
+				let count = 0;
+
+				for (const line of text.trim().split("\n")) {
+					if (line === "Adapter: PCI adapter")
+						eligible = true;
+					else if (line === "")
+						eligible = false;
+					else if (eligible) {
+						let match = line.match(/^(temp[0-9]+|GPU core|edge)+:\s+\+([0-9]+\.[0-9]+)(°| )C/);
+						if (!match)
+							// Fall back to junction/mem if GPU doesn't have edge temp (for AMD GPUs)
+							match = line.match(/^(junction|mem)+:\s+\+([0-9]+\.[0-9]+)(°| )C/);
+
+						if (match) {
+							sum += parseFloat(match[2]);
+							count++;
+						}
+					}
+				}
+
+				root.gpuTemp = count > 0 ? sum / count : 0;
 			}
 		}
 	}
