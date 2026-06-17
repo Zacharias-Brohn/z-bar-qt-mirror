@@ -21,6 +21,15 @@ CustomWindow {
 	readonly property real borderLayoutThickness: hasFullscreen ? 0 : Config.barConfig.border
 	readonly property real borderRounding: Config.barConfig.rounding * (1 - fsTransitionProg)
 	readonly property real borderThickness: Config.barConfig.border * (1 - fsTransitionProg)
+	readonly property int dragMaskPadding: {
+		if (focusGrab.active)
+			return 0;
+
+		if (monitor?.lastIpcObject.specialWorkspace?.name || monitor?.activeWorkspace.lastIpcObject.windows > 0)
+			return 0;
+
+		return 100;
+	}
 	property real fsTransitionProg: hasFullscreen ? 1 : 0
 	readonly property bool hasFullscreen: {
 		if (hasSpecialWorkspace) {
@@ -102,12 +111,12 @@ CustomWindow {
 	Region {
 		id: region
 
-		height: root.height - bar.implicitHeight - Config.barConfig.border
+		height: root.height - bar.implicitHeight - root.borderThickness - root.dragMaskPadding * 2
 		intersection: Intersection.Xor
 		regions: [...popoutRegions.instances, menuPopoutRegion]
-		width: root.width - Config.barConfig.border * 2
-		x: Config.barConfig.border
-		y: bar.implicitHeight
+		width: root.width - root.borderThickness * 2 - root.dragMaskPadding * 2
+		x: root.borderThickness + root.dragMaskPadding
+		y: bar.implicitHeight + root.dragMaskPadding
 	}
 
 	anchors {
@@ -128,7 +137,7 @@ CustomWindow {
 			height: modelData.height
 			intersection: Intersection.Subtract
 			width: modelData.width
-			x: modelData.x + Config.barConfig.border
+			x: modelData.x + root.borderThickness
 			y: modelData.y + bar.implicitHeight
 		}
 	}
@@ -224,7 +233,7 @@ CustomWindow {
 			implicitWidth: panels.dashboard.width
 			panel: panels.dashboardWrapper
 			radius: Appearance.rounding.normal
-			x: panels.dashboardWrapper.x + panels.dashboard.x + Config.barConfig.border
+			x: panels.dashboardWrapper.x + panels.dashboard.x + root.borderThickness
 			y: panels.dashboardWrapper.y + panels.dashboard.y + bar.implicitHeight - panels.dashboard.height * extraHeight
 		}
 
@@ -258,7 +267,7 @@ CustomWindow {
 			implicitWidth: panels.osd.width
 			panel: panels.osdWrapper
 			radius: 20
-			x: panels.osdWrapper.x + panels.osd.x + Config.barConfig.border
+			x: panels.osdWrapper.x + panels.osd.x + root.borderThickness
 			y: panels.osdWrapper.y + panels.osd.y + bar.implicitHeight
 		}
 
@@ -288,7 +297,7 @@ CustomWindow {
 			implicitWidth: panels.popouts.width
 			panel: panels.popoutsWrapper
 			radius: panels.popouts.current?.panelRadius ?? Appearance.rounding.normal
-			x: panels.popoutsWrapper.x + panels.popouts.x + Config.barConfig.border
+			x: panels.popoutsWrapper.x + panels.popouts.x + root.borderThickness
 			y: panels.popoutsWrapper.y + panels.popouts.y + bar.implicitHeight - panels.popouts.height * extraHeight
 
 			Behavior on extraHeight {
@@ -305,7 +314,7 @@ CustomWindow {
 			implicitWidth: panels.resources.width
 			panel: panels.resourcesWrapper
 			radius: Appearance.rounding.large
-			x: panels.resourcesWrapper.x + panels.resources.x + Config.barConfig.border
+			x: panels.resourcesWrapper.x + panels.resources.x + root.borderThickness
 			y: panels.resourcesWrapper.y + panels.resources.y + bar.implicitHeight
 		}
 
@@ -321,7 +330,7 @@ CustomWindow {
 			radius: Appearance.rounding.large
 			topLeftRadius: Appearance.rounding.large + Appearance.padding.smaller
 			topRightRadius: Appearance.rounding.large + Appearance.padding.smaller
-			x: panels.settingsWrapper.x + panels.settings.x + Config.barConfig.border
+			x: panels.settingsWrapper.x + panels.settings.x + root.borderThickness
 			y: panels.settingsWrapper.y + panels.settings.y + bar.implicitHeight - panels.settings.height * extraHeight
 		}
 

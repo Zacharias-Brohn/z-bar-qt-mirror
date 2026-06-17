@@ -13,7 +13,7 @@ Item {
 		id: layout
 
 		anchors.fill: parent
-		spacing: 8
+		spacing: Appearance.spacing.small
 
 		CustomRect {
 			Layout.fillHeight: true
@@ -29,7 +29,7 @@ Item {
 
 		CustomRect {
 			Layout.fillWidth: true
-			Layout.topMargin: 8 - layout.spacing
+			Layout.topMargin: Appearance.padding.normal - layout.spacing
 			color: DynamicColors.tPalette.m3outlineVariant
 			implicitHeight: 1
 		}
