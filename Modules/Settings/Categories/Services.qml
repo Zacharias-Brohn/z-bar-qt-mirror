@@ -127,7 +127,7 @@ SettingsPage {
 
 		SettingSpinBox {
 			min: 1
-			name: "Visualizer bars"
+			name: "Visualizer resolution"
 			object: Config.services
 			setting: "visualizerBars"
 			step: 1

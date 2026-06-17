@@ -188,7 +188,7 @@ Singleton {
 				resourceProgessThickness: dashboard.sizes.resourceProgessThickness,
 				weatherWidth: dashboard.sizes.weatherWidth,
 				mediaCoverArtSize: dashboard.sizes.mediaCoverArtSize,
-				mediaVisualiserSize: dashboard.sizes.mediaVisualiserSize,
+				mediaVisualizerSize: dashboard.sizes.mediaVisualizerSize,
 				resourceSize: dashboard.sizes.resourceSize
 			}
 		};
