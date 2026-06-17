@@ -1,9 +1,9 @@
 //@ pragma UseQApplication
-//@ pragma Env QSG_RENDER_LOOP=threaded
-// @ pragma Env QSG_RHI_BACKEND=vulkan
-//@ pragma Env QSG_NO_VSYNC=1
-//@ pragma Env QS_NO_RELOAD_POPUP=1
-//@ pragma Env QT_SCALE_FACTOR_ROUNDING_POLICY=Round
+//@ pragma DefaultEnv QSG_RENDER_LOOP=threaded
+// @ pragma DefaultEnv QSG_RHI_BACKEND=vulkan
+//@ pragma DefaultEnv QSG_NO_VSYNC=1
+//@ pragma DefaultEnv QS_NO_RELOAD_POPUP=1
+//@ pragma DefaultEnv QT_SCALE_FACTOR_ROUNDING_POLICY=Round
 //@ pragma DefaultEnv QT_QUICK_FLICKABLE_WHEEL_DECELERATION=10000
 //@ pragma DropExpensiveFonts
 import Quickshell

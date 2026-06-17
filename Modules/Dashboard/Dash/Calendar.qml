@@ -220,7 +220,7 @@ CustomMouseArea {
 
 				color: (model.day === 0) ? DynamicColors.palette.m3tertiary : DynamicColors.palette.m3onSurface
 				horizontalAlignment: Text.AlignHCenter
-				text: model.shortName
+				text: Qt.locale("en_US").standaloneDayName(model.day, Locale.ShortFormat)
 			}
 		}
 
@@ -247,9 +247,10 @@ CustomMouseArea {
 						id: internalGrid
 
 						anchors.fill: parent
-						locale: Qt.locale()
+						locale: daysRow.locale
 						month: internalGridContainer.month
 						spacing: 3
+						title: `${Qt.locale("en_US").standaloneMonthName(month, Locale.LongFormat)} ${year}`
 						year: internalGridContainer.year
 
 						delegate: Item {

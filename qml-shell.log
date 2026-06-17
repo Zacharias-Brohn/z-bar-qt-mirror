@@ -1,0 +1,44 @@
+[32m  INFO[0m: Launching config: "/home/zach/GitProjects/z-bar-qt/shell.qml"
+[32m  INFO[0m: Shell ID: "bd36f3a4d7a2d3b0ea8e340a90ef2957" Path ID "bd36f3a4d7a2d3b0ea8e340a90ef2957"
+[32m  INFO[0m: Saving logs to "/run/user/1000/quickshell/by-id/q8iu14khqgt/log.qslog"
+[32m  INFO[0m: QML tooling support enabled
+[33m  WARN[97m scene[0m: QML Connections at @Drawers/Interactions.qml[177:2]: Detected function "onUtilitiesChanged" in Connections element. This is probably intended to be a signal handler but no signal of the target matches the name.
+[33m  WARN[97m scene[0m: QML Connections at @Drawers/Interactions.qml[177:2]: Detected function "onUtilitiesChanged" in Connections element. This is probably intended to be a signal handler but no signal of the target matches the name.
+[33m  WARN[97m scene[0m: QML Connections at @Drawers/Interactions.qml[177:2]: Detected function "onUtilitiesChanged" in Connections element. This is probably intended to be a signal handler but no signal of the target matches the name.
+[33m  WARN[97m scene[0m: QML Connections at @Modules/Polkit/Polkit.qml[30:3]: Implicitly defined onFoo properties in Connections are deprecated. Use this syntax instead: function onFoo(<arguments>) { ... }
+[33m  WARN[97m scene[0m: @Modules/Wallpaper/WallBackground.qml[18:-1]: TypeError: Cannot read property 'y' of undefined
+[33m  WARN[97m scene[0m: @Modules/Wallpaper/WallBackground.qml[17:-1]: TypeError: Cannot read property 'x' of undefined
+[33m  WARN[97m scene[0m: @Modules/Wallpaper/WallBackground.qml[16:-1]: TypeError: Cannot read property 'width' of undefined
+[33m  WARN[97m scene[0m: @Modules/Wallpaper/WallBackground.qml[15:-1]: TypeError: Cannot read property 'height' of undefined
+[33m  WARN[97m scene[0m: @Modules/Wallpaper/WallBackground.qml[18:-1]: TypeError: Cannot read property 'y' of undefined
+[33m  WARN[97m scene[0m: @Modules/Wallpaper/WallBackground.qml[17:-1]: TypeError: Cannot read property 'x' of undefined
+[33m  WARN[97m scene[0m: @Modules/Wallpaper/WallBackground.qml[16:-1]: TypeError: Cannot read property 'width' of undefined
+[33m  WARN[97m scene[0m: @Modules/Wallpaper/WallBackground.qml[15:-1]: TypeError: Cannot read property 'height' of undefined
+[33m  WARN[97m scene[0m: @Modules/Wallpaper/WallBackground.qml[18:-1]: TypeError: Cannot read property 'y' of undefined
+[33m  WARN[97m scene[0m: @Modules/Wallpaper/WallBackground.qml[17:-1]: TypeError: Cannot read property 'x' of undefined
+[33m  WARN[97m scene[0m: @Modules/Wallpaper/WallBackground.qml[16:-1]: TypeError: Cannot read property 'width' of undefined
+[33m  WARN[97m scene[0m: @Modules/Wallpaper/WallBackground.qml[15:-1]: TypeError: Cannot read property 'height' of undefined
+[33m  WARN[97m scene[0m: @Drawers/Windows.qml[21:2]: Unable to assign [undefined] to bool
+[33m  WARN[97m scene[0m: @Drawers/Windows.qml[21:2]: Unable to assign [undefined] to bool
+[33m  WARN[97m scene[0m: @Drawers/Windows.qml[21:2]: Unable to assign [undefined] to bool
+[33m  WARN[97m scene[0m: @Modules/Polkit/Polkit.qml[134:8]: Unable to assign [undefined] to QString
+[33m  WARN[97m scene[0m: @Modules/Polkit/Polkit.qml[172:8]: Unable to assign [undefined] to bool
+[33m  WARN[97m scene[0m: @Drawers/Windows.qml[21:2]: Unable to assign [undefined] to bool
+[33m  WARN[97m scene[0m: @Drawers/Windows.qml[21:2]: Unable to assign [undefined] to bool
+[33m  WARN[97m scene[0m: @Drawers/Windows.qml[21:2]: Unable to assign [undefined] to bool
+[33m  WARN[97m scene[0m: @Drawers/Windows.qml[21:2]: Unable to assign [undefined] to bool
+[33m  WARN[97m scene[0m: @Drawers/Windows.qml[21:2]: Unable to assign [undefined] to bool
+[33m  WARN[97m scene[0m: @Drawers/Windows.qml[21:2]: Unable to assign [undefined] to bool
+[33m  WARN[97m scene[0m: @Drawers/Windows.qml[21:2]: Unable to assign [undefined] to bool
+[33m  WARN[97m scene[0m: @Drawers/Windows.qml[21:2]: Unable to assign [undefined] to bool
+[33m  WARN[97m scene[0m: QML IpcHandler at @Drawers/Windows.qml[135:2]: Handler was registered but will not be used because another handler is registered for target visibilities
+[33m  WARN[97m scene[0m: QML IpcHandler at @Drawers/Windows.qml[135:2]: Handler was registered but will not be used because another handler is registered for target visibilities
+[32m  INFO[0m: Configuration Loaded
+[33m  WARN[97m quickshell.service.sni.watcher[0m: Ignoring invalid StatusNotifierItem registration of :1.1291/StatusNotifierItem to watcher
+[33m  WARN[97m scene[0m: @Helpers/Brightness.qml[192:-1]: TypeError: Cannot call method 'split' of undefined
+[33m  WARN[97m scene[0m: @Helpers/Brightness.qml[192:-1]: TypeError: Cannot call method 'split' of undefined
+[33m  WARN[97m scene[0m: @Helpers/Brightness.qml[192:-1]: TypeError: Cannot call method 'split' of undefined
+[33m  WARN[97m quickshell.dbus.objectmanager[0m: Failed to create DBusObjectManagerInterface for "org.bluez" "/" : QDBusError("", "")
+[34m DEBUG[97m qml[0m: top height: 38 left width: 4 right width: 4 bottom height: 4
+[34m DEBUG[97m qml[0m: top height: 38 left width: 4 right width: 4 bottom height: 4
+[34m DEBUG[97m qml[0m: top height: 38 left width: 4 right width: 4 bottom height: 4
