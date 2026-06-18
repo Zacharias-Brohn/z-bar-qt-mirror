@@ -126,7 +126,6 @@ Item {
 		enabled: root.visibilities.isDrawing
 
 		onActiveChanged: {
-			console.log(active);
 			if (!active) {
 				setInitialPoint = false;
 				root.drawing.endStroke();
