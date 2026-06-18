@@ -12,7 +12,6 @@ Item {
 	required property real borderThickness
 	property bool dashboardShortcutActive
 	required property Drawing drawing
-	required property DrawingInput input
 	property bool osdShortcutActive
 	required property Panels panels
 	required property BarPopouts.Wrapper popouts
@@ -60,6 +59,7 @@ Item {
 
 		cursorShape: (active && centroid.pressPosition.y < root.bar.implicitHeight) ? Qt.ClosedHandCursor : undefined
 		dragThreshold: 0
+		enabled: !root.visibilities.isDrawing
 		grabPermissions: PointerHandler.CanTakeOverFromHandlersOfSameType | PointerHandler.ApprovesTakeOverByAnything
 		maximumPointCount: 1
 		minimumPointCount: 1
@@ -117,6 +117,40 @@ Item {
 		}
 	}
 
+	PointHandler {
+		id: drawingHandler
+
+		property bool setInitialPoint: false
+
+		enabled: root.visibilities.isDrawing
+
+		onActiveChanged: {
+			console.log(active);
+			if (!active) {
+				setInitialPoint = false;
+				root.drawing.endStroke();
+			} else {
+				root.panels.drawing.expanded = false;
+			}
+		}
+		onPointChanged: {
+			const x = point.position.x;
+			const y = point.position.y;
+			const origX = point.pressPosition.x;
+			const origY = point.pressPosition.y;
+			if (x === 0 && y === 0 && origX === 0 && origY === 0)
+				return;
+
+			if (!setInitialPoint) {
+				setInitialPoint = true;
+				root.drawing.beginStroke(origX, origY);
+				return;
+			}
+
+			root.drawing.appendPoint(x, y);
+		}
+	}
+
 	HoverHandler {
 		id: hoverHandler
 
@@ -139,9 +173,10 @@ Item {
 			const x = point.position.x;
 			const y = point.position.y;
 
-			if (root.visibilities.isDrawing && !root.inLeftPanel(root.panels.drawing, x, y)) {
-				root.input.z = 2;
-				root.panels.drawing.expanded = false;
+			if (root.visibilities.isDrawing) {
+				if (root.inLeftPanel(root.panels.drawing, x, y))
+					root.panels.drawing.expanded = true;
+				return;
 			}
 
 			if (!root.visibilities.bar && Config.barConfig.autoHide && y < root.bar.implicitHeight)

@@ -26,7 +26,7 @@ Item {
 	readonly property alias dashboardWrapper: dashboardWrapper
 	readonly property alias dock: dock
 	readonly property alias drawing: drawing
-	required property Canvas drawingItem
+	required property var drawingItem
 	readonly property alias launcher: launcher
 	readonly property alias notifications: notifications
 	readonly property alias osd: osd

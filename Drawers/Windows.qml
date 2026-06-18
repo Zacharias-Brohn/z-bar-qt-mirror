@@ -195,6 +195,8 @@ CustomWindow {
 	}
 
 	Item {
+		id: surface
+
 		anchors.fill: parent
 		layer.enabled: true
 		opacity: root.surfaceColor.a
@@ -364,27 +366,10 @@ CustomWindow {
 
 		active: visibilities.isDrawing
 		anchors.fill: parent
+		z: 2
 
 		sourceComponent: Drawing {
 			id: drawing
-		}
-	}
-
-	Loader {
-		id: inputLoader
-
-		active: visibilities.isDrawing
-		anchors.fill: parent
-		z: 2
-
-		sourceComponent: DrawingInput {
-			id: input
-
-			bar: bar
-			drawing: drawingLoader.item
-			panels: panels
-			popout: panels.drawing
-			visibilities: visibilities
 		}
 	}
 
@@ -396,7 +381,6 @@ CustomWindow {
 		borderThickness: root.borderLayoutThickness
 		drawing: drawingLoader.item
 		enabled: true
-		input: inputLoader.item
 		panels: panels
 		popouts: panels.popouts
 		screen: root.screen
@@ -451,6 +435,7 @@ CustomWindow {
 
 			anchors.left: parent.left
 			anchors.right: parent.right
+			enabled: !visibilities.isDrawing
 			fullscreen: root.hasFullscreen
 			popouts: panels.popouts
 			popoutsWrapper: panels.popoutsWrapper

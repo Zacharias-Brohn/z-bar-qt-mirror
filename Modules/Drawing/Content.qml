@@ -9,7 +9,7 @@ Item {
 	id: root
 
 	readonly property var colors: ["#ef4444", "#f97316", "#eab308", "#22c55e", "#06b6d4", "#3b82f6", "#a855f7", "#ec4899", "#ffffff", "#000000"]
-	required property Canvas drawing
+	required property var drawing
 	required property var visibilities
 
 	function syncFromPenColor() {

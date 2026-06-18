@@ -1,4 +1,4 @@
-find_package(Qt6 REQUIRED COMPONENTS ShaderTools Core Qml Gui Quick Concurrent Sql Network DBus)
+find_package(Qt6 REQUIRED COMPONENTS ShaderTools Core Qml Gui Quick Concurrent Sql Network DBus CanvasPainter)
 find_package(PkgConfig REQUIRED)
 find_library(SENSORS_LIBRARY NAMES sensors REQUIRED)
 find_path(SENSORS_INCLUDE_DIR NAMES sensors/sensors.h REQUIRED)

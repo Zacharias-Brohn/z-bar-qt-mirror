@@ -12,6 +12,8 @@ qml_module(ZShell-internal
 		lidwatcher.hpp lidwatcher.cpp
 		visualizerbars.hpp visualizerbars.cpp
 		linearindicatormanager.hpp linearindicatormanager.cpp
+		strokecanvasitem.hpp strokecanvasitem.cpp
+		strokecanvasrenderer.hpp strokecanvasrenderer.cpp
 	LIBRARIES
 		Qt::Gui
 		Qt::Quick
@@ -19,4 +21,5 @@ qml_module(ZShell-internal
 		Qt::Core
 		Qt::Network
 		Qt::DBus
+		Qt::CanvasPainter
 )

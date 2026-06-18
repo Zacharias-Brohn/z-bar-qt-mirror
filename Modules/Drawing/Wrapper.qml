@@ -10,7 +10,7 @@ import qs.Daemons
 Item {
 	id: root
 
-	required property Canvas drawing
+	required property var drawing
 	property bool expanded: true
 	property real offsetScale: shouldBeActive ? 0 : 1
 	required property ShellScreen screen

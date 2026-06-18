@@ -51,6 +51,7 @@ MouseArea {
 
 	anchors.fill: parent
 	cursorShape: !enabled ? undefined : Qt.PointingHandCursor
+	enabled: parent.enabled
 	hoverEnabled: true
 
 	Behavior on stateOpacity {
