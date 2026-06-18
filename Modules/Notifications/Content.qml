@@ -24,7 +24,7 @@ Item {
 		for (let i = 0; i < count; i++)
 			height += (list.itemAtIndex(i) as NotifWrapper)?.nonAnimHeight ?? 0;
 
-		if (panels.popouts.hasCurrent && (panels.popouts.currentCenter + (panels.popouts.current?.width / 2)) > panels.notifications.x || visibilities.dashboard || visibilities.sidebar)
+		if (panels.popouts.hasCurrent && (panels.popouts.currentCenter + (panels.popouts.current?.width / 2)) > panels.notifications.x || visibilities.dashboard)
 			return 0;
 
 		if (visibilities.osd) {

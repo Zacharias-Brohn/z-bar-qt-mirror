@@ -97,8 +97,6 @@ CustomRect {
 
 			Behavior on implicitHeight {
 				Anim {
-					duration: MaterialEasing.expressiveEffectsTime
-					easing.bezierCurve: MaterialEasing.expressiveEffects
 				}
 			}
 

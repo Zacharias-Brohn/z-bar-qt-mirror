@@ -122,6 +122,7 @@ Item {
 
 		property bool setInitialPoint: false
 
+		acceptedButtons: Qt.LeftButton | Qt.RightButton
 		enabled: root.visibilities.isDrawing
 
 		onActiveChanged: {
@@ -134,6 +135,11 @@ Item {
 			}
 		}
 		onPointChanged: {
+			if (point.pressedButtons & Qt.RightButton) {
+				root.drawing.clear();
+				return;
+			}
+
 			const x = point.position.x;
 			const y = point.position.y;
 			const origX = point.pressPosition.x;
