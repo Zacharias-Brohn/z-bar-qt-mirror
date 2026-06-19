@@ -27,7 +27,6 @@ TextField {
 		property bool disableBlink
 
 		color: DynamicColors.palette.m3primary
-		height: root.cursorHeight
 		implicitWidth: 2
 		radius: Appearance.rounding.normal
 
