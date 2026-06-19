@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Templates
+import qs.Helpers
 import qs.Config
 
 ScrollBar {
@@ -15,6 +16,7 @@ ScrollBar {
 	property bool shouldBeActive
 	readonly property real travelScale: root.rawTravel > 0 ? root.effectiveTravel / root.rawTravel : 0
 
+	enabled: !Visibilities.getForActive().isDrawing
 	implicitWidth: Appearance.padding.extraSmall * 2
 
 	contentItem: Item {
@@ -59,11 +61,13 @@ ScrollBar {
 			implicitHeight: root.height * root.effectiveSize
 			implicitWidth: fullMouse.pressed || fullMouse.containsMouse ? Appearance.padding.extraSmall * 2 : Appearance.padding.extraSmall
 			opacity: {
+				if (!root.enabled)
+					return 0;
 				if (root.size === 1)
 					return 0;
 				if (fullMouse.pressed)
 					return 1;
-				if (mouse.containsMouse)
+				if (fullMouse.containsMouse)
 					return 0.8;
 				if (root.policy === ScrollBar.AlwaysOn || root.shouldBeActive)
 					return 0.6;

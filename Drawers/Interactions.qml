@@ -124,6 +124,7 @@ Item {
 
 		acceptedButtons: Qt.LeftButton | Qt.RightButton
 		enabled: root.visibilities.isDrawing
+		grabPermissions: PointerHandler.CanTakeOverFromAnything | PointerHandler.TakeOverForbidden
 
 		onActiveChanged: {
 			if (!active) {

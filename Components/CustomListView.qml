@@ -1,10 +1,12 @@
 import QtQuick
+import qs.Helpers
 
 ListView {
 	id: root
 
 	property bool doneFakeFlick
 
+	interactive: !Visibilities.getForActive().isDrawing
 	maximumFlickVelocity: 3000
 
 	rebound: Transition {

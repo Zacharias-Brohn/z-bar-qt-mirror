@@ -162,7 +162,7 @@ Item {
 		color: DynamicColors.tPalette.m3surfaceContainer
 		radius: Appearance.rounding.normal
 
-		Flickable {
+		CustomFlickable {
 			id: clayout
 
 			anchors.fill: parent
