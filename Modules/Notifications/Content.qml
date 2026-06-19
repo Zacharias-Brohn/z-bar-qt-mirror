@@ -1,3 +1,5 @@
+pragma ComponentBehavior: Bound
+
 import qs.Components
 import qs.Config
 import qs.Daemons
@@ -149,11 +151,12 @@ Item {
 			color: "transparent"
 			implicitHeight: notif.implicitHeight
 			implicitWidth: notif.implicitWidth
-			radius: Appearance.rounding.smallest / 2
+			radius: Appearance.rounding.small
 
 			Notification {
 				id: notif
 
+				implicitWidth: root.implicitWidth - root.padding * 2
 				modelData: wrapper.modelData
 			}
 		}

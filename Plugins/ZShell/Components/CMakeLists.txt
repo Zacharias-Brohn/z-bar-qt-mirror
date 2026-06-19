@@ -3,6 +3,7 @@ qml_module(ZShell-components
     SOURCES
         lazylistview.hpp lazylistview.cpp
 		wavyline.hpp wavyline.cpp
+		buttonrow.hpp buttonrow.cpp
     LIBRARIES
         Qt::Quick
 )
