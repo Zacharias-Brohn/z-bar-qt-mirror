@@ -44,7 +44,7 @@ Item {
 	Loader {
 		id: icon
 
-		active: root.shouldBeActive || root.visible
+		active: (root.shouldBeActive || root.visible) && opacity > 0
 		anchors.right: parent.right
 		anchors.verticalCenter: parent.verticalCenter
 		asynchronous: true
@@ -63,7 +63,7 @@ Item {
 	Loader {
 		id: content
 
-		active: root.shouldBeActive || root.visible
+		active: (root.shouldBeActive || root.visible) && opacity > 0
 		anchors.right: parent.right
 		anchors.verticalCenter: parent.verticalCenter
 		asynchronous: true

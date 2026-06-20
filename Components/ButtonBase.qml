@@ -71,7 +71,7 @@ CustomRect {
 		id: stateLayer
 
 		color: root.internalChecked ? root.activeOnColor : root.inactiveOnColor
-		enabled: enabled
+		enabled: root.enabled
 
 		onClicked: {
 			if (root.isToggle)

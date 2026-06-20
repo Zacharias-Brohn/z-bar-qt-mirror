@@ -45,10 +45,10 @@ Item {
 	}
 
 	function syncFromPenColor() {
-		if (!drawing)
+		if (!drawing.drawingState)
 			return;
 
-		const c = drawing.penColor;
+		const c = drawing.drawingState.penColor;
 
 		if (c.hsvSaturation > 0) {
 			currentHue = c.hsvHue;
@@ -85,7 +85,7 @@ Item {
 
 		currentHue = relative / arcSweep;
 		lastChromaticHue = currentHue;
-		drawing.penColor = Qt.hsva(currentHue, drawing.penColor.hsvSaturation, drawing.penColor.hsvValue, drawing.penColor.a);
+		drawing.drawingState.penColor = Qt.hsva(currentHue, drawing.drawingState.penColor.hsvSaturation, drawing.drawingState.penColor.hsvValue, drawing.drawingState.penColor.a);
 	}
 
 	implicitHeight: 180
@@ -111,7 +111,7 @@ Item {
 			root.syncFromPenColor();
 		}
 
-		target: root.drawing
+		target: root.drawing.drawingState
 	}
 
 	Canvas {
@@ -151,7 +151,7 @@ Item {
 
 	CustomRect {
 		anchors.centerIn: parent
-		color: root.drawing?.penColor
+		color: root.drawing?.drawingState.penColor
 		implicitHeight: implicitWidth
 		implicitWidth: canvas.height - root.handleSize - Appearance.padding.extraLarge * 2
 		radius: Appearance.rounding.full

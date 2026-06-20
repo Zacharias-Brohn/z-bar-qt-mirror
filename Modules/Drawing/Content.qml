@@ -19,17 +19,17 @@ Item {
 			return;
 
 		if (!saturationSlider.pressed)
-			saturationSlider.value = drawing.penColor.hsvSaturation;
+			saturationSlider.value = drawing.drawingState.penColor.hsvSaturation;
 
 		if (!brightnessSlider.pressed)
-			brightnessSlider.value = drawing.penColor.hsvValue;
+			brightnessSlider.value = drawing.drawingState.penColor.hsvValue;
 	}
 
 	function updatePenColorFromHsv() {
 		if (!drawing)
 			return;
 
-		drawing.penColor = Qt.hsva(huePicker.currentHue, saturationSlider.value, brightnessSlider.value, drawing.penColor.a);
+		drawing.drawingState.penColor = Qt.hsva(huePicker.currentHue, saturationSlider.value, brightnessSlider.value, drawing.drawingState.penColor.a);
 	}
 
 	implicitHeight: column.height + Appearance.padding.larger * 2
@@ -42,7 +42,7 @@ Item {
 			root.syncFromPenColor();
 		}
 
-		target: root.drawing
+		target: root.drawing.drawingState
 	}
 
 	Column {
@@ -126,9 +126,9 @@ Item {
 			multiplier: 1
 			orientation: Qt.Horizontal
 			to: 45
-			value: root.drawing.penWidth
+			value: root.drawing.drawingState.penWidth
 
-			onMoved: root.drawing.penWidth = value
+			onMoved: root.drawing.drawingState.penWidth = value
 		}
 	}
 
@@ -146,6 +146,6 @@ Item {
 		shapeMorph: true
 		shapeMorphExpansion: pressed ? 12 : 0
 
-		onClicked: root.drawing.penColor = modelData
+		onClicked: root.drawing.drawingState.penColor = modelData
 	}
 }

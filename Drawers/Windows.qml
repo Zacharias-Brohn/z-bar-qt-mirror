@@ -361,23 +361,18 @@ CustomWindow {
 		}
 	}
 
-	Loader {
-		id: drawingLoader
+	Drawing {
+		id: drawing
 
-		active: visibilities.isDrawing
 		anchors.fill: parent
+		layer.enabled: true
+		visibilities: visibilities
 		z: 2
 
-		sourceComponent: Drawing {
-			id: drawing
-
-			layer.enabled: true
-
-			layer.effect: MultiEffect {
-				maskEnabled: true
-				maskInverted: true
-				maskSource: maskSource
-			}
+		layer.effect: MultiEffect {
+			maskEnabled: true
+			maskInverted: true
+			maskSource: maskSource
 		}
 	}
 
@@ -406,7 +401,7 @@ CustomWindow {
 		anchors.fill: parent
 		bar: bar
 		borderThickness: root.borderLayoutThickness
-		drawing: drawingLoader.item
+		drawing: drawing
 		enabled: true
 		panels: panels
 		popouts: panels.popouts
@@ -418,7 +413,7 @@ CustomWindow {
 
 			bar: bar
 			borderThickness: root.borderThickness
-			drawingItem: drawingLoader.item
+			drawingItem: drawing
 			screen: root.screen
 			visibilities: visibilities
 

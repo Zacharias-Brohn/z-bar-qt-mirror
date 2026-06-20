@@ -123,13 +123,12 @@ Item {
 		property bool setInitialPoint: false
 
 		acceptedButtons: Qt.LeftButton | Qt.RightButton
-		enabled: root.visibilities.isDrawing && !root.inLeftPanel(root.panels.drawing, hoverHandler.point.position.x, hoverHandler.point.position.y)
-		grabPermissions: PointerHandler.CanTakeOverFromAnything | PointerHandler.TakeOverForbidden
+		enabled: root.visibilities.isDrawing && (!root.inLeftPanel(root.panels.drawing, hoverHandler.point.position.x, hoverHandler.point.position.y) || !root.panels.drawing.expanded)
 
 		onActiveChanged: {
 			if (!active) {
 				setInitialPoint = false;
-				root.drawing.endStroke();
+				root.drawing.content.endStroke();
 			} else {
 				root.panels.drawing.expanded = false;
 			}
@@ -149,16 +148,18 @@ Item {
 
 			if (!setInitialPoint) {
 				setInitialPoint = true;
-				root.drawing.beginStroke(origX, origY);
+				root.drawing.content.beginStroke(origX, origY);
 				return;
 			}
 
-			root.drawing.appendPoint(x, y);
+			root.drawing.content.appendPoint(x, y);
 		}
 	}
 
 	HoverHandler {
 		id: hoverHandler
+
+		cursorShape: root.visibilities.isDrawing && !root.inLeftPanel(root.panels.drawing, point.position.x, point.position.y) ? Qt.CrossCursor : undefined
 
 		onHoveredChanged: {
 			if (!hovered) {
@@ -180,7 +181,7 @@ Item {
 			const y = point.position.y;
 
 			if (root.visibilities.isDrawing) {
-				if (root.inLeftPanel(root.panels.drawing, x, y))
+				if (root.inLeftPanel(root.panels.drawing, x, y) && !(drawingHandler.point.pressedButtons & Qt.LeftButton))
 					root.panels.drawing.expanded = true;
 				return;
 			}
