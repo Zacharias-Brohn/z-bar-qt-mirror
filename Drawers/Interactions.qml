@@ -140,7 +140,7 @@ Item {
 			const origY = point.pressPosition.y;
 
 			if (point.pressedButtons & Qt.RightButton) {
-				root.drawing.clear();
+				root.drawing.content.clear();
 				return;
 			}
 			if (x === 0 && y === 0 && origX === 0 && origY === 0)
@@ -159,7 +159,7 @@ Item {
 	HoverHandler {
 		id: hoverHandler
 
-		cursorShape: root.visibilities.isDrawing && !root.inLeftPanel(root.panels.drawing, point.position.x, point.position.y) ? Qt.CrossCursor : undefined
+		cursorShape: root.visibilities.isDrawing && !root.inLeftPanel(root.panels.drawing, point.position.x, point.position.y) ? Qt.BlankCursor : undefined
 
 		onHoveredChanged: {
 			if (!hovered) {
@@ -181,9 +181,16 @@ Item {
 			const y = point.position.y;
 
 			if (root.visibilities.isDrawing) {
-				if (root.inLeftPanel(root.panels.drawing, x, y) && !(drawingHandler.point.pressedButtons & Qt.LeftButton))
+				if (root.inLeftPanel(root.panels.drawing, x, y) && !(drawingHandler.point.pressedButtons & Qt.LeftButton)) {
 					root.panels.drawing.expanded = true;
-				return;
+					root.drawing.content.hideHover();
+					return;
+				}
+
+				if (!drawingHandler.point.pressedButtons) {
+					root.drawing.content.showHover(x, y);
+					return;
+				}
 			}
 
 			if (!root.visibilities.bar && Config.barConfig.autoHide && y < root.bar.implicitHeight)

@@ -37,6 +37,45 @@ void StrokeCanvasItem::setPenColor(const QColor &color) {
 	emit penColorChanged();
 }
 
+void StrokeCanvasItem::setHoverVisible(bool visible) {
+	if (m_hoverVisible == visible)
+		return;
+
+	m_hoverVisible = visible;
+	update();
+
+	emit hoverVisibleChanged();
+}
+
+void StrokeCanvasItem::setHoverPoint(const QPointF &point) {
+	if (m_hoverPoint == point)
+		return;
+
+	m_hoverPoint = point;
+	update();
+
+	emit hoverPointChanged();
+}
+
+void StrokeCanvasItem::showHover(qreal x, qreal y) {
+	m_hoverPoint = {x, y};
+	m_hoverVisible = true;
+	update();
+
+	emit hoverPointChanged();
+	emit hoverVisibleChanged();
+}
+
+void StrokeCanvasItem::hideHover() {
+	if (!m_hoverVisible)
+		return;
+
+	m_hoverVisible = false;
+	update();
+
+	emit hoverVisibleChanged();
+}
+
 void StrokeCanvasItem::setPenWidth(float width) {
 	if (qFuzzyCompare(m_penWidth, width))
 		return;

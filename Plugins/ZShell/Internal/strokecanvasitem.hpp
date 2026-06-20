@@ -18,10 +18,25 @@ Q_OBJECT
 QML_NAMED_ELEMENT(StrokeCanvas)
 
 Q_PROPERTY(QColor penColor READ penColor WRITE setPenColor NOTIFY penColorChanged)
+Q_PROPERTY(bool hoverVisible READ hoverVisible WRITE setHoverVisible NOTIFY hoverVisibleChanged)
+Q_PROPERTY(QPointF hoverPoint READ hoverPoint WRITE setHoverPoint NOTIFY hoverPointChanged)
 Q_PROPERTY(qreal penWidth READ penWidth WRITE setPenWidth NOTIFY penWidthChanged)
 
 public:
 explicit StrokeCanvasItem(QQuickItem *parent = nullptr);
+
+[[nodiscard]] bool hoverVisible() const {
+	return m_hoverVisible;
+}
+[[nodiscard]] QPointF hoverPoint() const {
+	return m_hoverPoint;
+}
+
+void setHoverVisible(bool visible);
+void setHoverPoint(const QPointF &point);
+
+Q_INVOKABLE void showHover(qreal x, qreal y);
+Q_INVOKABLE void hideHover();
 
 [[nodiscard]] QColor penColor() const {
 	return m_penColor;
@@ -42,6 +57,8 @@ Q_INVOKABLE void endStroke();
 signals:
 void penColorChanged();
 void penWidthChanged();
+void hoverVisibleChanged();
+void hoverPointChanged();
 
 protected:
 [[nodiscard]] QCanvasPainterItemRenderer *createItemRenderer() const override;
@@ -49,6 +66,8 @@ protected:
 private:
 friend class StrokeCanvasRenderer;
 
+bool m_hoverVisible = false;
+QPointF m_hoverPoint;
 QColor m_penColor = Qt::white;
 float m_penWidth = 4.f;
 

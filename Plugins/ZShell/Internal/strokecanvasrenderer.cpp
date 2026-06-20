@@ -37,6 +37,19 @@ static void drawStroke(
 	painter->stroke();
 }
 
+static void drawDot(
+	QCanvasPainter *painter,
+	const QPointF &point,
+	const QColor &color,
+	float width)
+{
+	painter->setFillStyle(color);
+
+	painter->beginPath();
+	painter->circle(point, width * 0.5f);
+	painter->fill();
+}
+
 void StrokeCanvasRenderer::synchronizeData(QCanvasPainterItem *item) {
 	auto *canvas = static_cast<StrokeCanvasItem *>(item);
 
@@ -45,6 +58,9 @@ void StrokeCanvasRenderer::synchronizeData(QCanvasPainterItem *item) {
 
 	m_strokes = canvas->m_strokes;
 	m_currentStroke = canvas->m_currentStroke;
+
+	m_hoverVisible = canvas->m_hoverVisible;
+	m_hoverPoint = canvas->m_hoverPoint;
 }
 
 void StrokeCanvasRenderer::paint(QCanvasPainter *painter) {
@@ -59,6 +75,15 @@ void StrokeCanvasRenderer::paint(QCanvasPainter *painter) {
 		m_currentStroke.color,
 		m_currentStroke.width
 		);
+
+	if (m_hoverVisible) {
+		drawDot(
+			painter,
+			m_hoverPoint,
+			m_penColor,
+			m_penWidth
+			);
+	}
 }
 
 };
