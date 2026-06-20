@@ -188,6 +188,7 @@ Item {
 				}
 
 				root.drawing.content.showHover(x, y);
+				return;
 			}
 
 			if (!root.visibilities.bar && Config.barConfig.autoHide && y < root.bar.implicitHeight)
