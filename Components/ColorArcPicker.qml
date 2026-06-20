@@ -91,6 +91,14 @@ Item {
 	implicitHeight: 180
 	implicitWidth: 220
 
+	Behavior on currentHue {
+		enabled: !root.dragActive
+
+		Anim {
+			type: Anim.StandardLarge
+		}
+	}
+
 	Component.onCompleted: syncFromPenColor()
 	onCurrentHueChanged: canvas.requestPaint()
 	onDrawingChanged: syncFromPenColor()

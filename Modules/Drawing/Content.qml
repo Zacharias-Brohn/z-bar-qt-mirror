@@ -2,13 +2,15 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
+import ZShell.Components
 import qs.Config
 import qs.Components
 
 Item {
 	id: root
 
-	readonly property var colors: ["#ef4444", "#f97316", "#eab308", "#22c55e", "#06b6d4", "#3b82f6", "#a855f7", "#ec4899", "#ffffff", "#000000"]
+	readonly property var colors1: ["#ef4444", "#f97316", "#eab308", "#22c55e", "#06b6d4"]
+	readonly property var colors2: ["#3b82f6", "#a855f7", "#ec4899", "#ffffff", "#000000"]
 	required property var drawing
 	required property var visibilities
 
@@ -58,13 +60,14 @@ Item {
 		GradientSlider {
 			id: saturationSlider
 
+			anchors.left: parent.left
+			anchors.right: parent.right
 			brightness: brightnessSlider.value
 			channel: "saturation"
 			from: 0
 			hue: huePicker.currentHue
 			icon: "\ue40a"
 			implicitHeight: 30
-			implicitWidth: palette.width
 			orientation: Qt.Horizontal
 			to: 1
 
@@ -74,12 +77,13 @@ Item {
 		GradientSlider {
 			id: brightnessSlider
 
+			anchors.left: parent.left
+			anchors.right: parent.right
 			channel: "brightness"
 			from: 0
 			hue: huePicker.currentHue
 			icon: "\ue1ac"
 			implicitHeight: 30
-			implicitWidth: palette.width
 			orientation: Qt.Horizontal
 			saturation: saturationSlider.value
 			to: 1
@@ -87,59 +91,38 @@ Item {
 			onMoved: root.updatePenColorFromHsv()
 		}
 
-		GridLayout {
-			id: palette
-
+		ButtonRow {
 			anchors.left: parent.left
 			anchors.right: parent.right
-			columns: 5
-			rowSpacing: 8
-			rows: 2
+			spacing: Appearance.spacing.normal
 
 			Repeater {
-				model: root.colors
+				model: root.colors1
 
-				delegate: Item {
-					id: colorCircle
+				delegate: ColorButton {
+				}
+			}
+		}
 
-					required property color modelData
-					readonly property bool selected: Qt.colorEqual(root.drawing.penColor, modelData)
+		ButtonRow {
+			anchors.left: parent.left
+			anchors.right: parent.right
+			spacing: Appearance.spacing.normal
 
-					Layout.fillWidth: true
-					height: 28
+			Repeater {
+				model: root.colors2
 
-					CustomRect {
-						anchors.centerIn: parent
-						border.color: Qt.rgba(0, 0, 0, 0.25)
-						border.width: Qt.colorEqual(modelData, "#ffffff") ? 1 : 0
-						color: colorCircle.modelData
-						height: 20
-						radius: width / 2
-						width: 20
-					}
-
-					CustomRect {
-						anchors.centerIn: parent
-						border.color: selected ? "#ffffff" : Qt.rgba(1, 1, 1, 0.28)
-						border.width: selected ? 3 : 1
-						color: "transparent"
-						height: parent.height
-						radius: width / 2
-						width: parent.height
-
-						StateLayer {
-							onClicked: root.drawing.penColor = colorCircle.modelData
-						}
-					}
+				delegate: ColorButton {
 				}
 			}
 		}
 
 		FilledSlider {
+			anchors.left: parent.left
+			anchors.right: parent.right
 			from: 1
 			icon: "border_color"
 			implicitHeight: 30
-			implicitWidth: palette.width
 			multiplier: 1
 			orientation: Qt.Horizontal
 			to: 45
@@ -147,5 +130,22 @@ Item {
 
 			onMoved: root.drawing.penWidth = value
 		}
+	}
+
+	component ColorButton: IconButton {
+		id: colorButton
+
+		required property color modelData
+
+		fillWidth: false
+		icon: ""
+		inactiveColor: modelData
+		inactiveOnColor: DynamicColors.on(modelData)
+		isRound: true
+		padding: Appearance.padding.extraSmall
+		shapeMorph: true
+		shapeMorphExpansion: pressed ? 12 : 0
+
+		onClicked: root.drawing.penColor = modelData
 	}
 }

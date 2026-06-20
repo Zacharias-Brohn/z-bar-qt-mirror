@@ -370,6 +370,33 @@ CustomWindow {
 
 		sourceComponent: Drawing {
 			id: drawing
+
+			layer.enabled: true
+
+			layer.effect: MultiEffect {
+				maskEnabled: true
+				maskInverted: true
+				maskSource: maskSource
+			}
+		}
+	}
+
+	Item {
+		id: maskSource
+
+		anchors.fill: parent
+		layer.enabled: true
+		visible: false
+
+		CustomRect {
+			readonly property int extraWidth: radius
+
+			color: "white"
+			implicitHeight: panels.drawing.height
+			implicitWidth: panels.drawing.width + extraWidth
+			radius: drawingBg.radius
+			x: -extraWidth + root.borderThickness + panels.drawing.x
+			y: panels.drawing.y + bar.implicitHeight
 		}
 	}
 

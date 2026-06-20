@@ -123,7 +123,7 @@ Item {
 		property bool setInitialPoint: false
 
 		acceptedButtons: Qt.LeftButton | Qt.RightButton
-		enabled: root.visibilities.isDrawing
+		enabled: root.visibilities.isDrawing && !root.inLeftPanel(root.panels.drawing, hoverHandler.point.position.x, hoverHandler.point.position.y)
 		grabPermissions: PointerHandler.CanTakeOverFromAnything | PointerHandler.TakeOverForbidden
 
 		onActiveChanged: {
@@ -135,15 +135,15 @@ Item {
 			}
 		}
 		onPointChanged: {
-			if (point.pressedButtons & Qt.RightButton) {
-				root.drawing.clear();
-				return;
-			}
-
 			const x = point.position.x;
 			const y = point.position.y;
 			const origX = point.pressPosition.x;
 			const origY = point.pressPosition.y;
+
+			if (point.pressedButtons & Qt.RightButton) {
+				root.drawing.clear();
+				return;
+			}
 			if (x === 0 && y === 0 && origX === 0 && origY === 0)
 				return;
 

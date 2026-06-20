@@ -28,8 +28,11 @@ static void drawStroke(
 	painter->beginPath();
 	painter->moveTo(points[0]);
 
-	for (qsizetype i = 1; i < points.size(); ++i)
-		painter->lineTo(points[i]);
+	for (int i = 1; i < points.size() - 1; ++i) {
+		QPointF mid = (points[i] + points [i + 1]) / 2;
+		painter->quadraticCurveTo(points[i], mid);
+	}
+	painter->lineTo(points.last());
 
 	painter->stroke();
 }

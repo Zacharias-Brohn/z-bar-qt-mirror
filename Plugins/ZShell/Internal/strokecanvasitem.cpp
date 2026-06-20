@@ -13,6 +13,20 @@ QCanvasPainterItemRenderer *StrokeCanvasItem::createItemRenderer() const {
 	return new StrokeCanvasRenderer;
 }
 
+static bool shouldAddPoint(
+	const QVector<QPointF> &points,
+	const QPointF &p,
+	qreal minDistance)
+{
+	if (points.isEmpty())
+		return true;
+
+	const QPointF delta = p - points.last();
+
+	return QPointF::dotProduct(delta, delta)
+	       >= minDistance * minDistance;
+}
+
 void StrokeCanvasItem::setPenColor(const QColor &color) {
 	if (m_penColor == color)
 		return;
@@ -44,7 +58,9 @@ void StrokeCanvasItem::beginStroke(qreal x, qreal y) {
 }
 
 void StrokeCanvasItem::appendPoint(qreal x, qreal y) {
-	m_currentStroke.points.append({x, y});
+	if (shouldAddPoint(m_currentStroke.points, {x, y}, 2.0))
+		m_currentStroke.points.append({x, y});
+
 	update();
 }
 
