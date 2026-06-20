@@ -73,7 +73,18 @@ void StrokeCanvasRenderer::synchronizeData(QCanvasPainterItem *item) {
 	m_penColor = canvas->m_penColor;
 	m_penWidth = canvas->m_penWidth;
 
-	m_strokes = canvas->m_strokes;
+	// Only copy strokes the renderer hasn't seen yet
+	while (m_strokes.size() < canvas->m_strokes.size())
+		m_strokes.append(canvas->m_strokes[m_strokes.size()]);
+
+	// Handle clear()
+	if (canvas->m_strokes.isEmpty() && !m_strokes.isEmpty()) {
+		for (const auto &stroke : m_strokes)
+			if (stroke.groupId >= 0)
+				m_pendingGroupRemovals.append(stroke.groupId);
+		m_strokes.clear();
+	}
+
 	m_currentStroke = canvas->m_currentStroke;
 
 	m_hoverVisible = canvas->m_hoverVisible;
@@ -81,26 +92,30 @@ void StrokeCanvasRenderer::synchronizeData(QCanvasPainterItem *item) {
 }
 
 void StrokeCanvasRenderer::paint(QCanvasPainter *painter) {
+	for (int id : m_pendingGroupRemovals)
+		painter->removePathGroup(id);
+	m_pendingGroupRemovals.clear();
+
 	painter->clearRect(0, 0, width(), height());
 
-	for (const auto &stroke : m_strokes)
-		drawStroke(painter, stroke.points, stroke.color, stroke.width);
+	for (const auto &stroke : m_strokes) {
+		painter->setStrokeStyle(stroke.color);
+		painter->setFillStyle(stroke.color);
+		painter->setLineWidth(stroke.width);
+		painter->setLineCap(QCanvasPainter::LineCap::Round);
+		painter->setLineJoin(QCanvasPainter::LineJoin::Round);
 
-	drawStroke(
-		painter,
-		m_currentStroke.points,
-		m_currentStroke.color,
-		m_currentStroke.width
-		);
-
-	if (m_hoverVisible) {
-		drawDot(
-			painter,
-			m_hoverPoint,
-			m_penColor,
-			m_penWidth
-			);
+		if (stroke.path.commandsSize() == 1) {
+			painter->fill(stroke.path, stroke.groupId);
+		} else {
+			painter->stroke(stroke.path, stroke.groupId);
+		}
 	}
+
+	drawStroke(painter, m_currentStroke.points, m_currentStroke.color, m_currentStroke.width);
+
+	if (m_hoverVisible)
+		drawDot(painter, m_hoverPoint, m_penColor, m_penWidth);
 }
 
 };

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QCanvasPainterItemRenderer>
+#include <qcontainerfwd.h>
 #include "stroke.hpp"
 
 namespace ZShell::internal {
@@ -19,6 +20,7 @@ QPointF m_hoverPoint;
 
 QVector<Stroke> m_strokes;
 Stroke m_currentStroke;
+QVector<int> m_pendingGroupRemovals;
 
 };
 

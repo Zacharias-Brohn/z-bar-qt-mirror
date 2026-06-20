@@ -1,5 +1,6 @@
 #include "strokecanvasitem.hpp"
 #include "strokecanvasrenderer.hpp"
+#include <qcanvaspainter.h>
 #include <qnamespace.h>
 
 namespace ZShell::internal {
@@ -25,6 +26,42 @@ static bool shouldAddPoint(
 
 	return QPointF::dotProduct(delta, delta)
 	       >= minDistance * minDistance;
+}
+
+static QCanvasPath buildStrokePath(const QVector<QPointF> &points) {
+	QCanvasPath path;
+
+	if (points.size() == 1) {
+		// Single point — store as a tiny circle so the group can still be cached
+		path.circle(points[0], 0); // radius 0; actual width applied at draw time
+		return path;
+	}
+
+	auto catmullToBezier = [](
+		const QPointF &p0, const QPointF &p1,
+		const QPointF &p2, const QPointF &p3,
+		float tension,
+		QPointF &cp1, QPointF &cp2)
+			       {
+				       cp1 = p1 + (p2 - p0) * tension / 3.0f;
+				       cp2 = p2 - (p3 - p1) * tension / 3.0f;
+			       };
+
+	const float tension = 0.5f;
+	path.moveTo(points[0]);
+
+	for (int i = 0; i < points.size() - 1; ++i) {
+		const QPointF &p0 = points[qMax(i - 1, 0)];
+		const QPointF &p1 = points[i];
+		const QPointF &p2 = points[i + 1];
+		const QPointF &p3 = points[qMin(i + 2, points.size() - 1)];
+
+		QPointF cp1, cp2;
+		catmullToBezier(p0, p1, p2, p3, tension, cp1, cp2);
+		path.bezierCurveTo(cp1, cp2, p2);
+	}
+
+	return path;
 }
 
 void StrokeCanvasItem::setPenColor(const QColor &color) {
@@ -129,16 +166,19 @@ void StrokeCanvasItem::endStroke() {
 	if (m_currentStroke.points.isEmpty())
 		return;
 
-	m_strokes.append(m_currentStroke);
+	m_currentStroke.path = buildStrokePath(m_currentStroke.points);
+	m_currentStroke.groupId = m_nextGroupId++;
 	m_currentStroke.points.clear();
+
+	m_strokes.append(m_currentStroke);
+	m_currentStroke = {};
 
 	update();
 }
 
 void StrokeCanvasItem::clear() {
 	m_strokes.clear();
-	m_currentStroke.points.clear();
-
+	m_currentStroke = {};
 	update();
 }
 
