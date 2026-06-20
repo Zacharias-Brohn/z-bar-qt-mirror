@@ -25,14 +25,31 @@ static void drawStroke(
 		return;
 	}
 
+	auto catmullToBezier = [](
+		const QPointF &p0, const QPointF &p1,
+		const QPointF &p2, const QPointF &p3,
+		float tension,
+		QPointF &cp1, QPointF &cp2)
+			       {
+				       cp1 = p1 + (p2 - p0) * tension / 3.0f;
+				       cp2 = p2 - (p3 - p1) * tension / 3.0f;
+			       };
+
+	const float tension = 0.5f; // increase toward 1.0 for tighter curves
+
 	painter->beginPath();
 	painter->moveTo(points[0]);
 
-	for (int i = 1; i < points.size() - 1; ++i) {
-		QPointF mid = (points[i] + points [i + 1]) / 2;
-		painter->quadraticCurveTo(points[i], mid);
+	for (int i = 0; i < points.size() - 1; ++i) {
+		const QPointF &p0 = points[qMax(i - 1, 0)];
+		const QPointF &p1 = points[i];
+		const QPointF &p2 = points[i + 1];
+		const QPointF &p3 = points[qMin(i + 2, points.size() - 1)];
+
+		QPointF cp1, cp2;
+		catmullToBezier(p0, p1, p2, p3, tension, cp1, cp2);
+		painter->bezierCurveTo(cp1, cp2, p2);
 	}
-	painter->lineTo(points.last());
 
 	painter->stroke();
 }

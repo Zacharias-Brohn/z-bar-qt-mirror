@@ -187,10 +187,7 @@ Item {
 					return;
 				}
 
-				if (!drawingHandler.point.pressedButtons) {
-					root.drawing.content.showHover(x, y);
-					return;
-				}
+				root.drawing.content.showHover(x, y);
 			}
 
 			if (!root.visibilities.bar && Config.barConfig.autoHide && y < root.bar.implicitHeight)

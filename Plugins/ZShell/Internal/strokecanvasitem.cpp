@@ -97,9 +97,31 @@ void StrokeCanvasItem::beginStroke(qreal x, qreal y) {
 }
 
 void StrokeCanvasItem::appendPoint(qreal x, qreal y) {
-	if (shouldAddPoint(m_currentStroke.points, {x, y}, 2.0))
-		m_currentStroke.points.append({x, y});
+	const QPointF incoming{x, y};
 
+	if (!shouldAddPoint(m_currentStroke.points, incoming, 2.0))
+		return;
+
+	QPointF smoothed;
+	if (m_currentStroke.points.isEmpty()) {
+		smoothed = incoming;
+	} else {
+		const QPointF last = m_currentStroke.points.last();
+		const QPointF delta = incoming - last;
+		const qreal dist = std::sqrt(QPointF::dotProduct(delta, delta));
+
+		constexpr qreal minDist = 6.0;
+		constexpr qreal maxDist = 20.0;
+		constexpr qreal minAlpha = 0.1;
+		constexpr qreal maxAlpha = 0.3;
+
+		const qreal t = std::clamp((dist - minDist) / (maxDist - minDist), 0.0, 1.0);
+		const qreal alpha = minAlpha + t * (maxAlpha - minAlpha);
+
+		smoothed = last * (1.0 - alpha) + incoming * alpha;
+	}
+
+	m_currentStroke.points.append(smoothed);
 	update();
 }
 
