@@ -149,6 +149,21 @@ Item {
 		}
 	}
 
+	CustomRect {
+		anchors.centerIn: parent
+		color: root.drawing?.penColor
+		implicitHeight: implicitWidth
+		implicitWidth: canvas.height - root.handleSize - Appearance.padding.extraLarge * 2
+		radius: Appearance.rounding.full
+
+		Behavior on color {
+			enabled: false
+
+			CAnim {
+			}
+		}
+	}
+
 	Item {
 		id: handle
 
@@ -182,7 +197,7 @@ Item {
 
 			Rectangle {
 				anchors.centerIn: parent
-				color: root.drawing ? root.drawing.penColor : Qt.hsla(root.currentHue, 1.0, 0.5, 1.0)
+				color: Qt.hsla(root.currentHue, 1.0, 0.5, 1.0)
 				height: width
 				radius: width / 2
 				width: parent.width - 12
