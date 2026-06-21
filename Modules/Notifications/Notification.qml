@@ -13,7 +13,6 @@ import qs.Components
 CustomRect {
 	id: root
 
-	readonly property int bodyTextFormat: /[<*_`#\[\]]/.test(modelData.body) ? Text.MarkdownText : Text.PlainText
 	property bool expanded: Config.notifs.openExpanded
 	readonly property bool hasAppIcon: modelData.appIcon.length > 0
 	readonly property bool hasImage: modelData.image.length > 0
@@ -246,6 +245,7 @@ CustomRect {
 				anchors.leftMargin: Appearance.spacing.small
 				anchors.top: parent.top
 				animate: true
+				font.pointSize: Appearance.font.size.small
 				height: implicitHeight
 				maximumLineCount: 1
 				text: summaryMetrics.elidedText
@@ -326,6 +326,7 @@ CustomRect {
 				anchors.top: parent.top
 				animate: true
 				color: DynamicColors.palette.m3onSurfaceVariant
+				font.pointSize: Appearance.font.size.small
 				horizontalAlignment: Text.AlignLeft
 				text: root.modelData.timeStr
 			}
@@ -374,9 +375,10 @@ CustomRect {
 				anchors.top: summary.bottom
 				animate: true
 				color: DynamicColors.palette.m3onSurfaceVariant
+				font.pointSize: Appearance.font.size.small
 				opacity: root.expanded ? 0 : 1
 				text: bodyPreviewMetrics.elidedText
-				textFormat: root.bodyTextFormat
+				textFormat: Text.MarkdownText
 
 				Behavior on opacity {
 					Anim {
@@ -406,7 +408,7 @@ CustomRect {
 				height: text ? implicitHeight : 0
 				opacity: root.expanded ? 1 : 0
 				text: root.modelData.body
-				textFormat: root.bodyTextFormat
+				textFormat: Text.MarkdownText
 				wrapMode: Text.WrapAtWordBoundaryOrAnywhere
 
 				Behavior on opacity {
@@ -441,6 +443,7 @@ CustomRect {
 				}
 
 				IconButton {
+					enabled: root.expanded
 					fillWidth: root.modelData.actions.length === 0
 					icon: "close"
 					inactiveColor: root.modelData.urgency === NotificationUrgency.Critical ? DynamicColors.palette.m3secondary : DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHighest, 2)
@@ -458,7 +461,13 @@ CustomRect {
 					TextButton {
 						required property var modelData
 
+						enabled: root.expanded
 						fillWidth: true
+						font: {
+							const f = Qt.font(font);
+							f.pointSize = Appearance.font.size.small;
+							return f;
+						}
 						implicitWidth: label.implicitWidth
 						inactiveColor: root.modelData.urgency === NotificationUrgency.Critical ? DynamicColors.palette.m3secondary : DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHighest, 2)
 						inactiveOnColor: root.modelData.urgency === NotificationUrgency.Critical ? DynamicColors.palette.m3onSecondary : DynamicColors.palette.m3onSurfaceVariant
@@ -478,6 +487,7 @@ CustomRect {
 				}
 
 				IconButton {
+					enabled: root.expanded
 					fillWidth: root.modelData.actions.length === 0
 					icon: copyTimer.running ? "inventory" : "content_copy"
 					inactiveColor: root.modelData.urgency === NotificationUrgency.Critical ? DynamicColors.palette.m3secondary : DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHighest, 2)
