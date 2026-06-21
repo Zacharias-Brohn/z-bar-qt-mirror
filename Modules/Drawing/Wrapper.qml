@@ -13,9 +13,32 @@ Item {
 	required property var drawing
 	property bool expanded: true
 	property real offsetScale: shouldBeActive ? 0 : 1
+	property bool pinned: false
 	required property ShellScreen screen
 	readonly property bool shouldBeActive: visibilities.isDrawing
 	required property var visibilities
+
+	function collapse(): void {
+		if (pinned)
+			return;
+
+		expanded = false;
+	}
+
+	function expand(): void {
+		expanded = true;
+	}
+
+	function toggleExpanded(): void {
+		if (pinned)
+			return;
+
+		expanded = !expanded;
+	}
+
+	function togglePinned(): void {
+		pinned = !pinned;
+	}
 
 	anchors.leftMargin: (-implicitWidth - 5) * offsetScale
 	implicitHeight: content.implicitHeight
@@ -76,6 +99,7 @@ Item {
 		sourceComponent: Content {
 			drawing: root.drawing
 			visibilities: root.visibilities
+			wrapper: root
 		}
 	}
 }

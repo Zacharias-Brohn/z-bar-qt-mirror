@@ -18,6 +18,11 @@ CustomRect {
 	property color disabledColor: Qt.alpha(DynamicColors.palette.m3onSurface, 0.1)
 	property color disabledOnColor: Qt.alpha(DynamicColors.palette.m3onSurface, 0.38)
 	property bool fillWidth
+	property font font: ({
+			family: Appearance.font.family.sans,
+			pointSize: Appearance.font.size.larger,
+			bold: false
+		})
 	property real horizontalPadding: padding
 	readonly property alias hovered: stateLayer.containsMouse
 	required implicitHeight

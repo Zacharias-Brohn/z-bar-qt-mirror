@@ -427,8 +427,8 @@ CustomRect {
 			ButtonRow {
 				id: actions
 
-				anchors.left: body.left
-				anchors.right: body.right
+				anchors.left: parent.left
+				anchors.right: parent.right
 				anchors.top: body.bottom
 				anchors.topMargin: Appearance.spacing.small
 				opacity: root.expanded ? 1 : 0
@@ -459,6 +459,7 @@ CustomRect {
 						required property var modelData
 
 						fillWidth: true
+						implicitWidth: label.implicitWidth
 						inactiveColor: root.modelData.urgency === NotificationUrgency.Critical ? DynamicColors.palette.m3secondary : DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHighest, 2)
 						inactiveOnColor: root.modelData.urgency === NotificationUrgency.Critical ? DynamicColors.palette.m3onSecondary : DynamicColors.palette.m3onSurfaceVariant
 						isRound: true

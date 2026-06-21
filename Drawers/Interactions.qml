@@ -94,7 +94,7 @@ Item {
 			if (centroid.pressPosition.y > root.screen.height - Config.barConfig.border && centroid.pressPosition.x < root.screen.width / 5 && dragY < -50)
 				root.visibilities.clipboard = true;
 
-			if (!Config.dock.hoverToReveal && centroid.pressPosition.y > root.screen.height - root.bar.implicitHeight && centroid.pressPosition.x > root.screen.width / 5)
+			if (!Config.dock.hoverToReveal && centroid.pressPosition.y > root.screen.height - root.bar.implicitHeight && centroid.pressPosition.x > root.screen.width / 5 && !root.visibilities.launcher)
 				if (dragY < -10) {
 					root.visibilities.dock = true;
 					root.singleGestureTriggered = true;
@@ -123,6 +123,7 @@ Item {
 		property bool setInitialPoint: false
 
 		acceptedButtons: Qt.LeftButton | Qt.RightButton
+		cursorShape: Qt.BlankCursor
 		enabled: root.visibilities.isDrawing && (!root.inLeftPanel(root.panels.drawing, hoverHandler.point.position.x, hoverHandler.point.position.y) || !root.panels.drawing.expanded)
 
 		onActiveChanged: {
@@ -130,10 +131,12 @@ Item {
 				setInitialPoint = false;
 				root.drawing.content.endStroke();
 			} else {
-				root.panels.drawing.expanded = false;
+				root.panels.drawing.collapse();
 			}
 		}
 		onPointChanged: {
+			if (!active)
+				return;
 			const x = point.position.x;
 			const y = point.position.y;
 			const origX = point.pressPosition.x;
@@ -159,7 +162,7 @@ Item {
 	HoverHandler {
 		id: hoverHandler
 
-		cursorShape: root.visibilities.isDrawing && !root.inLeftPanel(root.panels.drawing, point.position.x, point.position.y) ? Qt.BlankCursor : undefined
+		cursorShape: root.visibilities.isDrawing && !root.inLeftPanel(root.panels.drawing, point.position.x, point.position.y) ? Qt.CrossCursor : undefined
 
 		onHoveredChanged: {
 			if (!hovered) {
@@ -182,7 +185,7 @@ Item {
 
 			if (root.visibilities.isDrawing) {
 				if (root.inLeftPanel(root.panels.drawing, x, y) && !(drawingHandler.point.pressedButtons & Qt.LeftButton)) {
-					root.panels.drawing.expanded = true;
+					root.panels.drawing.expand();
 					root.drawing.content.hideHover();
 					return;
 				}

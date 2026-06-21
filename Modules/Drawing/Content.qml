@@ -1,7 +1,6 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-import QtQuick.Layouts
 import ZShell.Components
 import qs.Config
 import qs.Components
@@ -13,6 +12,7 @@ Item {
 	readonly property var colors2: ["#3b82f6", "#a855f7", "#ec4899", "#ffffff", "#000000"]
 	required property var drawing
 	required property var visibilities
+	required property Wrapper wrapper
 
 	function syncFromPenColor() {
 		if (!drawing)
@@ -92,6 +92,8 @@ Item {
 		}
 
 		ButtonRow {
+			id: row1
+
 			anchors.left: parent.left
 			anchors.right: parent.right
 			spacing: Appearance.spacing.normal
@@ -100,11 +102,14 @@ Item {
 				model: root.colors1
 
 				delegate: ColorButton {
+					row: row1
 				}
 			}
 		}
 
 		ButtonRow {
+			id: row2
+
 			anchors.left: parent.left
 			anchors.right: parent.right
 			spacing: Appearance.spacing.normal
@@ -113,6 +118,7 @@ Item {
 				model: root.colors2
 
 				delegate: ColorButton {
+					row: row2
 				}
 			}
 		}
@@ -130,19 +136,69 @@ Item {
 
 			onMoved: root.drawing.drawingState.penWidth = value
 		}
+
+		ButtonRow {
+			anchors.left: parent.left
+			anchors.right: parent.right
+			spacing: Appearance.spacing.small
+
+			IconTextButton {
+				fillWidth: true
+				font.pointSize: Appearance.font.size.normal
+				icon: "close"
+				inactiveColor: DynamicColors.palette.m3error
+				inactiveOnColor: DynamicColors.palette.m3onError
+				isRound: true
+				shapeMorph: true
+				text: "Exit"
+
+				onClicked: root.visibilities.isDrawing = false
+			}
+
+			IconTextButton {
+				fillWidth: true
+				font.pointSize: Appearance.font.size.normal
+				icon: "ink_eraser"
+				inactiveColor: DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHighest, 2)
+				inactiveOnColor: DynamicColors.palette.m3onSurfaceVariant
+				isRound: true
+				shapeMorph: true
+				text: "Clear"
+
+				onClicked: root.drawing.content.clear()
+			}
+		}
+	}
+
+	IconButton {
+		anchors.margins: Appearance.padding.normal
+		anchors.right: parent.right
+		anchors.top: parent.top
+		checked: root.wrapper.pinned
+		icon: "keep"
+		isToggle: true
+		shapeMorph: true
+
+		onClicked: {
+			root.wrapper.togglePinned();
+		}
 	}
 
 	component ColorButton: IconButton {
 		id: colorButton
 
+		readonly property real buttonSize: (row.width - row.spacing * 4) / 5
 		required property color modelData
+		required property ButtonRow row
 
 		fillWidth: false
+		font.pointSize: Appearance.font.size.normal
 		icon: ""
+		implicitHeight: buttonSize
+		implicitWidth: buttonSize
 		inactiveColor: modelData
 		inactiveOnColor: DynamicColors.on(modelData)
 		isRound: true
-		padding: Appearance.padding.extraSmall
 		shapeMorph: true
 		shapeMorphExpansion: pressed ? 12 : 0
 

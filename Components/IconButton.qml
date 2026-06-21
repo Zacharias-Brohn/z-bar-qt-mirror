@@ -4,7 +4,6 @@ import qs.Config
 ButtonBase {
 	id: root
 
-	property alias font: label.font
 	property alias icon: label.text
 	readonly property alias label: label
 
@@ -36,6 +35,7 @@ ButtonBase {
 		anchors.verticalCenterOffset: 1
 		color: root.onColor
 		fill: !root.isToggle || root.internalChecked ? 1 : 0
+		font.pointSize: root.font.pointSize
 
 		Behavior on fill {
 			Anim {
