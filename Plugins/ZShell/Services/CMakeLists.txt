@@ -14,6 +14,7 @@ qml_module(ZShell-services
 		sensorslib.hpp sensorslib.cpp
 		usagefmt.hpp usagefmt.cpp
 		cpu.hpp cpu.cpp
+		gpu.hpp gpu.cpp
 		memory.hpp memory.cpp
 		diskinfo.hpp diskinfo.cpp
 		storage.hpp storage.cpp

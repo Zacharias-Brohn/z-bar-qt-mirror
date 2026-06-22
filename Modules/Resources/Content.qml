@@ -55,18 +55,18 @@ Item {
 				WrappedLoader {
 					id: gpuCard
 
-					active: Config.dashboard.performance.showGpu && SystemUsage.gpuType !== ""
+					active: Config.dashboard.performance.showGpu && Gpu.type !== Gpu.None
 
 					sourceComponent: HeroCard {
 						accent: DynamicColors.palette.m3secondary
 						icon: "desktop_windows"
 						label: qsTr("GPU")
-						subLabel: SystemUsage.gpuName
-						temperature: SystemUsage.gpuTemp
-						usage: SystemUsage.gpuPerc
+						subLabel: Gpu.name
+						temperature: Gpu.temperature
+						usage: Gpu.percentage
 
-						Ref {
-							service: SystemUsage
+						ServiceRef {
+							service: Gpu
 						}
 					}
 				}

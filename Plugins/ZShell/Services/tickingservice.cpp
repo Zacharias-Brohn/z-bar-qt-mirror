@@ -1,4 +1,11 @@
 #include "tickingservice.hpp"
+#include <QFile>
+#include <QDir>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonValue>
+#include <QFileSystemWatcher>
+#include <QTimer>
 
 namespace ZShell::services {
 
@@ -9,6 +16,42 @@ TickingService::TickingService(QObject* parent)
 	QObject::connect(m_timer, &QTimer::timeout, this, [this] {
 			tick();
 		});
+
+	QString configPath = QDir::homePath() + QStringLiteral("/.config/zshell/config.json");
+
+	auto reloadConfig = [this, configPath]() {
+				    QFile file(configPath);
+				    if (file.open(QIODevice::ReadOnly)) {
+					    QJsonDocument doc = QJsonDocument::fromJson(file.readAll());
+					    if (!doc.isNull()) {
+						    QJsonObject dashboard = doc.object().value("dashboard").toObject();
+						    if (dashboard.contains("resourceUpdateInterval")) {
+							    applyInterval(dashboard.value("resourceUpdateInterval").toInt(1000));
+						    }
+					    }
+				    }
+			    };
+
+	reloadConfig();
+
+	static auto* watcher = new QFileSystemWatcher();
+	if (!watcher->files().contains(configPath)) {
+		QObject::connect(watcher, &QFileSystemWatcher::fileChanged, this, [this, configPath]() {
+				QTimer::singleShot(100, this, [this, configPath]() {
+					QFile file(configPath);
+					if (file.exists()) {
+						QJsonDocument doc = QJsonDocument::fromJson(file.readAll());
+						if (!doc.isNull()) {
+							QJsonObject dashboard = doc.object().value("dashboard").toObject();
+							if (dashboard.contains("resourceUpdateInterval")) {
+								applyInterval(dashboard.value("resourceUpdateInterval").toInt(1000));
+							}
+						}
+					}
+				});
+			});
+		watcher->addPath(configPath);
+	}
 }
 
 int TickingService::updateInterval() const {
