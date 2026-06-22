@@ -1,11 +1,8 @@
 pragma ComponentBehavior: Bound
 
-import Quickshell
 import QtQuick
-import QtQuick.Layouts
 import qs.Components
 import qs.Config
-import qs.Modules
 import qs.Helpers
 
 CustomClippingRect {
@@ -33,11 +30,21 @@ CustomClippingRect {
 			text: qsTr("Network")
 		}
 
+		CustomText {
+			anchors.margins: Appearance.padding.large
+			anchors.right: parent.right
+			anchors.top: parent.top
+			font.pointSize: Appearance.font.size.large
+			text: Network.networkName
+		}
+
 		StateLayer {
 			id: buttonScan
 
 			onClicked: {
-				console.log(Network.network.length);
+				console.log("Network devices: " + Network.netDevice);
+				console.log("Network interface names: " + Network.nicNames);
+				console.log("Connected devices: " + Network.networkName);
 			}
 		}
 	}
