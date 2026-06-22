@@ -123,7 +123,6 @@ Item {
 		property bool setInitialPoint: false
 
 		acceptedButtons: Qt.LeftButton | Qt.RightButton
-		cursorShape: Qt.BlankCursor
 		enabled: root.visibilities.isDrawing && (!root.inLeftPanel(root.panels.drawing, hoverHandler.point.position.x, hoverHandler.point.position.y) || !root.panels.drawing.expanded)
 
 		onActiveChanged: {
@@ -162,7 +161,7 @@ Item {
 	HoverHandler {
 		id: hoverHandler
 
-		cursorShape: root.visibilities.isDrawing && !root.inLeftPanel(root.panels.drawing, point.position.x, point.position.y) ? Qt.CrossCursor : undefined
+		cursorShape: root.visibilities.isDrawing && !root.inLeftPanel(root.panels.drawing, point.position.x, point.position.y) ? Qt.BlankCursor : undefined
 
 		onHoveredChanged: {
 			if (!hovered) {

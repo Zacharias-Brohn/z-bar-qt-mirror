@@ -2,6 +2,7 @@
 #include "strokecanvasrenderer.hpp"
 #include <qcanvaspainter.h>
 #include <qnamespace.h>
+#include <qpoint.h>
 
 namespace ZShell::internal {
 
@@ -28,12 +29,11 @@ static bool shouldAddPoint(
 	       >= minDistance * minDistance;
 }
 
-static QCanvasPath buildStrokePath(const QVector<QPointF> &points) {
+static QCanvasPath buildStrokePath(const QVector<QPointF> &points, float width) {
 	QCanvasPath path;
 
 	if (points.size() == 1) {
-		// Single point — store as a tiny circle so the group can still be cached
-		path.circle(points[0], 0); // radius 0; actual width applied at draw time
+		path.circle(points[0], width * 0.5f);
 		return path;
 	}
 
@@ -95,12 +95,18 @@ void StrokeCanvasItem::setHoverPoint(const QPointF &point) {
 }
 
 void StrokeCanvasItem::showHover(qreal x, qreal y) {
-	m_hoverPoint = {x, y};
-	m_hoverVisible = true;
-	update();
+	const QPointF newPoint{x, y};
+	const bool pointChanged = (m_hoverPoint != newPoint);
+	const bool visibleChanged = !m_hoverVisible;
 
-	emit hoverPointChanged();
-	emit hoverVisibleChanged();
+
+	if (pointChanged || visibleChanged) {
+		m_hoverVisible = true;
+		m_hoverPoint = newPoint;
+		if (pointChanged) emit hoverPointChanged();
+		if (visibleChanged) emit hoverVisibleChanged();
+		update();
+	}
 }
 
 void StrokeCanvasItem::hideHover() {
@@ -124,6 +130,7 @@ void StrokeCanvasItem::setPenWidth(float width) {
 }
 
 void StrokeCanvasItem::beginStroke(qreal x, qreal y) {
+	m_isDrawing = true;
 	m_currentStroke.points.clear();
 	m_currentStroke.points.append({x, y});
 
@@ -163,13 +170,14 @@ void StrokeCanvasItem::appendPoint(qreal x, qreal y) {
 }
 
 void StrokeCanvasItem::endStroke() {
+	m_isDrawing = false;
 	if (m_currentStroke.points.isEmpty())
 		return;
 
-	m_currentStroke.path = buildStrokePath(m_currentStroke.points);
+	m_currentStroke.isSinglePoint = (m_currentStroke.points.size() == 1);
+	m_currentStroke.path = buildStrokePath(m_currentStroke.points, m_currentStroke.width);
 	m_currentStroke.groupId = m_nextGroupId++;
 	m_currentStroke.points.clear();
-
 	m_strokes.append(m_currentStroke);
 	m_currentStroke = {};
 

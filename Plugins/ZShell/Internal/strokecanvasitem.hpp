@@ -70,6 +70,7 @@ bool m_hoverVisible = false;
 QPointF m_hoverPoint;
 QColor m_penColor = Qt::white;
 float m_penWidth = 4.f;
+bool m_isDrawing = false;
 
 int m_nextGroupId = 0;
 QVector<Stroke> m_strokes;

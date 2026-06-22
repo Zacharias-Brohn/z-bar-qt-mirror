@@ -17,6 +17,7 @@ QColor m_penColor;
 float m_penWidth = 4.f;
 bool m_hoverVisible = false;
 QPointF m_hoverPoint;
+bool m_isDrawing = false;
 
 QVector<Stroke> m_strokes;
 Stroke m_currentStroke;

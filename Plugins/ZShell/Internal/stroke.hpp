@@ -13,6 +13,7 @@ struct Stroke {
 	QColor color;
 	float width;
 	int groupId = -1;
+	bool isSinglePoint = false;
 };
 
 };

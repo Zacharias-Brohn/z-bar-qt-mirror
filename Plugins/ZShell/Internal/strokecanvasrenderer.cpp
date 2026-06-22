@@ -1,5 +1,6 @@
 #include "strokecanvasrenderer.hpp"
 #include "strokecanvasitem.hpp"
+#include <qcolor.h>
 
 namespace ZShell::internal {
 
@@ -54,17 +55,79 @@ static void drawStroke(
 	painter->stroke();
 }
 
-static void drawDot(
+static void drawHoverCursor(
 	QCanvasPainter *painter,
 	const QPointF &point,
-	const QColor &color,
-	float width)
+	float penWidth,
+	QColor penColor,
+	bool isDrawing)
 {
-	painter->setFillStyle(color);
+	const float radius = penWidth * 0.5f;
 
-	painter->beginPath();
-	painter->circle(point, width * 0.5f);
-	painter->fill();
+	if (isDrawing) {
+		painter->setFillStyle(penColor);
+		painter->beginPath();
+		painter->circle(point, radius);
+		painter->fill();
+	}
+
+	const float lineWidth = 1.5f;
+	const float crosshairSize = 6.0f;
+	const bool useDashes = penWidth > 10.0f;
+
+	auto drawOutline = [&](const QColor &color, float width) {
+				   painter->setStrokeStyle(color);
+				   painter->setLineWidth(width);
+				   painter->setLineCap(QCanvasPainter::LineCap::Round);
+
+
+				   if (useDashes) {
+					   const int dashCount = 12;
+					   const float fullAngle = 2.0f * M_PI;
+					   const float dashAngle = fullAngle / dashCount * 0.5f;
+					   const float gapAngle  = fullAngle / dashCount * 0.5f;
+
+					   float angle = 0.0f;
+					   for (int i = 0; i < dashCount; ++i) {
+						   painter->beginPath();
+						   painter->arc(point, radius, angle, angle + dashAngle,
+						                QCanvasPainter::PathWinding::ClockWise,
+						                QCanvasPainter::PathConnection::NotConnected);
+						   painter->stroke();
+						   angle += dashAngle + gapAngle;
+					   }
+				   } else {
+					   painter->beginPath();
+					   painter->circle(point, radius);
+					   painter->stroke();
+				   }
+			   };
+
+	auto drawCrosshair = [&](const QColor &color, float width) {
+				     painter->setStrokeStyle(color);
+				     painter->setLineWidth(width);
+				     painter->setLineCap(QCanvasPainter::LineCap::Round);
+
+				     const float inner = radius + 3.0f;
+				     const float outer = radius + 3.0f + crosshairSize;
+
+				     painter->beginPath();
+				     painter->moveTo(point + QPointF(0, -outer));
+				     painter->lineTo(point + QPointF(0, -inner));
+				     painter->moveTo(point + QPointF(0,  outer));
+				     painter->lineTo(point + QPointF(0,  inner));
+				     painter->moveTo(point + QPointF(-outer, 0));
+				     painter->lineTo(point + QPointF(-inner, 0));
+				     painter->moveTo(point + QPointF( outer, 0));
+				     painter->lineTo(point + QPointF( inner, 0));
+				     painter->stroke();
+			     };
+
+	drawOutline(QColor(0, 0, 0, 160), lineWidth + 1.0f);
+	drawCrosshair(QColor(0, 0, 0, 160), lineWidth + 1.0f);
+
+	drawOutline(QColor(255, 255, 255, 220), lineWidth);
+	drawCrosshair(QColor(255, 255, 255, 220), lineWidth);
 }
 
 void StrokeCanvasRenderer::synchronizeData(QCanvasPainterItem *item) {
@@ -73,11 +136,9 @@ void StrokeCanvasRenderer::synchronizeData(QCanvasPainterItem *item) {
 	m_penColor = canvas->m_penColor;
 	m_penWidth = canvas->m_penWidth;
 
-	// Only copy strokes the renderer hasn't seen yet
 	while (m_strokes.size() < canvas->m_strokes.size())
 		m_strokes.append(canvas->m_strokes[m_strokes.size()]);
 
-	// Handle clear()
 	if (canvas->m_strokes.isEmpty() && !m_strokes.isEmpty()) {
 		for (const auto &stroke : m_strokes)
 			if (stroke.groupId >= 0)
@@ -89,6 +150,7 @@ void StrokeCanvasRenderer::synchronizeData(QCanvasPainterItem *item) {
 
 	m_hoverVisible = canvas->m_hoverVisible;
 	m_hoverPoint = canvas->m_hoverPoint;
+	m_isDrawing = canvas->m_isDrawing;
 }
 
 void StrokeCanvasRenderer::paint(QCanvasPainter *painter) {
@@ -105,7 +167,7 @@ void StrokeCanvasRenderer::paint(QCanvasPainter *painter) {
 		painter->setLineCap(QCanvasPainter::LineCap::Round);
 		painter->setLineJoin(QCanvasPainter::LineJoin::Round);
 
-		if (stroke.path.commandsSize() == 1) {
+		if (stroke.isSinglePoint) {
 			painter->fill(stroke.path, stroke.groupId);
 		} else {
 			painter->stroke(stroke.path, stroke.groupId);
@@ -115,7 +177,7 @@ void StrokeCanvasRenderer::paint(QCanvasPainter *painter) {
 	drawStroke(painter, m_currentStroke.points, m_currentStroke.color, m_currentStroke.width);
 
 	if (m_hoverVisible)
-		drawDot(painter, m_hoverPoint, m_penColor, m_penWidth);
+		drawHoverCursor(painter, m_hoverPoint, m_penWidth, m_penColor, m_isDrawing);
 }
 
 };
