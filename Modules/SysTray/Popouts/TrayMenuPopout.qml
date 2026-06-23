@@ -13,6 +13,8 @@ StackView {
 	id: root
 
 	property int biggestWidth: 0
+	readonly property int itemHeight: 30
+	readonly property int panelRadius: ((itemHeight / 2) + Appearance.padding.small) * Appearance.rounding.scale
 	required property PopoutState popouts
 	property int rootWidth: 0
 	required property QsMenuHandle trayItem
@@ -100,10 +102,13 @@ StackView {
 					asynchronous: true
 
 					sourceComponent: Item {
-						implicitHeight: 30
+						implicitHeight: root.itemHeight
 
 						StateLayer {
-							function onClicked(): void {
+							enabled: item.modelData.enabled
+							radius: item.radius
+
+							onClicked: {
 								const entry = item.modelData;
 								if (entry.hasChildren) {
 									root.rootWidth = root.biggestWidth;
@@ -117,9 +122,6 @@ StackView {
 									root.popouts.hasCurrent = false;
 								}
 							}
-
-							disabled: !item.modelData.enabled
-							radius: item.radius
 						}
 
 						Loader {
@@ -217,13 +219,13 @@ StackView {
 						radius: Appearance.rounding.full
 
 						StateLayer {
-							function onClicked(): void {
+							color: DynamicColors.palette.m3onSecondaryContainer
+							radius: parent.radius
+
+							onClicked: {
 								root.pop();
 								root.biggestWidth = root.rootWidth;
 							}
-
-							color: DynamicColors.palette.m3onSecondaryContainer
-							radius: parent.radius
 						}
 					}
 

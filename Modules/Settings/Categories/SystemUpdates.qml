@@ -70,7 +70,7 @@ CustomClippingRect {
 
 						StateLayer {
 							color: DynamicColors.palette.m3onPrimary
-							disabled: Updates.updating
+							enabled: !Updates.updating
 
 							onClicked: Updates.performSystemUpdate()
 						}

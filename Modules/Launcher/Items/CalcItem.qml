@@ -23,11 +23,11 @@ Item {
 	implicitHeight: Config.launcher.sizes.itemHeight
 
 	StateLayer {
-		function onClicked(): void {
+		radius: Appearance.rounding.smallest
+
+		onClicked: {
 			root.onClicked();
 		}
-
-		radius: Appearance.rounding.smallest
 	}
 
 	RowLayout {
@@ -76,12 +76,12 @@ Item {
 			StateLayer {
 				id: stateLayer
 
-				function onClicked(): void {
+				color: DynamicColors.palette.m3onTertiary
+
+				onClicked: {
 					Quickshell.execDetached(["app2unit", "--", ...Config.general.apps.terminal, "fish", "-C", `exec qalc -i '${root.math}'`]);
 					root.list.visibilities.launcher = false;
 				}
-
-				color: DynamicColors.palette.m3onTertiary
 			}
 
 			CustomText {

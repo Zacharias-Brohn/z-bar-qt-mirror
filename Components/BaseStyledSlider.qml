@@ -12,11 +12,8 @@ Slider {
 	readonly property bool isVertical: orientation === Qt.Vertical
 	property real multiplier: 100
 	property real oldValue
-
-	// Wrapper components can inject their own track visuals here.
 	property Component trackContent
 
-	// Keep current behavior for existing usages.
 	orientation: Qt.Vertical
 
 	background: CustomRect {

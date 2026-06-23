@@ -215,6 +215,10 @@ Singleton {
 				notif.hasActionIcons = notif.notification.hasActionIcons;
 			}
 
+			function onHintsChanged(): void {
+				notif.hints = notif.notification.hints;
+			}
+
 			function onImageChanged(): void {
 				notif.imageSource = notif.notification.image || "";
 				notif.image = notif.imageSource;
@@ -237,6 +241,7 @@ Singleton {
 		}
 		property real expireTimeout: 5
 		property bool hasActionIcons
+		property var hints
 		property string image
 		property string imageSource
 		property var locks: new Set()
@@ -333,6 +338,7 @@ Singleton {
 			appName = notification.appName;
 			imageSource = notification.image || "";
 			image = imageSource;
+			hints = notification.hints;
 			expireTimeout = notification.expireTimeout;
 			urgency = notification.urgency;
 			resident = notification.resident;

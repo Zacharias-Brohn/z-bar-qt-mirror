@@ -108,12 +108,12 @@ ColumnLayout {
 		}
 
 		StateLayer {
-			function onClicked(): void {
-				parent.forceActiveFocus();
-			}
-
 			cursorShape: Qt.IBeamCursor
 			hoverEnabled: false
+
+			onClicked: {
+				parent.forceActiveFocus();
+			}
 		}
 
 		RowLayout {
@@ -167,11 +167,11 @@ ColumnLayout {
 				radius: Appearance.rounding.full
 
 				StateLayer {
-					function onClicked(): void {
+					color: root.lock.pam.buffer ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3onSurface
+
+					onClicked: {
 						root.lock.pam.passwd.start();
 					}
-
-					color: root.lock.pam.buffer ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3onSurface
 				}
 
 				MaterialIcon {

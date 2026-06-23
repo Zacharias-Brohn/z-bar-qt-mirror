@@ -94,7 +94,7 @@ Item {
 					const finalRect = Qt.rect(cropXPercent, cropYPercent, cropWidthPercent, cropHeightPercent);
 
 					// We just pass the percentages directly to the backend
-					Wallpapers.setCrop(delegate.modelData.name, finalRect, finalRect, cropRect.zoom);
+					Wallpapers.setCrop(delegate.modelData.name, finalRect, cropRect.zoom);
 				}
 
 				function zoomClipRect(zoom: real): void {
@@ -131,24 +131,22 @@ Item {
 					anchors.left: parent.left
 					anchors.right: parent.right
 					implicitHeight: 30
-					spacing: Appearance.spacing.large
-
-					CustomText {
-						text: qsTr("Crop scale")
-					}
 
 					CustomSlider {
 						id: zoomSlider
 
 						Layout.fillWidth: true
-						Layout.preferredHeight: 30
+						Layout.leftMargin: Appearance.padding.normal
+						Layout.preferredHeight: Appearance.padding.larger * 3
+						Layout.rightMargin: Appearance.padding.normal
 						from: 1.0
-						implicitHeight: 30
+						implicitHeight: Appearance.padding.larger * 3
+						insetIcon: "crop"
 						to: 5.0
 						value: cropRectLoader.item ? cropRectLoader.item.zoom : 1.0
 
-						onMoved: {
-							delegate.zoomClipRect(value);
+						onInteraction: value => {
+							delegate.zoomClipRect(1 + (value * 4));
 							wrapper.changesMade = true;
 						}
 					}
@@ -167,7 +165,7 @@ Item {
 					anchors.top: parent.top
 					asynchronous: true
 					fillMode: Image.PreserveAspectFit
-					// retainWhileLoading: true
+					retainWhileLoading: true
 					source: Wallpapers.current
 					sourceSize.height: parent.height
 					sourceSize.width: parent.width
@@ -202,7 +200,7 @@ Item {
 					Loader {
 						id: cropRectLoader
 
-						active: scaledImg.paintedWidth > 0 && scaledImg.status == Image.Ready
+						active: scaledImg.paintedWidth > 0
 
 						sourceComponent: Component {
 							CustomRect {

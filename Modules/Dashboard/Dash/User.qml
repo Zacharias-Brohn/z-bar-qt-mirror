@@ -9,7 +9,7 @@ import QtQuick
 Row {
 	id: root
 
-	required property PersistentProperties state
+	required property PersistentProperties dashState
 
 	padding: 20
 	spacing: 12

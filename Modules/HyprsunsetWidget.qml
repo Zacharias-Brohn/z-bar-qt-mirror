@@ -24,6 +24,12 @@ CustomRect {
 		anchors.centerIn: parent
 		animate: true
 		color: root.tempEnabled ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3onSurface
+		fill: root.tempEnabled ? 1 : 0
 		text: root.tempEnabled ? "lightbulb" : "light_off"
+
+		Behavior on fill {
+			Anim {
+			}
+		}
 	}
 }

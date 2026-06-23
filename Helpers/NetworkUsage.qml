@@ -39,6 +39,21 @@ Singleton {
 	readonly property real uploadSpeed: _uploadSpeed
 	readonly property real uploadTotal: _uploadTotal
 
+function resetSampling(): void {
+	netDevFile.reload();
+
+	const content = netDevFile.text();
+	if (!content)
+		return;
+
+	const data = root.parseNetDev(content);
+	const now = Date.now();
+
+	root._prevRxBytes = data.rx;
+	root._prevTxBytes = data.tx;
+	root._prevTimestamp = now;
+}
+
 	function formatBytes(bytes: real): var {
 		// Handle negative or invalid values
 		if (bytes < 0 || isNaN(bytes) || !isFinite(bytes)) {
@@ -156,10 +171,15 @@ Singleton {
 	Timer {
 		interval: Config.dashboard.resourceUpdateInterval
 		repeat: true
-		running: root.refCount > 0
+		running: true
 		triggeredOnStart: true
 
 		onTriggered: {
+			if (root.refCount <= 0) {
+				root.resetSampling();
+				return;
+			}
+
 			netDevFile.reload();
 			const content = netDevFile.text();
 			if (!content)

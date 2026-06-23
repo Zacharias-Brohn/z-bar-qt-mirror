@@ -2,6 +2,7 @@
 #include "desktopstatemanager.hpp"
 #include <QDir>
 #include <QFileInfoList>
+#include <QPoint>
 
 namespace ZShell::services {
 
@@ -37,7 +38,29 @@ QHash<int, QByteArray> DesktopModel::roleNames() const {
 	return roles;
 }
 
+QPoint DesktopModel::getEmptySpot(const QSet<QString> &occupied) const {
+	for (int x = 0; ; ++x) {
+		for (int y = 0; y < m_rows; ++y) {
+			QString key = QString::number(x) + "," + QString::number(y);
+			if (!occupied.contains(key)) {
+				return QPoint(x, y);
+			}
+		}
+	}
+}
+
 void DesktopModel::loadDirectory(const QString &path) {
+	m_watchedPath = path;
+
+	if (!m_watcher.directories().isEmpty())
+		m_watcher.removePaths(m_watcher.directories());
+
+	m_watcher.addPath(path);
+
+	connect(&m_watcher, &QFileSystemWatcher::directoryChanged,
+	        this, &DesktopModel::onDirectoryChanged,
+	        Qt::UniqueConnection);
+
 	beginResetModel();
 	m_items.clear();
 
@@ -47,6 +70,14 @@ void DesktopModel::loadDirectory(const QString &path) {
 
 	DesktopStateManager sm;
 	QVariantMap savedLayout = sm.getLayout();
+
+	QSet<QString> occupied;
+	for (const QFileInfo &fileInfo : list) {
+		if (savedLayout.contains(fileInfo.fileName())) {
+			QVariantMap pos = savedLayout[fileInfo.fileName()].toMap();
+			occupied.insert(QString::number(pos["x"].toInt()) + "," + QString::number(pos["y"].toInt()));
+		}
+	}
 
 	for (const QFileInfo &fileInfo : list) {
 		DesktopItem item;
@@ -59,13 +90,18 @@ void DesktopModel::loadDirectory(const QString &path) {
 			item.gridX = pos["x"].toInt();
 			item.gridY = pos["y"].toInt();
 		} else {
-			// TODO: make getEmptySpot in C++ and call it here to get the initial position for new icons
-			item.gridX = 0;
-			item.gridY = 0;
+			QPoint spot = getEmptySpot(occupied);
+			item.gridX = spot.x();
+			item.gridY = spot.y();
+			occupied.insert(QString::number(item.gridX) + "," + QString::number(item.gridY));
 		}
 		m_items.append(item);
 	}
 	endResetModel();
+}
+
+void DesktopModel::onDirectoryChanged() {
+	loadDirectory(m_watchedPath);
 }
 
 void DesktopModel::moveIcon(int index, int newX, int newY) {
@@ -183,4 +219,4 @@ void DesktopModel::massMove(const QVariantList& selectedPathsList, const QString
 	saveCurrentLayout();
 }
 
-} // namespace ZShell::services
+};

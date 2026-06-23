@@ -17,8 +17,8 @@ Item {
 	readonly property Popout currentPopout: content.children.find(c => c.shouldBeActive) ?? null
 	required property PopoutState popouts
 
-	implicitHeight: (currentPopout?.implicitHeight ?? 0) + 5 * 2
-	implicitWidth: (currentPopout?.implicitWidth ?? 0) + 5 * 2
+	implicitHeight: (currentPopout?.implicitHeight ?? 0) + Appearance.padding.small * 2
+	implicitWidth: (currentPopout?.implicitWidth ?? 0) + Appearance.padding.small * 2
 
 	Item {
 		id: content
@@ -28,7 +28,7 @@ Item {
 		Popout {
 			name: "audio"
 
-			sourceComponent: AudioPopup {
+			sourceComponent: AudioPopout {
 				wrapper: root.wrapper
 			}
 		}
@@ -73,7 +73,6 @@ Item {
 			name: "upower"
 
 			sourceComponent: UPowerPopout {
-				wrapper: root.popouts
 			}
 		}
 

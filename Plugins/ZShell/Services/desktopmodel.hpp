@@ -4,7 +4,7 @@
 #include <QList>
 #include <QString>
 #include <QQmlEngine>
-#include <cstdint>
+#include <QFileSystemWatcher>
 
 namespace ZShell::services {
 
@@ -39,9 +39,27 @@ Q_INVOKABLE void loadDirectory(const QString &path);
 Q_INVOKABLE void moveIcon(int index, int newX, int newY);
 Q_INVOKABLE void massMove(const QVariantList &selectedPathsList, const QString &leaderPath, int targetX, int targetY, int maxCol, int maxRow);
 
+Q_PROPERTY(int rows READ rows WRITE setRows NOTIFY rowsChanged)
+
+public:
+[[nodiscard]] int rows() const {
+	return m_rows;
+}
+void setRows(int r) {
+	if (m_rows != r) { m_rows = r; emit rowsChanged(); }
+}
+
+signals:
+void rowsChanged();
+
 private:
+int m_rows = 1;
 QList<DesktopItem> m_items;
+QString m_watchedPath;
+QFileSystemWatcher m_watcher;
 void saveCurrentLayout();
+[[nodiscard]] QPoint getEmptySpot(const QSet<QString> &occupied) const;
+void onDirectoryChanged();
 };
 
-} // namespace ZShell::Services
+};

@@ -10,9 +10,9 @@ import qs.Components
 Item {
 	id: root
 
+	required property PersistentProperties dashState
 	readonly property real nonAnimHeight: view.implicitHeight + viewWrapper.anchors.margins * 2
 	readonly property real nonAnimWidth: view.implicitWidth + viewWrapper.anchors.margins * 2
-	required property PersistentProperties state
 	required property PersistentProperties visibilities
 
 	implicitHeight: nonAnimHeight
@@ -59,7 +59,7 @@ Item {
 					index: 0
 
 					sourceComponent: Dash {
-						state: root.state
+						dashState: root.dashState
 						visibilities: root.visibilities
 					}
 				}

@@ -5,6 +5,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QDebug>
+#include <QJsonArray>
 
 namespace ZShell::services {
 
@@ -12,7 +13,7 @@ DesktopStateManager::DesktopStateManager(QObject *parent) : QObject(parent) {
 }
 
 QString DesktopStateManager::getConfigFilePath() const {
-	QString configDir = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + "/sleex";
+	QString configDir = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + "/zshell";
 	QDir dir(configDir);
 	if (!dir.exists()) {
 		dir.mkpath(".");
@@ -29,7 +30,7 @@ void DesktopStateManager::saveLayout(const QVariantMap& layout) {
 		file.write(doc.toJson(QJsonDocument::Indented));
 		file.close();
 	} else {
-		qWarning() << "Sleex: Impossible de sauvegarder le layout du bureau dans" << getConfigFilePath();
+		qWarning() << "zshell: Cannot save desktop layout to" << getConfigFilePath();
 	}
 }
 

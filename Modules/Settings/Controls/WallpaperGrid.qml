@@ -131,16 +131,16 @@ GridView {
 		}
 
 		StateLayer {
-			function onClicked(): void {
-				Wallpapers.setWallpaper(modelData.path);
-			}
-
 			anchors.bottomMargin: itemMargin
 			anchors.fill: parent
 			anchors.leftMargin: itemMargin
 			anchors.rightMargin: itemMargin
 			anchors.topMargin: itemMargin
 			radius: itemRadius
+
+			onClicked: {
+				Wallpapers.setWallpaper(modelData.path);
+			}
 		}
 	}
 	Behavior on opacity {

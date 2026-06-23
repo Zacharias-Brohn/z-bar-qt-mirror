@@ -47,6 +47,75 @@ SettingsPage {
 	}
 
 	SettingsSection {
+		sectionId: "Clipboard"
+
+		SettingsHeader {
+			name: "Clipboard"
+		}
+
+		SettingSwitch {
+			name: "Enable clipboard history viewer"
+			object: Config.clipboard
+			setting: "enabled"
+		}
+
+		Separator {
+		}
+
+		SettingSpinBox {
+			max: 20
+			min: 1
+			name: "Max entries visible"
+			object: Config.clipboard
+			setting: "maxEntriesShown"
+		}
+
+		Separator {
+		}
+
+		SettingSpinBox {
+			max: 80
+			min: 30
+			name: "Entry height"
+			object: Config.clipboard.sizes
+			setting: "itemHeight"
+		}
+
+		Separator {
+		}
+
+		SettingSpinBox {
+			max: 700
+			min: 300
+			name: "Entry width"
+			object: Config.clipboard.sizes
+			setting: "width"
+		}
+
+		Separator {
+		}
+
+		SettingSpinBox {
+			max: 1800
+			min: 50
+			name: "Minimum preview width"
+			object: Config.clipboard.sizes
+			setting: "minPreviewWidth"
+		}
+
+		Separator {
+		}
+
+		SettingSpinBox {
+			max: 1800
+			min: 50
+			name: "Maximum preview width"
+			object: Config.clipboard.sizes
+			setting: "previewWidth"
+		}
+	}
+
+	SettingsSection {
 		sectionId: "Toasts"
 
 		SettingsHeader {

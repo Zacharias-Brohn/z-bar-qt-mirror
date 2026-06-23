@@ -415,6 +415,13 @@ export const settingsIndex = [
         keywords: ["screen", "step", "increment"],
     },
     {
+        name: "Minimum brightness",
+        category: "services",
+        categoryName: "Services",
+        section: "Media",
+        keywords: ["brightness", "minimum", "screen"],
+    },
+    {
         name: "Max volume",
         category: "services",
         categoryName: "Services",
@@ -562,6 +569,49 @@ export const settingsIndex = [
         categoryName: "Utilities",
         section: "Utilities",
         keywords: ["notification", "size", "width"],
+    },
+    // Clipboard section
+    {
+        name: "Enable clipboard history viewer",
+        category: "utilities",
+        categoryName: "Utilities",
+        section: "Clipboard",
+        keywords: ["enable", "clipboard"],
+    },
+    {
+        name: "Max entries visible",
+        category: "utilities",
+        categoryName: "Utilities",
+        section: "Clipboard",
+        keywords: ["clipboard", "max"],
+    },
+    {
+        name: "Entry height",
+        category: "utilities",
+        categoryName: "Utilities",
+        section: "Clipboard",
+        keywords: ["height", "entry"],
+    },
+    {
+        name: "Entry width",
+        category: "utilities",
+        categoryName: "Utilities",
+        section: "Clipboard",
+        keywords: ["width", "entry"],
+    },
+    {
+        name: "Minimum preview width",
+        category: "utilities",
+        categoryName: "Utilities",
+        section: "Clipboard",
+        keywords: ["minimum", "preview", "width"],
+    },
+    {
+        name: "Maximum preview width",
+        category: "utilities",
+        categoryName: "Utilities",
+        section: "Clipboard",
+        keywords: ["maximum", "preview", "width"],
     },
     // Toasts section
     {

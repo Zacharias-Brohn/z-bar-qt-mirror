@@ -1,6 +1,6 @@
 import QtQuick
-import QtQuick.Templates
 import QtQuick.Shapes
+import QtQuick.Templates
 import qs.Config
 
 Switch {
@@ -12,38 +12,41 @@ Switch {
 	implicitWidth: implicitIndicatorWidth
 
 	indicator: CustomRect {
-		color: root.checked ? DynamicColors.palette.m3primary : DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHighest, root.cLayer)
-		implicitHeight: 13 + 7 * 2
+		color: root.checked && root.enabled ? DynamicColors.palette.m3primary : DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHighest, root.cLayer)
+		implicitHeight: Appearance.font.size.medium + Appearance.padding.normal * 2
 		implicitWidth: implicitHeight * 1.7
 		radius: Appearance.rounding.full
 
 		CustomRect {
-			readonly property real nonAnimWidth: root.pressed ? implicitHeight * 1.3 : implicitHeight
+			readonly property real nonAnimWidth: root.pressed ? implicitHeight * 1.2 : implicitHeight
 
 			anchors.verticalCenter: parent.verticalCenter
-			color: root.checked ? DynamicColors.palette.m3onPrimary : DynamicColors.layer(DynamicColors.palette.m3outline, root.cLayer + 1)
-			implicitHeight: parent.implicitHeight - 10
+			color: root.checked && root.enabled ? DynamicColors.palette.m3onPrimary : DynamicColors.layer(DynamicColors.palette.m3outline, root.cLayer + 1)
+			implicitHeight: parent.implicitHeight - Appearance.padding.extraSmall
 			implicitWidth: nonAnimWidth
 			radius: Appearance.rounding.full
-			x: root.checked ? parent.implicitWidth - nonAnimWidth - 10 / 2 : 10 / 2
+			x: root.checked ? parent.implicitWidth - nonAnimWidth - Appearance.padding.extraSmall / 2 : Appearance.padding.extraSmall / 2
 
 			Behavior on implicitWidth {
 				Anim {
+					type: Anim.FastSpatial
 				}
 			}
 			Behavior on x {
 				Anim {
+					type: Anim.FastSpatial
 				}
 			}
 
 			CustomRect {
 				anchors.fill: parent
-				color: root.checked ? DynamicColors.palette.m3primary : DynamicColors.palette.m3onSurface
+				color: root.checked && root.enabled ? DynamicColors.palette.m3primary : DynamicColors.palette.m3onSurface
 				opacity: root.pressed ? 0.1 : root.hovered ? 0.08 : 0
 				radius: parent.radius
 
 				Behavior on opacity {
 					Anim {
+						type: Anim.DefaultEffects
 					}
 				}
 			}
@@ -63,14 +66,14 @@ Switch {
 				}
 				property point end2: {
 					if (root.pressed)
-						return Qt.point(width, height / 2);
+						return Qt.point(width * 0.8, height / 2);
 					if (root.checked)
 						return Qt.point(width * 0.85, height * 0.2);
 					return Qt.point(width * 0.85, height * 0.15);
 				}
 				property point start1: {
 					if (root.pressed)
-						return Qt.point(width * 0.1, height / 2);
+						return Qt.point(width * 0.2, height / 2);
 					if (root.checked)
 						return Qt.point(width * 0.15, height / 2);
 					return Qt.point(width * 0.15, height * 0.15);
@@ -88,7 +91,7 @@ Switch {
 
 				anchors.centerIn: parent
 				asynchronous: true
-				height: parent.implicitHeight - Appearance.padding.small * 2
+				height: parent.implicitHeight - Appearance.padding.larger
 				preferredRendererType: Shape.CurveRenderer
 				width: height
 
@@ -110,11 +113,11 @@ Switch {
 				}
 
 				ShapePath {
-					capStyle: Appearance.rounding.scale === 0 ? ShapePath.SquareCap : ShapePath.RoundCap
+					capStyle: ShapePath.RoundCap
 					fillColor: "transparent"
 					startX: icon.start1.x
 					startY: icon.start1.y
-					strokeColor: root.checked ? DynamicColors.palette.m3primary : DynamicColors.palette.m3surfaceContainerHighest
+					strokeColor: root.checked && root.enabled ? DynamicColors.palette.m3primary : DynamicColors.palette.m3surfaceContainerHighest
 					strokeWidth: Appearance.font.size.larger * 0.15
 
 					Behavior on strokeColor {
@@ -148,8 +151,7 @@ Switch {
 	}
 
 	component PropAnim: PropertyAnimation {
-		duration: MaterialEasing.expressiveEffectsTime
-		easing.bezierCurve: MaterialEasing.expressiveEffects
-		easing.type: Easing.BezierSpline
+		duration: Appearance.anim.durations.expressiveFastSpatial
+		easing.bezierCurve: Appearance.anim.curves.expressiveFastSpatial
 	}
 }

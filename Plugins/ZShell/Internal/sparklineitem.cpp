@@ -1,5 +1,6 @@
 #include "sparklineitem.hpp"
 
+#include <qmath.h>
 #include <qpainter.h>
 #include <qpainterpath.h>
 #include <qpen.h>
@@ -33,19 +34,45 @@ void SparklineItem::drawLine(QPainter* painter, CircularBuffer* buffer, const QC
 	const qreal w = width();
 	const qreal h = height();
 	const int len = buffer->count();
+	if (len < 2 || m_maxValue <= 0.0)
+		return;
+
 	const qreal stepX = w / static_cast<qreal>(m_historyLength - 1);
 	const qreal startX = w - (len - 1) * stepX - stepX * m_slideProgress + stepX;
 
-	// Build line path
-	QPainterPath linePath;
-	linePath.moveTo(startX, h - (buffer->at(0) / m_maxValue) * h);
-	for (int i = 1; i < len; ++i) {
+	const qreal strokePad = qCeil(m_lineWidth / 2);
+	const qreal curvePad  = 3.0;
+	const qreal topPad    = strokePad + curvePad;
+	const qreal bottomPad = strokePad;
+	const qreal plotTop    = topPad;
+	const qreal plotBottom = h - bottomPad;
+	const qreal fillBottom = h;
+	const qreal plotH      = qMax<qreal>(1.0, plotBottom - plotTop);
+
+	QVector<QPointF> points;
+	points.reserve(len);
+
+	for (int i = 0; i < len; ++i) {
 		const qreal x = startX + i * stepX;
-		const qreal y = h - (buffer->at(i) / m_maxValue) * h;
-		linePath.lineTo(x, y);
+		const qreal value = qBound<qreal>(0.0, buffer->at(i), m_maxValue);
+		const qreal y = plotTop + (1.0 - (value / m_maxValue)) * plotH;
+		points.append(QPointF(x, y));
 	}
 
-	// Stroke the line
+	QPainterPath linePath;
+	linePath.moveTo(points[0]);
+
+	for (int i = 0; i < points.size() - 1; ++i) {
+		const QPointF& p0 = points[i];
+		const QPointF& p1 = points[i + 1];
+
+		const qreal ctrlX = (p0.x() + p1.x()) * 0.5;
+		const QPointF c1(ctrlX, p0.y());
+		const QPointF c2(ctrlX, p1.y());
+
+		linePath.cubicTo(c1, c2, p1);
+	}
+
 	QPen pen(color, m_lineWidth);
 	pen.setCapStyle(Qt::RoundCap);
 	pen.setJoinStyle(Qt::RoundJoin);
@@ -53,10 +80,9 @@ void SparklineItem::drawLine(QPainter* painter, CircularBuffer* buffer, const QC
 	painter->setBrush(Qt::NoBrush);
 	painter->drawPath(linePath);
 
-	// Fill under the line
 	QPainterPath fillPath = linePath;
-	fillPath.lineTo(startX + (len - 1) * stepX, h);
-	fillPath.lineTo(startX, h);
+	fillPath.lineTo(startX + (len - 1) * stepX, fillBottom);
+	fillPath.lineTo(startX, fillBottom);
 	fillPath.closeSubpath();
 
 	QColor fillColor = color;

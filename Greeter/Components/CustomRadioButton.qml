@@ -33,13 +33,13 @@ RadioButton {
 		}
 
 		StateLayer {
-			function onClicked(): void {
-				root.click();
-			}
-
 			anchors.margins: -7
 			color: root.checked ? DynamicColors.palette.m3onSurface : DynamicColors.palette.m3primary
 			z: -1
+
+			onClicked: {
+				root.click();
+			}
 		}
 
 		CustomRect {

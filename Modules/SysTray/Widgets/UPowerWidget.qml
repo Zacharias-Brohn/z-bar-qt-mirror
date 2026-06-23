@@ -102,20 +102,16 @@ Item {
 		active: !Battery.isLaptop
 		anchors.centerIn: parent
 
-		sourceComponent: RowLayout {
-			id: upowerIcon
-
-			MaterialIcon {
-				Layout.alignment: Qt.AlignVCenter
-				animate: true
-				fill: 1
-				text: {
-					if (PowerProfiles.profile === PowerProfile.PowerSaver)
-						return "nest_eco_leaf";
-					if (PowerProfiles.profile === PowerProfile.Performance)
-						return "bolt";
-					return "power_settings_new";
-				}
+		sourceComponent: MaterialIcon {
+			Layout.alignment: Qt.AlignVCenter
+			animate: true
+			fill: 1
+			text: {
+				if (PowerProfiles.profile === PowerProfile.PowerSaver)
+					return "energy_savings_leaf";
+				if (PowerProfiles.profile === PowerProfile.Performance)
+					return "bolt";
+				return "balance";
 			}
 		}
 	}

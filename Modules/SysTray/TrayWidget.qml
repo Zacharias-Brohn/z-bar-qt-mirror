@@ -2,12 +2,10 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
-import Quickshell
 import Quickshell.Services.SystemTray
 import qs.Components
 import qs.Config
 import qs.Modules.SysTray.Widgets
-import qs.Modules.SysTray.Popouts
 import qs.Modules
 
 RowLayout {
@@ -17,11 +15,37 @@ RowLayout {
 	required property RowLayout loader
 	required property Wrapper popouts
 
+	function closestRowChild(row, x) {
+		let child = row.childAt(x, row.height / 2);
+		if (child)
+			return child;
+
+		let closest = null;
+		let closestDistance = Infinity;
+
+		for (let i = 0; i < row.children.length; ++i) {
+			let c = row.children[i];
+
+			if (!c.visible || c.width <= 0)
+				continue;
+
+			let centerX = c.x + c.width / 2;
+			let dist = Math.abs(x - centerX);
+
+			if (dist < closestDistance) {
+				closestDistance = dist;
+				closest = c;
+			}
+		}
+
+		return closest;
+	}
+
 	function getHoveredSubItem(localX, localY) {
 		let modPos = mapToItem(sysTrayMod, localX, localY);
 		if (sysTrayMod.contains(Qt.point(modPos.x, modPos.y))) {
 			let modRowPos = sysTrayMod.mapToItem(sysModRow, modPos.x, modPos.y);
-			let child = sysModRow.childAt(modRowPos.x, modRowPos.y);
+			let child = closestRowChild(sysModRow, modRowPos.x);
 			if (child) {
 				if (child.objectName === "audioWidget" && Config.barConfig.popouts.audio)
 					return {

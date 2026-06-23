@@ -44,11 +44,11 @@ CustomRect {
 	}
 
 	StateLayer {
-		function onClicked(): void {
+		visible: root.enabled
+
+		onClicked: {
 			SettingsDropdowns.toggle(menu, root);
 		}
-
-		visible: root.enabled
 	}
 
 	PathViewMenu {

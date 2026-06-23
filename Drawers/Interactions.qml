@@ -9,9 +9,9 @@ Item {
 	id: root
 
 	required property Item bar
+	required property real borderThickness
 	property bool dashboardShortcutActive
 	required property Drawing drawing
-	required property DrawingInput input
 	property bool osdShortcutActive
 	required property Panels panels
 	required property BarPopouts.Wrapper popouts
@@ -48,7 +48,7 @@ Item {
 	}
 
 	function withinPanelWidth(panel: Item, x: real, y: real): bool {
-		const panelX = panel.x;
+		const panelX = panel.x + root.borderThickness;
 		return x >= panelX && x <= panelX + panel.width;
 	}
 
@@ -59,7 +59,8 @@ Item {
 
 		cursorShape: (active && centroid.pressPosition.y < root.bar.implicitHeight) ? Qt.ClosedHandCursor : undefined
 		dragThreshold: 0
-		grabPermissions: PointerHandler.CanTakeOverFromHandlersOfDifferentType | PointerHandler.ApprovesTakeOverByAnything
+		enabled: !root.visibilities.isDrawing
+		grabPermissions: PointerHandler.CanTakeOverFromHandlersOfSameType | PointerHandler.ApprovesTakeOverByAnything
 		maximumPointCount: 1
 		minimumPointCount: 1
 		target: null
@@ -74,7 +75,7 @@ Item {
 			const dragX = x - centroid.pressPosition.x;
 			const dragY = y - centroid.pressPosition.y;
 
-			if (centroid.pressPosition.y >= root.screen.height - Config.barConfig.border && dragY < -200)
+			if (centroid.pressPosition.y >= root.screen.height - Config.barConfig.border && centroid.pressPosition.x > root.screen.width / 5 && dragY < -200)
 				root.visibilities.launcher = true;
 
 			if (root.singleGestureTriggered)
@@ -90,7 +91,10 @@ Item {
 				}
 			}
 
-			if (!Config.dock.hoverToReveal && centroid.pressPosition.y > root.screen.height - root.bar.implicitHeight)
+			if (centroid.pressPosition.y > root.screen.height - Config.barConfig.border && centroid.pressPosition.x < root.screen.width / 5 && dragY < -50)
+				root.visibilities.clipboard = true;
+
+			if (!Config.dock.hoverToReveal && centroid.pressPosition.y > root.screen.height - root.bar.implicitHeight && centroid.pressPosition.x > root.screen.width / 5 && !root.visibilities.launcher)
 				if (dragY < -10) {
 					root.visibilities.dock = true;
 					root.singleGestureTriggered = true;
@@ -113,8 +117,51 @@ Item {
 		}
 	}
 
+	PointHandler {
+		id: drawingHandler
+
+		property bool setInitialPoint: false
+
+		acceptedButtons: Qt.LeftButton | Qt.RightButton
+		enabled: root.visibilities.isDrawing && (!root.inLeftPanel(root.panels.drawing, hoverHandler.point.position.x, hoverHandler.point.position.y) || !root.panels.drawing.expanded)
+
+		onActiveChanged: {
+			if (!active) {
+				setInitialPoint = false;
+				root.drawing.content.endStroke();
+			} else {
+				root.panels.drawing.collapse();
+			}
+		}
+		onPointChanged: {
+			if (!active)
+				return;
+			const x = point.position.x;
+			const y = point.position.y;
+			const origX = point.pressPosition.x;
+			const origY = point.pressPosition.y;
+
+			if (point.pressedButtons & Qt.RightButton) {
+				root.drawing.content.clear();
+				return;
+			}
+			if (x === 0 && y === 0 && origX === 0 && origY === 0)
+				return;
+
+			if (!setInitialPoint) {
+				setInitialPoint = true;
+				root.drawing.content.beginStroke(origX, origY);
+				return;
+			}
+
+			root.drawing.content.appendPoint(x, y);
+		}
+	}
+
 	HoverHandler {
 		id: hoverHandler
+
+		cursorShape: root.visibilities.isDrawing && !root.inLeftPanel(root.panels.drawing, point.position.x, point.position.y) ? Qt.BlankCursor : undefined
 
 		onHoveredChanged: {
 			if (!hovered) {
@@ -135,9 +182,15 @@ Item {
 			const x = point.position.x;
 			const y = point.position.y;
 
-			if (root.visibilities.isDrawing && !root.inLeftPanel(root.panels.drawing, x, y)) {
-				root.input.z = 2;
-				root.panels.drawing.expanded = false;
+			if (root.visibilities.isDrawing) {
+				if (root.inLeftPanel(root.panels.drawing, x, y) && !(drawingHandler.point.pressedButtons & Qt.LeftButton)) {
+					root.panels.drawing.expand();
+					root.drawing.content.hideHover();
+					return;
+				}
+
+				root.drawing.content.showHover(x, y);
+				return;
 			}
 
 			if (!root.visibilities.bar && Config.barConfig.autoHide && y < root.bar.implicitHeight)

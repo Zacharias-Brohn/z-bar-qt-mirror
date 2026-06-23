@@ -36,7 +36,7 @@ void CavaProcessor::process() {
 	QVector<double> values(m_bars);
 
 	for(int i = 0; i < m_bars; ++i) {
-		values[i] = std::clamp(m_out[i], 0.0, 1.0);
+		values[i] = m_out[i];
 	}
 
 	// Left to right pass

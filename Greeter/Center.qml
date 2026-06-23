@@ -118,12 +118,12 @@ ColumnLayout {
 		}
 
 		StateLayer {
-			function onClicked(): void {
-				parent.forceActiveFocus();
-			}
-
 			cursorShape: Qt.IBeamCursor
 			hoverEnabled: false
+
+			onClicked: {
+				parent.forceActiveFocus();
+			}
 		}
 
 		RowLayout {
@@ -179,11 +179,11 @@ ColumnLayout {
 				radius: Appearance.rounding.full
 
 				StateLayer {
-					function onClicked(): void {
+					color: root.greeter.buffer && !root.greeter.launching ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3onSurface
+
+					onClicked: {
 						root.greeter.submit();
 					}
-
-					color: root.greeter.buffer && !root.greeter.launching ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3onSurface
 				}
 
 				MaterialIcon {

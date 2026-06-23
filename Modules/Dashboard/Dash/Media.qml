@@ -4,6 +4,7 @@ import Quickshell
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Shapes
+import QtQuick.Effects
 import ZShell.Services
 import qs.Daemons
 import qs.Components
@@ -15,7 +16,7 @@ Item {
 
 	property real playerProgress: {
 		const active = Players.active;
-		return active?.length ? active.position / active.length : 0;
+		return active?.length ? (active.position % active.length) / active.length : 0;
 	}
 	property int rowHeight: Appearance.padding.large + Config.dashboard.sizes.mediaProgressThickness + Appearance.spacing.small
 
@@ -45,46 +46,82 @@ Item {
 	Shape {
 		id: visualizer
 
-		readonly property real barW: Math.max(0, (width - gap * (bars - 1)) / bars)
 		readonly property int bars: Config.services.visualizerBars
-		property color color: DynamicColors.palette.m3primary
-		readonly property real gap: Appearance.spacing.small
+		property color color: DynamicColors.palette.m3tertiary
+		property color fillColor: Qt.alpha(color, 0.25)
 
 		anchors.fill: layout
+		anchors.leftMargin: -(shape.strokeWidth / 2)
+		layer.enabled: true
 		asynchronous: true
-		data: visualizerBars.instances
 		preferredRendererType: Shape.CurveRenderer
-	}
-
-	Variants {
-		id: visualizerBars
-
-		model: Array.from({
-			length: Config.services.visualizerBars
-		}, (_, i) => i)
 
 		ShapePath {
-			id: visualizerBar
-
-			readonly property real magnitude: value * Config.dashboard.sizes.mediaVisualiserSize
-			required property int modelData
-			readonly property real value: Math.max(1e-3, Audio.cava.values[modelData])
-
-			capStyle: Appearance.rounding.scale === 0 ? ShapePath.SquareCap : ShapePath.RoundCap
-			startX: (visualizer.barW / 2) + modelData * (visualizer.barW + visualizer.gap)
-			startY: layout.y + layout.height
+			id: shape
 			strokeColor: visualizer.color
-			strokeWidth: visualizer.barW
+			fillColor: visualizer.fillColor
+			strokeWidth: 2
 
-			Behavior on strokeColor {
-				CAnim {
+			PathSvg {
+				path: shape.curvePath
+			}
+
+			property string curvePath: {
+				const values = Audio.cava.values;
+				const n = values.length;
+
+				if (n < 2)
+					return "";
+
+				const h = layout.height + shape.strokeWidth / 2;
+				const w = layout.width + shape.strokeWidth;
+
+				function x(i) {
+					return i * w / (n - 1);
 				}
-			}
 
-			PathLine {
-				relativeX: 0
-				relativeY: -visualizerBar.magnitude
+				function y(i) {
+					return h - values[i] * Config.dashboard.sizes.mediaVisualizerSize;
+				}
+
+				let d = `M 0 ${h} `;
+				d += `L ${x(0)} ${y(0)} `;
+
+				for (let i = 0; i < n - 1; ++i) {
+					const x0 = x(i);
+					const y0 = y(i);
+
+					const x1 = x(i + 1);
+					const y1 = y(i + 1);
+
+					const prev = Math.max(0, i - 1);
+					const next = Math.min(n - 1, i + 2);
+
+					const c1x = x0 + (x1 - x(prev)) / 6;
+					const c1y = y0 + (y1 - y(prev)) / 6;
+
+					const c2x = x1 - (x(next) - x0) / 6;
+					const c2y = y1 - (y(next) - y0) / 6;
+
+					d += `C ${c1x} ${c1y}, ${c2x} ${c2y}, ${x1} ${y1} `;
+				}
+
+				d += `L ${w} ${h} `;
+				d += `L 0 ${h} Z`;
+
+				return d;
 			}
+		}
+	}
+
+	CustomRect {
+		anchors.fill: visualizer
+
+		color: Qt.alpha(DynamicColors.palette.m3shadow, 0.2)
+		layer.enabled: true
+		layer.effect: MultiEffect {
+			maskEnabled: true
+			maskSource: visualizer
 		}
 	}
 
@@ -295,12 +332,12 @@ Item {
 		StateLayer {
 			id: controlState
 
-			function onClicked(): void {
+			color: control.canUse ? DynamicColors.palette[`m3on${control.set_color}`] : DynamicColors.palette[`m3on${control.set_color}Container`]
+			enabled: control.canUse
+
+			onClicked: {
 				control.onClicked();
 			}
-
-			color: control.canUse ? DynamicColors.palette[`m3on${control.set_color}`] : DynamicColors.palette[`m3on${control.set_color}Container`]
-			disabled: !control.canUse
 			// radius: Appearance.rounding.full
 		}
 

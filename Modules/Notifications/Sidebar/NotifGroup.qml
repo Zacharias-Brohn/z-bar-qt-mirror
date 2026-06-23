@@ -171,11 +171,11 @@ CustomRect {
 					radius: Appearance.rounding.full
 
 					StateLayer {
-						function onClicked(): void {
+						color: root.urgency === NotificationUrgency.Critical ? DynamicColors.palette.m3onError : DynamicColors.palette.m3onSurface
+
+						onClicked: {
 							root.toggleExpand(!root.expanded);
 						}
-
-						color: root.urgency === NotificationUrgency.Critical ? DynamicColors.palette.m3onError : DynamicColors.palette.m3onSurface
 					}
 
 					RowLayout {

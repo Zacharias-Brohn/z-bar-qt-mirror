@@ -7,6 +7,8 @@ import qs.Config
 TextField {
 	id: root
 
+	property int cursorHeight: root.height
+
 	background: null
 	color: DynamicColors.palette.m3onSurface
 	cursorVisible: !readOnly

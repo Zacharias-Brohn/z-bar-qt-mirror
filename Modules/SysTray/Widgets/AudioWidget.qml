@@ -14,6 +14,8 @@ RowLayout {
 	property color textColor: DynamicColors.palette.m3onSurface
 
 	MaterialIcon {
+		id: mic
+
 		Layout.alignment: Qt.AlignVCenter
 		animate: true
 		color: (Audio.sourceMuted ?? false) ? DynamicColors.palette.m3error : root.textColor

@@ -1,36 +1,30 @@
-import QtQuick
+pragma ComponentBehavior: Bound
 
-Canvas {
+import Quickshell
+import QtQuick
+import ZShell.Internal
+
+Item {
 	id: root
 
-	property color penColor: "white"
-	property real penWidth: 4
-	property var points: []
+	readonly property alias content: contentLoader.item
+	readonly property PersistentProperties drawingState: PersistentProperties {
+		property color penColor: "white"
+		property int penWidth: 4
 
-	function clear(): void {
-		var ctx = getContext('2d');
-		root.points = [];
-		ctx.reset();
-		root.requestPaint();
+		reloadableId: "drawingState"
 	}
+	required property PersistentProperties visibilities
 
-	renderStrategy: Canvas.Cooperative
+	Loader {
+		id: contentLoader
 
-	onPaint: {
-		if (points.length < 2)
-			return;
-		var ctx = root.getContext('2d');
-		ctx.save();
-		ctx.lineWidth = root.penWidth;
-		ctx.strokeStyle = root.penColor;
-		ctx.lineJoin = "round";
-		ctx.lineCap = "round";
-		ctx.beginPath();
-		ctx.moveTo(points[0].x, points[0].y);
-		for (var i = 1; i < points.length; i++)
-			ctx.lineTo(points[i].x, points[i].y);
-		ctx.stroke();
-		points = points.slice(points.length - 2);
-		ctx.restore();
+		active: root.visibilities.isDrawing
+		anchors.fill: parent
+
+		sourceComponent: StrokeCanvas {
+			penColor: root.drawingState.penColor
+			penWidth: root.drawingState.penWidth
+		}
 	}
 }

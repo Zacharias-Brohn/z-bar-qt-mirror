@@ -21,6 +21,7 @@ CustomRect {
 
 		anchors.centerIn: parent
 		color: root.visibilities.sidebar ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3onSurface
+		fill: root.visibilities.sidebar ? 1 : 0
 		font.family: "Material Symbols Rounded"
 		font.pointSize: Appearance.font.size.larger
 		text: HasNotifications.hasNotifications ? "\uf4fe" : "\ue7f4"
@@ -29,10 +30,14 @@ CustomRect {
 			CAnim {
 			}
 		}
+		Behavior on fill {
+			Anim {
+			}
+		}
 	}
 
 	StateLayer {
-		cursorShape: Qt.PointingHandCursor
+		color: root.visibilities.sidebar ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3onSurface
 
 		onClicked: {
 			root.visibilities.sidebar = !root.visibilities.sidebar;

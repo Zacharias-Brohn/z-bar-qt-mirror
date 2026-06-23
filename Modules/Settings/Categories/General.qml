@@ -1,6 +1,7 @@
 import Quickshell
 import QtQuick
 import QtQuick.Layouts
+import QtQuick.Controls
 import qs.Modules.Settings.Controls
 import qs.Config
 import qs.Components
@@ -62,6 +63,7 @@ SettingsPage {
 
 	SettingsSection {
 		sectionId: "Color"
+		z: 1
 
 		SettingsHeader {
 			name: "Color"
@@ -105,7 +107,6 @@ SettingsPage {
 			active: root.schemeTypeItem(menuItems, Config.colors.schemeType)
 			enabled: Config.general.color.schemeGeneration
 			label: qsTr("Scheme type")
-			z: 2
 
 			menuItems: [
 				MenuItem {
@@ -231,26 +232,37 @@ SettingsPage {
 			shouldBeActive: Config.general.color.schemeGeneration ? 1 : 0
 		}
 
-		SettingSpinner {
+		TimeInput {
 			name: "Schedule dark mode"
 			object: Config.general.color
-			settings: ["scheduleDarkStart", "scheduleDarkEnd", "scheduleDark"]
-			shouldBeActive: Config.general.color.schemeGeneration ? 1 : 0
+			settings: ["scheduleDark", "scheduleDarkStart", "scheduleDarkEnd"]
+			shouldBeActive: Config.general.color.schemeGeneration
 		}
 
 		Separator {
 		}
 
-		SettingHyprSpinner {
+		HyprTimeInput {
 			name: "Schedule Hyprsunset"
 			object: Config.general.color
-			settings: ["scheduleHyprsunsetStart", "scheduleHyprsunsetEnd", "scheduleHyprsunset", "hyprsunsetTemp"]
+			settings: ["scheduleHyprsunset", "scheduleHyprsunsetStart", "scheduleHyprsunsetEnd", "hyprsunsetTemp"]
+		}
+
+		Separator {
+		}
+
+		SettingSpinBox {
+			max: 20000
+			min: 1000
+			name: "Hyprsunset temperature"
+			object: Config.general.color
+			setting: "hyprsunsetTemp"
+			step: 200
 		}
 	}
 
 	SettingsSection {
 		sectionId: "Default Apps"
-		z: -1
 
 		SettingsHeader {
 			name: "Default Apps"

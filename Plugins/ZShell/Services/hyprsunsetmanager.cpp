@@ -135,9 +135,17 @@ void HyprsunsetManager::apply() {
 	if (m_manualToggle || !m_activeAuto || !m_startAllowed)
 		return;
 
-	const auto current = QTime::currentTime().hour();
+	const auto current = QTime::currentTime();
+	const auto currentMin = current.hour() * 60 + current.minute();
+	bool isDarkTime;
 
-	if (current >= m_startTime || current < m_endTime) {
+	if (m_startTime <= m_endTime) {
+		isDarkTime = (currentMin >= m_startTime && currentMin < m_endTime);
+	} else {
+		isDarkTime = (currentMin >= m_startTime || currentMin < m_endTime);
+	}
+
+	if (isDarkTime) {
 		start();
 	} else {
 		end();

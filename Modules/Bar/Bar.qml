@@ -18,6 +18,7 @@ RowLayout {
 	required property Wrapper popouts
 	required property ClipWrapper popoutsWrapper
 	required property ShellScreen screen
+	required property bool fullscreen
 	readonly property int vPadding: 6
 	required property PersistentProperties visibilities
 
@@ -91,6 +92,7 @@ RowLayout {
 
 				delegate: WrappedLoader {
 					sourceComponent: HyprsunsetWidget {
+						visible: !root.fullscreen
 					}
 				}
 			}
@@ -109,6 +111,7 @@ RowLayout {
 				delegate: WrappedLoader {
 					sourceComponent: Workspaces {
 						screen: root.screen
+						visible: !root.fullscreen
 					}
 				}
 			}
@@ -120,6 +123,7 @@ RowLayout {
 					sourceComponent: TrayWidget {
 						loader: root
 						popouts: root.popouts
+						visible: !root.fullscreen
 					}
 				}
 			}
@@ -130,6 +134,7 @@ RowLayout {
 				delegate: WrappedLoader {
 					sourceComponent: Resources {
 						visibilities: root.visibilities
+						visible: !root.fullscreen
 					}
 				}
 			}
@@ -139,6 +144,7 @@ RowLayout {
 
 				delegate: WrappedLoader {
 					sourceComponent: UpdatesWidget {
+						visible: !root.fullscreen
 					}
 				}
 			}
@@ -150,6 +156,7 @@ RowLayout {
 					sourceComponent: NotifBell {
 						popouts: root.popouts
 						visibilities: root.visibilities
+						visible: !root.fullscreen
 					}
 				}
 			}
@@ -162,6 +169,7 @@ RowLayout {
 						loader: root
 						popouts: root.popouts
 						visibilities: root.visibilities
+						visible: !root.fullscreen
 					}
 				}
 			}
@@ -172,6 +180,7 @@ RowLayout {
 				delegate: WrappedLoader {
 					sourceComponent: WindowTitle {
 						bar: root
+						visible: !root.fullscreen
 					}
 				}
 			}
@@ -190,6 +199,7 @@ RowLayout {
 
 				delegate: WrappedLoader {
 					sourceComponent: MediaWidget {
+						visible: !root.fullscreen
 					}
 				}
 			}

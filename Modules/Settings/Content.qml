@@ -14,6 +14,8 @@ Item {
 	id: root
 
 	property string currentCategory: "general"
+	property int currentIndex: 0
+	property int lastIndex: 0
 	readonly property real nonAnimHeight: Math.floor(screen.height / 1.5) + viewWrapper.anchors.margins * 2
 	readonly property real nonAnimWidth: view.implicitWidth + Math.floor(screen.width / 2) + viewWrapper.anchors.margins * 2
 	property string pendingSection: ""
@@ -27,8 +29,9 @@ Item {
 		scrollTimer.restart();
 	}
 
-	function selectCategory(categoryKey: string) {
-		layout.selectCategory(categoryKey);
+	function setCategory(category: string, index: int): void {
+		currentIndex = index;
+		currentCategory = category;
 	}
 
 	implicitHeight: nonAnimHeight
@@ -50,35 +53,88 @@ Item {
 
 	Connections {
 		function onCurrentCategoryChanged() {
-			stack.pop();
-			if (currentCategory === "general")
-				stack.push(general);
-			else if (currentCategory === "wallpaper")
-				stack.push(background);
-			else if (currentCategory === "bar")
-				stack.push(bar);
-			else if (currentCategory === "appearance")
-				stack.push(appearance);
-			else if (currentCategory === "lockscreen")
-				stack.push(lockscreen);
-			else if (currentCategory === "services")
-				stack.push(services);
-			else if (currentCategory === "notifications")
-				stack.push(notifications);
-			else if (currentCategory === "sidebar")
-				stack.push(sidebar);
-			else if (currentCategory === "utilities")
-				stack.push(utilities);
-			else if (currentCategory === "dashboard")
-				stack.push(dashboard);
-			else if (currentCategory === "osd")
-				stack.push(osd);
-			else if (currentCategory === "launcher")
-				stack.push(launcher);
-			else if (currentCategory === "screenshot")
-				stack.push(screenshot);
-			else if (currentCategory === "updates")
-				stack.push(updates);
+			if (root.currentCategory === "general") {
+				stack.replaceCurrentItem(general, [], StackView.PopTransition);
+				root.lastIndex = root.currentIndex;
+			} else if (root.currentCategory === "wallpaper") {
+				if (root.currentIndex < root.lastIndex)
+					stack.replaceCurrentItem(background, [], StackView.PopTransition);
+				else
+					stack.replaceCurrentItem(background, [], StackView.PushTransition);
+				root.lastIndex = root.currentIndex;
+			} else if (root.currentCategory === "bar") {
+				if (root.currentIndex < root.lastIndex)
+					stack.replaceCurrentItem(bar, [], StackView.PopTransition);
+				else
+					stack.replaceCurrentItem(bar, [], StackView.PushTransition);
+				root.lastIndex = root.currentIndex;
+			} else if (root.currentCategory === "appearance") {
+				if (root.currentIndex < root.lastIndex)
+					stack.replaceCurrentItem(appearance, [], StackView.PopTransition);
+				else
+					stack.replaceCurrentItem(appearance, [], StackView.PushTransition);
+				root.lastIndex = root.currentIndex;
+			} else if (root.currentCategory === "lockscreen") {
+				if (root.currentIndex < root.lastIndex)
+					stack.replaceCurrentItem(lockscreen, [], StackView.PopTransition);
+				else
+					stack.replaceCurrentItem(lockscreen, [], StackView.PushTransition);
+				root.lastIndex = root.currentIndex;
+			} else if (root.currentCategory === "services") {
+				if (root.currentIndex < root.lastIndex)
+					stack.replaceCurrentItem(services, [], StackView.PopTransition);
+				else
+					stack.replaceCurrentItem(services, [], StackView.PushTransition);
+				root.lastIndex = root.currentIndex;
+			} else if (root.currentCategory === "notifications") {
+				if (root.currentIndex < root.lastIndex)
+					stack.replaceCurrentItem(notifications, [], StackView.PopTransition);
+				else
+					stack.replaceCurrentItem(notifications, [], StackView.PushTransition);
+				root.lastIndex = root.currentIndex;
+			} else if (root.currentCategory === "sidebar") {
+				if (root.currentIndex < root.lastIndex)
+					stack.replaceCurrentItem(sidebar, [], StackView.PopTransition);
+				else
+					stack.replaceCurrentItem(sidebar, [], StackView.PushTransition);
+				root.lastIndex = root.currentIndex;
+			} else if (root.currentCategory === "utilities") {
+				if (root.currentIndex < root.lastIndex)
+					stack.replaceCurrentItem(utilities, [], StackView.PopTransition);
+				else
+					stack.replaceCurrentItem(utilities, [], StackView.PushTransition);
+				root.lastIndex = root.currentIndex;
+			} else if (root.currentCategory === "dashboard") {
+				if (root.currentIndex < root.lastIndex)
+					stack.replaceCurrentItem(dashboard, [], StackView.PopTransition);
+				else
+					stack.replaceCurrentItem(dashboard, [], StackView.PushTransition);
+				root.lastIndex = root.currentIndex;
+			} else if (root.currentCategory === "osd") {
+				if (root.currentIndex < root.lastIndex)
+					stack.replaceCurrentItem(osd, [], StackView.PopTransition);
+				else
+					stack.replaceCurrentItem(osd, [], StackView.PushTransition);
+				root.lastIndex = root.currentIndex;
+			} else if (root.currentCategory === "launcher") {
+				if (root.currentIndex < root.lastIndex)
+					stack.replaceCurrentItem(launcher, [], StackView.PopTransition);
+				else
+					stack.replaceCurrentItem(launcher, [], StackView.PushTransition);
+				root.lastIndex = root.currentIndex;
+			} else if (root.currentCategory === "screenshot") {
+				if (root.currentIndex < root.lastIndex)
+					stack.replaceCurrentItem(screenshot, [], StackView.PopTransition);
+				else
+					stack.replaceCurrentItem(screenshot, [], StackView.PushTransition);
+				root.lastIndex = root.currentIndex;
+			} else if (root.currentCategory === "updates") {
+				if (root.currentIndex < root.lastIndex)
+					stack.replaceCurrentItem(updates, [], StackView.PopTransition);
+				else
+					stack.replaceCurrentItem(updates, [], StackView.PushTransition);
+				root.lastIndex = root.currentIndex;
+			}
 		}
 
 		target: root
@@ -99,7 +155,7 @@ Item {
 			anchors.top: parent.top
 
 			onSettingSelected: (category, section, settingName) => {
-				root.selectCategory(category);
+				layout.selectCategory(category);
 				root.scrollToSetting(section, settingName);
 			}
 		}
@@ -141,8 +197,102 @@ Item {
 				id: stack
 
 				anchors.fill: parent
-				anchors.margins: Appearance.padding.smaller
 				initialItem: general
+
+				popEnter: Transition {
+					SequentialAnimation {
+						Anim {
+							duration: 0
+							from: 0
+							property: "opacity"
+							to: 0
+						}
+
+						PauseAnimation {
+							duration: Appearance.anim.durations.expressiveEffects
+						}
+
+						ParallelAnimation {
+							Anim {
+								duration: Appearance.anim.durations.expressiveFastSpatial
+								from: 0
+								property: "opacity"
+								to: 1
+							}
+
+							Anim {
+								duration: Appearance.anim.durations.expressiveFastSpatial
+								from: -50
+								property: "y"
+								to: 0
+							}
+						}
+					}
+				}
+				popExit: Transition {
+					ParallelAnimation {
+						Anim {
+							duration: Appearance.anim.durations.expressiveFastSpatial
+							from: 1
+							property: "opacity"
+							to: 0
+						}
+
+						Anim {
+							duration: Appearance.anim.durations.expressiveFastSpatial
+							from: 0
+							property: "y"
+							to: 50
+						}
+					}
+				}
+				pushEnter: Transition {
+					SequentialAnimation {
+						Anim {
+							duration: 0
+							from: 0
+							property: "opacity"
+							to: 0
+						}
+
+						PauseAnimation {
+							duration: Appearance.anim.durations.expressiveEffects
+						}
+
+						ParallelAnimation {
+							Anim {
+								duration: Appearance.anim.durations.expressiveFastSpatial
+								from: 0
+								property: "opacity"
+								to: 1
+							}
+
+							Anim {
+								duration: Appearance.anim.durations.expressiveFastSpatial
+								from: 50
+								property: "y"
+								to: 0
+							}
+						}
+					}
+				}
+				pushExit: Transition {
+					ParallelAnimation {
+						Anim {
+							duration: Appearance.anim.durations.expressiveFastSpatial
+							from: 1
+							property: "opacity"
+							to: 0
+						}
+
+						Anim {
+							duration: Appearance.anim.durations.expressiveFastSpatial
+							from: 0
+							property: "y"
+							to: -50
+						}
+					}
+				}
 			}
 		}
 	}

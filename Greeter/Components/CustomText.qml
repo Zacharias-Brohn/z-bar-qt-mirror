@@ -15,6 +15,7 @@ Text {
 	color: DynamicColors.palette.m3onSurface
 	font.family: Appearance.font.family.sans
 	font.pointSize: Appearance.font.size.normal
+	linkColor: DynamicColors.palette.m3onPrimaryFixedVariant
 	renderType: Text.NativeRendering
 	textFormat: Text.PlainText
 

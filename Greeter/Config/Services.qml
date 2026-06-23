@@ -14,6 +14,7 @@ JsonObject {
 			"to": "YT Music"
 		}
 	]
+	property bool updates: true
 	property bool useFahrenheit: false
 	property bool useTwelveHourClock: Qt.locale().timeFormat(Locale.ShortFormat).toLowerCase().includes("a")
 	property int visualizerBars: 30

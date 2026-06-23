@@ -42,11 +42,24 @@ Singleton {
 	function checkStartup() {
 		if (!root.enabled)
 			return;
+
 		var now = new Date();
-		if (now.getHours() >= darkStart || now.getHours() < darkEnd) {
-			applyDarkMode();
+		var nowMinutes = now.getHours() * 60 + now.getMinutes();
+
+		var isDarkTime;
+
+		if (root.darkStart <= root.darkEnd) {
+			isDarkTime = (nowMinutes >= root.darkStart && nowMinutes < root.darkEnd);
 		} else {
-			applyLightMode();
+			isDarkTime = (nowMinutes >= root.darkStart || nowMinutes < root.darkEnd);
+		}
+
+		if (isDarkTime) {
+			if (DynamicColors.light)
+				root.applyDarkMode();
+		} else {
+			if (!DynamicColors.light)
+				root.applyLightMode();
 		}
 	}
 
@@ -60,8 +73,19 @@ Singleton {
 		onTriggered: {
 			if (!root.enabled)
 				return;
+
 			var now = new Date();
-			if (now.getHours() >= root.darkStart || now.getHours() < root.darkEnd) {
+			var nowMinutes = now.getHours() * 60 + now.getMinutes();
+
+			var isDarkTime;
+
+			if (root.darkStart <= root.darkEnd) {
+				isDarkTime = (nowMinutes >= root.darkStart && nowMinutes < root.darkEnd);
+			} else {
+				isDarkTime = (nowMinutes >= root.darkStart || nowMinutes < root.darkEnd);
+			}
+
+			if (isDarkTime) {
 				if (DynamicColors.light)
 					root.applyDarkMode();
 			} else {
