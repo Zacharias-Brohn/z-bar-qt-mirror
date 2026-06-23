@@ -87,9 +87,15 @@ RowLayout {
 		id: upButton
 
 		color: root.enabled ? DynamicColors.palette.m3primary : DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHighest, 1)
-		implicitHeight: upIcon.implicitHeight + Appearance.padding.small * 2
+		implicitHeight: upIcon.implicitHeight + Appearance.padding.extraSmall * 2
 		implicitWidth: implicitHeight
-		radius: Appearance.rounding.full
+		radius: upState.pressed ? Appearance.rounding.small : Appearance.rounding.normal
+
+		Behavior on radius {
+			Anim {
+				type: Anim.FastEffects
+			}
+		}
 
 		StateLayer {
 			id: upState
@@ -120,9 +126,15 @@ RowLayout {
 
 	CustomRect {
 		color: root.enabled ? DynamicColors.palette.m3primary : DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHighest, 1)
-		implicitHeight: downIcon.implicitHeight + Appearance.padding.small * 2
+		implicitHeight: downIcon.implicitHeight + Appearance.padding.extraSmall * 2
 		implicitWidth: implicitHeight
-		radius: Appearance.rounding.full
+		radius: downState.pressed ? Appearance.rounding.small : Appearance.rounding.normal
+
+		Behavior on radius {
+			Anim {
+				type: Anim.FastEffects
+			}
+		}
 
 		StateLayer {
 			id: downState

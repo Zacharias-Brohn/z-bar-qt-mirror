@@ -21,6 +21,13 @@ Searcher {
 	property bool recentlyChanged
 	property bool showPreview: false
 
+	function getCategoryFor(w: FileSystemEntry): string {
+		let category = w.parentDir.slice(Paths.wallsdir.length + 1);
+		if (category.includes("/"))
+			category = category.slice(0, category.indexOf("/"));
+		return category;
+	}
+
 	function getCrop(screen: string): var {
 		return root.crops[screen];
 	}

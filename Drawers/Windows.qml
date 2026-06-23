@@ -323,15 +323,13 @@ CustomWindow {
 		PanelBg {
 			id: settingsBg
 
-			property real extraHeight: 0.2
+			property real extraHeight: 0
 
 			deformAmount: 0.03
 			implicitHeight: panels.settings.height * (1 + extraHeight)
 			implicitWidth: panels.settings.width
-			panel: panels.settings
-			radius: Appearance.rounding.large
-			topLeftRadius: Appearance.rounding.large + Appearance.padding.smaller
-			topRightRadius: Appearance.rounding.large + Appearance.padding.smaller
+			panel: panels.settingsWrapper
+			radius: Appearance.rounding.large + Appearance.padding.normal
 			x: panels.settingsWrapper.x + panels.settings.x + root.borderThickness
 			y: panels.settingsWrapper.y + panels.settings.y + bar.implicitHeight - panels.settings.height * extraHeight
 		}
@@ -441,7 +439,7 @@ CustomWindow {
 			resources.transform: Matrix4x4 {
 				matrix: resourcesBg.deformMatrix
 			}
-			settings.transform: Matrix4x4 {
+			settingsWrapper.transform: Matrix4x4 {
 				matrix: settingsBg.deformMatrix
 			}
 			sidebar.transform: Matrix4x4 {

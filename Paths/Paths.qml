@@ -19,7 +19,7 @@ Singleton {
 	readonly property string recsdir: Quickshell.env("ZSHELL_RECORDINGS_DIR") || `${videos}/Recordings`
 	readonly property string state: `${Quickshell.env("XDG_STATE_HOME") || `${home}/.local/state`}/zshell`
 	readonly property string videos: Quickshell.env("XDG_VIDEOS_DIR") || `${home}/Videos`
-	readonly property string wallsdir: Quickshell.env("ZSHELL_WALLPAPERS_DIR") || absolutePath(Config.wallpaperPath)
+	readonly property string wallsdir: Quickshell.env("ZSHELL_WALLPAPERS_DIR") || absolutePath(Config.general.wallpaperPath)
 
 	function absolutePath(path: string): string {
 		return toLocalFile(path.replace("~", home));

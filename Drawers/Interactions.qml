@@ -298,6 +298,8 @@ Item {
 				root.visibilities.sidebar = false;
 				root.panels.popouts.hasCurrent = false;
 				root.visibilities.launcher = false;
+			} else {
+				Config.save();
 			}
 		}
 

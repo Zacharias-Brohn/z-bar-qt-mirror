@@ -10,7 +10,7 @@ import qs.Modules.Osd as Osd
 import qs.Components.Toast as Toasts
 import qs.Modules.Launcher as Launcher
 import qs.Modules.Resources as Resources
-import qs.Modules.Settings as Settings
+import qs.Modules.SettingsNew as Settings
 import qs.Modules.Drawing as Drawing
 import qs.Modules.Dock as Dock
 import qs.Modules.Clipboard as Clipboard
@@ -184,11 +184,11 @@ Item {
 	Item {
 		id: settingsWrapper
 
-		anchors.horizontalCenter: parent.horizontalCenter
-		anchors.top: parent.top
 		clip: true
-		implicitHeight: settings.implicitHeight * (1 - settings.offsetScale)
+		implicitHeight: settings.implicitHeight
 		implicitWidth: settings.implicitWidth
+		x: (root.width - settings.implicitWidth) / 2
+		y: (settings.implicitHeight + (root.height - root.bar.implicitHeight - settings.implicitHeight) / 2) * (1 - settings.offsetScale) - settings.implicitHeight - 5
 
 		Settings.Wrapper {
 			id: settings
