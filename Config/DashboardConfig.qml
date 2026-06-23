@@ -1,7 +1,6 @@
 import Quickshell.Io
 
 JsonObject {
-	property int dragThreshold: 50
 	property bool enabled: true
 	property int mediaUpdateInterval: 500
 	property Performance performance: Performance {

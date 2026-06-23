@@ -167,7 +167,6 @@ Singleton {
 			enabled: dashboard.enabled,
 			mediaUpdateInterval: dashboard.mediaUpdateInterval,
 			resourceUpdateInterval: dashboard.resourceUpdateInterval,
-			dragThreshold: dashboard.dragThreshold,
 			performance: {
 				showBattery: dashboard.performance.showBattery,
 				showGpu: dashboard.performance.showGpu,
@@ -245,6 +244,9 @@ Singleton {
 		return {
 			maxAppsShown: launcher.maxAppsShown,
 			maxWallpapers: launcher.maxWallpapers,
+			dragThreshold: launcher.dragThreshold,
+			enableDangerousActions: launcher.enableDangerousActions,
+			enabled: launcher.enabled,
 			hiddenApps: launcher.hiddenApps,
 			favoriteApps: launcher.favoriteApps,
 			uwsm: launcher.uwsm,
@@ -349,6 +351,7 @@ Singleton {
 	function serializeSidebar(): var {
 		return {
 			enabled: sidebar.enabled,
+			dragThreshold: sidebar.dragThreshold,
 			sizes: {
 				width: sidebar.sizes.width
 			}

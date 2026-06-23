@@ -82,7 +82,7 @@ PageBase {
 			checked: root.app && Strings.testRegexList(Config.launcher.favoriteApps, root.app.id)
 			enabled: !root.favoriteByRegex
 			first: true
-			subtext: root.favoriteByRegex ? qsTr("Matched by a regex in favoriteApps — edit the config file to change") : qsTr("Pin to the top of the launcher")
+			subtext: root.favoriteByRegex ? qsTr("Matched by a regex in favoriteApps — edit the config file to change") : qsTr("Pin to the bottom of the launcher")
 			text: qsTr("Favorite")
 
 			onToggled: {

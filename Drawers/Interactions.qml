@@ -75,7 +75,7 @@ Item {
 			const dragX = x - centroid.pressPosition.x;
 			const dragY = y - centroid.pressPosition.y;
 
-			if (centroid.pressPosition.y >= root.screen.height - Config.barConfig.border && centroid.pressPosition.x > root.screen.width / 5 && dragY < -200)
+			if (centroid.pressPosition.y >= root.screen.height - Config.barConfig.border && centroid.pressPosition.x > root.screen.width / 5 && dragY < -Config.launcher.dragThreshold)
 				root.visibilities.launcher = true;
 
 			if (root.singleGestureTriggered)
@@ -100,7 +100,7 @@ Item {
 					root.singleGestureTriggered = true;
 				}
 
-			if (centroid.pressPosition.x > root.screen.width - Config.barConfig.border && centroid.pressPosition.y < (root.screen.height / 2) && dragX < -20) {
+			if (centroid.pressPosition.x > root.screen.width - Config.barConfig.border && centroid.pressPosition.y < (root.screen.height / 2) && dragX < -Config.sidebar.dragThreshold) {
 				root.visibilities.sidebar = true;
 				root.singleGestureTriggered = true;
 			}

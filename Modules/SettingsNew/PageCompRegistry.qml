@@ -9,6 +9,7 @@ import qs.Modules.SettingsNew.Pages
 import qs.Modules.SettingsNew.Pages.Wallpaper
 import qs.Modules.SettingsNew.Pages.Audio
 import qs.Modules.SettingsNew.Pages.Apps
+import qs.Modules.SettingsNew.Pages.Panels
 
 QtObject {
 	id: root
@@ -65,7 +66,31 @@ QtObject {
 
 		// Shell
 		Component {
-			PlaceholderComp {
+			StackPage {
+				Component {
+					PanelsPage {
+					}
+				}
+
+				Component {
+					DashboardPanel {
+					}
+				}
+
+				Component {
+					BarPanel {
+					}
+				}
+
+				Component {
+					LauncherPanel {
+					}
+				}
+
+				Component {
+					SidebarPanel {
+					}
+				}
 			}
 		},
 		Component {

@@ -31,7 +31,7 @@ Singleton {
 		{
 			name: qsTr("Connected devices"),
 			icon: "devices_other",
-			description: qsTr("Bluetooth, paiting"),
+			description: qsTr("Bluetooth, pairing"),
 			category: "connectivity"
 		},
 		{
