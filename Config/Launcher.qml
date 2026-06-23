@@ -84,6 +84,8 @@ JsonObject {
 			dangerous: false
 		},
 	]
+	property list<string> favoriteApps: []
+	property list<string> hiddenApps: []
 	property int maxAppsShown: 10
 	property int maxWallpapers: 7
 	property Sizes sizes: Sizes {

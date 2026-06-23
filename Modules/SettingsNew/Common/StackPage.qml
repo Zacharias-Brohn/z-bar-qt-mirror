@@ -104,7 +104,7 @@ StackView {
 		id: logCat
 
 		defaultLogLevel: LoggingCategory.Info
-		name: "caelestia.nexus"
+		name: "ZShell.settings"
 	}
 
 	Connections {

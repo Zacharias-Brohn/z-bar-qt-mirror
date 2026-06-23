@@ -20,105 +20,18 @@ PageBase {
 		spacing: Appearance.spacing.large
 		width: root.cappedWidth
 
-		CustomClippingRect {
+		Item {
 			id: wallWrapper
 
 			Layout.alignment: Qt.AlignHCenter
-			color: DynamicColors.tPalette.m3surfaceContainer
-			implicitHeight: {
-				const screen = root.sState.screen;
-				const cWidth = root.cappedWidth;
-				return Math.min(Math.round(cWidth * 0.4), cWidth / screen.width * screen.height);
-			}
+			implicitHeight: cropper.height
 			implicitWidth: {
 				const screen = root.sState.screen;
 				return implicitHeight / screen.height * screen.width;
 			}
-			radius: Appearance.rounding.large
 
-			Loader {
-				active: opacity > 0
-				anchors.centerIn: parent
-				opacity: Config.background.enabled ? 0 : 1
-
-				Behavior on opacity {
-					Anim {
-						type: Anim.SlowEffects
-					}
-				}
-				sourceComponent: ColumnLayout {
-					spacing: Appearance.spacing.extraSmall
-
-					MaterialIcon {
-						Layout.alignment: Qt.AlignHCenter
-						color: DynamicColors.palette.m3onSurfaceVariant
-						text: "hide_image"
-					}
-
-					CustomText {
-						Layout.alignment: Qt.AlignHCenter
-						color: DynamicColors.palette.m3onSurfaceVariant
-						text: qsTr("Wallpaper disabled")
-					}
-				}
-			}
-
-			Item {
-				anchors.fill: parent
-				opacity: Config.background.enabled ? 1 : 0
-
-				Behavior on opacity {
-					Anim {
-						type: Anim.SlowEffects
-					}
-				}
-
-				Loader {
-					id: wallIndicatorLoader
-
-					active: opacity > 0
-					anchors.fill: parent
-					opacity: 0
-
-					Behavior on opacity {
-						Anim {
-							type: Anim.DefaultEffects
-						}
-					}
-					sourceComponent: CustomRect {
-						color: DynamicColors.palette.m3primaryContainer
-						radius: Appearance.rounding.normal
-					}
-				}
-
-				Timer {
-					id: wallLoadDebounceTimer
-
-					interval: 100
-
-					onTriggered: {
-						if (wallImg.status !== Image.Ready)
-							wallIndicatorLoader.opacity = 1;
-					}
-				}
-
-				FadeImage {
-					id: wallImg
-
-					anchors.fill: parent
-					fadeInAnim: Anim.SlowEffects
-					fadeOutAnim: Anim.DefaultEffects
-					preventInit: wallIndicatorLoader.opacity > 0
-					source: Wallpapers.current
-
-					onSourceChanged: wallLoadDebounceTimer.restart()
-					onStatusChanged: {
-						if (status === Image.Ready) {
-							wallLoadDebounceTimer.stop();
-							wallIndicatorLoader.opacity = 0;
-						}
-					}
-				}
+			WallpaperCropper {
+				id: cropper
 			}
 		}
 
@@ -162,7 +75,7 @@ PageBase {
 			onToggled: DynamicColors.setMode(checked ? "dark" : "light")
 		}
 
-		PopupRow {
+		OverlayRow {
 			checked: Config.general.color.scheduleDark
 			first: true
 			subtext: qsTr("Dark mode will turn on at %1, and turn off at %2.").arg(Config.general.color.scheduleDarkStart).arg(Config.general.color.scheduleDarkEnd)
@@ -189,7 +102,7 @@ PageBase {
 			}
 		}
 
-		PopupRow {
+		OverlayRow {
 			Layout.topMargin: Appearance.spacing.extraSmall / 2 - parent.spacing
 			checked: Config.general.color.scheduleHyprsunset
 			last: true

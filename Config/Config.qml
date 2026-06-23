@@ -245,6 +245,8 @@ Singleton {
 		return {
 			maxAppsShown: launcher.maxAppsShown,
 			maxWallpapers: launcher.maxWallpapers,
+			hiddenApps: launcher.hiddenApps,
+			favoriteApps: launcher.favoriteApps,
 			uwsm: launcher.uwsm,
 			actionPrefix: launcher.actionPrefix,
 			specialPrefix: launcher.specialPrefix,

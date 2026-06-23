@@ -68,6 +68,7 @@ PageBase {
 			Layout.topMargin: Appearance.spacing.extraSmall / 2 - parent.spacing
 			enabled: Config.screenshot.enable_pp && Config.screenshot.mode === "manual" && Config.screenshot.rounding
 			from: 0
+			last: true
 			stepSize: 1
 			text: qsTr("Corner radius")
 			to: 50
@@ -80,9 +81,9 @@ PageBase {
 		}
 
 		ToggleRow {
-			Layout.topMargin: Appearance.spacing.extraSmall / 2 - parent.spacing
 			checked: Config.screenshot.shadow
 			enabled: Config.screenshot.enable_pp && Config.screenshot.mode === "manual"
+			first: true
 			text: qsTr("Enable shadow")
 
 			onToggled: Config.screenshot.shadow = checked

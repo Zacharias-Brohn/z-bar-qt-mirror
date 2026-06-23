@@ -7,6 +7,8 @@ import qs.Config
 import qs.Modules.SettingsNew.Common
 import qs.Modules.SettingsNew.Pages
 import qs.Modules.SettingsNew.Pages.Wallpaper
+import qs.Modules.SettingsNew.Pages.Audio
+import qs.Modules.SettingsNew.Pages.Apps
 
 QtObject {
 	id: root
@@ -27,12 +29,59 @@ QtObject {
 				}
 			}
 		},
-
-		// Screenshot
 		Component {
+			// Screenshot
 			StackPage {
 				Component {
 					Screenshot {
+					}
+				}
+			}
+		},
+
+		// Connectivity
+		Component {
+			PlaceholderComp {
+			}
+		},
+		Component {
+			PlaceholderComp {
+			}
+		},
+		Component {
+			// Audio
+			StackPage {
+				Component {
+					AudioPage {
+					}
+				}
+
+				Component {
+					AppVolumes {
+					}
+				}
+			}
+		},
+
+		// Shell
+		Component {
+			PlaceholderComp {
+			}
+		},
+		Component {
+			StackPage {
+				Component {
+					AppsPage {
+					}
+				}
+
+				Component {
+					AllApps {
+					}
+				}
+
+				Component {
+					AppInfo {
 					}
 				}
 			}

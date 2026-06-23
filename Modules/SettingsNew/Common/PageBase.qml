@@ -64,6 +64,7 @@ ColumnLayout {
 		bottomMargin: Appearance.padding.extraLarge
 		contentHeight: root.contentChild?.implicitHeight ?? 0
 		contentItem.children: [root.contentChild]
+		fadeAmount: 0.1
 		topMargin: Appearance.padding.large
 	}
 }

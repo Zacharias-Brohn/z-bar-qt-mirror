@@ -15,118 +15,102 @@ PageBase {
 	isSubPage: true
 	title: qsTr("Wallpapers")
 
-	Item {
+	ColumnLayout {
 		anchors.left: parent.left
 		anchors.right: parent.right
 		anchors.top: parent.top
-		implicitHeight: childrenRect.height
+		spacing: Appearance.spacing.small
+		width: root.cappedWidth
 
-		WallpaperCropper {
-			id: cropper
+		CustomText {
+			Layout.topMargin: Appearance.spacing.large
+			font.pointSize: Appearance.font.size.large
+			text: qsTr("Wallpapers")
 		}
 
-		ColumnLayout {
-			anchors.horizontalCenter: parent.horizontalCenter
-			anchors.margins: Appearance.spacing.normal
-			anchors.top: cropper.bottom
-			spacing: Appearance.spacing.small
-			width: root.cappedWidth
+		GridLayout {
+			Layout.fillWidth: true
+			columnSpacing: Appearance.spacing.extraSmall
+			columns: 4
+			rowSpacing: Appearance.spacing.extraSmall
+			visible: localWalls.count > 0
 
-			CustomText {
-				Layout.topMargin: Appearance.spacing.large
-				font.pointSize: Appearance.font.size.large
-				text: qsTr("Wallpapers")
-			}
+			Repeater {
+				id: localWalls
 
-			GridLayout {
-				Layout.fillWidth: true
-				columnSpacing: Appearance.spacing.extraSmall
-				columns: 4
-				rowSpacing: Appearance.spacing.extraSmall
-				visible: localWalls.count > 0
+				model: {
+					const walls = Wallpapers.list;
+					var baseDir = Paths.wallsdir;
+					const categories = {};
+					const list = [];
+					for (const w of walls) {
+						var parentDir = w.parentDir;
+						if (!parentDir.endsWith("/"))
+							parentDir = parentDir + "/";
 
-				Repeater {
-					id: localWalls
+						if (!baseDir.endsWith("/"))
+							baseDir = baseDir + "/";
 
-					model: {
-						const walls = Wallpapers.list;
-						var baseDir = Paths.wallsdir;
-						const categories = {};
-						const list = [];
-						for (const w of walls) {
-							var parentDir = w.parentDir;
-							if (!parentDir.endsWith("/"))
-								parentDir = parentDir + "/";
-
-							if (!baseDir.endsWith("/"))
-								baseDir = baseDir + "/";
-
-							if (parentDir !== baseDir) {
-								const category = Wallpapers.getCategoryFor(w);
-								if (category && (!(category in categories) || categories[category].name.localeCompare(w.name) > 0))
-									categories[category] = w;
-							} else {
-								list.push(w);
-							}
+						if (parentDir !== baseDir) {
+							const category = Wallpapers.getCategoryFor(w);
+							if (category && (!(category in categories) || categories[category].name.localeCompare(w.name) > 0))
+								categories[category] = w;
+						} else {
+							list.push(w);
 						}
-						list.push(...Object.values(categories));
-						list.sort((a, b) => ((a.parentDir === baseDir) - (b.parentDir === baseDir)) || a.name.localeCompare(b.name));
-						while (list.length < 4)
-							list.push(null);
-
-						return list;
 					}
+					list.push(...Object.values(categories));
+					list.sort((a, b) => ((a.parentDir === baseDir) - (b.parentDir === baseDir)) || a.name.localeCompare(b.name));
+					while (list.length < 4)
+						list.push(null);
 
-					WallItem {
-						required property FileSystemEntry modelData
+					return list;
+				}
 
-						enabled: modelData
+				WallItem {
+					required property FileSystemEntry modelData
 
-						// Empty placeholders for sizing
-						opacity: modelData ? 1 : 0
-						source: String(modelData?.path ?? "")
+					enabled: modelData
 
-						onClicked: {
-							if (modelData.parentDir !== Paths.wallsdir) {
-								root.sState.selectedWallpaperCategory = Wallpapers.getCategoryFor(modelData);
-								root.sState.openSubPage(2); // Category page
-							} else {
-								Wallpapers.setWallpaper(modelData.path);
-								root.sState.closeSubPage();
-							}
-						}
+					// Empty placeholders for sizing
+					opacity: modelData ? 1 : 0
+					source: String(modelData?.path ?? "")
+
+					onClicked: {
+						Wallpapers.setWallpaper(modelData.path);
+						root.sState.closeSubPage();
 					}
 				}
 			}
+		}
 
-			Loader {
-				Layout.fillWidth: true
-				active: localWalls.count === 0
-				asynchronous: true
-				visible: active
+		Loader {
+			Layout.fillWidth: true
+			active: localWalls.count === 0
+			asynchronous: true
+			visible: active
 
-				sourceComponent: CustomRect {
-					color: DynamicColors.tPalette.m3surfaceContainer
-					implicitHeight: noWallsLayout.implicitHeight + Appearance.padding.extraLarge * 3
-					radius: Appearance.rounding.large
+			sourceComponent: CustomRect {
+				color: DynamicColors.tPalette.m3surfaceContainer
+				implicitHeight: noWallsLayout.implicitHeight + Appearance.padding.extraLarge * 3
+				radius: Appearance.rounding.large
 
-					ColumnLayout {
-						id: noWallsLayout
+				ColumnLayout {
+					id: noWallsLayout
 
-						anchors.centerIn: parent
-						spacing: Appearance.spacing.extraSmall
+					anchors.centerIn: parent
+					spacing: Appearance.spacing.extraSmall
 
-						MaterialIcon {
-							Layout.alignment: Qt.AlignHCenter
-							color: DynamicColors.palette.m3outline
-							text: "hide_image"
-						}
+					MaterialIcon {
+						Layout.alignment: Qt.AlignHCenter
+						color: DynamicColors.palette.m3outline
+						text: "hide_image"
+					}
 
-						CustomText {
-							Layout.alignment: Qt.AlignHCenter
-							color: DynamicColors.palette.m3outline
-							text: qsTr("No local wallpapers found")
-						}
+					CustomText {
+						Layout.alignment: Qt.AlignHCenter
+						color: DynamicColors.palette.m3outline
+						text: qsTr("No local wallpapers found")
 					}
 				}
 			}
