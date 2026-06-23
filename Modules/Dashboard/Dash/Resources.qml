@@ -24,8 +24,8 @@ Item {
 		service: Cpu
 	}
 
-	Ref {
-		service: SystemUsage
+	ServiceRef {
+		service: Gpu
 	}
 
 	ColumnLayout {
@@ -52,13 +52,13 @@ Item {
 		Resource {
 			fgColor: DynamicColors.palette.m3tertiary
 			icon: "gamepad"
-			value: SystemUsage.gpuPerc
+			value: Gpu.percentage
 		}
 
 		Resource {
 			fgColor: DynamicColors.palette.m3primary
 			icon: "host"
-			value: SystemUsage.gpuMemUsed
+			value: Gpu.memoryUsed / Gpu.memoryTotal
 		}
 
 		Resource {

@@ -34,8 +34,8 @@ CustomRect {
 		implicitHeight: root.implicitHeight
 		spacing: Appearance.spacing.smaller
 
-		Ref {
-			service: SystemUsage
+		ServiceRef {
+			service: Gpu
 		}
 
 		ServiceRef {
@@ -70,7 +70,7 @@ CustomRect {
 			icon: "gamepad"
 			iconColor: root.visibilities.resources ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3onSurface
 			mainColor: root.visibilities.resources ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3tertiary
-			percentage: SystemUsage.gpuPerc
+			percentage: Gpu.percentage
 		}
 
 		Resource {
@@ -78,7 +78,7 @@ CustomRect {
 			icon: "developer_board"
 			iconColor: root.visibilities.resources ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3onSurface
 			mainColor: root.visibilities.resources ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3primary
-			percentage: SystemUsage.gpuMemUsed
+			percentage: Gpu.memoryUsed / Gpu.memoryTotal
 		}
 	}
 }
