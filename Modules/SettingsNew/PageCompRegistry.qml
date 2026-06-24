@@ -10,6 +10,8 @@ import qs.Modules.SettingsNew.Pages.Wallpaper
 import qs.Modules.SettingsNew.Pages.Audio
 import qs.Modules.SettingsNew.Pages.Apps
 import qs.Modules.SettingsNew.Pages.Panels
+import qs.Modules.SettingsNew.Pages.Panels.Bar
+import qs.Modules.SettingsNew.Pages.Services
 
 QtObject {
 	id: root
@@ -73,12 +75,17 @@ QtObject {
 				}
 
 				Component {
+					BarPanel {
+					}
+				}
+
+				Component {
 					DashboardPanel {
 					}
 				}
 
 				Component {
-					BarPanel {
+					ResourcesPanel {
 					}
 				}
 
@@ -91,8 +98,26 @@ QtObject {
 					SidebarPanel {
 					}
 				}
+
+				// Bar sub pages
+				Component {
+					BarTray {
+					}
+				}
+
+				Component {
+					BarStatusIcons {
+					}
+				}
+
+				Component {
+					BarClock {
+					}
+				}
 			}
 		},
+
+		// Apps
 		Component {
 			StackPage {
 				Component {
@@ -107,6 +132,21 @@ QtObject {
 
 				Component {
 					AppInfo {
+					}
+				}
+			}
+		},
+
+		// Services
+		Component {
+			StackPage {
+				Component {
+					ServicesPage {
+					}
+				}
+
+				Component {
+					NotificationsPage {
 					}
 				}
 			}

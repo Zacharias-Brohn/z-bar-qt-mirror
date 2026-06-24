@@ -38,11 +38,11 @@ Item {
 
 		Rectangle {
 			anchors.fill: parent
-			anchors.margins: Config.barConfig.border + 1
+			anchors.margins: Config.bar.border + 1
 			anchors.topMargin: root.bar.implicitHeight + 1
-			radius: Config.barConfig.border > 0 ? Config.barConfig.rounding : 0
-			topLeftRadius: Config.barConfig.rounding
-			topRightRadius: Config.barConfig.rounding
+			radius: Config.bar.border > 0 ? Config.bar.rounding : 0
+			topLeftRadius: Config.bar.rounding
+			topRightRadius: Config.bar.rounding
 		}
 	}
 }

@@ -9,6 +9,7 @@ JsonObject {
 	property bool expire: true
 	property int groupPreviewNum: 3
 	property bool openExpanded: false
+	property bool showInFullscreen: true
 	property Sizes sizes: Sizes {
 	}
 

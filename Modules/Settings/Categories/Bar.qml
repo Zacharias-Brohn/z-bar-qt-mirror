@@ -11,7 +11,7 @@ SettingsPage {
 
 		SettingSwitch {
 			name: "Auto hide"
-			object: Config.barConfig
+			object: Config.bar
 			setting: "autoHide"
 		}
 
@@ -21,7 +21,7 @@ SettingsPage {
 		SettingSpinBox {
 			min: 1
 			name: "Height"
-			object: Config.barConfig
+			object: Config.bar
 			setting: "height"
 		}
 
@@ -31,7 +31,7 @@ SettingsPage {
 		SettingSpinBox {
 			min: 0
 			name: "Rounding"
-			object: Config.barConfig
+			object: Config.bar
 			setting: "rounding"
 		}
 
@@ -41,7 +41,7 @@ SettingsPage {
 		SettingSpinBox {
 			min: 0
 			name: "Border"
-			object: Config.barConfig
+			object: Config.bar
 			setting: "border"
 		}
 
@@ -51,7 +51,7 @@ SettingsPage {
 		SettingSpinBox {
 			min: 0
 			name: "Smoothing"
-			object: Config.barConfig
+			object: Config.bar
 			setting: "smoothing"
 		}
 	}
@@ -66,7 +66,7 @@ SettingsPage {
 		SettingSpinBox {
 			min: 16
 			name: "Tray icon size"
-			object: Config.barConfig.tray
+			object: Config.bar.tray
 			setting: "trayIconSize"
 		}
 	}
@@ -80,7 +80,7 @@ SettingsPage {
 
 		SettingSwitch {
 			name: "Tray"
-			object: Config.barConfig.popouts
+			object: Config.bar.popouts
 			setting: "tray"
 		}
 
@@ -89,7 +89,7 @@ SettingsPage {
 
 		SettingSwitch {
 			name: "Audio"
-			object: Config.barConfig.popouts
+			object: Config.bar.popouts
 			setting: "audio"
 		}
 
@@ -98,7 +98,7 @@ SettingsPage {
 
 		SettingSwitch {
 			name: "Active window"
-			object: Config.barConfig.popouts
+			object: Config.bar.popouts
 			setting: "activeWindow"
 		}
 
@@ -107,7 +107,7 @@ SettingsPage {
 
 		SettingSwitch {
 			name: "Resources"
-			object: Config.barConfig.popouts
+			object: Config.bar.popouts
 			setting: "resources"
 		}
 
@@ -116,7 +116,7 @@ SettingsPage {
 
 		SettingSwitch {
 			name: "Clock"
-			object: Config.barConfig.popouts
+			object: Config.bar.popouts
 			setting: "clock"
 		}
 
@@ -125,7 +125,7 @@ SettingsPage {
 
 		SettingSwitch {
 			name: "Network"
-			object: Config.barConfig.popouts
+			object: Config.bar.popouts
 			setting: "network"
 		}
 
@@ -134,7 +134,7 @@ SettingsPage {
 
 		SettingSwitch {
 			name: "Power"
-			object: Config.barConfig.popouts
+			object: Config.bar.popouts
 			setting: "upower"
 		}
 	}
@@ -148,7 +148,7 @@ SettingsPage {
 
 		SettingBarEntryList {
 			name: "Bar entries"
-			object: Config.barConfig
+			object: Config.bar
 			setting: "entries"
 		}
 	}

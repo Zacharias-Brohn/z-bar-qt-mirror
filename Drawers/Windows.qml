@@ -18,9 +18,9 @@ CustomWindow {
 	id: root
 
 	readonly property alias bar: bar
-	readonly property real borderLayoutThickness: hasFullscreen ? 0 : Config.barConfig.border
-	readonly property real borderRounding: Config.barConfig.rounding * (1 - fsTransitionProg)
-	readonly property real borderThickness: Config.barConfig.border * (1 - fsTransitionProg)
+	readonly property real borderLayoutThickness: hasFullscreen ? 0 : Config.bar.border
+	readonly property real borderRounding: Config.bar.rounding * (1 - fsTransitionProg)
+	readonly property real borderThickness: Config.bar.border * (1 - fsTransitionProg)
 	readonly property int dragMaskPadding: {
 		if (focusGrab.active)
 			return 0;
@@ -69,7 +69,7 @@ CustomWindow {
 	}
 
 	contentItem.Keys.onEscapePressed: {
-		if (Config.barConfig.autoHide)
+		if (Config.bar.autoHide)
 			visibilities.bar = false;
 		visibilities.launcher = false;
 		visibilities.sidebar = false;
@@ -190,8 +190,8 @@ CustomWindow {
 	Binding {
 		property: "bar"
 		target: visibilities
-		value: visibilities.sidebar || visibilities.dashboard || visibilities.osd || (!Config.barConfig.hideWhenNotif && visibilities.notif) || visibilities.resources || visibilities.settings || bar.isHovered
-		when: Config.barConfig.autoHide
+		value: visibilities.sidebar || visibilities.dashboard || visibilities.osd || (!Config.bar.hideWhenNotif && visibilities.notif) || visibilities.resources || visibilities.settings || bar.isHovered
+		when: Config.bar.autoHide
 	}
 
 	Item {
@@ -211,7 +211,7 @@ CustomWindow {
 			id: blobGroup
 
 			color: root.surfaceColor
-			smoothing: Config.barConfig.smoothing
+			smoothing: Config.bar.smoothing
 		}
 
 		BlobInvertedRect {

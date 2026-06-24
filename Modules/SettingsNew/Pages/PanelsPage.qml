@@ -15,36 +15,44 @@ PageBase {
 
 		NavRow {
 			first: true
-			icon: "dashboard"
-			label: qsTr("Dashboard")
-			status: Config.dashboard.enabled ? qsTr("Enabled") : qsTr("Disabled")
+			icon: "dock_to_bottom"
+			status: !Config.bar.autoHide ? qsTr("Always visible") : qsTr("Reveal on hover")
+			text: qsTr("Bar")
 
 			onClicked: root.sState.openSubPage(1)
 		}
 
 		NavRow {
-			icon: "dock_to_bottom"
-			label: qsTr("Taskbar")
-			status: !Config.barConfig.autoHide ? qsTr("Always visible") : qsTr("Reveal on hover")
+			icon: "dashboard"
+			status: Config.dashboard.enabled ? qsTr("Enabled") : qsTr("Disabled")
+			text: qsTr("Dashboard")
 
 			onClicked: root.sState.openSubPage(2)
 		}
 
 		NavRow {
-			icon: "apps"
-			label: qsTr("Launcher")
-			status: Config.launcher.enabled ? qsTr("Enabled") : qsTr("Disabled")
+			icon: "insert_chart"
+			status: Config.dashboard.performance.enabled ? qsTr("Enabled") : qsTr("Disabled")
+			text: qsTr("Resources")
 
 			onClicked: root.sState.openSubPage(3)
 		}
 
 		NavRow {
-			icon: "dock_to_right"
-			label: qsTr("Sidebar")
-			last: true
-			status: Config.sidebar.enabled ? qsTr("Enabled") : qsTr("Disabled")
+			icon: "apps"
+			status: Config.launcher.enabled ? qsTr("Enabled") : qsTr("Disabled")
+			text: qsTr("Launcher")
 
 			onClicked: root.sState.openSubPage(4)
+		}
+
+		NavRow {
+			icon: "dock_to_right"
+			last: true
+			status: Config.sidebar.enabled ? qsTr("Enabled") : qsTr("Disabled")
+			text: qsTr("Sidebar")
+
+			onClicked: root.sState.openSubPage(5)
 		}
 	}
 }

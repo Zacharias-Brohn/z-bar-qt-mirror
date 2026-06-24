@@ -1,8 +1,7 @@
 import Quickshell
-import Quickshell.Hyprland
 import QtQuick
 import qs.Config
-import qs.Helpers
+import qs.Daemons
 import qs.Components
 
 CustomRect {
@@ -12,7 +11,7 @@ CustomRect {
 	required property PersistentProperties visibilities
 
 	color: visibilities.sidebar ? DynamicColors.palette.m3primary : DynamicColors.tPalette.m3surfaceContainer
-	implicitHeight: Config.barConfig.height + Appearance.padding.smallest * 2
+	implicitHeight: Config.bar.height + Appearance.padding.smallest * 2
 	implicitWidth: implicitHeight
 	radius: Appearance.rounding.full
 
@@ -24,7 +23,7 @@ CustomRect {
 		fill: root.visibilities.sidebar ? 1 : 0
 		font.family: "Material Symbols Rounded"
 		font.pointSize: Appearance.font.size.larger
-		text: HasNotifications.hasNotifications ? "\uf4fe" : "\ue7f4"
+		text: NotifServer.list.length ? "\uf4fe" : "\ue7f4"
 
 		Behavior on color {
 			CAnim {

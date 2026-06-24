@@ -16,7 +16,7 @@ CustomRect {
 
 	clip: true
 	color: visibilities.resources ? DynamicColors.palette.m3primary : DynamicColors.tPalette.m3surfaceContainer
-	implicitHeight: Config.barConfig.height + Appearance.padding.smallest * 2
+	implicitHeight: Config.bar.height + Appearance.padding.smallest * 2
 	implicitWidth: rowLayout.implicitWidth + Appearance.padding.larger * 2
 	radius: Appearance.rounding.full
 

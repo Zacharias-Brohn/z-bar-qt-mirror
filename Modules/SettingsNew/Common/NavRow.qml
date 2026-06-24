@@ -9,8 +9,8 @@ ConnectedRect {
 	id: root
 
 	property alias icon: icon.text
-	property alias label: label.text
 	property alias status: status.text
+	property alias text: label.text
 
 	signal clicked
 
@@ -28,13 +28,13 @@ ConnectedRect {
 		anchors.leftMargin: Appearance.padding.largeIncreased
 		anchors.margins: Appearance.padding.normal
 		anchors.rightMargin: Appearance.padding.largeIncreased
-		spacing: Appearance.spacing.small
+		spacing: Appearance.spacing.normal
 
 		MaterialIcon {
 			id: icon
 
 			color: DynamicColors.palette.m3onSurfaceVariant
-			font.pointSize: Appearance.font.size.medium
+			font.pointSize: Appearance.font.size.large
 		}
 
 		ColumnLayout {

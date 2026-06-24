@@ -23,13 +23,13 @@ PageBase {
 		}
 
 		ToggleRow {
-			checked: Config.barConfig.autoHide
+			checked: Config.bar.autoHide
 			first: true
 			last: true
 			subtext: qsTr("Hide the bar, reveal on hover")
 			text: qsTr("Auto hide")
 
-			onToggled: Config.barConfig.autoHide = checked
+			onToggled: Config.bar.autoHide = checked
 		}
 
 		// Components
@@ -39,44 +39,28 @@ PageBase {
 
 		NavRow {
 			first: true
-			icon: "workspaces"
-			label: qsTr("Workspaces")
-			status: qsTr("Indicators, window icons")
+			icon: "widgets"
+			status: qsTr("System tray icons")
+			text: qsTr("Tray")
 
 			onClicked: root.sState.openSubPage(5)
 		}
 
 		NavRow {
-			icon: "web_asset"
-			label: qsTr("Active window")
-			status: qsTr("Title display, popout")
+			icon: "signal_cellular_alt"
+			status: qsTr("Visible indicators")
+			text: qsTr("Status icons")
 
 			onClicked: root.sState.openSubPage(6)
 		}
 
 		NavRow {
-			icon: "widgets"
-			label: qsTr("Tray")
-			status: qsTr("System tray icons")
-
-			onClicked: root.sState.openSubPage(7)
-		}
-
-		NavRow {
-			icon: "signal_cellular_alt"
-			label: qsTr("Status icons")
-			status: qsTr("Visible indicators")
-
-			onClicked: root.sState.openSubPage(8)
-		}
-
-		NavRow {
 			icon: "schedule"
-			label: qsTr("Clock")
 			last: true
 			status: qsTr("Date, icon, background")
+			text: qsTr("Clock")
 
-			onClicked: root.sState.openSubPage(9)
+			onClicked: root.sState.openSubPage(7)
 		}
 	}
 }

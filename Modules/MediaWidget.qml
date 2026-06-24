@@ -12,7 +12,7 @@ CustomRect {
 	readonly property int textWidth: Math.min(metrics.width, 200)
 
 	color: DynamicColors.tPalette.m3surfaceContainer
-	implicitHeight: Config.barConfig.height + Appearance.padding.smallest * 2
+	implicitHeight: Config.bar.height + Appearance.padding.smallest * 2
 	implicitWidth: layout.implicitWidth + Appearance.padding.normal * 2
 	radius: Appearance.rounding.full
 

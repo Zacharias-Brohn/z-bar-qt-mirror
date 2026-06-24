@@ -15,15 +15,15 @@ import qs.Modules.Network
 Item {
 	id: root
 
-	readonly property int contentHeight: Config.barConfig.height + padding * 2
-	readonly property int exclusiveZone: Config.barConfig.autoHide ? Config.barConfig.border : contentHeight
+	readonly property int contentHeight: Config.bar.height + padding * 2
+	readonly property int exclusiveZone: Config.bar.autoHide ? Config.bar.border : contentHeight
 	required property bool fullscreen
 	property bool isHovered
-	readonly property int padding: Math.max(Appearance.padding.smaller, Config.barConfig.border)
+	readonly property int padding: Math.max(Appearance.padding.smaller, Config.bar.border)
 	required property Wrapper popouts
 	required property ClipWrapper popoutsWrapper
 	required property ShellScreen screen
-	readonly property bool shouldBeVisible: !fullscreen && (!Config.barConfig.autoHide || visibilities.bar || isHovered)
+	readonly property bool shouldBeVisible: !fullscreen && (!Config.bar.autoHide || visibilities.bar || isHovered)
 	readonly property int vPadding: 6
 	required property PersistentProperties visibilities
 
@@ -31,8 +31,8 @@ Item {
 		content.item?.checkPopout(x);
 	}
 
-	implicitHeight: fullscreen ? 0 : Config.barConfig.border
-	visible: height > Config.barConfig.border
+	implicitHeight: fullscreen ? 0 : Config.bar.border
+	visible: height > Config.bar.border
 
 	states: State {
 		name: "visible"

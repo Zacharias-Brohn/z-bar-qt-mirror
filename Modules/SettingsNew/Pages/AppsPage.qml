@@ -30,33 +30,33 @@ PageBase {
 		DefaultRow {
 			first: true
 			icon: "terminal"
-			label: qsTr("Terminal")
 			status: Config.general.apps.terminal.join(" ")
+			text: qsTr("Terminal")
 
 			onSelected: app => Config.general.apps.terminal = app.command
 		}
 
 		DefaultRow {
 			icon: "volume_up"
-			label: qsTr("Audio")
 			status: Config.general.apps.audio.join(" ")
+			text: qsTr("Audio")
 
 			onSelected: app => Config.general.apps.audio = app.command
 		}
 
 		DefaultRow {
 			icon: "play_circle"
-			label: qsTr("Media playback")
 			status: Config.general.apps.playback.join(" ")
+			text: qsTr("Media playback")
 
 			onSelected: app => Config.general.apps.playback = app.command
 		}
 
 		DefaultRow {
 			icon: "folder"
-			label: qsTr("File manager")
 			last: true
 			status: Config.general.apps.explorer.join(" ")
+			text: qsTr("File manager")
 
 			onSelected: app => Config.general.apps.explorer = app.command
 		}
@@ -69,9 +69,9 @@ PageBase {
 		NavRow {
 			first: true
 			icon: "apps"
-			label: qsTr("All apps")
 			last: true
 			status: qsTr("Browse installed apps, set favorites and hidden")
+			text: qsTr("All apps")
 
 			onClicked: root.sState.openSubPage(1)
 		}

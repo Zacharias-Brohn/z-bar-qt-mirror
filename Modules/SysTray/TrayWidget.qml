@@ -47,12 +47,12 @@ RowLayout {
 			let modRowPos = sysTrayMod.mapToItem(sysModRow, modPos.x, modPos.y);
 			let child = closestRowChild(sysModRow, modRowPos.x);
 			if (child) {
-				if (child.objectName === "audioWidget" && Config.barConfig.popouts.audio)
+				if (child.objectName === "audioWidget" && Config.bar.popouts.audio)
 					return {
 						id: "audio",
 						item: child
 					};
-				if (child.objectName === "upowerWidget" && Config.barConfig.popouts.upower)
+				if (child.objectName === "upowerWidget" && Config.bar.popouts.upower)
 					return {
 						id: "upower",
 						item: child
@@ -75,7 +75,7 @@ RowLayout {
 		return null;
 	}
 
-	height: Config.barConfig.height + Appearance.padding.smallest * 2
+	height: Config.bar.height + Appearance.padding.smallest * 2
 	spacing: Appearance.padding.small
 	width: sysTray.implicitWidth + sysTrayMod.implicitWidth + Appearance.padding.small
 
@@ -123,22 +123,31 @@ RowLayout {
 		Layout.fillHeight: true
 		bottomLeftRadius: Appearance.rounding.smallest / 2
 		color: DynamicColors.tPalette.m3surfaceContainer
-		implicitWidth: sysModRow.width + Appearance.padding.smaller * 2
+		implicitWidth: sysModRow.implicitWidth + Appearance.padding.smaller + Appearance.padding.normal
 		radius: Appearance.rounding.full
 		topLeftRadius: Appearance.rounding.smallest / 2
 
-		Row {
+		RowLayout {
 			id: sysModRow
 
-			anchors.centerIn: parent
-			spacing: Appearance.padding.small
+			anchors.fill: parent
+			anchors.leftMargin: Appearance.padding.smaller
+			anchors.rightMargin: Appearance.padding.normal
 
 			AudioWidget {
+				Layout.fillHeight: true
+				Layout.rightMargin: hasContent ? Appearance.spacing.extraSmall : 0
 				objectName: "audioWidget"
+
+				Behavior on Layout.rightMargin {
+					Anim {
+						type: Anim.FastEffects
+					}
+				}
 			}
 
 			UPowerWidget {
-				height: parent.height
+				Layout.fillHeight: true
 				objectName: "upowerWidget"
 			}
 		}

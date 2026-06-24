@@ -1,16 +1,14 @@
 pragma ComponentBehavior: Bound
 
-import QtQuick
 import QtQuick.Layouts
 import qs.Config
-import qs.Components
 import qs.Modules.SettingsNew.Common
 
 PageBase {
 	id: root
 
 	isSubPage: true
-	title: qsTr("Dashboard")
+	title: qsTr("Tray")
 
 	ColumnLayout {
 		anchors.horizontalCenter: parent.horizontalCenter
@@ -18,19 +16,16 @@ PageBase {
 		spacing: Appearance.spacing.extraSmall / 2
 		width: root.cappedWidth
 
-		// General
-		SectionHeader {
+		SpinRow {
 			first: true
-			text: qsTr("General")
-		}
-
-		ToggleRow {
-			checked: Config.dashboard.enabled
-			first: true
+			from: 12
 			last: true
-			text: qsTr("Enabled")
+			stepSize: 1
+			text: qsTr("Icon size")
+			to: 24
+			value: Config.bar.tray.trayIconSize
 
-			onToggled: Config.dashboard.enabled = checked
+			onMoved: value => Config.bar.tray.trayIconSize = value
 		}
 	}
 }

@@ -21,7 +21,7 @@ Item {
 	readonly property int workspacesShown: workspaces.length
 
 	height: implicitHeight
-	implicitHeight: Config.barConfig.height + Appearance.padding.smaller * 2
+	implicitHeight: Config.bar.height + Appearance.padding.smaller * 2
 	implicitWidth: (root.workspaceButtonWidth * root.workspacesShown) + root.activeWorkspaceMargin * 2
 
 	Behavior on implicitWidth {

@@ -11,9 +11,9 @@ ConnectedRect {
 	default required property Item content
 	property alias icon: icon.text
 	property bool keepPopupAsChild
-	property alias label: label.text
 	readonly property alias popup: popup
 	property alias status: status.text
+	property alias text: label.text
 
 	Layout.fillWidth: true
 	implicitHeight: navLayout.implicitHeight + navLayout.anchors.margins * 2
@@ -33,13 +33,13 @@ ConnectedRect {
 		anchors.leftMargin: Appearance.padding.largeIncreased
 		anchors.margins: Appearance.padding.normal
 		anchors.rightMargin: Appearance.padding.largeIncreased
-		spacing: Appearance.spacing.small
+		spacing: Appearance.spacing.normal
 
 		MaterialIcon {
 			id: icon
 
 			color: DynamicColors.palette.m3onSurfaceVariant
-			font.pointSize: Appearance.font.size.medium
+			font.pointSize: Appearance.font.size.larger
 		}
 
 		ColumnLayout {

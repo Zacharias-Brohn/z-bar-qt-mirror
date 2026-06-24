@@ -10,6 +10,7 @@ JsonObject {
 	}
 
 	component Performance: JsonObject {
+		property bool enabled: true
 		property bool showBattery: true
 		property bool showCpu: true
 		property bool showGpu: true

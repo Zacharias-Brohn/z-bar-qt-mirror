@@ -57,7 +57,7 @@ Item {
 				if (mouse.button === Qt.LeftButton) {
 					root.item.activate();
 					console.log(icon.source + "\n" + root.item.id);
-				} else if (mouse.button === Qt.RightButton && Config.barConfig.popouts.tray) {
+				} else if (mouse.button === Qt.RightButton && Config.bar.popouts.tray) {
 					root.popouts.currentName = `traymenu${root.ind}`;
 					root.popouts.currentCenter = Qt.binding(() => root.mapToItem(root.loader, root.implicitWidth / 2, 0).x);
 					root.popouts.hasCurrent = true;
@@ -77,7 +77,7 @@ Item {
 		anchors.centerIn: parent
 		antialiasing: true
 		color: root.current ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3onSurface
-		implicitSize: Config.barConfig.tray.trayIconSize * root.dpr
+		implicitSize: Config.bar.tray.trayIconSize * root.dpr
 		layer.enabled: Config.general.color.smart || Config.general.color.scheduleDark
 		scale: 1 / root.dpr
 		source: root.resolveIcon(root.item.id, root.item.icon)
