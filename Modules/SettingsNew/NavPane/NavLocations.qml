@@ -6,13 +6,14 @@ import qs.Components
 import qs.Config
 import qs.Modules.SettingsNew
 
-Flickable {
+VerticalFadeFlickable {
 	id: root
 
 	required property SettingsState sState
 
 	bottomMargin: Appearance.padding.large
 	contentHeight: content.implicitHeight
+	fadeAmount: 0.1
 	topMargin: Appearance.padding.large
 
 	ColumnLayout {

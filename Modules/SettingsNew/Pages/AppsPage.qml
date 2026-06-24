@@ -93,7 +93,7 @@ PageBase {
 				p = p.parent;
 			return p?.opacity < 1;
 		}
-		popup.topMovement: Math.max(0 - popupHeight, Appearance.padding.large)
+		popup.topMovement: Appearance.padding.large
 
 		Loader {
 			active: row.popup.animDriver > 0

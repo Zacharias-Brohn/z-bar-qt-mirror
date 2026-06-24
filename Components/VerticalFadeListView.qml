@@ -7,7 +7,7 @@ CustomListView {
 	id: root
 
 	property real bottomFadeOpacity: fadeShouldBeActive(false) ? 0 : 1
-	property real fadeAmount: 0.2
+	property real fadeAmount: 0.1
 	property real topFadeOpacity: fadeShouldBeActive(true) ? 0 : 1
 
 	function fadeShouldBeActive(isStart: bool): bool {

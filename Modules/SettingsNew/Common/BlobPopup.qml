@@ -66,7 +66,7 @@ Item {
 		group: blobGroup
 		implicitHeight: parent.height
 		implicitWidth: parent.width
-		radius: Appearance.rounding.large
+		radius: Appearance.rounding.small + Appearance.padding.small
 
 		states: State {
 			name: "open"
@@ -86,8 +86,8 @@ Item {
 			}
 
 			Anim {
-				duration: Appearance.anim.durations.expressiveFastSpatial
-				easing.bezierCurve: Appearance.anim.curves.expressiveFastSpatial
+				duration: Appearance.anim.durations.expressiveFastEffects
+				easing.bezierCurve: Appearance.anim.curves.expressiveFastEffects
 				properties: "topMargin,implicitHeight"
 			}
 
