@@ -25,10 +25,7 @@ PageBase {
 
 			Layout.alignment: Qt.AlignHCenter
 			implicitHeight: cropper.height
-			implicitWidth: {
-				const screen = root.sState.screen;
-				return implicitHeight / screen.height * screen.width;
-			}
+			implicitWidth: root.cappedWidth
 
 			WallpaperCropper {
 				id: cropper
@@ -76,9 +73,22 @@ PageBase {
 		}
 
 		OverlayRow {
+			id: darkMode
+
+			readonly property string endTime: {
+				var d = new Date(0, 0, 0, 0, 0, 0, 0);
+				d.setMinutes(Config.general.color.scheduleDarkEnd);
+				return Qt.formatTime(d, "hh:mm AP");
+			}
+			readonly property string startTime: {
+				var d = new Date(0, 0, 0, 0, 0, 0, 0);
+				d.setMinutes(Config.general.color.scheduleDarkStart);
+				return Qt.formatTime(d, "hh:mm AP");
+			}
+
 			checked: Config.general.color.scheduleDark
 			first: true
-			subtext: qsTr("Dark mode will turn on at %1, and turn off at %2.").arg(Config.general.color.scheduleDarkStart).arg(Config.general.color.scheduleDarkEnd)
+			subtext: qsTr("Dark mode will turn on at %1, and turn off at %2.").arg(startTime).arg(endTime)
 			text: qsTr("Schedule dark mode")
 
 			popup: Component {
@@ -103,10 +113,23 @@ PageBase {
 		}
 
 		OverlayRow {
+			id: hyprsunset
+
+			readonly property string endTime: {
+				var d = new Date(0, 0, 0, 0, 0, 0, 0);
+				d.setMinutes(Config.general.color.scheduleHyprsunsetEnd);
+				return Qt.formatTime(d, "hh:mm AP");
+			}
+			readonly property string startTime: {
+				var d = new Date(0, 0, 0, 0, 0, 0, 0);
+				d.setMinutes(Config.general.color.scheduleHyprsunsetStart);
+				return Qt.formatTime(d, "hh:mm AP");
+			}
+
 			Layout.topMargin: Appearance.spacing.extraSmall / 2 - parent.spacing
 			checked: Config.general.color.scheduleHyprsunset
 			last: true
-			subtext: qsTr("Hyprsunset will turn on at %1, and turn off at %2.").arg(Config.general.color.scheduleHyprsunsetStart).arg(Config.general.color.scheduleHyprsunsetEnd)
+			subtext: qsTr("Hyprsunset will turn on at %1, and turn off at %2.").arg(startTime).arg(endTime)
 			text: qsTr("Schedule hyprsunset")
 
 			popup: Component {

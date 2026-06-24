@@ -8,19 +8,9 @@ import qs.Helpers
 CustomClippingRect {
 	id: root
 
-	readonly property string endTime: {
-		var d = new Date(0, 0, 0, 0, 0, 0, 0);
-		d.setMinutes(object[settings[2]]);
-		return Qt.formatTime(d, "hh:mm AP");
-	}
 	required property var object
 	required property list<string> settings
 	property bool shouldBeActive: true
-	readonly property string startTime: {
-		var d = new Date(0, 0, 0, 0, 0, 0, 0);
-		d.setMinutes(object[settings[1]]);
-		return Qt.formatTime(d, "hh:mm AP");
-	}
 
 	signal applySettings(startTime: int, endTime: int)
 	signal close

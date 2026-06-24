@@ -12,6 +12,7 @@ import qs.Helpers
 Item {
 	id: wrapper
 
+	property int buttonRowHeight: Appearance.padding.large * 3
 	property bool changesMade: false
 	readonly property var currentScreen: screens.length > selectedScreenIndex ? screens[selectedScreenIndex] : null
 	property var screens: []
@@ -34,13 +35,7 @@ Item {
 
 	function refreshScreens(): void {
 		screens = [...Quickshell.screens].sort((a, b) => a.x - b.x);
-
-		if (screens.length === 0) {
-			selectedScreenIndex = 0;
-			return;
-		}
-
-		selectedScreenIndex = Math.max(0, Math.min(selectedScreenIndex, screens.length - 1));
+		selectedScreenIndex = 0;
 	}
 
 	function selectScreen(index: int): void {
@@ -130,12 +125,13 @@ Item {
 	ButtonRow {
 		id: screenSelector
 
+		anchors.bottom: scaledImg.top
+		anchors.bottomMargin: Appearance.spacing.normal
 		anchors.left: parent.left
 		anchors.leftMargin: Appearance.padding.extraLarge * 2
 		anchors.right: parent.right
 		anchors.rightMargin: Appearance.padding.extraLarge * 2
 		anchors.top: parent.top
-		implicitHeight: 34
 		spacing: Appearance.spacing.small
 
 		Repeater {
@@ -196,8 +192,9 @@ Item {
 		anchors.bottomMargin: Appearance.spacing.normal
 		anchors.left: parent.left
 		anchors.right: parent.right
-		anchors.top: screenSelector.bottom
-		anchors.topMargin: Appearance.spacing.normal
+		anchors.top: parent.top
+		anchors.topMargin: wrapper.buttonRowHeight + Appearance.spacing.normal
+		// anchors.top: screenSelector.bottom
 		asynchronous: true
 		fillMode: Image.PreserveAspectFit
 		retainWhileLoading: true
@@ -207,24 +204,33 @@ Item {
 
 		onPaintedWidthChanged: {
 			if (paintedWidth > 0 && cropRectLoader.item) {
-				cropRectLoader.item.restoreFromData();
+				if (!wrapper.screens.length)
+					wrapper.refreshScreens();
+
+				wrapper.syncCropToScreen();
 			}
 		}
 		onSourceChanged: {
 			if (cropRectLoader.item) {
-				cropRectLoader.item.restoreFromData();
+				if (!wrapper.screens.length)
+					wrapper.refreshScreens();
+
+				wrapper.syncCropToScreen();
 			}
 		}
 		onStatusChanged: {
 			if (scaledImg.status == Image.Ready && cropRectLoader.item) {
-				cropRectLoader.item.restoreFromData();
+				if (!wrapper.screens.length)
+					wrapper.refreshScreens();
+
+				wrapper.syncCropToScreen();
 			}
 		}
 
 		Loader {
 			id: cropRectLoader
 
-			active: scaledImg.paintedWidth > 0 && wrapper.currentScreen
+			active: scaledImg.status === Image.Ready
 
 			sourceComponent: Component {
 				CustomRect {
@@ -259,10 +265,9 @@ Item {
 					}
 
 					function restoreFromData() {
-						if (!wrapper.currentScreen)
-							return;
-
 						let data = Wallpapers.getCrop(wrapper.currentScreen.name);
+
+						console.log(data.x, data.y);
 
 						if (data && (Math.abs(data.x) > 0.001 || Math.abs(data.y) > 0.001 || Math.abs(data.width - 1.0) > 0.001 || Math.abs(data.height - 1.0) > 0.001)) {
 							zoom = data.zoom > 0 ? data.zoom : 1.0;
