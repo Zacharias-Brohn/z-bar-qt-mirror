@@ -43,7 +43,7 @@ PageBase {
 			status: qsTr("System tray icons")
 			text: qsTr("Tray")
 
-			onClicked: root.sState.openSubPage(5)
+			onClicked: root.sState.openSubPage(6)
 		}
 
 		NavRow {
@@ -51,7 +51,7 @@ PageBase {
 			status: qsTr("Visible indicators")
 			text: qsTr("Status icons")
 
-			onClicked: root.sState.openSubPage(6)
+			onClicked: root.sState.openSubPage(7)
 		}
 
 		NavRow {
@@ -60,7 +60,7 @@ PageBase {
 			status: qsTr("Date, icon, background")
 			text: qsTr("Clock")
 
-			onClicked: root.sState.openSubPage(7)
+			onClicked: root.sState.openSubPage(8)
 		}
 	}
 }
