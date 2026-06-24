@@ -221,11 +221,11 @@ Item {
 			font: Appearance.font.family.sans
 			// icon: root.iconForId(modelData.entry.id)
 			icon: root.labelForId(modelData.entry.id)
-			inactiveColour: DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHighest, 2)
+			inactiveColor: DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHighest, 2)
+			isToggle: true
 			radius: stateLayer.pressed ? 6 / 2 : internalChecked ? 6 : 8
 			radiusAnim.duration: MaterialEasing.expressiveEffectsTime
 			radiusAnim.easing.bezierCurve: MaterialEasing.expressiveEffects
-			toggle: true
 			visible: !["spacer", "upower", "dash", "audio"].some(prefix => modelData.entry.id.startsWith(prefix))
 
 			Behavior on Layout.preferredWidth {

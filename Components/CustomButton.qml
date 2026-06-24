@@ -23,10 +23,10 @@ Button {
 	}
 
 	StateLayer {
-		function onClicked(): void {
+		radius: control.radius
+
+		onClicked: {
 			control.clicked();
 		}
-
-		radius: control.radius
 	}
 }

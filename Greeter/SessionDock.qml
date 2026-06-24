@@ -83,7 +83,7 @@ ColumnLayout {
 				radius: Appearance.rounding.normal - Appearance.padding.smaller
 
 				StateLayer {
-					function onClicked(): void {
+					onClicked: {
 						root.greeter.sessionIndex = index;
 					}
 				}

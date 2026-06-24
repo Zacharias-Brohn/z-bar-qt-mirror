@@ -1,25 +1,21 @@
 import QtQuick
-import QtQuick.Layouts
+import QtQuick.Controls
 import qs.Components
 import qs.Config
 import qs.Helpers
 
-CustomClippingRect {
+Item {
 	id: root
 
 	default property alias contentData: clayout.data
 
-	// Find and scroll to a section by its sectionId, then highlight a specific setting
 	function scrollToSectionAndHighlight(sectionId: string, settingName: string): bool {
-		// Find the section with matching sectionId
 		for (let i = 0; i < clayout.children.length; i++) {
 			const section = clayout.children[i];
 			if (section.sectionId === sectionId) {
-				// Scroll to the section with some padding
 				const targetY = section.y - Appearance.padding.normal;
 				flickable.contentY = Math.max(0, Math.min(targetY, flickable.contentHeight - flickable.height));
 
-				// Use the singleton to highlight the setting
 				SettingsHighlight.highlight(settingName);
 				return true;
 			}
@@ -27,14 +23,15 @@ CustomClippingRect {
 		return false;
 	}
 
-	radius: Appearance.rounding.normal - Appearance.padding.smaller
-
 	CustomFlickable {
 		id: flickable
 
 		anchors.fill: parent
+		// for future:
+		// anchors.leftMargin: Appearance.padding.extraLarge
+		// anchors.rightMargin: Appearance.padding.extraLarge
 		clip: true
-		contentHeight: clayout.implicitHeight
+		contentHeight: clayout.implicitHeight + clayout.anchors.margins * 2
 
 		CustomScrollBar.vertical: CustomScrollBar {
 			flickable: flickable
@@ -64,7 +61,9 @@ CustomClippingRect {
 			id: clayout
 
 			anchors.left: parent.left
+			anchors.margins: Appearance.padding.extraSmall
 			anchors.right: parent.right
+			anchors.top: parent.top
 			spacing: Appearance.spacing.small
 
 			// move: Transition {

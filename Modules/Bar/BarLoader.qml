@@ -16,12 +16,13 @@ Item {
 
 	readonly property int contentHeight: Config.barConfig.height + padding * 2
 	readonly property int exclusiveZone: Config.barConfig.autoHide ? Config.barConfig.border : contentHeight
+	required property bool fullscreen
 	property bool isHovered
 	readonly property int padding: Math.max(Appearance.padding.smaller, Config.barConfig.border)
 	required property Wrapper popouts
 	required property ClipWrapper popoutsWrapper
 	required property ShellScreen screen
-	readonly property bool shouldBeVisible: (!Config.barConfig.autoHide || visibilities.bar || isHovered)
+	readonly property bool shouldBeVisible: !fullscreen && (!Config.barConfig.autoHide || visibilities.bar || isHovered)
 	readonly property int vPadding: 6
 	required property PersistentProperties visibilities
 
@@ -29,7 +30,7 @@ Item {
 		content.item?.checkPopout(x);
 	}
 
-	implicitHeight: Config.barConfig.border
+	implicitHeight: fullscreen ? 0 : Config.barConfig.border
 	visible: height > Config.barConfig.border
 
 	states: State {
@@ -74,6 +75,7 @@ Item {
 		anchors.right: parent.right
 
 		sourceComponent: Bar {
+			fullscreen: root.fullscreen
 			height: root.contentHeight
 			popouts: root.popouts
 			popoutsWrapper: root.popoutsWrapper

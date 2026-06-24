@@ -59,15 +59,15 @@ ColumnLayout {
 		}
 
 		StateLayer {
-			function onClicked(): void {
-				root.toggleRequested();
-				root.expanded = !root.expanded;
-			}
-
 			anchors.fill: parent
 			color: DynamicColors.palette.m3onSurface
 			radius: Appearance.rounding.normal
 			showHoverBackground: false
+
+			onClicked: {
+				root.toggleRequested();
+				root.expanded = !root.expanded;
+			}
 		}
 	}
 

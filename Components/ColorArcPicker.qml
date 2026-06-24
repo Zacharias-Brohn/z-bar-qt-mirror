@@ -45,10 +45,10 @@ Item {
 	}
 
 	function syncFromPenColor() {
-		if (!drawing)
+		if (!drawing.drawingState)
 			return;
 
-		const c = drawing.penColor;
+		const c = drawing.drawingState.penColor;
 
 		if (c.hsvSaturation > 0) {
 			currentHue = c.hsvHue;
@@ -85,11 +85,19 @@ Item {
 
 		currentHue = relative / arcSweep;
 		lastChromaticHue = currentHue;
-		drawing.penColor = Qt.hsva(currentHue, drawing.penColor.hsvSaturation, drawing.penColor.hsvValue, drawing.penColor.a);
+		drawing.drawingState.penColor = Qt.hsva(currentHue, drawing.drawingState.penColor.hsvSaturation, drawing.drawingState.penColor.hsvValue, drawing.drawingState.penColor.a);
 	}
 
 	implicitHeight: 180
 	implicitWidth: 220
+
+	Behavior on currentHue {
+		enabled: !root.dragActive
+
+		Anim {
+			type: Anim.StandardLarge
+		}
+	}
 
 	Component.onCompleted: syncFromPenColor()
 	onCurrentHueChanged: canvas.requestPaint()
@@ -103,7 +111,7 @@ Item {
 			root.syncFromPenColor();
 		}
 
-		target: root.drawing
+		target: root.drawing.drawingState
 	}
 
 	Canvas {
@@ -141,6 +149,21 @@ Item {
 		}
 	}
 
+	CustomRect {
+		anchors.centerIn: parent
+		color: root.drawing?.drawingState.penColor
+		implicitHeight: implicitWidth
+		implicitWidth: canvas.height - root.handleSize - Appearance.padding.extraLarge * 2
+		radius: Appearance.rounding.full
+
+		Behavior on color {
+			enabled: false
+
+			CAnim {
+			}
+		}
+	}
+
 	Item {
 		id: handle
 
@@ -174,7 +197,7 @@ Item {
 
 			Rectangle {
 				anchors.centerIn: parent
-				color: root.drawing ? root.drawing.penColor : Qt.hsla(root.currentHue, 1.0, 0.5, 1.0)
+				color: Qt.hsla(root.currentHue, 1.0, 0.5, 1.0)
 				height: width
 				radius: width / 2
 				width: parent.width - 12

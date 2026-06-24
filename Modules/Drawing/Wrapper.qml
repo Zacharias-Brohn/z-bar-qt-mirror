@@ -10,12 +10,35 @@ import qs.Daemons
 Item {
 	id: root
 
-	required property Canvas drawing
+	required property var drawing
 	property bool expanded: true
 	property real offsetScale: shouldBeActive ? 0 : 1
+	property bool pinned: false
 	required property ShellScreen screen
 	readonly property bool shouldBeActive: visibilities.isDrawing
 	required property var visibilities
+
+	function collapse(): void {
+		if (pinned)
+			return;
+
+		expanded = false;
+	}
+
+	function expand(): void {
+		expanded = true;
+	}
+
+	function toggleExpanded(): void {
+		if (pinned)
+			return;
+
+		expanded = !expanded;
+	}
+
+	function togglePinned(): void {
+		pinned = !pinned;
+	}
 
 	anchors.leftMargin: (-implicitWidth - 5) * offsetScale
 	implicitHeight: content.implicitHeight
@@ -44,7 +67,7 @@ Item {
 	Loader {
 		id: icon
 
-		active: root.shouldBeActive || root.visible
+		active: (root.shouldBeActive || root.visible) && opacity > 0
 		anchors.right: parent.right
 		anchors.verticalCenter: parent.verticalCenter
 		asynchronous: true
@@ -63,7 +86,7 @@ Item {
 	Loader {
 		id: content
 
-		active: root.shouldBeActive || root.visible
+		active: (root.shouldBeActive || root.visible) && opacity > 0
 		anchors.right: parent.right
 		anchors.verticalCenter: parent.verticalCenter
 		asynchronous: true
@@ -76,6 +99,7 @@ Item {
 		sourceComponent: Content {
 			drawing: root.drawing
 			visibilities: root.visibilities
+			wrapper: root
 		}
 	}
 }

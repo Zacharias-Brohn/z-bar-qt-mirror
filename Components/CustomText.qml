@@ -27,24 +27,25 @@ Text {
 		enabled: root.animate
 
 		SequentialAnimation {
-			Anim {
-				easing.bezierCurve: MaterialEasing.standardAccel
+			TAnim {
+				target: root
 				to: root.animateFrom
+				type: Anim.FastEffects
 			}
 
 			PropertyAction {
 			}
 
-			Anim {
-				easing.bezierCurve: MaterialEasing.standardDecel
+			TAnim {
+				target: root
 				to: root.animateTo
+				type: Anim.DefaultEffects
 			}
 		}
 	}
 
-	component Anim: NumberAnimation {
+	component TAnim: Anim {
 		duration: root.animateDuration / 2
-		easing.type: Easing.BezierSpline
 		properties: root.animateProp.split(",").length > 1 ? root.animateProp : ""
 		property: root.animateProp.split(",").length === 1 ? root.animateProp : ""
 		target: root

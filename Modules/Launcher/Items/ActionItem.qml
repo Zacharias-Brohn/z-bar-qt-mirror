@@ -15,11 +15,11 @@ Item {
 	implicitHeight: Config.launcher.sizes.itemHeight
 
 	StateLayer {
-		function onClicked(): void {
+		radius: Appearance.rounding.smallest
+
+		onClicked: {
 			root.modelData?.onClicked(root.list);
 		}
-
-		radius: Appearance.rounding.smallest
 	}
 
 	Item {

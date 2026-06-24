@@ -34,8 +34,7 @@ Item {
 		anchors.centerIn: parent
 
 		sourceComponent: Content {
-			padding: Appearance.padding.normal
-			visibilities: root.visibilities
+			wrapper: root
 		}
 	}
 }

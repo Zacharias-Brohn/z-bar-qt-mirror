@@ -17,8 +17,8 @@ BusyIndicator {
 	}
 
 	property int animState
-	property color bgColour: DynamicColors.palette.m3secondaryContainer
-	property color fgColour: DynamicColors.palette.m3primary
+	property color bgColor: DynamicColors.palette.m3secondaryContainer
+	property color fgColor: DynamicColors.palette.m3primary
 	property real implicitSize: Appearance.font.size.normal * 3
 	property real internalStrokeWidth: strokeWidth
 	readonly property alias progress: manager.progress
@@ -31,8 +31,8 @@ BusyIndicator {
 
 	contentItem: CircularProgress {
 		anchors.fill: parent
-		bgColour: root.bgColour
-		fgColour: root.fgColour
+		bgColor: root.bgColor
+		fgColor: root.fgColor
 		padding: root.padding
 		rotation: manager.rotation
 		startAngle: manager.startFraction * 360
@@ -73,7 +73,6 @@ BusyIndicator {
 
 	CircularIndicatorManager {
 		id: manager
-
 	}
 
 	NumberAnimation {

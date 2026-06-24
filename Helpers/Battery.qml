@@ -29,4 +29,6 @@ Singleton {
 	readonly property bool isLaptop: UPower.displayDevice.isLaptopBattery
 	readonly property bool onBattery: UPower.onBattery
 	readonly property bool ready: UPower.displayDevice.ready
+	readonly property real timeToEmpty: UPower.displayDevice.timeToEmpty
+	readonly property real timeToFull: UPower.displayDevice.timeToFull
 }

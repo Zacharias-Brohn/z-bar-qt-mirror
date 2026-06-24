@@ -1,33 +1,35 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-import QtQuick.Layouts
+import ZShell.Components
 import qs.Config
 import qs.Components
 
 Item {
 	id: root
 
-	readonly property var colors: ["#ef4444", "#f97316", "#eab308", "#22c55e", "#06b6d4", "#3b82f6", "#a855f7", "#ec4899", "#ffffff", "#000000"]
-	required property Canvas drawing
+	readonly property var colors1: ["#ef4444", "#f97316", "#eab308", "#22c55e", "#06b6d4"]
+	readonly property var colors2: ["#3b82f6", "#a855f7", "#ec4899", "#ffffff", "#000000"]
+	required property var drawing
 	required property var visibilities
+	required property Wrapper wrapper
 
 	function syncFromPenColor() {
 		if (!drawing)
 			return;
 
 		if (!saturationSlider.pressed)
-			saturationSlider.value = drawing.penColor.hsvSaturation;
+			saturationSlider.value = drawing.drawingState.penColor.hsvSaturation;
 
 		if (!brightnessSlider.pressed)
-			brightnessSlider.value = drawing.penColor.hsvValue;
+			brightnessSlider.value = drawing.drawingState.penColor.hsvValue;
 	}
 
 	function updatePenColorFromHsv() {
 		if (!drawing)
 			return;
 
-		drawing.penColor = Qt.hsva(huePicker.currentHue, saturationSlider.value, brightnessSlider.value, drawing.penColor.a);
+		drawing.drawingState.penColor = Qt.hsva(huePicker.currentHue, saturationSlider.value, brightnessSlider.value, drawing.drawingState.penColor.a);
 	}
 
 	implicitHeight: column.height + Appearance.padding.larger * 2
@@ -40,7 +42,7 @@ Item {
 			root.syncFromPenColor();
 		}
 
-		target: root.drawing
+		target: root.drawing.drawingState
 	}
 
 	Column {
@@ -58,13 +60,14 @@ Item {
 		GradientSlider {
 			id: saturationSlider
 
+			anchors.left: parent.left
+			anchors.right: parent.right
 			brightness: brightnessSlider.value
 			channel: "saturation"
 			from: 0
 			hue: huePicker.currentHue
 			icon: "\ue40a"
 			implicitHeight: 30
-			implicitWidth: palette.width
 			orientation: Qt.Horizontal
 			to: 1
 
@@ -74,12 +77,13 @@ Item {
 		GradientSlider {
 			id: brightnessSlider
 
+			anchors.left: parent.left
+			anchors.right: parent.right
 			channel: "brightness"
 			from: 0
 			hue: huePicker.currentHue
 			icon: "\ue1ac"
 			implicitHeight: 30
-			implicitWidth: palette.width
 			orientation: Qt.Horizontal
 			saturation: saturationSlider.value
 			to: 1
@@ -87,65 +91,117 @@ Item {
 			onMoved: root.updatePenColorFromHsv()
 		}
 
-		GridLayout {
-			id: palette
+		ButtonRow {
+			id: row1
 
 			anchors.left: parent.left
 			anchors.right: parent.right
-			columns: 5
-			rowSpacing: 8
-			rows: 2
+			spacing: Appearance.spacing.normal
 
 			Repeater {
-				model: root.colors
+				model: root.colors1
 
-				delegate: Item {
-					id: colorCircle
+				delegate: ColorButton {
+					row: row1
+				}
+			}
+		}
 
-					required property color modelData
-					readonly property bool selected: Qt.colorEqual(root.drawing.penColor, modelData)
+		ButtonRow {
+			id: row2
 
-					Layout.fillWidth: true
-					height: 28
+			anchors.left: parent.left
+			anchors.right: parent.right
+			spacing: Appearance.spacing.normal
 
-					CustomRect {
-						anchors.centerIn: parent
-						border.color: Qt.rgba(0, 0, 0, 0.25)
-						border.width: Qt.colorEqual(modelData, "#ffffff") ? 1 : 0
-						color: colorCircle.modelData
-						height: 20
-						radius: width / 2
-						width: 20
-					}
+			Repeater {
+				model: root.colors2
 
-					CustomRect {
-						anchors.centerIn: parent
-						border.color: selected ? "#ffffff" : Qt.rgba(1, 1, 1, 0.28)
-						border.width: selected ? 3 : 1
-						color: "transparent"
-						height: parent.height
-						radius: width / 2
-						width: parent.height
-
-						StateLayer {
-							onClicked: root.drawing.penColor = colorCircle.modelData
-						}
-					}
+				delegate: ColorButton {
+					row: row2
 				}
 			}
 		}
 
 		FilledSlider {
+			anchors.left: parent.left
+			anchors.right: parent.right
 			from: 1
 			icon: "border_color"
 			implicitHeight: 30
-			implicitWidth: palette.width
 			multiplier: 1
 			orientation: Qt.Horizontal
 			to: 45
-			value: root.drawing.penWidth
+			value: root.drawing.drawingState.penWidth
 
-			onMoved: root.drawing.penWidth = value
+			onMoved: root.drawing.drawingState.penWidth = value
 		}
+
+		ButtonRow {
+			anchors.left: parent.left
+			anchors.right: parent.right
+			spacing: Appearance.spacing.small
+
+			IconTextButton {
+				fillWidth: true
+				font.pointSize: Appearance.font.size.normal
+				icon: "close"
+				inactiveColor: DynamicColors.palette.m3error
+				inactiveOnColor: DynamicColors.palette.m3onError
+				isRound: true
+				shapeMorph: true
+				text: "Exit"
+
+				onClicked: root.visibilities.isDrawing = false
+			}
+
+			IconTextButton {
+				fillWidth: true
+				font.pointSize: Appearance.font.size.normal
+				icon: "ink_eraser"
+				inactiveColor: DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHighest, 2)
+				inactiveOnColor: DynamicColors.palette.m3onSurfaceVariant
+				isRound: true
+				shapeMorph: true
+				text: "Clear"
+
+				onClicked: root.drawing.content.clear()
+			}
+		}
+	}
+
+	IconButton {
+		anchors.margins: Appearance.padding.normal
+		anchors.right: parent.right
+		anchors.top: parent.top
+		checked: root.wrapper.pinned
+		icon: "keep"
+		isToggle: true
+		shapeMorph: true
+
+		onClicked: {
+			root.wrapper.togglePinned();
+		}
+	}
+
+	component ColorButton: IconButton {
+		id: colorButton
+
+		readonly property real buttonSize: (row.width - row.spacing * 4) / 5
+		required property color modelData
+		required property ButtonRow row
+
+		fillWidth: false
+		font.pointSize: Appearance.font.size.normal
+		icon: ""
+		implicitHeight: buttonSize
+		implicitWidth: buttonSize
+		inactiveColor: modelData
+		inactiveOnColor: DynamicColors.on(modelData)
+		isRound: true
+		shapeMorph: true
+		shapeMorphExpansion: pressed ? 12 : 0
+
+		onClicked: root.drawing.drawingState.penColor = modelData
 	}
 }

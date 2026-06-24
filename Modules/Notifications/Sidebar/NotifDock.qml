@@ -17,7 +17,7 @@ Item {
 	required property var visibilities
 
 	anchors.fill: parent
-	anchors.margins: 8
+	anchors.margins: Appearance.padding.normal
 
 	Component.onCompleted: NotifServer.list.forEach(n => n.popup = false)
 
@@ -156,7 +156,7 @@ Item {
 	Loader {
 		active: opacity > 0
 		anchors.bottom: parent.bottom
-		anchors.margins: 8
+		anchors.margins: Appearance.padding.normal
 		anchors.right: parent.right
 		opacity: root.notifCount > 0 ? 1 : 0
 		scale: root.notifCount > 0 ? 1 : 0.5

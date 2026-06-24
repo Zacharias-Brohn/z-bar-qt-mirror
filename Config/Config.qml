@@ -13,6 +13,7 @@ Singleton {
 	property alias appearance: adapter.appearance
 	property alias background: adapter.background
 	property alias barConfig: adapter.barConfig
+	property alias clipboard: adapter.clipboard
 	property alias colors: adapter.colors
 	property alias dashboard: adapter.dashboard
 	property alias dock: adapter.dock
@@ -116,6 +117,19 @@ Singleton {
 		};
 	}
 
+	function serializeClipboard(): var {
+		return {
+			enabled: clipboard.enabled,
+			maxEntriesShown: clipboard.maxEntriesShown,
+			sizes: {
+				width: clipboard.sizes.width,
+				previewWidth: clipboard.sizes.previewWidth,
+				minPreviewWidth: clipboard.sizes.minPreviewWidth,
+				itemHeight: clipboard.sizes.itemHeight
+			}
+		};
+	}
+
 	function serializeColors(): var {
 		return {
 			schemeType: colors.schemeType,
@@ -143,7 +157,8 @@ Singleton {
 			launcher: serializeLauncher(),
 			colors: serializeColors(),
 			dock: serializeDock(),
-			screenshot: serializeScreenshot()
+			screenshot: serializeScreenshot(),
+			clipboard: serializeClipboard()
 		};
 	}
 
@@ -173,7 +188,7 @@ Singleton {
 				resourceProgessThickness: dashboard.sizes.resourceProgessThickness,
 				weatherWidth: dashboard.sizes.weatherWidth,
 				mediaCoverArtSize: dashboard.sizes.mediaCoverArtSize,
-				mediaVisualiserSize: dashboard.sizes.mediaVisualiserSize,
+				mediaVisualizerSize: dashboard.sizes.mediaVisualizerSize,
 				resourceSize: dashboard.sizes.resourceSize
 			}
 		};
@@ -194,6 +209,7 @@ Singleton {
 		return {
 			logo: general.logo,
 			wallpaperPath: general.wallpaperPath,
+			showOverFullscreen: general.showOverFullscreen,
 			desktopIcons: general.desktopIcons,
 			dateFormat: general.dateFormat,
 			color: {
@@ -315,6 +331,7 @@ Singleton {
 			weatherLocation: services.weatherLocation,
 			updates: services.updates,
 			useFahrenheit: services.useFahrenheit,
+			minBrightness: services.minBrightness,
 			ddcutilService: services.ddcutilService,
 			useTwelveHourClock: services.useTwelveHourClock,
 			gpuType: services.gpuType,
@@ -446,6 +463,8 @@ Singleton {
 			property BackgroundConfig background: BackgroundConfig {
 			}
 			property BarConfig barConfig: BarConfig {
+			}
+			property ClipboardConfig clipboard: ClipboardConfig {
 			}
 			property Colors colors: Colors {
 			}

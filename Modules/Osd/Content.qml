@@ -97,7 +97,9 @@ Item {
 
 				FilledSlider {
 					anchors.fill: parent
+					from: Config.services.minBrightness
 					icon: `brightness_${(Math.round(value * 6) + 1)}`
+					to: 1.0
 					value: root.brightness
 
 					onPressedChanged: {

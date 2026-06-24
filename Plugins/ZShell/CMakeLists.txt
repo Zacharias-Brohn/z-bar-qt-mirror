@@ -1,12 +1,23 @@
-find_package(Qt6 REQUIRED COMPONENTS ShaderTools Core Qml Gui Quick Concurrent Sql Network DBus)
+find_package(Qt6 REQUIRED COMPONENTS ShaderTools Core Qml Gui Quick Concurrent Sql Network DBus CanvasPainter)
 find_package(PkgConfig REQUIRED)
+find_library(SENSORS_LIBRARY NAMES sensors REQUIRED)
+find_path(SENSORS_INCLUDE_DIR NAMES sensors/sensors.h REQUIRED)
 pkg_check_modules(Qalculate IMPORTED_TARGET libqalculate REQUIRED)
 pkg_check_modules(Pipewire IMPORTED_TARGET libpipewire-0.3 REQUIRED)
 pkg_check_modules(Aubio IMPORTED_TARGET aubio REQUIRED)
 pkg_check_modules(Cava IMPORTED_TARGET libcava QUIET)
 pkg_check_modules(GLIB REQUIRED glib-2.0 gobject-2.0 gio-2.0)
+
 if(NOT Cava_FOUND)
     pkg_check_modules(Cava IMPORTED_TARGET cava REQUIRED)
+endif()
+
+if(NOT TARGET Sensors::Sensors)
+	add_library(Sensors::Sensors UNKNOWN IMPORTED)
+	set_target_properties(Sensors::Sensors PROPERTIES
+		IMPORTED_LOCATION "${SENSORS_LIBRARY}"
+		INTERFACE_INCLUDE_DIRECTORIES "${SENSORS_INCLUDE_DIR}"
+	)
 endif()
 
 set(QT_QML_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qml")
@@ -45,6 +56,7 @@ qml_module(ZShell
 		requests.hpp requests.cpp
 		toaster.hpp toaster.cpp
 		qalculator.hpp qalculator.cpp
+		zutils.hpp zutils.cpp
     LIBRARIES
         Qt::Gui
         Qt::Quick

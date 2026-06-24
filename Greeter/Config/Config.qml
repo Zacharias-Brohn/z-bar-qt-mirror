@@ -4,8 +4,6 @@ import Quickshell
 import Quickshell.Io
 import ZShell
 import QtQuick
-import qs.Helpers
-import qs.Paths
 
 Singleton {
 	id: root
@@ -23,6 +21,7 @@ Singleton {
 	property alias osd: adapter.osd
 	property alias overview: adapter.overview
 	property bool recentlySaved: false
+	property alias screenshot: adapter.screenshot
 	property alias services: adapter.services
 	property alias sidebar: adapter.sidebar
 	property alias utilities: adapter.utilities
@@ -47,6 +46,9 @@ Singleton {
 			},
 			padding: {
 				scale: appearance.padding.scale
+			},
+			deform: {
+				scale: appearance.deform.scale
 			},
 			font: {
 				family: {
@@ -77,16 +79,28 @@ Singleton {
 	function serializeBackground(): var {
 		return {
 			wallFadeDuration: background.wallFadeDuration,
-			enabled: background.enabled
+			enabled: background.enabled,
+			alignX: background.alignX,
+			sourceClipX: background.sourceClipX,
+			sourceClipY: background.sourceClipY,
+			sourceClipW: background.sourceClipW,
+			sourceClipH: background.sourceClipH,
+			alignY: background.alignY,
+			zoom: background.zoom
 		};
 	}
 
 	function serializeBar(): var {
 		return {
 			autoHide: barConfig.autoHide,
+			hideWhenNotif: barConfig.hideWhenNotif,
 			rounding: barConfig.rounding,
 			border: barConfig.border,
+			smoothing: barConfig.smoothing,
 			height: barConfig.height,
+			tray: {
+				trayIconSize: barConfig.tray.trayIconSize
+			},
 			popouts: {
 				tray: barConfig.popouts.tray,
 				audio: barConfig.popouts.audio,
@@ -102,7 +116,12 @@ Singleton {
 
 	function serializeColors(): var {
 		return {
-			schemeType: colors.schemeType
+			schemeType: colors.schemeType,
+			presets: {
+				name: colors.presets.name,
+				variant: colors.presets.variant,
+				accent: colors.presets.accent
+			}
 		};
 	}
 
@@ -121,7 +140,8 @@ Singleton {
 			background: serializeBackground(),
 			launcher: serializeLauncher(),
 			colors: serializeColors(),
-			dock: serializeDock()
+			dock: serializeDock(),
+			screenshot: serializeScreenshot()
 		};
 	}
 
@@ -172,11 +192,16 @@ Singleton {
 		return {
 			logo: general.logo,
 			wallpaperPath: general.wallpaperPath,
-			username: general.username,
 			desktopIcons: general.desktopIcons,
+			dateFormat: general.dateFormat,
 			color: {
 				mode: general.color.mode,
 				smart: general.color.smart,
+				scheduleDark: general.color.scheduleDark,
+				scheduleHyprsunset: general.color.scheduleHyprsunset,
+				scheduleHyprsunsetStart: general.color.scheduleHyprsunsetStart,
+				hyprsunsetTemp: general.color.hyprsunsetTemp,
+				scheduleHyprsunsetEnd: general.color.scheduleHyprsunsetEnd,
 				schemeGeneration: general.color.schemeGeneration,
 				scheduleDarkStart: general.color.scheduleDarkStart,
 				scheduleDarkEnd: general.color.scheduleDarkEnd,
@@ -190,6 +215,10 @@ Singleton {
 			},
 			idle: {
 				timeouts: general.idle.timeouts
+			},
+			battery: {
+				popupThresholds: general.battery.popupThresholds,
+				critPerc: general.battery.critPerc
 			}
 		};
 	}
@@ -198,6 +227,7 @@ Singleton {
 		return {
 			maxAppsShown: launcher.maxAppsShown,
 			maxWallpapers: launcher.maxWallpapers,
+			uwsm: launcher.uwsm,
 			actionPrefix: launcher.actionPrefix,
 			specialPrefix: launcher.specialPrefix,
 			useFuzzy: {
@@ -221,6 +251,8 @@ Singleton {
 		return {
 			recolorLogo: lock.recolorLogo,
 			enableFprint: lock.enableFprint,
+			showNotifContent: lock.showNotifContent,
+			showNotifIcon: lock.showNotifIcon,
 			maxFprintTries: lock.maxFprintTries,
 			blurAmount: lock.blurAmount,
 			sizes: {
@@ -262,9 +294,24 @@ Singleton {
 		};
 	}
 
+	function serializeScreenshot(): var {
+		return {
+			enable_pp: screenshot.enable_pp,
+			mode: screenshot.mode,
+			radius: screenshot.radius,
+			shadow: screenshot.shadow,
+			rounding: screenshot.rounding,
+			shadow_blur: screenshot.shadow_blur,
+			shadow_color: screenshot.shadow_color,
+			shadow_offset_x: screenshot.shadow_offset_x,
+			shadow_offset_y: screenshot.shadow_offset_y
+		};
+	}
+
 	function serializeServices(): var {
 		return {
 			weatherLocation: services.weatherLocation,
+			updates: services.updates,
 			useFahrenheit: services.useFahrenheit,
 			ddcutilService: services.ddcutilService,
 			useTwelveHourClock: services.useTwelveHourClock,
@@ -317,7 +364,6 @@ Singleton {
 
 	ElapsedTimer {
 		id: timer
-
 	}
 
 	Timer {
@@ -414,6 +460,8 @@ Singleton {
 			property Osd osd: Osd {
 			}
 			property Overview overview: Overview {
+			}
+			property Screenshot screenshot: Screenshot {
 			}
 			property Services services: Services {
 			}
