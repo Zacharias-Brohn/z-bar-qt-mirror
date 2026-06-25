@@ -31,6 +31,12 @@ static float cpuSmoothstep(float edge0, float edge1, float x) {
 	return t * t * (3.0f - 2.0f * t);
 }
 
+static float cornerFillFactor(float sd, float smoothFactor) {
+	const float outside = cpuSmoothstep(0.0f, smoothFactor, sd);
+	const float inside = cpuSmoothstep(0.0f, -smoothFactor, sd);
+	return std::max(outside, inside);
+}
+
 BlobShape::BlobShape(QQuickItem* parent)
 	: QQuickItem(parent) {
 	setFlag(ItemHasContents);
@@ -70,19 +76,11 @@ void BlobShape::geometryChange(const QRectF& newGeometry, const QRectF& oldGeome
 	if (m_group) {
 		m_pendingDx += static_cast<float>(newGeometry.x() - oldGeometry.x());
 		m_pendingDy += static_cast<float>(newGeometry.y() - oldGeometry.y());
-		m_pendingDw += static_cast<float>(newGeometry.width() - oldGeometry.width());
-		m_pendingDh += static_cast<float>(newGeometry.height() - oldGeometry.height());
-
-		const float deformMag = std::abs(m_deformMatrix(0, 0) - 1.0f) + std::abs(m_deformMatrix(0, 1)) +
-		                        std::abs(m_deformMatrix(1, 0)) + std::abs(m_deformMatrix(1, 1) - 1.0f);
-		const float syncThreshold = deformMag > 0.001f ? 0.05f : 0.5f;
-
-		if (std::abs(m_pendingDx) > syncThreshold || std::abs(m_pendingDy) > syncThreshold ||
-		    std::abs(m_pendingDw) > syncThreshold || std::abs(m_pendingDh) > syncThreshold) {
+		const auto dw = std::abs(newGeometry.width() - oldGeometry.width());
+		const auto dh = std::abs(newGeometry.height() - oldGeometry.height());
+		if (std::abs(m_pendingDx) > 0.5f || std::abs(m_pendingDy) > 0.5f || dw > 0.5 || dh > 0.5) {
 			m_pendingDx = 0;
 			m_pendingDy = 0;
-			m_pendingDw = 0;
-			m_pendingDh = 0;
 			m_group->markShapeDirty(this);
 		}
 	}
@@ -281,10 +279,12 @@ void BlobShape::updatePolish() {
 
 	const float smoothFactor = pad;
 	constexpr float minR = 2.0f;
+	const bool cornerFill = m_group->cornerFill();
 	const auto rectCount = m_cachedRects.size();
 	for (qsizetype i = 0; i < rectCount; ++i) {
 		auto& ri = m_cachedRects[i];
 		const int riExcludeMask = ri.excludeMask;
+		BlobShape* const si = rectShapes[i];
 		float fTr = 1.0f, fBr = 1.0f, fBl = 1.0f, fTl = 1.0f;
 
 		const float cTrX = ri.cx + ri.hw, cTrY = ri.cy - ri.hh;
@@ -292,19 +292,26 @@ void BlobShape::updatePolish() {
 		const float cBlX = ri.cx - ri.hw, cBlY = ri.cy + ri.hh;
 		const float cTlX = ri.cx - ri.hw, cTlY = ri.cy - ri.hh;
 
-		for (qsizetype j = 0; j < rectCount; ++j) {
+		for (qsizetype j = 0; cornerFill && j < rectCount; ++j) {
 			if (j == i)
 				continue;
 			if (riExcludeMask & (1 << j))
 				continue;
+			BlobShape* const sj = rectShapes[j];
+			if (si->isCornerExcluded(sj) || sj->isCornerExcluded(si))
+				continue;
 			const auto& rj = m_cachedRects[j];
-			fTr = std::min(fTr, cpuSmoothstep(0.0f, smoothFactor, cpuSdBox(cTrX, cTrY, rj.cx, rj.cy, rj.hw, rj.hh)));
-			fBr = std::min(fBr, cpuSmoothstep(0.0f, smoothFactor, cpuSdBox(cBrX, cBrY, rj.cx, rj.cy, rj.hw, rj.hh)));
-			fBl = std::min(fBl, cpuSmoothstep(0.0f, smoothFactor, cpuSdBox(cBlX, cBlY, rj.cx, rj.cy, rj.hw, rj.hh)));
-			fTl = std::min(fTl, cpuSmoothstep(0.0f, smoothFactor, cpuSdBox(cTlX, cTlY, rj.cx, rj.cy, rj.hw, rj.hh)));
+			const float sdTr = cpuSdBox(cTrX, cTrY, rj.cx, rj.cy, rj.hw, rj.hh);
+			const float sdBr = cpuSdBox(cBrX, cBrY, rj.cx, rj.cy, rj.hw, rj.hh);
+			const float sdBl = cpuSdBox(cBlX, cBlY, rj.cx, rj.cy, rj.hw, rj.hh);
+			const float sdTl = cpuSdBox(cTlX, cTlY, rj.cx, rj.cy, rj.hw, rj.hh);
+			fTr = std::min(fTr, cornerFillFactor(sdTr, smoothFactor));
+			fBr = std::min(fBr, cornerFillFactor(sdBr, smoothFactor));
+			fBl = std::min(fBl, cornerFillFactor(sdBl, smoothFactor));
+			fTl = std::min(fTl, cornerFillFactor(sdTl, smoothFactor));
 		}
 
-		if (m_cachedHasInverted) {
+		if (cornerFill && m_cachedHasInverted) {
 			const float icx = m_cachedInvertedInner[0];
 			const float icy = m_cachedInvertedInner[1];
 			const float ihw = m_cachedInvertedInner[2];

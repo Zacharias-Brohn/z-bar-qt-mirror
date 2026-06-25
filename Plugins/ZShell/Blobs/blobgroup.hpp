@@ -13,6 +13,7 @@ Q_OBJECT
 QML_ELEMENT
 Q_PROPERTY(qreal smoothing READ smoothing WRITE setSmoothing NOTIFY smoothingChanged)
 Q_PROPERTY(QColor color READ color WRITE setColor NOTIFY colorChanged)
+Q_PROPERTY(bool cornerFill READ cornerFill WRITE setCornerFill NOTIFY cornerFillChanged)
 
 public:
 explicit BlobGroup(QObject* parent = nullptr);
@@ -29,6 +30,12 @@ void setSmoothing(qreal s);
 }
 
 void setColor(const QColor& c);
+
+[[nodiscard]] bool cornerFill() const {
+	return m_cornerFill;
+}
+
+void setCornerFill(bool e);
 
 void addShape(BlobShape* shape);
 void removeShape(BlobShape* shape);
@@ -51,10 +58,12 @@ void ensurePhysicsUpdated();
 signals:
 void smoothingChanged();
 void colorChanged();
+void cornerFillChanged();
 
 private:
 qreal m_smoothing = 32.0;
 QColor m_color{ 0x44, 0x88, 0xff };
+bool m_cornerFill = true;
 QList<BlobShape*> m_shapes;
 BlobInvertedRect* m_invertedRect = nullptr;
 bool m_physicsUpdated = false;

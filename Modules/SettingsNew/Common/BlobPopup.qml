@@ -30,6 +30,7 @@ Item {
 		id: blobGroup
 
 		color: DynamicColors.palette.m3surfaceContainerHighest
+		cornerFill: false
 		smoothing: Appearance.rounding.medium
 
 		Behavior on color {

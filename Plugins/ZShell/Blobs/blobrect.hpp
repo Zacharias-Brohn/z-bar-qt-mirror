@@ -14,6 +14,7 @@ Q_PROPERTY(qreal stiffness READ stiffness WRITE setStiffness NOTIFY stiffnessCha
 Q_PROPERTY(qreal damping READ damping WRITE setDamping NOTIFY dampingChanged)
 Q_PROPERTY(qreal deformScale READ deformScale WRITE setDeformScale NOTIFY deformScaleChanged)
 Q_PROPERTY(QQmlListProperty<BlobRect> exclude READ exclude NOTIFY excludeChanged)
+Q_PROPERTY(QQmlListProperty<BlobRect> excludeCorners READ excludeCorners NOTIFY excludeCornersChanged)
 Q_PROPERTY(qreal topLeftRadius READ topLeftRadius WRITE setTopLeftRadius NOTIFY topLeftRadiusChanged)
 Q_PROPERTY(qreal topRightRadius READ topRightRadius WRITE setTopRightRadius NOTIFY topRightRadiusChanged)
 Q_PROPERTY(qreal bottomLeftRadius READ bottomLeftRadius WRITE setBottomLeftRadius NOTIFY bottomLeftRadiusChanged)
@@ -58,8 +59,10 @@ void setDeformScale(qreal s) {
 }
 
 QQmlListProperty<BlobRect> exclude();
+QQmlListProperty<BlobRect> excludeCorners();
 
 bool isExcluded(const BlobShape* other) const override;
+bool isCornerExcluded(const BlobShape* other) const override;
 void cornerRadii(float out[4]) const override;
 
 [[nodiscard]] qreal topLeftRadius() const {
@@ -91,6 +94,7 @@ void stiffnessChanged();
 void dampingChanged();
 void deformScaleChanged();
 void excludeChanged();
+void excludeCornersChanged();
 void topLeftRadiusChanged();
 void topRightRadiusChanged();
 void bottomLeftRadiusChanged();
@@ -130,6 +134,7 @@ qreal m_bottomLeftRadius = -1;
 qreal m_bottomRightRadius = -1;
 
 QList<QPointer<BlobRect> > m_exclude;
+QList<QPointer<BlobRect> > m_excludeCorners;
 
 static void excludeAppend(QQmlListProperty<BlobRect>* prop, BlobRect* rect);
 static qsizetype excludeCount(QQmlListProperty<BlobRect>* prop);
@@ -137,4 +142,11 @@ static BlobRect* excludeAt(QQmlListProperty<BlobRect>* prop, qsizetype index);
 static void excludeClear(QQmlListProperty<BlobRect>* prop);
 static void excludeReplace(QQmlListProperty<BlobRect>* prop, qsizetype index, BlobRect* rect);
 static void excludeRemoveLast(QQmlListProperty<BlobRect>* prop);
+
+static void excludeCornersAppend(QQmlListProperty<BlobRect>* prop, BlobRect* rect);
+static qsizetype excludeCornersCount(QQmlListProperty<BlobRect>* prop);
+static BlobRect* excludeCornersAt(QQmlListProperty<BlobRect>* prop, qsizetype index);
+static void excludeCornersClear(QQmlListProperty<BlobRect>* prop);
+static void excludeCornersReplace(QQmlListProperty<BlobRect>* prop, qsizetype index, BlobRect* rect);
+static void excludeCornersRemoveLast(QQmlListProperty<BlobRect>* prop);
 };
