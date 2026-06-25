@@ -136,7 +136,7 @@ RowLayout {
 
 			AudioWidget {
 				Layout.fillHeight: true
-				Layout.rightMargin: hasContent ? Appearance.spacing.extraSmall : 0
+				Layout.rightMargin: hasContent ? Appearance.spacing.extraSmall / 2 : 0
 				objectName: "audioWidget"
 
 				Behavior on Layout.rightMargin {
