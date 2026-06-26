@@ -73,6 +73,7 @@ CustomRect {
 			CustomSplitButton {
 				active: menuItems.find(m => root.props.recordingMode === m.icon + m.text) ?? menuItems[0]
 				enabled: !Recorder.running
+				menuOnTop: true
 
 				menuItems: [
 					MenuItem {
