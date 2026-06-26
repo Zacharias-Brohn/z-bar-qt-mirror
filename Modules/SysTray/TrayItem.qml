@@ -45,13 +45,13 @@ Item {
 	CustomRect {
 		anchors.fill: parent
 		anchors.margins: 3
-		color: Config.general.color.scheduleDark && root.current ? DynamicColors.palette.m3primary : "transparent"
+		color: icon.layer.enabled && root.current ? DynamicColors.palette.m3primary : "transparent"
 		radius: Appearance.rounding.full
 
 		StateLayer {
 			acceptedButtons: Qt.LeftButton | Qt.RightButton
 			anchors.fill: parent
-			color: Config.general.color.scheduleDark && root.current ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3onSurface
+			color: icon.layer.enabled && root.current ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3onSurface
 
 			onClicked: mouse => {
 				if (mouse.button === Qt.LeftButton) {

@@ -44,7 +44,7 @@ CustomWindow {
 	readonly property bool hasFullscreenOnNormalWs: monitor?.activeWorkspace?.toplevels.values.some(t => t.lastIpcObject.fullscreen > 1) ?? false
 	readonly property bool hasSpecialWorkspace: (monitor?.lastIpcObject.specialWorkspace?.name.length ?? 0) > 0
 	readonly property alias interactionWrapper: interactions
-	readonly property alias menuRegion: menuPopoutRegion
+	readonly property alias menuRegion: regions.menuPopoutRegion
 	readonly property HyprlandMonitor monitor: Hypr.monitorFor(screen)
 	property var root: Quickshell.shellDir
 	readonly property real sdfBorderOffset: 2 * fsTransitionProg
@@ -56,7 +56,7 @@ CustomWindow {
 	WlrLayershell.layer: (fsTransitionProg > 0 && Config.general.showOverFullscreen) || (hasSpecialWorkspace && hasFullscreenOnNormalWs) ? WlrLayer.Overlay : WlrLayer.Top
 	color: "transparent"
 	contentItem.focus: true
-	mask: visibilities.isDrawing ? null : (hasFullscreen ? emptyRegion : region)
+	mask: visibilities.isDrawing ? null : (hasFullscreen ? emptyRegion : regions)
 	name: "Bar"
 
 	Behavior on fsTransitionProg {
@@ -94,29 +94,27 @@ CustomWindow {
 	}
 
 	Region {
-		id: menuPopoutRegion
-
-		intersection: Intersection.Subtract
-	}
-
-	Region {
 		id: emptyRegion
 
 		height: panels.notifications.height
 		width: panels.notifications.width
 		x: panels.notifications.x + root.borderThickness
 		y: panels.notifications.y + bar.implicitHeight
+
+		Region {
+			height: panels.osd.height
+			width: panels.osdWrapper.width * (1 - panels.osd.offsetScale) + root.borderThickness
+			x: root.width - width
+			y: panels.osdWrapper.y + bar.implicitHeight
+		}
 	}
 
-	Region {
-		id: region
+	Regions {
+		id: regions
 
-		height: root.height - bar.implicitHeight - root.borderThickness - root.dragMaskPadding * 2
-		intersection: Intersection.Xor
-		regions: [...popoutRegions.instances, menuPopoutRegion]
-		width: root.width - root.borderThickness * 2 - root.dragMaskPadding * 2
-		x: root.borderThickness + root.dragMaskPadding
-		y: bar.implicitHeight + root.dragMaskPadding
+		bar: bar
+		panels: panels
+		win: root
 	}
 
 	anchors {
@@ -124,22 +122,6 @@ CustomWindow {
 		left: true
 		right: true
 		top: true
-	}
-
-	Variants {
-		id: popoutRegions
-
-		model: panels.children
-
-		Region {
-			required property Item modelData
-
-			height: modelData.height
-			intersection: Intersection.Subtract
-			width: modelData.width
-			x: modelData.x + root.borderThickness
-			y: modelData.y + bar.implicitHeight
-		}
 	}
 
 	HyprlandFocusGrab {
