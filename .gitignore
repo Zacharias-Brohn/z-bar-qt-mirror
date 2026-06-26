@@ -15,3 +15,4 @@ dist/
 **/target/
 **/test-plugins/
 **/Charts/
+**/network-dev/
