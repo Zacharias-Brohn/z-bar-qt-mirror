@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <qnamespace.h>
 
 BlobRect::BlobRect(QQuickItem* parent)
 	: BlobShape(parent) {
@@ -27,6 +28,17 @@ void BlobRect::updatePolish() {
 			emit rawDeformMatrixChanged();
 			updateCenteredDeformMatrix();
 			m_physicsActive = false;
+
+			if (m_group) {
+				QMetaObject::invokeMethod(
+					this,
+					[this]() {
+					if (m_group)
+						m_group->markDirty();
+				},
+					Qt::QueuedConnection
+					);
+			}
 		} else {
 			QMetaObject::invokeMethod(
 				this,
@@ -289,9 +301,20 @@ void BlobRect::checkAtRest(float speed) {
 		m_dmVel00 = 0.0f;
 		m_dmVel01 = 0.0f;
 		m_dmVel11 = 0.0f;
-		m_deformMatrix = QMatrix4x4(); // identity
+		m_deformMatrix = QMatrix4x4();
 		emit rawDeformMatrixChanged();
 		updateCenteredDeformMatrix();
 		m_physicsActive = false;
+
+		if (m_group) {
+			QMetaObject::invokeMethod(
+				this,
+				[this]() {
+				if (m_group)
+					m_group->markDirty();
+			},
+				Qt::QueuedConnection
+				);
+		}
 	}
 }

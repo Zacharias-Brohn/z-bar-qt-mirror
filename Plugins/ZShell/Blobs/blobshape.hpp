@@ -84,6 +84,8 @@ float m_cachedPaddedX = 0;
 float m_cachedPaddedY = 0;
 float m_cachedPaddedW = 0;
 float m_cachedPaddedH = 0;
+float m_pendingDw = 0;
+float m_pendingDh = 0;
 QRectF m_localPaddedRect;
 QVector<BlobRectData> m_cachedRects;
 int m_cachedMyIndex = -2;

@@ -76,9 +76,15 @@ void BlobShape::geometryChange(const QRectF& newGeometry, const QRectF& oldGeome
 	if (m_group) {
 		m_pendingDx += static_cast<float>(newGeometry.x() - oldGeometry.x());
 		m_pendingDy += static_cast<float>(newGeometry.y() - oldGeometry.y());
-		const auto dw = std::abs(newGeometry.width() - oldGeometry.width());
-		const auto dh = std::abs(newGeometry.height() - oldGeometry.height());
-		if (std::abs(m_pendingDx) > 0.5f || std::abs(m_pendingDy) > 0.5f || dw > 0.5 || dh > 0.5) {
+		m_pendingDw += static_cast<float>(newGeometry.width() - oldGeometry.width());
+		m_pendingDh += static_cast<float>(newGeometry.height() - oldGeometry.height());
+
+		const float deformMag = std::abs(m_deformMatrix(0, 0) - 1.0f) + std::abs(m_deformMatrix(0, 1)) +
+		                        std::abs(m_deformMatrix(1, 0)) + std::abs(m_deformMatrix(1, 1) - 1.0f);
+		const float syncThreshold = deformMag > 0.001f ? 0.05f : 0.5f;
+
+		if (std::abs(m_pendingDx) > syncThreshold || std::abs(m_pendingDy) > syncThreshold ||
+		    std::abs(m_pendingDw) > syncThreshold || std::abs(m_pendingDh) > syncThreshold) {
 			m_pendingDx = 0;
 			m_pendingDy = 0;
 			m_group->markShapeDirty(this);
