@@ -60,5 +60,11 @@ Singleton {
 			description: qsTr("Poll intervals, audio and brightness increments"),
 			category: "shell"
 		},
+		{
+			name: qsTr("About"),
+			icon: "info",
+			description: qsTr("System information"),
+			category: "about"
+		},
 	]
 }

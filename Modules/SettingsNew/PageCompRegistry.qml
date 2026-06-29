@@ -150,6 +150,16 @@ QtObject {
 					}
 				}
 			}
+		},
+
+		// About
+		Component {
+			StackPage {
+				Component {
+					AboutPage {
+					}
+				}
+			}
 		}
 	]
 	readonly property Component placeholderComp: Component {

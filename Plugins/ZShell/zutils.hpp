@@ -12,6 +12,9 @@ Q_OBJECT
 QML_ELEMENT
 QML_SINGLETON
 
+Q_PROPERTY(QString version READ version CONSTANT)
+Q_PROPERTY(QString qtVersion READ qtVersion CONSTANT)
+
 public:
 // clang-format off
 Q_INVOKABLE void saveItem(QQuickItem* target, const QUrl& path);
