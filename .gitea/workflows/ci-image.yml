@@ -1,0 +1,22 @@
+name: Rebuild CI Image
+
+on:
+    schedule:
+        - cron: '0 6 * * 1'
+    workflow_dispatch:
+
+jobs:
+    build:
+        runs-on: alpine
+        env:
+            IMAGE: git.aramjonghu.nl/aramjonghu/zshell-ci:latest
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Build image
+              run: docker build -t "$IMAGE" -f ci/Dockerfile .
+
+            - name: Push image
+              run: docker push "$IMAGE"

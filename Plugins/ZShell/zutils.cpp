@@ -3,9 +3,11 @@
 #include <QtConcurrent/qtconcurrentrun.h>
 #include <QtQuick/qquickitemgrabresult.h>
 #include <QtQuick/qquickwindow.h>
+#include <qcontainerfwd.h>
 #include <qdir.h>
 #include <qfileinfo.h>
 #include <qfuturewatcher.h>
+#include <qjsprimitivevalue.h>
 #include <qloggingcategory.h>
 #include <qqmlengine.h>
 
@@ -140,6 +142,18 @@ QString ZUtils::toLocalFile(const QUrl& url) {
 
 qreal ZUtils::clamp(qreal value, qreal min, qreal max) {
 	return qBound(min, value, max);
+}
+
+#ifndef ZSHELL_VERSION
+#define ZSHELL_VERSION ""
+#endif
+
+QString ZUtils::version() const {
+	return QStringLiteral(ZSHELL_VERSION);
+}
+
+QString ZUtils::qtVersion() const {
+	return QStringLiteral(QT_VERSION_STR);
 }
 
 } // namespace ZShell
