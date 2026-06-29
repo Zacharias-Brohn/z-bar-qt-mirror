@@ -20,6 +20,9 @@ jobs:
             - name: Install Docker CLI
               run: apk add --no-cache docker-cli
 
+            - name: Login to registry
+              run: echo "${{ secrets.REGISTRY_TOKEN }}" | docker login git.aramjonghu.nl --username aramjonghu --password-stdin
+
             - name: Build image
               run: docker build -t "$IMAGE" -f ci/Dockerfile .
 
