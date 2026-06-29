@@ -1,0 +1,29 @@
+name: C++
+
+on:
+    pull_request:
+
+jobs:
+    build:
+        runs-on: alpine
+        container:
+            image: git.aramjonghu.nl/aramjonghu/zshell-ci:latest
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Configure
+              run: cmake -B build -G Ninja -DENABLE_MODULES=plugin -DCMAKE_BUILD_TYPE=Release
+
+            - name: Build
+              run: ninja -C build
+
+            - name: clang-tidy
+              continue-on-error: true
+              run: |
+                  set -o pipefail
+                  run-clang-tidy -p build -j $(nproc) -header-filter="Plugins/.*" 2>&1 | \
+                    grep -v 'Suppressed\|non-user\|non-system\|unknown argument.*mno-direct'
