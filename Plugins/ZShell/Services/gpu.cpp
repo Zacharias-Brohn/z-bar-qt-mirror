@@ -17,26 +17,31 @@ namespace ZShell::services {
 namespace {
 
 constexpr const char* kTypeDetectScript =
-	"if command -v nvidia-smi >/dev/null 2>&1 && nvidia-smi -L >/dev/null 2>&1; then echo NVIDIA;"
-	" elif ls /sys/class/drm/card*/device/gpu_busy_percent 2>/dev/null | grep -q .; then echo GENERIC;"
+	"if command -v nvidia-smi >/dev/null 2>&1 && nvidia-smi -L >/dev/null "
+	"2>&1; then echo NVIDIA;"
+	" elif ls /sys/class/drm/card*/device/gpu_busy_percent 2>/dev/null | grep "
+	"-q .; then echo GENERIC;"
 	" else echo NONE; fi";
 
-constexpr const char* kNameDetectScript = "nvidia-smi --query-gpu=name --format=csv,noheader 2>/dev/null"
-                                          " || glxinfo -B 2>/dev/null | grep 'Device:' | cut -d':' -f2 | cut -d'(' -f1"
-                                          " || lspci 2>/dev/null | grep -i 'vga\\|3d controller\\|display' | head -1";
+constexpr const char* kNameDetectScript =
+	"nvidia-smi --query-gpu=name --format=csv,noheader 2>/dev/null"
+	" || glxinfo -B 2>/dev/null | grep 'Device:' | cut -d':' -f2 | cut -d'(' "
+	"-f1"
+	" || lspci 2>/dev/null | grep -i 'vga\\|3d controller\\|display' | head -1";
 
 } // namespace
 
-Gpu::Gpu(QObject* parent)
-	: TickingService(parent) {
-	QString configPath = QDir::homePath() + QStringLiteral("/.config/zshell/config.json");
+Gpu::Gpu(QObject* parent) : TickingService(parent) {
+	QString configPath =
+		QDir::homePath() + QStringLiteral("/.config/zshell/config.json");
 
 	auto reloadConfig = [this, configPath]() {
 		QFile file(configPath);
 		if (file.open(QIODevice::ReadOnly)) {
 			QJsonDocument doc = QJsonDocument::fromJson(file.readAll());
 			if (!doc.isNull()) {
-				QJsonObject services = doc.object().value("services").toObject();
+				QJsonObject services =
+					doc.object().value("services").toObject();
 				setUserType(parseType(services.value("gpuType").toString()));
 			}
 		}
@@ -46,18 +51,25 @@ Gpu::Gpu(QObject* parent)
 
 	static QFileSystemWatcher* watcher = new QFileSystemWatcher();
 	if (!watcher->files().contains(configPath)) {
-		QObject::connect(watcher, &QFileSystemWatcher::fileChanged, this, [this, configPath]() {
-			QTimer::singleShot(100, this, [this, configPath]() {
-				QFile file(configPath);
-				if (file.exists()) {
-					QJsonDocument doc = QJsonDocument::fromJson(file.readAll());
-					if (!doc.isNull()) {
-						QJsonObject services = doc.object().value("services").toObject();
-						setUserType(parseType(services.value("gpuType").toString()));
+		QObject::connect(
+			watcher,
+			&QFileSystemWatcher::fileChanged,
+			this,
+			[this, configPath]() {
+				QTimer::singleShot(100, this, [this, configPath]() {
+					QFile file(configPath);
+					if (file.exists()) {
+						QJsonDocument doc =
+							QJsonDocument::fromJson(file.readAll());
+						if (!doc.isNull()) {
+							QJsonObject services =
+								doc.object().value("services").toObject();
+							setUserType(parseType(
+								services.value("gpuType").toString()));
+						}
 					}
-				}
+				});
 			});
-		});
 		watcher->addPath(configPath);
 	}
 
@@ -134,13 +146,13 @@ void Gpu::setName(QString value) {
 }
 
 void Gpu::setMemoryUsed(qreal value) {
-	if (m_memoryUsed == value) return;
+	if (std::abs(m_memoryUsed - value) < 0.001) return;
 	m_memoryUsed = value;
 	Q_EMIT memoryUsedChanged();
 }
 
 void Gpu::setMemoryTotal(qreal value) {
-	if (m_memoryTotal == value) return;
+	if (std::abs(m_memoryTotal - value) < 0.001) return;
 	m_memoryTotal = value;
 	Q_EMIT memoryTotalChanged();
 }
@@ -169,15 +181,22 @@ void Gpu::detectTypeOnce() {
 		return;
 	}
 	m_typeProc = new QProcess(this);
-	QObject::connect(m_typeProc, &QProcess::finished, this, [this](int, QProcess::ExitStatus) {
-			const QByteArray out = m_typeProc->readAllStandardOutput().trimmed();
+	QObject::connect(
+		m_typeProc,
+		&QProcess::finished,
+		this,
+		[this](int, QProcess::ExitStatus) {
+			const QByteArray out =
+				m_typeProc->readAllStandardOutput().trimmed();
 			if (!out.isEmpty()) {
 				setAutoType(parseType(QString::fromLatin1(out)));
 			}
 			m_typeProc->deleteLater();
 			m_typeProc = nullptr;
 		});
-	m_typeProc->start(QStringLiteral("sh"), { QStringLiteral("-c"), QString::fromLatin1(kTypeDetectScript) });
+	m_typeProc->start(
+		QStringLiteral("sh"),
+		{QStringLiteral("-c"), QString::fromLatin1(kTypeDetectScript)});
 }
 
 void Gpu::detectNameOnce() {
@@ -185,21 +204,30 @@ void Gpu::detectNameOnce() {
 		return;
 	}
 	m_nameProc = new QProcess(this);
-	QObject::connect(m_nameProc, &QProcess::finished, this, [this](int, QProcess::ExitStatus) {
-			const QString output = QString::fromUtf8(m_nameProc->readAllStandardOutput()).trimmed();
+	QObject::connect(
+		m_nameProc,
+		&QProcess::finished,
+		this,
+		[this](int, QProcess::ExitStatus) {
+			const QString output =
+				QString::fromUtf8(m_nameProc->readAllStandardOutput()).trimmed();
 			if (!output.isEmpty()) {
 				const QString lower = output.toLower();
-				if (lower.contains(QStringLiteral("nvidia")) || lower.contains(QStringLiteral("geforce")) ||
-				    lower.contains(QStringLiteral("rtx")) || lower.contains(QStringLiteral("gtx")) ||
-				    lower.contains(QStringLiteral("rx"))) {
+				if (lower.contains(QStringLiteral("nvidia")) ||
+					lower.contains(QStringLiteral("geforce")) ||
+					lower.contains(QStringLiteral("rtx")) ||
+					lower.contains(QStringLiteral("gtx")) ||
+					lower.contains(QStringLiteral("rx"))) {
 					setName(cleanName(output));
 				} else {
-					static const QRegularExpression bracketRe(QStringLiteral("\\[([^\\]]+)\\][^\\[]*$"));
+					static const QRegularExpression bracketRe(
+						QStringLiteral("\\[([^\\]]+)\\][^\\[]*$"));
 					const auto bracket = bracketRe.match(output);
 					if (bracket.hasMatch()) {
 						setName(cleanName(bracket.captured(1)));
 					} else {
-						static const QRegularExpression colonRe(QStringLiteral(":\\s*(.+)"));
+						static const QRegularExpression colonRe(
+							QStringLiteral(":\\s*(.+)"));
 						const auto colon = colonRe.match(output);
 						if (colon.hasMatch()) {
 							setName(cleanName(colon.captured(1)));
@@ -210,17 +238,21 @@ void Gpu::detectNameOnce() {
 			m_nameProc->deleteLater();
 			m_nameProc = nullptr;
 		});
-	m_nameProc->start(QStringLiteral("sh"), { QStringLiteral("-c"), QString::fromLatin1(kNameDetectScript) });
+	m_nameProc->start(
+		QStringLiteral("sh"),
+		{QStringLiteral("-c"), QString::fromLatin1(kNameDetectScript)});
 }
 
 void Gpu::readGenericUsage() {
-	const QStringList paths =
-		QDir(QStringLiteral("/sys/class/drm"))
-		.entryList(QStringList() << QStringLiteral("card*"), QDir::Dirs | QDir::NoDotAndDotDot);
+	const QStringList paths = QDir(QStringLiteral("/sys/class/drm"))
+								  .entryList(
+									  QStringList() << QStringLiteral("card*"),
+									  QDir::Dirs | QDir::NoDotAndDotDot);
 	qreal sum = 0.0;
 	int count = 0;
 	for (const QString& card : paths) {
-		QFile f(QStringLiteral("/sys/class/drm/%1/device/gpu_busy_percent").arg(card));
+		QFile f(QStringLiteral("/sys/class/drm/%1/device/gpu_busy_percent")
+					.arg(card));
 		if (!f.open(QIODevice::ReadOnly | QIODevice::Text)) {
 			continue;
 		}
@@ -244,57 +276,65 @@ void Gpu::startNvidiaUsage() {
 		return;
 	}
 	m_nvidiaProc = new QProcess(this);
-	QObject::connect(m_nvidiaProc, &QProcess::readyReadStandardOutput, this, [this]() {
-		while (m_nvidiaProc->canReadLine()) {
-			const QByteArray out = m_nvidiaProc->readLine();
-			const QString output = QString::fromUtf8(out).trimmed();
-			if (output.isEmpty())
-				continue;
+	QObject::connect(
+		m_nvidiaProc, &QProcess::readyReadStandardOutput, this, [this]() {
+			while (m_nvidiaProc->canReadLine()) {
+				const QByteArray out = m_nvidiaProc->readLine();
+				const QString output = QString::fromUtf8(out).trimmed();
+				if (output.isEmpty()) continue;
 
-			const QList<QString> parts = output.split(',');
-			if (parts.size() < 4)
-				return;
+				const QList<QString> parts = output.split(',');
+				if (parts.size() < 4) return;
 
-			bool ok1 = false;
-			bool ok2 = false;
-			bool ok3 = false;
-			bool ok4 = false;
-			const qreal usage = parts.at(0).trimmed().toDouble(&ok1) / 100.0;
-			const qreal temp = parts.at(1).trimmed().toDouble(&ok2);
-			const qreal memUsed = parts.at(2).trimmed().toDouble(&ok3);
-			const qreal memTotal = parts.at(3).trimmed().toDouble(&ok4);
+				bool ok1 = false;
+				bool ok2 = false;
+				bool ok3 = false;
+				bool ok4 = false;
+				const qreal usage =
+					parts.at(0).trimmed().toDouble(&ok1) / 100.0;
+				const qreal temp = parts.at(1).trimmed().toDouble(&ok2);
+				const qreal memUsed = parts.at(2).trimmed().toDouble(&ok3);
+				const qreal memTotal = parts.at(3).trimmed().toDouble(&ok4);
 
-			if (ok1 && std::abs(usage - m_percentage) > 0.0001) {
-				m_percentage = usage;
-				Q_EMIT percentageChanged();
+				if (ok1 && std::abs(usage - m_percentage) > 0.0001) {
+					m_percentage = usage;
+					Q_EMIT percentageChanged();
+				}
+				if (ok2 && std::abs(temp - m_temperature) > 0.05) {
+					m_temperature = temp;
+					Q_EMIT temperatureChanged();
+				}
+				if (ok3) {
+					setMemoryUsed(memUsed);
+				}
+				if (ok4) {
+					setMemoryTotal(memTotal);
+				}
 			}
-			if (ok2 && std::abs(temp - m_temperature) > 0.05) {
-				m_temperature = temp;
-				Q_EMIT temperatureChanged();
-			}
-			if (ok3) {
-				setMemoryUsed(memUsed);
-			}
-			if (ok4) {
-				setMemoryTotal(memTotal);
-			}
-		}
-	});
+		});
 
 	QObject::connect(m_nvidiaProc, &QProcess::finished, this, [this]() {
 		m_nvidiaProc->deleteLater();
 		m_nvidiaProc = nullptr;
 	});
 
-	QObject::connect(m_nvidiaProc, &QProcess::errorOccurred, this, [this](QProcess::ProcessError) {
-		m_nvidiaProc->deleteLater();
-		m_nvidiaProc = nullptr;
-	});
+	QObject::connect(
+		m_nvidiaProc,
+		&QProcess::errorOccurred,
+		this,
+		[this](QProcess::ProcessError) {
+			m_nvidiaProc->deleteLater();
+			m_nvidiaProc = nullptr;
+		});
 
-	m_nvidiaProc->start(QStringLiteral("nvidia-smi"), { QStringLiteral("--query-gpu=utilization.gpu,temperature.gpu,memory.used,memory.total"),
-	                                                    QStringLiteral("--format=csv,noheader,nounits"),
-	                                                    QStringLiteral("-lms"),
-	                                                    QString::number(updateInterval()) });
+	m_nvidiaProc->start(
+		QStringLiteral("nvidia-smi"),
+		{QStringLiteral(
+			 "--query-gpu=utilization.gpu,temperature.gpu,"
+			 "memory.used,memory.total"),
+		 QStringLiteral("--format=csv,noheader,nounits"),
+		 QStringLiteral("-lms"),
+		 QString::number(updateInterval())});
 }
 
 void Gpu::readGpuTemperature() {
@@ -322,7 +362,8 @@ Gpu::Type Gpu::parseType(const QString& s) {
 
 QString Gpu::cleanName(QString s) {
 	static const QRegularExpression noise(
-		QStringLiteral("\\(R\\)|\\(TM\\)|Graphics"), QRegularExpression::CaseInsensitiveOption);
+		QStringLiteral("\\(R\\)|\\(TM\\)|Graphics"),
+		QRegularExpression::CaseInsensitiveOption);
 	static const QRegularExpression spaces(QStringLiteral("\\s+"));
 	s.replace(noise, QString());
 	s.replace(spaces, QStringLiteral(" "));
