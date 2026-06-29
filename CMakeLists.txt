@@ -1,6 +1,35 @@
 cmake_minimum_required(VERSION 3.19)
 
-project(ZShell)
+if(NOT DEFINED VERSION)
+	execute_process(
+		COMMAND git describe --tags --abbrev=0
+		WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+		OUTPUT_VARIABLE GIT_LAST_TAG
+		OUTPUT_STRIP_TRAILING_WHITESPACE
+		ERROR_QUIET
+	)
+
+	if (GIT_LAST_TAG)
+		string(REGEX REPLACE "^v" "" GIT_LAST_TAG "${GIT_LAST_TAG}")
+
+		string(REPLACE "." ";" VERSION_LIST "${GIT_LAST_TAG}")
+		list(GET VERSION_LIST 0 VERSION_MAJOR)
+		list(GET VERSION_LIST 1 VERSION_MINOR)
+
+		execute_process(
+			COMMAND git rev-list v${VERSION_MAJOR}.${VERSION_MINOR}.0..HEAD --count
+			WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+			OUTPUT_VARIABLE VERSION_PATCH
+			OUTPUT_STRIP_TRAILING_WHITESPACE
+			ERROR_QUIET
+		)
+	endif()
+endif()
+
+set(PROJECT_VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
+
+project(ZShell VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH})
+message(STATUS "ZShell version: ${PROJECT_VERSION}")
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -15,11 +44,11 @@ set(INSTALL_QSCONFDIR "etc/xdg/quickshell/zshell" CACHE STRING "Quickshell confi
 set(INSTALL_GREETERCONFDIR "etc/xdg/quickshell/zshell-greeter" CACHE STRING "Quickshell greeter install dir")
 
 add_compile_options(
-    -Wall -Wextra -Wpedantic -Wshadow -Wconversion
-    -Wold-style-cast -Wnull-dereference -Wdouble-promotion
-    -Wformat=2 -Wfloat-equal -Woverloaded-virtual
-    -Wsign-conversion -Wredundant-decls -Wswitch
-    -Wunreachable-code
+	-Wall -Wextra -Wpedantic -Wshadow -Wconversion
+	-Wold-style-cast -Wnull-dereference -Wdouble-promotion
+	-Wformat=2 -Wfloat-equal -Woverloaded-virtual
+	-Wsign-conversion -Wredundant-decls -Wswitch
+	-Wunreachable-code
 )
 
 
@@ -30,8 +59,8 @@ endif()
 
 if("shell" IN_LIST ENABLE_MODULES)
 	foreach(dir assets scripts Components Config Modules Daemons Drawers Effects Helpers Paths)
-        install(DIRECTORY ${dir} DESTINATION "${INSTALL_QSCONFDIR}")
-    endforeach()
+		install(DIRECTORY ${dir} DESTINATION "${INSTALL_QSCONFDIR}")
+	endforeach()
 
 	# Disable watching for changes
 	file(READ shell.qml SHELL_QML)

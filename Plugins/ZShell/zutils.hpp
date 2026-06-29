@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QtQuick/qquickitem.h>
+#include <qcontainerfwd.h>
 #include <qobject.h>
 #include <qqmlintegration.h>
 
@@ -26,6 +27,9 @@ Q_INVOKABLE static bool deleteFile(const QUrl& path);
 Q_INVOKABLE static QString toLocalFile(const QUrl& url);
 
 Q_INVOKABLE static qreal clamp(qreal value, qreal min, qreal max);
+
+[[nodiscard]] QString version() const;
+[[nodiscard]] QString qtVersion() const;
 };
 
 } // namespace ZShell
