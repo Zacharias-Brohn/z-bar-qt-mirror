@@ -19,7 +19,7 @@ static void drawStroke(
 
 	if (points.size() == 1) {
 		painter->beginPath();
-		painter->circle(points.front(), width * 0.5f);
+		painter->circle(points.front(), width * 0.5);
 		painter->fill();
 		return;
 	}
@@ -69,8 +69,8 @@ static void drawHoverCursor(
 		painter->fill();
 	}
 
-	const float lineWidth = 1.5f;
-	const float crosshairSize = 6.0f;
+	const qreal lineWidth = 1.5;
+	const qreal crosshairSize = 6.0;
 	const bool useDashes = penWidth > 10.0;
 
 	auto drawOutline = [&](const QColor& color, qreal width) {
@@ -81,11 +81,11 @@ static void drawHoverCursor(
 
 		if (useDashes) {
 			const int dashCount = 12;
-			const float fullAngle = 2.0f * M_PI;
-			const float dashAngle = fullAngle / dashCount * 0.5f;
-			const float gapAngle = fullAngle / dashCount * 0.5f;
+			const qreal fullAngle = 2.0 * M_PI;
+			const qreal dashAngle = fullAngle / dashCount * 0.5;
+			const qreal gapAngle = fullAngle / dashCount * 0.5;
 
-			float angle = 0.0f;
+			qreal angle = 0.0;
 			for (int i = 0; i < dashCount; ++i) {
 				painter->beginPath();
 				painter->arc(
@@ -110,8 +110,8 @@ static void drawHoverCursor(
 		painter->setLineWidth(width);
 		painter->setLineCap(QCanvasPainter::LineCap::Round);
 
-		const float inner = radius + 3.0f;
-		const float outer = radius + 3.0f + crosshairSize;
+		const qreal inner = radius + 3.0;
+		const qreal outer = radius + 3.0 + crosshairSize;
 
 		painter->beginPath();
 		painter->moveTo(point + QPointF(0, -outer));
@@ -125,8 +125,8 @@ static void drawHoverCursor(
 		painter->stroke();
 	};
 
-	drawOutline(QColor(0, 0, 0, 160), lineWidth + 1.0f);
-	drawCrosshair(QColor(0, 0, 0, 160), lineWidth + 1.0f);
+	drawOutline(QColor(0, 0, 0, 160), lineWidth + 1.0);
+	drawCrosshair(QColor(0, 0, 0, 160), lineWidth + 1.0);
 
 	drawOutline(QColor(255, 255, 255, 220), lineWidth);
 	drawCrosshair(QColor(255, 255, 255, 220), lineWidth);
