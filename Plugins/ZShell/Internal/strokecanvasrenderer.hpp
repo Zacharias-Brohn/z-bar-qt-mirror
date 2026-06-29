@@ -7,22 +7,20 @@
 namespace ZShell::internal {
 
 class StrokeCanvasRenderer final : public QCanvasPainterItemRenderer {
+	public:
+	void synchronizeData(QCanvasPainterItem* item) override;
+	void paint(QCanvasPainter* painter) override;
 
-public:
-void synchronizeData(QCanvasPainterItem *item) override;
-void paint(QCanvasPainter *painter) override;
+	private:
+	QColor m_penColor;
+	qreal m_penWidth = 4.0;
+	bool m_hoverVisible = false;
+	QPointF m_hoverPoint;
+	bool m_isDrawing = false;
 
-private:
-QColor m_penColor;
-float m_penWidth = 4.f;
-bool m_hoverVisible = false;
-QPointF m_hoverPoint;
-bool m_isDrawing = false;
-
-QVector<Stroke> m_strokes;
-Stroke m_currentStroke;
-QVector<int> m_pendingGroupRemovals;
-
+	QVector<Stroke> m_strokes;
+	Stroke m_currentStroke;
+	QVector<int> m_pendingGroupRemovals;
 };
 
-};
+}; // namespace ZShell::internal
