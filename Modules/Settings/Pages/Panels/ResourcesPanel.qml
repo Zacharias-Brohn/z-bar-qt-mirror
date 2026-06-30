@@ -28,6 +28,7 @@ PageBase {
 			checked: Config.dashboard.performance.enabled
 			first: true
 			last: true
+			settingAnchor: "resources-enabled"
 			text: qsTr("Enabled")
 
 			onToggled: Config.dashboard.performance.enabled = checked
@@ -41,6 +42,7 @@ PageBase {
 		ToggleRow {
 			checked: Config.dashboard.performance.showBattery
 			first: true
+			settingAnchor: "resources-battery"
 			text: qsTr("Battery")
 
 			onToggled: Config.dashboard.performance.showBattery = checked
@@ -48,6 +50,7 @@ PageBase {
 
 		ToggleRow {
 			checked: Config.dashboard.performance.showGpu
+			settingAnchor: "resources-gpu"
 			text: qsTr("GPU")
 
 			onToggled: Config.dashboard.performance.showGpu = checked
@@ -55,6 +58,7 @@ PageBase {
 
 		ToggleRow {
 			checked: Config.dashboard.performance.showCpu
+			settingAnchor: "resources-cpu"
 			text: qsTr("CPU")
 
 			onToggled: Config.dashboard.performance.showCpu = checked
@@ -62,6 +66,7 @@ PageBase {
 
 		ToggleRow {
 			checked: Config.dashboard.performance.showMemory
+			settingAnchor: "resources-memory"
 			text: qsTr("Memory")
 
 			onToggled: Config.dashboard.performance.showMemory = checked
@@ -69,6 +74,7 @@ PageBase {
 
 		ToggleRow {
 			checked: Config.dashboard.performance.showStorage
+			settingAnchor: "resources-storage"
 			text: qsTr("Storage")
 
 			onToggled: Config.dashboard.performance.showStorage = checked
@@ -77,6 +83,7 @@ PageBase {
 		ToggleRow {
 			checked: Config.dashboard.performance.showNetwork
 			last: true
+			settingAnchor: "resources-network"
 			text: qsTr("Network")
 
 			onToggled: Config.dashboard.performance.showNetwork = checked

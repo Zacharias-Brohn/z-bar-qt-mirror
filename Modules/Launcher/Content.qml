@@ -52,11 +52,7 @@ Item {
 		placeholderText: qsTr("Type \"%1\" for commands").arg(Config.launcher.actionPrefix)
 		topPadding: Appearance.padding.larger
 
-		Component.onCompleted: {
-			console.log(search.color);
-			console.log(search.placeholderTextColor);
-			forceActiveFocus();
-		}
+		Component.onCompleted: forceActiveFocus()
 		Keys.onDownPressed: list.currentList?.decrementCurrentIndex()
 		Keys.onEscapePressed: root.visibilities.launcher = false
 		Keys.onPressed: event => {

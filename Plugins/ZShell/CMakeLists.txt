@@ -24,11 +24,12 @@ set(QT_QML_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qml")
 qt_standard_project_setup(REQUIRES 6.9)
 
 function(qml_module arg_TARGET)
-	cmake_parse_arguments(PARSE_ARGV 1 arg "" "URI" "SOURCES;LIBRARIES")
+	cmake_parse_arguments(PARSE_ARGV 1 arg "" "URI" "SOURCES;LIBRARIES;RESOURCES")
 	qt_add_qml_module(${arg_TARGET}
 		URI ${arg_URI}
 		VERSION 1.0
 		SOURCES ${arg_SOURCES}
+		RESOURCES ${arg_RESOURCES}
 	)
 
 	qt_query_qml_module(${arg_TARGET}
@@ -47,6 +48,8 @@ function(qml_module arg_TARGET)
 	target_link_libraries(${arg_TARGET} PRIVATE Qt::Core Qt::Qml ${arg_LIBRARIES})
 endfunction()
 
+set_source_files_properties("${SETTINGS_INDEX_JSON}" PROPERTIES QT_RESOURCE_ALIAS "settings-index.json")
+
 qml_module(ZShell
 	URI ZShell
 	SOURCES
@@ -57,6 +60,8 @@ qml_module(ZShell
 		toaster.hpp toaster.cpp
 		qalculator.hpp qalculator.cpp
 		zutils.hpp zutils.cpp
+	RESOURCES
+		"${SETTINGS_INDEX_JSON}"
 	LIBRARIES
 		Qt::Gui
 		Qt::Quick

@@ -34,21 +34,11 @@ Item {
 		implicitHeight: 50
 		radius: Appearance.rounding.full
 
-		MaterialIcon {
-			id: searchIcon
-
-			anchors.left: parent.left
-			anchors.margins: Appearance.padding.large
-			anchors.verticalCenter: parent.verticalCenter
-			text: "search"
-		}
-
-		CustomTextField {
+		SearchBar {
 			id: searchField
 
 			anchors.bottom: parent.bottom
-			anchors.left: searchIcon.right
-			anchors.leftMargin: Appearance.spacing.small
+			anchors.left: parent.left
 			anchors.right: parent.right
 			anchors.top: parent.top
 			color: DynamicColors.palette.m3onSurface
@@ -170,7 +160,6 @@ Item {
 						id: lineText
 
 						color: DynamicColors.palette.m3onSurface
-						font.family: ClipHistory.previewIsCode ? Appearance.font.family.mono : Appearance.font.family.sans
 						height: lineText.paintedHeight + Appearance.padding.extraSmall * 2
 						text: lineRow.modelData.text.trim()
 						verticalAlignment: Text.AlignVCenter
@@ -336,6 +325,8 @@ Item {
 			}
 			model: ScriptModel {
 				values: ClipHistory.fuzzyQuery(searchField.text)
+
+				onValuesChanged: view.currentIndex = 0
 			}
 
 			onCurrentItemChanged: {

@@ -71,6 +71,7 @@ PageBase {
 			first: true
 			icon: "notifications"
 			last: true
+			settingAnchor: "services-notifications"
 			status: qsTr("Notifications, toasts, timeouts")
 			text: qsTr("Notifications")
 
@@ -85,6 +86,7 @@ PageBase {
 		SpinRow {
 			first: true
 			from: 100
+			settingAnchor: "services-media-refresh"
 			stepSize: 50
 			subtext: qsTr("How often the media position updates (ms)")
 			text: qsTr("Media refresh")
@@ -97,6 +99,7 @@ PageBase {
 		SpinRow {
 			from: 0.5
 			last: true
+			settingAnchor: "services-system-stats-refresh"
 			stepSize: 0.5
 			subtext: qsTr("CPU, memory and GPU update interval (seconds)")
 			text: qsTr("System stats refresh")
@@ -118,6 +121,7 @@ PageBase {
 			first: true
 			last: true
 			menuItems: playerVariants.instances
+			settingAnchor: "services-default-player"
 			subtext: qsTr("Preferred media player when several are open")
 			text: qsTr("Default player")
 
@@ -132,6 +136,7 @@ PageBase {
 		SpinRow {
 			first: true
 			from: 1
+			settingAnchor: "services-volume-step"
 			stepSize: 1
 			subtext: qsTr("Amount the volume changes per input (%)")
 			text: qsTr("Volume step")
@@ -143,6 +148,7 @@ PageBase {
 
 		SpinRow {
 			from: 1
+			settingAnchor: "services-brightness-step"
 			stepSize: 1
 			subtext: qsTr("Amount the brightness changes per input (%)")
 			text: qsTr("Brightness step")
@@ -154,6 +160,7 @@ PageBase {
 
 		SpinRow {
 			from: 1
+			settingAnchor: "services-brightness-minimum"
 			stepSize: 1
 			subtext: qsTr("Lowest allowed brightness (%)")
 			text: qsTr("Brightness minimum")
@@ -166,6 +173,7 @@ PageBase {
 		SpinRow {
 			from: 50
 			last: true
+			settingAnchor: "services-max-volume"
 			stepSize: 5
 			subtext: qsTr("Upper limit for output volume (%)")
 			text: qsTr("Max volume")
@@ -183,6 +191,7 @@ PageBase {
 		SpinRow {
 			first: true
 			from: 10
+			settingAnchor: "services-visualizer-resolution"
 			stepSize: 2
 			subtext: qsTr("Resolution of the audio visualizer")
 			text: qsTr("Visualizer resolution")
@@ -194,6 +203,7 @@ PageBase {
 
 		ToggleRow {
 			checked: Config.general.color.smart
+			settingAnchor: "services-smart-color-scheme"
 			subtext: qsTr("Derive theme mode from the wallpaper")
 			text: qsTr("Smart color scheme")
 
@@ -205,6 +215,7 @@ PageBase {
 			last: true
 			menuItems: root.gpuItems
 			menuOnTop: true
+			settingAnchor: "services-gpu"
 			subtext: Gpu.name ? qsTr("Monitoring: %1").arg(Gpu.name) : qsTr("Override for GPU type")
 			text: qsTr("GPU")
 

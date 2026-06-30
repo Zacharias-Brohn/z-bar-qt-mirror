@@ -30,6 +30,7 @@ PageBase {
 		DefaultRow {
 			first: true
 			icon: "terminal"
+			settingAnchor: "apps-default-terminal"
 			status: Config.general.apps.terminal.join(" ")
 			text: qsTr("Terminal")
 
@@ -38,6 +39,7 @@ PageBase {
 
 		DefaultRow {
 			icon: "volume_up"
+			settingAnchor: "apps-default-audio"
 			status: Config.general.apps.audio.join(" ")
 			text: qsTr("Audio")
 
@@ -46,6 +48,7 @@ PageBase {
 
 		DefaultRow {
 			icon: "play_circle"
+			settingAnchor: "apps-default-playback"
 			status: Config.general.apps.playback.join(" ")
 			text: qsTr("Media playback")
 
@@ -55,6 +58,7 @@ PageBase {
 		DefaultRow {
 			icon: "folder"
 			last: true
+			settingAnchor: "apps-default-file-manager"
 			status: Config.general.apps.explorer.join(" ")
 			text: qsTr("File manager")
 
@@ -70,6 +74,7 @@ PageBase {
 			first: true
 			icon: "apps"
 			last: true
+			settingAnchor: "apps-all-apps"
 			status: qsTr("Browse installed apps, set favorites and hidden")
 			text: qsTr("All apps")
 

@@ -10,6 +10,7 @@
 #include <qjsprimitivevalue.h>
 #include <qloggingcategory.h>
 #include <qqmlengine.h>
+#include <qfile.h>
 
 Q_LOGGING_CATEGORY(lcZUtils, "ZShell.cutils", QtInfoMsg)
 
@@ -168,6 +169,15 @@ QString ZUtils::toLocalFile(const QUrl& url) {
 
 qreal ZUtils::clamp(qreal value, qreal min, qreal max) {
 	return qBound(min, value, max);
+}
+
+QString ZUtils::settingsIndex() {
+	QFile file(QStringLiteral(":/qt/qml/ZShell/settings-index.json"));
+	if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+		qCWarning(lcZUtils) << "Failed to open embedded settings index";
+		return QString();
+	}
+	return QString::fromUtf8(file.readAll());
 }
 
 #ifndef ZSHELL_VERSION

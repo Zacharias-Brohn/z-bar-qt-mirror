@@ -25,6 +25,7 @@ PageBase {
 		ToggleRow {
 			checked: Config.bar.tray.showAudio
 			first: true
+			settingAnchor: "bar-status-speakers"
 			text: qsTr("Speakers")
 
 			onToggled: Config.bar.tray.showAudio = checked
@@ -32,6 +33,7 @@ PageBase {
 
 		ToggleRow {
 			checked: Config.bar.tray.showMicrophone
+			settingAnchor: "bar-status-mic"
 			text: qsTr("Microphone")
 
 			onToggled: Config.bar.tray.showMicrophone = checked
@@ -62,6 +64,7 @@ PageBase {
 		ToggleRow {
 			checked: Config.bar.tray.showPower
 			last: true
+			settingAnchor: "bar-status-power"
 			text: qsTr("Battery")
 
 			onToggled: Config.bar.tray.showPower = checked
@@ -75,6 +78,7 @@ PageBase {
 		ToggleRow {
 			checked: Config.bar.popouts.audio
 			first: true
+			settingAnchor: "bar-status-audio-popout"
 			subtext: qsTr("Show a details popout when hovering the audio icons")
 			text: qsTr("Audio popout on hover")
 
@@ -84,6 +88,7 @@ PageBase {
 		ToggleRow {
 			checked: Config.bar.popouts.upower
 			last: true
+			settingAnchor: "bar-status-power-popout"
 			subtext: qsTr("Show a details popout when hovering the power icon")
 			text: qsTr("Power popout on hover")
 

@@ -26,6 +26,7 @@ PageBase {
 			checked: Config.bar.autoHide
 			first: true
 			last: true
+			settingAnchor: "bar-autohide"
 			subtext: qsTr("Hide the bar, reveal on hover")
 			text: qsTr("Auto hide")
 
@@ -40,6 +41,7 @@ PageBase {
 		NavRow {
 			first: true
 			icon: "widgets"
+			settingAnchor: "bar-tray"
 			status: qsTr("System tray icons")
 			text: qsTr("Tray")
 
@@ -48,6 +50,7 @@ PageBase {
 
 		NavRow {
 			icon: "signal_cellular_alt"
+			settingAnchor: "bar-statusicons"
 			status: qsTr("Visible indicators")
 			text: qsTr("Status icons")
 
@@ -57,6 +60,7 @@ PageBase {
 		NavRow {
 			icon: "schedule"
 			last: true
+			settingAnchor: "bar-clock"
 			status: qsTr("Date, icon, background")
 			text: qsTr("Clock")
 

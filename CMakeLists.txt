@@ -51,6 +51,20 @@ add_compile_options(
 	-Wunreachable-code
 )
 
+if("shell" IN_LIST ENABLE_MODULES)
+	find_package(Python3 COMPONENTS Interpreter REQUIRED)
+	set(SETTINGS_INDEX_JSON "${CMAKE_BINARY_DIR}/settings-index.json")
+	execute_process(
+		COMMAND ${Python3_EXECUTABLE}
+			"${CMAKE_SOURCE_DIR}/scripts/build-settings-index.py"
+			"${CMAKE_SOURCE_DIR}/Modules/Settings"
+			"${SETTINGS_INDEX_JSON}"
+		RESULT_VARIABLE SETTINGS_INDEX_RESULT
+	)
+	if(NOT SETTINGS_INDEX_RESULT EQUAL 0)
+		message(FATAL_ERROR "Failed to build settings search index")
+	endif()
+endif()
 
 if("plugin" IN_LIST ENABLE_MODULES)
 	add_subdirectory(Plugins)

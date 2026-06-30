@@ -26,6 +26,7 @@ PageBase {
 		ToggleRow {
 			checked: Config.sidebar.enabled
 			first: true
+			settingAnchor: "sidebar-enabled"
 			text: qsTr("Enabled")
 
 			onToggled: Config.sidebar.enabled = checked
@@ -34,6 +35,7 @@ PageBase {
 		SpinRow {
 			from: 0
 			last: true
+			settingAnchor: "sidebar-drag-threshold"
 			stepSize: 5
 			subtext: qsTr("Pixels dragged before the sidebar opens")
 			text: qsTr("Drag threshold")

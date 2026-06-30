@@ -20,6 +20,7 @@ PageBase {
 			first: true
 			from: 12
 			last: true
+			settingAnchor: "bar-tray-iconsize"
 			stepSize: 1
 			text: qsTr("Icon size")
 			to: 24

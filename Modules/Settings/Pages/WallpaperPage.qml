@@ -49,6 +49,7 @@ PageBase {
 		ToggleRow {
 			checked: Config.background.enabled
 			first: true
+			settingAnchor: "style-display-wallpaper"
 			text: qsTr("Display wallpaper")
 
 			onToggled: Config.background.enabled = checked
@@ -57,6 +58,7 @@ PageBase {
 		ToggleRow {
 			Layout.topMargin: Appearance.spacing.extraSmall / 2 - parent.spacing
 			checked: DynamicColors.transparency.enabled
+			settingAnchor: "style-transparency"
 			subtext: qsTr("Base %1, layers %2").arg(DynamicColors.transparency.base).arg(DynamicColors.transparency.layers)
 			text: qsTr("Transparency")
 
@@ -67,6 +69,7 @@ PageBase {
 			Layout.topMargin: Appearance.spacing.extraSmall / 2 - parent.spacing
 			checked: !DynamicColors.light
 			last: true
+			settingAnchor: "style-dark-theme"
 			text: qsTr("Dark theme")
 
 			onToggled: DynamicColors.setMode(checked ? "dark" : "light")
@@ -88,6 +91,7 @@ PageBase {
 
 			checked: Config.general.color.scheduleDark
 			first: true
+			settingAnchor: "style-schedule-dark-mode"
 			subtext: qsTr("Dark mode will turn on at %1, and turn off at %2.").arg(startTime).arg(endTime)
 			text: qsTr("Schedule dark mode")
 
@@ -129,6 +133,7 @@ PageBase {
 			Layout.topMargin: Appearance.spacing.extraSmall / 2 - parent.spacing
 			checked: Config.general.color.scheduleHyprsunset
 			last: true
+			settingAnchor: "style-schedule-hyprsunset"
 			subtext: qsTr("Hyprsunset will turn on at %1, and turn off at %2.").arg(startTime).arg(endTime)
 			text: qsTr("Schedule hyprsunset")
 
