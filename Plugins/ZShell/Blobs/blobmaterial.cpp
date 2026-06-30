@@ -1,7 +1,6 @@
 #include "blobmaterial.hpp"
 
-#include <math.h>
-
+#include <cmath>
 #include <cstring>
 
 static_assert(
