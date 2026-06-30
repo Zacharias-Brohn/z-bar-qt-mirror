@@ -96,8 +96,8 @@ qreal CircularIndicatorManager::duration() const {
 qreal CircularIndicatorManager::completeEndDuration() const {
 	if (m_type == IndeterminateAnimationType::Advance) {
 		return advance::DURATION_TO_COMPLETE_END_IN_MS;
-	}  		return retreat::DURATION_TO_COMPLETE_END_IN_MS;
-
+	}
+	return retreat::DURATION_TO_COMPLETE_END_IN_MS;
 }
 
 CircularIndicatorManager::IndeterminateAnimationType
