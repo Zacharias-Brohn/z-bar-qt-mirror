@@ -74,7 +74,8 @@ Searcher {
 	AppDb {
 		id: appDb
 
-		entries: DesktopEntries.applications.values
+		entries: DesktopEntries.applications.values.filter(a => !Strings.testRegexList(Config.launcher.hiddenApps, a.id))
+		favoriteApps: Config.launcher.favoriteApps
 		path: `${Paths.state}/apps.sqlite`
 	}
 }

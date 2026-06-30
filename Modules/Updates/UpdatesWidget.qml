@@ -12,7 +12,7 @@ CustomRect {
 	property color textColor: DynamicColors.palette.m3onSurface
 
 	color: DynamicColors.tPalette.m3surfaceContainer
-	implicitHeight: Config.barConfig.height + Appearance.padding.smallest * 2
+	implicitHeight: Config.bar.height + Appearance.padding.smallest * 2
 	implicitWidth: contentRow.implicitWidth + Appearance.spacing.small * 2
 	radius: Appearance.rounding.full
 

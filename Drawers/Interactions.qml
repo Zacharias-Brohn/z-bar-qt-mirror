@@ -21,15 +21,15 @@ Item {
 	required property PersistentProperties visibilities
 
 	function inBottomPanel(panel: Item, x: real, y: real): bool {
-		return y > root.height - panel.height - Config.barConfig.border && withinPanelWidth(panel, x, y);
+		return y > root.height - panel.height - Config.bar.border && withinPanelWidth(panel, x, y);
 	}
 
 	function inLeftPanel(panel: Item, x: real, y: real): bool {
-		return x < panel.x + panel.width + Config.barConfig.border && withinPanelHeight(panel, x, y);
+		return x < panel.x + panel.width + Config.bar.border && withinPanelHeight(panel, x, y);
 	}
 
 	function inRightPanel(panel: Item, x: real, y: real): bool {
-		return x > panel.x - Config.barConfig.border && withinPanelHeight(panel, x, y);
+		return x > panel.x - Config.bar.border && withinPanelHeight(panel, x, y);
 	}
 
 	function inTopPanel(panel: Item, x: real, y: real): bool {
@@ -75,7 +75,7 @@ Item {
 			const dragX = x - centroid.pressPosition.x;
 			const dragY = y - centroid.pressPosition.y;
 
-			if (centroid.pressPosition.y >= root.screen.height - Config.barConfig.border && centroid.pressPosition.x > root.screen.width / 5 && dragY < -200)
+			if (centroid.pressPosition.y >= root.screen.height - Config.bar.border && centroid.pressPosition.x > root.screen.width / 5 && dragY < -Config.launcher.dragThreshold)
 				root.visibilities.launcher = true;
 
 			if (root.singleGestureTriggered)
@@ -91,7 +91,7 @@ Item {
 				}
 			}
 
-			if (centroid.pressPosition.y > root.screen.height - Config.barConfig.border && centroid.pressPosition.x < root.screen.width / 5 && dragY < -50)
+			if (centroid.pressPosition.y > root.screen.height - Config.bar.border && centroid.pressPosition.x < root.screen.width / 5 && dragY < -50)
 				root.visibilities.clipboard = true;
 
 			if (!Config.dock.hoverToReveal && centroid.pressPosition.y > root.screen.height - root.bar.implicitHeight && centroid.pressPosition.x > root.screen.width / 5 && !root.visibilities.launcher)
@@ -100,17 +100,17 @@ Item {
 					root.singleGestureTriggered = true;
 				}
 
-			if (centroid.pressPosition.x > root.screen.width - Config.barConfig.border && centroid.pressPosition.y < (root.screen.height / 2) && dragX < -20) {
+			if (centroid.pressPosition.x > root.screen.width - Config.bar.border && centroid.pressPosition.y < (root.screen.height / 2) && dragX < -Config.sidebar.dragThreshold) {
 				root.visibilities.sidebar = true;
 				root.singleGestureTriggered = true;
 			}
 
-			if (centroid.pressPosition.x >= root.screen.width - Config.barConfig.border && centroid.pressPosition.y > (root.screen.height / 2) && dragX < -20) {
+			if (centroid.pressPosition.x >= root.screen.width - Config.bar.border && centroid.pressPosition.y > (root.screen.height / 2) && dragX < -20) {
 				Hypr.dispatch(`hl.dsp.focus({ workspace = 'r+1', on_current_monitor = true })`);
 				root.singleGestureTriggered = true;
 			}
 
-			if (centroid.pressPosition.x <= Config.barConfig.border && dragX > 20) {
+			if (centroid.pressPosition.x <= Config.bar.border && dragX > 20) {
 				Hypr.dispatch(`hl.dsp.focus({ workspace = 'r-1', on_current_monitor = true })`);
 				root.singleGestureTriggered = true;
 			}
@@ -174,7 +174,7 @@ Item {
 					root.popouts.hasCurrent = false;
 				}
 
-				if (Config.barConfig.autoHide)
+				if (Config.bar.autoHide)
 					root.bar.isHovered = false;
 			}
 		}
@@ -193,7 +193,7 @@ Item {
 				return;
 			}
 
-			if (!root.visibilities.bar && Config.barConfig.autoHide && y < root.bar.implicitHeight)
+			if (!root.visibilities.bar && Config.bar.autoHide && y < root.bar.implicitHeight)
 				root.bar.isHovered = true;
 
 			if (root.panels.sidebar.width === 0) {
@@ -298,6 +298,8 @@ Item {
 				root.visibilities.sidebar = false;
 				root.panels.popouts.hasCurrent = false;
 				root.visibilities.launcher = false;
+			} else {
+				Config.save();
 			}
 		}
 

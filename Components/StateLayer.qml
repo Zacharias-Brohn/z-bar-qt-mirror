@@ -20,6 +20,7 @@ MouseArea {
 		return (Math.sqrt(Math.max(d1, d2, d3, d4)) + (shapeMorph ? 24 : 0)) * 1.3;
 	}
 	property real endRadiusAtPress
+	property bool manualHoverOverride
 	property bool manualPressOverride
 	property real pressX: width / 2
 	property real pressY: height / 2
@@ -27,7 +28,7 @@ MouseArea {
 	readonly property alias rect: base
 	property bool shapeMorph
 	property bool showHoverBackground: true
-	property real stateOpacity: containsMouse ? 0.08 : 0
+	property real stateOpacity: containsMouse || manualHoverOverride ? 0.08 : 0
 	property alias topLeftRadius: base.topLeftRadius
 	property alias topRightRadius: base.topRightRadius
 

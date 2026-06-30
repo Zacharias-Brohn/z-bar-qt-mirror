@@ -1,168 +1,132 @@
-pragma ComponentBehavior: Bound
-
 import QtQuick
-import QtQuick.Layouts
+import QtQuick.Templates
 import qs.Config
 
-RowLayout {
+DoubleSpinBox {
 	id: root
 
-	property string displayText: root.value.toString()
-	property bool isEditing: false
-	property real max: Infinity
-	property real min: -Infinity
-	property alias repeatRate: timer.interval
-	property real step: 1
-	property real value
+	property int cLayer: 1
+	property int repeatDecay: 50
+	property int repeatRate: 400
 
-	signal valueModified(value: real)
+	function decrease(): void {
+		let newValue = Math.max(from, value - stepSize);
+		const decimals = stepSize < 1 ? Math.max(1, Math.ceil(-Math.log10(stepSize))) : 0;
+		newValue = Math.round(newValue * Math.pow(10, decimals)) / Math.pow(10, decimals);
+		value = newValue;
+		valueModified();
+	}
 
+	function increase(): void {
+		let newValue = Math.min(to, value + stepSize);
+		const decimals = stepSize < 1 ? Math.max(1, Math.ceil(-Math.log10(stepSize))) : 0;
+		newValue = Math.round(newValue * Math.pow(10, decimals)) / Math.pow(10, decimals);
+		value = newValue;
+		valueModified();
+	}
+
+	decimals: stepSize < 1 ? Math.max(1, Math.ceil(-Math.log10(stepSize))) : 0
+	editable: true
+	implicitHeight: Math.max(up.indicator.implicitHeight, down.indicator.implicitHeight, contentItem.implicitHeight) + topPadding + bottomPadding
+	implicitWidth: contentItem.implicitWidth + leftPadding + rightPadding
+	leftPadding: up.indicator.implicitWidth + Appearance.spacing.extraSmall / 2
+	rightPadding: down.indicator.implicitWidth + Appearance.spacing.extraSmall / 2
 	spacing: Appearance.spacing.small
 
-	onValueChanged: {
-		if (!root.isEditing) {
-			root.displayText = root.value.toString();
-		}
-	}
-
-	CustomTextField {
-		id: textField
-
-		color: root.enabled ? DynamicColors.palette.m3onSurface : Qt.alpha(DynamicColors.palette.m3onSurface, 0.5)
-		implicitHeight: upButton.implicitHeight
+	contentItem: TextFieldBase {
+		horizontalAlignment: TextField.AlignHCenter
+		implicitWidth: 65
 		inputMethodHints: Qt.ImhFormattedNumbersOnly
-		leftPadding: Appearance.padding.normal
-		padding: Appearance.padding.small
-		rightPadding: Appearance.padding.normal
-		text: root.isEditing ? text : root.displayText
+		leftPadding: Appearance.padding.larger
+		readOnly: !root.editable
+		rightPadding: Appearance.padding.larger
+		text: root.textFromValue(root.value, root.locale)
+		validator: root.validator
 
 		background: CustomRect {
-			color: root.enabled ? DynamicColors.tPalette.m3surfaceContainerHigh : DynamicColors.tPalette.m3surfaceContainerLow
-			implicitWidth: 100
-			radius: Appearance.rounding.full
-		}
-		validator: DoubleValidator {
-			bottom: root.min
-			decimals: root.step < 1 ? Math.max(1, Math.ceil(-Math.log10(root.step))) : 0
-			top: root.max
-		}
-
-		onAccepted: {
-			const numValue = parseFloat(text);
-			if (!isNaN(numValue)) {
-				const clampedValue = Math.max(root.min, Math.min(root.max, numValue));
-				root.value = clampedValue;
-				root.displayText = clampedValue.toString();
-				root.valueModified(clampedValue);
-			} else {
-				text = root.displayText;
-			}
-			root.isEditing = false;
-		}
-		onActiveFocusChanged: {
-			if (activeFocus) {
-				root.isEditing = true;
-			} else {
-				root.isEditing = false;
-				root.displayText = root.value.toString();
-			}
-		}
-		onEditingFinished: {
-			if (text !== root.displayText) {
-				const numValue = parseFloat(text);
-				if (!isNaN(numValue)) {
-					const clampedValue = Math.max(root.min, Math.min(root.max, numValue));
-					root.value = clampedValue;
-					root.displayText = clampedValue.toString();
-					root.valueModified(clampedValue);
-				} else {
-					text = root.displayText;
-				}
-			}
-			root.isEditing = false;
+			color: DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHighest, root.cLayer)
+			radius: Appearance.rounding.extraSmall
 		}
 	}
+	down.indicator: IconButton {
+		id: downButton
 
-	CustomRect {
+		bottomRightRadius: pressed ? Appearance.rounding.small : Appearance.rounding.extraSmall
+		color: enabled ? DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHighest, root.cLayer) : disabledColor
+		disabledColor: Qt.alpha(DynamicColors.palette.m3surfaceContainerHighest, 0.4)
+		icon: "remove"
+		isRound: true
+		label.anchors.horizontalCenterOffset: pressed ? 0 : 2
+		padding: Appearance.padding.extraSmall
+		topRightRadius: pressed ? Appearance.rounding.small : Appearance.rounding.extraSmall
+		type: IconButton.Text
+
+		Behavior on bottomRightRadius {
+			Anim {
+				type: Anim.DefaultEffects
+			}
+		}
+		Behavior on label.anchors.horizontalCenterOffset {
+			Anim {
+				type: Anim.DefaultEffects
+			}
+		}
+		Behavior on topRightRadius {
+			Anim {
+				type: Anim.DefaultEffects
+			}
+		}
+	}
+	up.indicator: IconButton {
 		id: upButton
 
-		color: root.enabled ? DynamicColors.palette.m3primary : DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHighest, 1)
-		implicitHeight: upIcon.implicitHeight + Appearance.padding.small * 2
-		implicitWidth: implicitHeight
-		radius: Appearance.rounding.full
+		anchors.right: parent.right
+		bottomLeftRadius: pressed ? Appearance.rounding.small : Appearance.rounding.extraSmall
+		color: enabled ? DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHighest, root.cLayer) : disabledColor
+		disabledColor: Qt.alpha(DynamicColors.palette.m3surfaceContainerHighest, 0.4)
+		icon: "add"
+		isRound: true
+		label.anchors.horizontalCenterOffset: pressed ? 0 : -2
+		padding: Appearance.padding.extraSmall
+		topLeftRadius: pressed ? Appearance.rounding.small : Appearance.rounding.extraSmall
+		type: IconButton.Text
 
-		StateLayer {
-			id: upState
-
-			color: DynamicColors.palette.m3onPrimary
-
-			onClicked: {
-				let newValue = Math.min(root.max, root.value + root.step);
-				// Round to avoid floating point precision errors
-				const decimals = root.step < 1 ? Math.max(1, Math.ceil(-Math.log10(root.step))) : 0;
-				newValue = Math.round(newValue * Math.pow(10, decimals)) / Math.pow(10, decimals);
-				root.value = newValue;
-				root.displayText = newValue.toString();
-				root.valueModified(newValue);
+		Behavior on bottomLeftRadius {
+			Anim {
+				type: Anim.DefaultEffects
 			}
-			onPressAndHold: timer.start()
-			onReleased: timer.stop()
 		}
-
-		MaterialIcon {
-			id: upIcon
-
-			anchors.centerIn: parent
-			color: root.enabled ? DynamicColors.palette.m3onPrimary : Qt.alpha(DynamicColors.palette.m3onSurface, 0.5)
-			text: "keyboard_arrow_up"
-		}
-	}
-
-	CustomRect {
-		color: root.enabled ? DynamicColors.palette.m3primary : DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHighest, 1)
-		implicitHeight: downIcon.implicitHeight + Appearance.padding.small * 2
-		implicitWidth: implicitHeight
-		radius: Appearance.rounding.full
-
-		StateLayer {
-			id: downState
-
-			color: DynamicColors.palette.m3onPrimary
-
-			onClicked: {
-				let newValue = Math.max(root.min, root.value - root.step);
-				// Round to avoid floating point precision errors
-				const decimals = root.step < 1 ? Math.max(1, Math.ceil(-Math.log10(root.step))) : 0;
-				newValue = Math.round(newValue * Math.pow(10, decimals)) / Math.pow(10, decimals);
-				root.value = newValue;
-				root.displayText = newValue.toString();
-				root.valueModified(newValue);
+		Behavior on label.anchors.horizontalCenterOffset {
+			Anim {
+				type: Anim.DefaultEffects
 			}
-			onPressAndHold: timer.start()
-			onReleased: timer.stop()
 		}
-
-		MaterialIcon {
-			id: downIcon
-
-			anchors.centerIn: parent
-			color: root.enabled ? DynamicColors.palette.m3onPrimary : Qt.alpha(DynamicColors.palette.m3onSurface, 0.5)
-			text: "keyboard_arrow_down"
+		Behavior on topLeftRadius {
+			Anim {
+				type: Anim.DefaultEffects
+			}
 		}
 	}
 
 	Timer {
 		id: timer
 
-		interval: 100
+		interval: root.repeatRate
 		repeat: true
+		running: upButton.pressed || downButton.pressed
 		triggeredOnStart: true
 
+		onRunningChanged: {
+			if (!running)
+				interval = root.repeatRate;
+		}
 		onTriggered: {
-			if (upState.pressed)
-				upState.onClicked();
-			else if (downState.pressed)
-				downState.onClicked();
+			if (upButton.pressed)
+				root.increase();
+			else if (downButton.pressed)
+				root.decrease();
+			if (interval > root.repeatDecay)
+				interval -= root.repeatDecay;
 		}
 	}
 }

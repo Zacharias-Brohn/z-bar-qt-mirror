@@ -44,7 +44,7 @@ Scope {
 	}
 
 	component ExclusionZone: CustomWindow {
-		exclusiveZone: Config.barConfig.border
+		exclusiveZone: Config.bar.border
 		implicitHeight: 1
 		implicitWidth: 1
 		name: "Bar-Exclusion"

@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <qnamespace.h>
 
 BlobRect::BlobRect(QQuickItem* parent) : BlobShape(parent) {}
 
@@ -31,9 +32,11 @@ void BlobRect::updatePolish() {
 				QMetaObject::invokeMethod(
 					this,
 					[this]() {
-						if (m_group) m_group->markDirty();
-					},
-					Qt::QueuedConnection);
+					if (m_group)
+						m_group->markDirty();
+				},
+					Qt::QueuedConnection
+					);
 			}
 		} else {
 			QMetaObject::invokeMethod(
@@ -103,20 +106,15 @@ void BlobRect::updatePhysics() {
 
 	const float kStiffness = static_cast<float>(m_stiffness);
 	const float kDamping = static_cast<float>(m_damping);
+	const float invDamp = 1.0f / (1.0f + kDamping * dt);
 
-	const float accel00 =
-		-kStiffness * (m_dm00 - target00) - kDamping * m_dmVel00;
-	m_dmVel00 += accel00 * dt;
+	m_dmVel00 = (m_dmVel00 - kStiffness * (m_dm00 - target00) * dt) * invDamp;
 	m_dm00 += m_dmVel00 * dt;
 
-	const float accel01 =
-		-kStiffness * (m_dm01 - target01) - kDamping * m_dmVel01;
-	m_dmVel01 += accel01 * dt;
+	m_dmVel01 = (m_dmVel01 - kStiffness * (m_dm01 - target01) * dt) * invDamp;
 	m_dm01 += m_dmVel01 * dt;
 
-	const float accel11 =
-		-kStiffness * (m_dm11 - target11) - kDamping * m_dmVel11;
-	m_dmVel11 += accel11 * dt;
+	m_dmVel11 = (m_dmVel11 - kStiffness * (m_dm11 - target11) * dt) * invDamp;
 	m_dm11 += m_dmVel11 * dt;
 
 	m_deformMatrix = QMatrix4x4(
@@ -184,6 +182,14 @@ bool BlobRect::isExcluded(const BlobShape* other) const {
 	return false;
 }
 
+bool BlobRect::isCornerExcluded(const BlobShape* other) const {
+	for (const auto& ptr : m_excludeCorners) {
+		if (ptr == other)
+			return true;
+	}
+	return false;
+}
+
 QQmlListProperty<BlobRect> BlobRect::exclude() {
 	return QQmlListProperty<BlobRect>(
 		this,
@@ -194,6 +200,11 @@ QQmlListProperty<BlobRect> BlobRect::exclude() {
 		&excludeClear,
 		&excludeReplace,
 		&excludeRemoveLast);
+}
+
+QQmlListProperty<BlobRect> BlobRect::excludeCorners() {
+	return QQmlListProperty<BlobRect>(this, nullptr, &excludeCornersAppend, &excludeCornersCount, &excludeCornersAt,
+	                                  &excludeCornersClear, &excludeCornersReplace, &excludeCornersRemoveLast);
 }
 
 void BlobRect::excludeAppend(QQmlListProperty<BlobRect>* prop, BlobRect* rect) {
@@ -238,6 +249,52 @@ void BlobRect::excludeRemoveLast(QQmlListProperty<BlobRect>* prop) {
 	emit self->excludeChanged();
 }
 
+void BlobRect::excludeCornersAppend(QQmlListProperty<BlobRect>* prop, BlobRect* rect) {
+	auto* self = static_cast<BlobRect*>(prop->object);
+	self->m_excludeCorners.append(rect);
+	if (self->m_group)
+		self->m_group->markDirty();
+	emit self->excludeCornersChanged();
+}
+
+qsizetype BlobRect::excludeCornersCount(QQmlListProperty<BlobRect>* prop) {
+	auto* self = static_cast<BlobRect*>(prop->object);
+	return self->m_excludeCorners.size();
+}
+
+BlobRect* BlobRect::excludeCornersAt(QQmlListProperty<BlobRect>* prop, qsizetype index) {
+	auto* self = static_cast<BlobRect*>(prop->object);
+	return self->m_excludeCorners.at(index);
+}
+
+void BlobRect::excludeCornersClear(QQmlListProperty<BlobRect>* prop) {
+	auto* self = static_cast<BlobRect*>(prop->object);
+	if (self->m_excludeCorners.isEmpty())
+		return;
+	self->m_excludeCorners.clear();
+	if (self->m_group)
+		self->m_group->markDirty();
+	emit self->excludeCornersChanged();
+}
+
+void BlobRect::excludeCornersReplace(QQmlListProperty<BlobRect>* prop, qsizetype index, BlobRect* rect) {
+	auto* self = static_cast<BlobRect*>(prop->object);
+	self->m_excludeCorners[index] = rect;
+	if (self->m_group)
+		self->m_group->markDirty();
+	emit self->excludeCornersChanged();
+}
+
+void BlobRect::excludeCornersRemoveLast(QQmlListProperty<BlobRect>* prop) {
+	auto* self = static_cast<BlobRect*>(prop->object);
+	if (self->m_excludeCorners.isEmpty())
+		return;
+	self->m_excludeCorners.removeLast();
+	if (self->m_group)
+		self->m_group->markDirty();
+	emit self->excludeCornersChanged();
+}
+
 void BlobRect::checkAtRest(float speed) {
 	constexpr float kEpsilon = 0.002f;
 	const bool atRest =
@@ -262,9 +319,11 @@ void BlobRect::checkAtRest(float speed) {
 			QMetaObject::invokeMethod(
 				this,
 				[this]() {
-					if (m_group) m_group->markDirty();
-				},
-				Qt::QueuedConnection);
+				if (m_group)
+					m_group->markDirty();
+			},
+				Qt::QueuedConnection
+				);
 		}
 	}
 }
