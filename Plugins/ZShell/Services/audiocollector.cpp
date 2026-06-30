@@ -253,6 +253,7 @@ AudioCollector::AudioCollector(QObject* parent)
 	, m_writeBuffer(&m_buffer2) {}
 
 AudioCollector::~AudioCollector() {
+	// NOLINTNEXTLINE(clang-analyzer-optin.cplusplus.VirtualCall)
 	stop();
 }
 

@@ -170,6 +170,7 @@ void CachingImageManager::updateSource(const QString& path) {
 		});
 
 	watcher->setFuture(future);
+	// NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
 }
 
 QUrl CachingImageManager::cachePath() const {

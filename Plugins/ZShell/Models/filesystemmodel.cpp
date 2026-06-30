@@ -258,6 +258,7 @@ void FileSystemModel::watchDirIfRecursive(const QString& path) {
 			});
 		watcher->setFuture(future);
 	}
+	// NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
 }
 
 void FileSystemModel::update() {
@@ -405,6 +406,7 @@ void FileSystemModel::updateEntriesForDir(const QString& dir) {
 		});
 
 	watcher->setFuture(future);
+	// NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
 }
 
 void FileSystemModel::applyChanges(

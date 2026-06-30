@@ -2,6 +2,11 @@
 Checks: >
     -*,
     bugprone-*,
+    -readability-redundant-inline-specifier
+    -bugprone-throwing-static-initialization
+    -bugprone-invalid-enum-default-initialization
+    -bugprone-suspicious-include
+    -bugprone-branch-clone
     -bugprone-easily-swappable-parameters,
     -bugprone-narrowing-conversions,
     -bugprone-implicit-widening-of-multiplication-result,

@@ -6,6 +6,7 @@ namespace ZShell {
 
 Qalculator::Qalculator(QObject* parent) : QObject(parent) {
 	if (!CALCULATOR) {
+		// NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
 		new Calculator();
 		CALCULATOR->loadExchangeRates();
 		CALCULATOR->loadGlobalDefinitions();

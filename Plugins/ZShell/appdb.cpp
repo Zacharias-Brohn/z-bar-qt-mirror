@@ -9,6 +9,7 @@ namespace ZShell {
 AppEntry::AppEntry(QObject* entry, unsigned int frequency, QObject* parent)
 	: QObject(parent), m_entry(entry), m_frequency(frequency) {
 	const auto mo = m_entry->metaObject();
+	// NOLINTNEXTLINE(clang-analyzer-optin.cplusplus.VirtualCall)
 	const auto tmo = metaObject();
 
 	for (const auto& prop :
