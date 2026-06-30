@@ -10,7 +10,7 @@ import qs.Modules.Osd as Osd
 import qs.Components.Toast as Toasts
 import qs.Modules.Launcher as Launcher
 import qs.Modules.Resources as Resources
-import qs.Modules.SettingsNew as Settings
+import qs.Modules.Settings as Settings
 import qs.Modules.Drawing as Drawing
 import qs.Modules.Dock as Dock
 import qs.Modules.Clipboard as Clipboard
