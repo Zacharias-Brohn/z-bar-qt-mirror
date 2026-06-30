@@ -64,7 +64,8 @@ static QString luaArray(const QVariantList& list) {
 		parts << luaValue(item);
 	}
 
-	return QLatin1String("{ ") + parts.join(QLatin1String(", ")) + QLatin1String(" }");
+	return QLatin1String("{ ") + parts.join(QLatin1String(", ")) +
+		   QLatin1String(" }");
 }
 
 static QString luaArray(const QStringList& list) {
@@ -75,7 +76,8 @@ static QString luaArray(const QStringList& list) {
 		parts << luaEscapeString(item);
 	}
 
-	return QLatin1String("{ ") + parts.join(QLatin1String(", ")) + QLatin1String(" }");
+	return QLatin1String("{ ") + parts.join(QLatin1String(", ")) +
+		   QLatin1String(" }");
 }
 
 static QString luaMapFromHash(const QVariantHash& hash) {
@@ -83,10 +85,12 @@ static QString luaMapFromHash(const QVariantHash& hash) {
 	parts.reserve(hash.size());
 
 	for (auto it = hash.cbegin(); it != hash.cend(); ++it) {
-		parts << luaEscapeString(it.key()) + QLatin1String(" = ") + luaValue(it.value());
+		parts << luaEscapeString(it.key()) + QLatin1String(" = ") +
+					 luaValue(it.value());
 	}
 
-	return QLatin1String("{ ") + parts.join(QLatin1String(", ")) + QLatin1String(" }");
+	return QLatin1String("{ ") + parts.join(QLatin1String(", ")) +
+		   QLatin1String(" }");
 }
 
 static QString luaMap(const QVariantMap& map) {
@@ -94,10 +98,12 @@ static QString luaMap(const QVariantMap& map) {
 	parts.reserve(map.size());
 
 	for (auto it = map.cbegin(); it != map.cend(); ++it) {
-		parts << luaEscapeString(it.key()) + QLatin1String(" = ") + luaValue(it.value());
+		parts << luaEscapeString(it.key()) + QLatin1String(" = ") +
+					 luaValue(it.value());
 	}
 
-	return QLatin1String("{ ") + parts.join(QLatin1String(", ")) + QLatin1String(" }");
+	return QLatin1String("{ ") + parts.join(QLatin1String(", ")) +
+		   QLatin1String(" }");
 }
 
 static QString luaValue(const QVariant& v) {
@@ -143,7 +149,8 @@ static QString normalizeOptionPath(QString key) {
 }
 
 static QString buildHlConfigCall(const QString& key, const QVariant& value) {
-	const auto parts = normalizeOptionPath(key).split(QLatin1Char('.'), Qt::SkipEmptyParts);
+	const auto parts =
+		normalizeOptionPath(key).split(QLatin1Char('.'), Qt::SkipEmptyParts);
 	if (parts.isEmpty()) {
 		return {};
 	}
@@ -189,7 +196,8 @@ static QVariant parseGetOptionValue(const QJsonObject& obj) {
 
 		const auto option = obj.value(QStringLiteral("option")).toString();
 
-		if (option.contains(QStringLiteral("color")) || option.contains(QStringLiteral("col."))) {
+		if (option.contains(QStringLiteral("color")) ||
+			option.contains(QStringLiteral("col."))) {
 			return colorFromInt(static_cast<quint32>(value));
 		}
 
@@ -234,7 +242,8 @@ static QVariant parseGetOptionValue(const QJsonObject& obj) {
 	return {};
 }
 
-static void insertNestedValue(QVariantMap& root, const QStringList& path, const QVariant& value) {
+static void insertNestedValue(
+	QVariantMap& root, const QStringList& path, const QVariant& value) {
 	if (path.isEmpty()) {
 		return;
 	}
@@ -261,16 +270,19 @@ HyprExtras::HyprExtras(QObject* parent)
 	, m_devices(new HyprDevices(this)) {
 	const auto his = qEnvironmentVariable("HYPRLAND_INSTANCE_SIGNATURE");
 	if (his.isEmpty()) {
-		qCWarning(lcHypr) << "$HYPRLAND_INSTANCE_SIGNATURE is unset. Unable to connect to Hyprland socket.";
+		qCWarning(lcHypr) << "$HYPRLAND_INSTANCE_SIGNATURE is unset. Unable to "
+							 "connect to Hyprland socket.";
 		return;
 	}
 
-	auto hyprDir = QString("%1/hypr/%2").arg(qEnvironmentVariable("XDG_RUNTIME_DIR"), his);
+	auto hyprDir =
+		QString("%1/hypr/%2").arg(qEnvironmentVariable("XDG_RUNTIME_DIR"), his);
 	if (!QDir(hyprDir).exists()) {
 		hyprDir = QStringLiteral("/tmp/hypr/") + his;
 
 		if (!QDir(hyprDir).exists()) {
-			qCWarning(lcHypr) << "Hyprland socket directory does not exist. Unable to connect to Hyprland socket.";
+			qCWarning(lcHypr) << "Hyprland socket directory does not exist. "
+								 "Unable to connect to Hyprland socket.";
 			return;
 		}
 	}
@@ -283,9 +295,15 @@ HyprExtras::HyprExtras(QObject* parent)
 
 	m_socket = new QLocalSocket(this);
 
-	QObject::connect(m_socket, &QLocalSocket::errorOccurred, this, &HyprExtras::socketError);
-	QObject::connect(m_socket, &QLocalSocket::stateChanged, this, &HyprExtras::socketStateChanged);
-	QObject::connect(m_socket, &QLocalSocket::readyRead, this, &HyprExtras::readEvent);
+	QObject::connect(
+		m_socket, &QLocalSocket::errorOccurred, this, &HyprExtras::socketError);
+	QObject::connect(
+		m_socket,
+		&QLocalSocket::stateChanged,
+		this,
+		&HyprExtras::socketStateChanged);
+	QObject::connect(
+		m_socket, &QLocalSocket::readyRead, this, &HyprExtras::readEvent);
 
 	m_socket->connectToServer(m_eventSocket, QLocalSocket::ReadOnly);
 }
@@ -304,10 +322,11 @@ void HyprExtras::message(const QString& message) {
 	}
 
 	makeRequest(message, [](bool success, const QByteArray& res) {
-			if (!success) {
-				qCWarning(lcHypr) << "message: request error:" << QString::fromUtf8(res);
-			}
-		});
+		if (!success) {
+			qCWarning(lcHypr)
+				<< "message: request error:" << QString::fromUtf8(res);
+		}
+	});
 }
 
 void HyprExtras::batchMessage(const QStringList& messages) {
@@ -315,10 +334,12 @@ void HyprExtras::batchMessage(const QStringList& messages) {
 		return;
 	}
 
-	makeRequest(QStringLiteral("[[BATCH]]") + messages.join(QLatin1Char(';')),
-	            [](bool success, const QByteArray& res) {
+	makeRequest(
+		QStringLiteral("[[BATCH]]") + messages.join(QLatin1Char(';')),
+		[](bool success, const QByteArray& res) {
 			if (!success) {
-				qCWarning(lcHypr) << "batchMessage: request error:" << QString::fromUtf8(res);
+				qCWarning(lcHypr)
+					<< "batchMessage: request error:" << QString::fromUtf8(res);
 			}
 		});
 }
@@ -342,11 +363,14 @@ void HyprExtras::applyOptions(const QVariantHash& options) {
 		return;
 	}
 
-	makeRequest(QStringLiteral("eval ") + calls.join(QLatin1String("; ")), [this](bool success, const QByteArray& res) {
+	makeRequest(
+		QStringLiteral("eval ") + calls.join(QLatin1String("; ")),
+		[this](bool success, const QByteArray& res) {
 			if (success) {
 				refreshOptions();
 			} else {
-				qCWarning(lcHypr) << "applyOptions: request error" << QString::fromUtf8(res);
+				qCWarning(lcHypr)
+					<< "applyOptions: request error" << QString::fromUtf8(res);
 			}
 		});
 }
@@ -372,26 +396,26 @@ void HyprExtras::refreshOptions() {
 
 	auto nextOptions = std::make_shared<QVariantMap>();
 
-	auto step = std::make_shared<std::function<void(int)> >();
+	auto step = std::make_shared<std::function<void(int)>>();
 	*step = [this, generation, nextOptions, step](int index) {
-			if (generation != m_optionsRefreshGeneration) {
-				return;
+		if (generation != m_optionsRefreshGeneration) {
+			return;
+		}
+
+		if (index >= optionKeys.size()) {
+			if (m_options != *nextOptions) {
+				m_options = *nextOptions;
+				emit optionsChanged();
 			}
+			return;
+		}
 
-			if (index >= optionKeys.size()) {
-				if (m_options != *nextOptions) {
-					m_options = *nextOptions;
-					emit optionsChanged();
-				}
-				return;
-			}
+		const QString key = optionKeys.at(index);
 
-			const QString key = optionKeys.at(index);
-
-			m_optionsRefresh = makeRequestJson(
-				QStringLiteral("getoption ") + key,
-				[this, generation, nextOptions, step, index, key](bool success, const QJsonDocument& response)
-			{
+		m_optionsRefresh = makeRequestJson(
+			QStringLiteral("getoption ") + key,
+			[this, generation, nextOptions, step, index, key](
+				bool success, const QJsonDocument& response) {
 				m_optionsRefresh.reset();
 
 				if (generation != m_optionsRefreshGeneration) {
@@ -399,19 +423,26 @@ void HyprExtras::refreshOptions() {
 				}
 
 				if (success && response.isObject()) {
-					const QVariant value = parseGetOptionValue(response.object());
+					const QVariant value =
+						parseGetOptionValue(response.object());
 					if (value.isValid()) {
-						insertNestedValue(*nextOptions, key.split(QLatin1Char(':'), Qt::SkipEmptyParts), value);
+						insertNestedValue(
+							*nextOptions,
+							key.split(QLatin1Char(':'), Qt::SkipEmptyParts),
+							value);
 					} else {
-						qCWarning(lcHypr) << "refreshOptions: getoption returned no usable value for" << key;
+						qCWarning(lcHypr) << "refreshOptions: getoption "
+											 "returned no usable value for"
+										  << key;
 					}
 				} else if (!success) {
-					qCWarning(lcHypr) << "refreshOptions: getoption request error for" << key;
+					qCWarning(lcHypr)
+						<< "refreshOptions: getoption request error for" << key;
 				}
 
 				(*step)(index + 1);
 			});
-		};
+	};
 
 	(*step)(0);
 }
@@ -421,7 +452,9 @@ void HyprExtras::refreshDevices() {
 		m_devicesRefresh->close();
 	}
 
-	m_devicesRefresh = makeRequestJson(QStringLiteral("devices"), [this](bool success, const QJsonDocument& response) {
+	m_devicesRefresh = makeRequestJson(
+		QStringLiteral("devices"),
+		[this](bool success, const QJsonDocument& response) {
 			m_devicesRefresh.reset();
 			if (success) {
 				m_devices->updateLastIpcObject(response.object());
@@ -431,15 +464,19 @@ void HyprExtras::refreshDevices() {
 
 void HyprExtras::socketError(QLocalSocket::LocalSocketError error) const {
 	if (!m_socketValid) {
-		qCWarning(lcHypr) << "socketError: unable to connect to Hyprland event socket:" << error;
+		qCWarning(lcHypr)
+			<< "socketError: unable to connect to Hyprland event socket:"
+			<< error;
 	} else {
-		qCWarning(lcHypr) << "socketError: Hyprland event socket error:" << error;
+		qCWarning(lcHypr) << "socketError: Hyprland event socket error:"
+						  << error;
 	}
 }
 
 void HyprExtras::socketStateChanged(QLocalSocket::LocalSocketState state) {
 	if (state == QLocalSocket::UnconnectedState && m_socketValid) {
-		qCWarning(lcHypr) << "socketStateChanged: Hyprland event socket disconnected.";
+		qCWarning(lcHypr)
+			<< "socketStateChanged: Hyprland event socket disconnected.";
 	}
 
 	m_socketValid = state == QLocalSocket::ConnectedState;
@@ -452,7 +489,8 @@ void HyprExtras::readEvent() {
 			break;
 		}
 		rawEvent.truncate(rawEvent.length() - 1);
-		const auto event = QByteArrayView(rawEvent.data(), rawEvent.indexOf(">>"));
+		const auto event =
+			QByteArrayView(rawEvent.data(), rawEvent.indexOf(">>"));
 		handleEvent(QString::fromUtf8(event));
 	}
 }
@@ -466,14 +504,18 @@ void HyprExtras::handleEvent(const QString& event) {
 }
 
 HyprExtras::SocketPtr HyprExtras::makeRequestJson(
-	const QString& request, const std::function<void(bool, QJsonDocument)>& callback) {
-	return makeRequest(QStringLiteral("j/") + request, [callback](bool success, const QByteArray& response) {
+	const QString& request,
+	const std::function<void(bool, QJsonDocument)>& callback) {
+	return makeRequest(
+		QStringLiteral("j/") + request,
+		[callback](bool success, const QByteArray& response) {
 			callback(success, QJsonDocument::fromJson(response));
 		});
 }
 
 HyprExtras::SocketPtr HyprExtras::makeRequest(
-	const QString& request, const std::function<void(bool, QByteArray)>& callback) {
+	const QString& request,
+	const std::function<void(bool, QByteArray)>& callback) {
 	if (m_requestSocket.isEmpty()) {
 		return SocketPtr();
 	}
@@ -481,18 +523,24 @@ HyprExtras::SocketPtr HyprExtras::makeRequest(
 	auto socket = SocketPtr::create(this);
 
 	QObject::connect(socket.data(), &QLocalSocket::connected, this, [=, this]() {
-			QObject::connect(socket.data(), &QLocalSocket::readyRead, this, [socket, callback]() {
+		QObject::connect(
+			socket.data(), &QLocalSocket::readyRead, this, [socket, callback]() {
 				const auto response = socket->readAll();
 				callback(true, std::move(response));
 				socket->close();
 			});
 
-			socket->write(request.toUtf8());
-			socket->flush();
-		});
+		socket->write(request.toUtf8());
+		socket->flush();
+	});
 
-	QObject::connect(socket.data(), &QLocalSocket::errorOccurred, this, [=](QLocalSocket::LocalSocketError err) {
-			qCWarning(lcHypr) << "makeRequest: error making request:" << err << "| request:" << request;
+	QObject::connect(
+		socket.data(),
+		&QLocalSocket::errorOccurred,
+		this,
+		[=](QLocalSocket::LocalSocketError err) {
+			qCWarning(lcHypr) << "makeRequest: error making request:" << err
+							  << "| request:" << request;
 			callback(false, {});
 			socket->close();
 		});

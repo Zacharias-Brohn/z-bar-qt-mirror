@@ -24,12 +24,14 @@ struct Accum {
 };
 
 [[nodiscard]] QString sysfsRealPath(uint major, uint minor) {
-	const QString link = QStringLiteral("/sys/dev/block/%1:%2").arg(major).arg(minor);
+	const QString link =
+		QStringLiteral("/sys/dev/block/%1:%2").arg(major).arg(minor);
 	const QString resolved = QFileInfo(link).canonicalFilePath();
 	return resolved;
 }
 
-[[nodiscard]] bool readDevtFromSysfs(const QString& sysfsBlockDir, uint& major, uint& minor) {
+[[nodiscard]] bool readDevtFromSysfs(
+	const QString& sysfsBlockDir, uint& major, uint& minor) {
 	QFile f(sysfsBlockDir + QStringLiteral("/dev"));
 	if (!f.open(QIODevice::ReadOnly | QIODevice::Text)) {
 		return false;
@@ -50,6 +52,7 @@ struct Accum {
 
 QStringList resolveByDevt(uint major, uint minor, int depth = 0);
 
+// NOLINTNEXTLINE(misc-no-recursion)
 QStringList resolveAtNode(const QString& node, int depth) {
 	if (node.isEmpty() || depth > 8) {
 		return {};
@@ -62,18 +65,20 @@ QStringList resolveAtNode(const QString& node, int depth) {
 
 	if (QFileInfo::exists(node + QStringLiteral("/partition"))) {
 		const QString diskNode = nodeInfo.path();
-		return { QFileInfo(diskNode).fileName() };
+		return {QFileInfo(diskNode).fileName()};
 	}
 
 	const QDir slavesDir(node + QStringLiteral("/slaves"));
 	if (slavesDir.exists()) {
-		const QStringList slaves = slavesDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
+		const QStringList slaves =
+			slavesDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
 		if (!slaves.isEmpty()) {
 			QStringList out;
 			for (const QString& slave : slaves) {
 				uint sm = 0;
 				uint sn = 0;
-				const QString slaveDir = QStringLiteral("/sys/class/block/") + slave;
+				const QString slaveDir =
+					QStringLiteral("/sys/class/block/") + slave;
 				if (!readDevtFromSysfs(slaveDir, sm, sn)) {
 					continue;
 				}
@@ -88,18 +93,17 @@ QStringList resolveAtNode(const QString& node, int depth) {
 		}
 	}
 
-	return { nodeInfo.fileName() };
+	return {nodeInfo.fileName()};
 }
 
+// NOLINTNEXTLINE(misc-no-recursion)
 QStringList resolveByDevt(uint major, uint minor, int depth) {
 	return resolveAtNode(sysfsRealPath(major, minor), depth);
 }
 
 } // namespace
 
-Storage::Storage(QObject* parent)
-	: TickingService(parent) {
-}
+Storage::Storage(QObject* parent) : TickingService(parent) {}
 
 qreal Storage::percentage() const {
 	qreal totalUsed = 0.0;
@@ -124,7 +128,8 @@ bool Storage::sameOrder(const QList<DiskInfo*>& a, const QList<DiskInfo*>& b) {
 }
 
 QQmlListProperty<DiskInfo> Storage::disksProp() {
-	return QQmlListProperty<DiskInfo>(this, nullptr, &Storage::disksCount, &Storage::disksAt);
+	return QQmlListProperty<DiskInfo>(
+		this, nullptr, &Storage::disksCount, &Storage::disksAt);
 }
 
 qsizetype Storage::disksCount(QQmlListProperty<DiskInfo>* prop) {
@@ -157,30 +162,11 @@ DiskInfo* Storage::primaryDisk() const {
 
 bool Storage::isPseudoFs(QByteArrayView fsType) {
 	static constexpr const char* kPseudo[] = {
-		"tmpfs",
-		"devtmpfs",
-		"proc",
-		"sysfs",
-		"cgroup",
-		"cgroup2",
-		"overlay",
-		"squashfs",
-		"devpts",
-		"mqueue",
-		"ramfs",
-		"rpc_pipefs",
-		"autofs",
-		"configfs",
-		"debugfs",
-		"tracefs",
-		"securityfs",
-		"pstore",
-		"bpf",
-		"binfmt_misc",
-		"hugetlbfs",
-		"fusectl",
-		"efivarfs",
-		"selinuxfs",
+		"tmpfs",	 "devtmpfs",   "proc",	   "sysfs",		"cgroup",
+		"cgroup2",	 "overlay",	   "squashfs", "devpts",	"mqueue",
+		"ramfs",	 "rpc_pipefs", "autofs",   "configfs",	"debugfs",
+		"tracefs",	 "securityfs", "pstore",   "bpf",		"binfmt_misc",
+		"hugetlbfs", "fusectl",	   "efivarfs", "selinuxfs",
 	};
 	for (const char* p : kPseudo) {
 		if (fsType == QByteArrayView(p)) {
@@ -194,7 +180,7 @@ QStringList Storage::resolveToPhysicalDisks(const QString& devicePath) {
 	if (devicePath.isEmpty() || !devicePath.startsWith(QLatin1Char('/'))) {
 		return {};
 	}
-	struct stat st {};
+	struct stat st{};
 	if (::stat(devicePath.toLocal8Bit().constData(), &st) != 0) {
 		return {};
 	}
@@ -232,7 +218,8 @@ void Storage::tick() {
 		const QByteArray device = v.device();
 		const auto totalBytes = static_cast<quint64>(v.bytesTotal());
 		const auto availBytes = static_cast<quint64>(v.bytesAvailable());
-		const quint64 usedBytes = totalBytes > availBytes ? totalBytes - availBytes : 0;
+		const quint64 usedBytes =
+			totalBytes > availBytes ? totalBytes - availBytes : 0;
 		const bool isRoot = v.rootPath() == QStringLiteral("/");
 
 		DeviceEntry& e = byDevice[device];
@@ -244,7 +231,8 @@ void Storage::tick() {
 
 	for (auto it = byDevice.constBegin(); it != byDevice.constEnd(); ++it) {
 		const DeviceEntry& e = it.value();
-		const QStringList disks = resolveToPhysicalDisks(QString::fromLocal8Bit(e.device));
+		const QStringList disks =
+			resolveToPhysicalDisks(QString::fromLocal8Bit(e.device));
 		if (disks.isEmpty()) {
 			continue;
 		}
@@ -269,14 +257,23 @@ void Storage::tick() {
 	next.reserve(byDisk.size());
 	for (auto it = byDisk.constBegin(); it != byDisk.constEnd(); ++it) {
 		if (DiskInfo* survivor = existing.take(it.key())) {
-			survivor->update(it.value().usedBytes, it.value().totalBytes, it.value().hasRoot);
+			survivor->update(
+				it.value().usedBytes,
+				it.value().totalBytes,
+				it.value().hasRoot);
 			next.append(survivor);
 		} else {
-			next.append(new DiskInfo(it.key(), it.value().usedBytes, it.value().totalBytes, it.value().hasRoot, this));
+			next.append(new DiskInfo(
+				it.key(),
+				it.value().usedBytes,
+				it.value().totalBytes,
+				it.value().hasRoot,
+				this));
 		}
 	}
 
-	std::sort(next.begin(), next.end(), [](const DiskInfo* a, const DiskInfo* b) {
+	std::sort(
+		next.begin(), next.end(), [](const DiskInfo* a, const DiskInfo* b) {
 			if (a->hasRoot() != b->hasRoot()) {
 				return a->hasRoot();
 			}
@@ -284,7 +281,8 @@ void Storage::tick() {
 		});
 
 	bool manualCleared = false;
-	if (DiskInfo* m = m_manualPrimaryDisk.data(); m && existing.contains(m->mount())) {
+	if (DiskInfo* m = m_manualPrimaryDisk.data();
+		m && existing.contains(m->mount())) {
 		m_manualPrimaryDisk.clear();
 		manualCleared = true;
 	}

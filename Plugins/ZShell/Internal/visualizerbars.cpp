@@ -9,14 +9,12 @@
 
 namespace ZShell::internal {
 
-VisualizerBars::VisualizerBars(QQuickItem* parent)
-	: QQuickPaintedItem(parent) {
+VisualizerBars::VisualizerBars(QQuickItem* parent) : QQuickPaintedItem(parent) {
 	setAntialiasing(true);
 }
 
 void VisualizerBars::advance(qreal dt) {
-	if (m_displayValues.isEmpty() || m_settled)
-		return;
+	if (m_displayValues.isEmpty() || m_settled) return;
 
 	// dt is in seconds (from FrameAnimation.frameTime), convert to ms
 	const qreal dtMs = dt * 1000.0;
@@ -45,8 +43,7 @@ void VisualizerBars::advance(qreal dt) {
 }
 
 void VisualizerBars::paint(QPainter* painter) {
-	if (m_displayValues.isEmpty())
-		return;
+	if (m_displayValues.isEmpty()) return;
 
 	painter->setRenderHint(QPainter::Antialiasing, true);
 	painter->setPen(Qt::NoPen);
@@ -68,15 +65,13 @@ void VisualizerBars::drawSide(QPainter* painter, bool rightSide) {
 	const qreal h = height();
 	const auto count = m_displayValues.size();
 
-	if (count == 0)
-		return;
+	if (count == 0) return;
 
 	const qreal sideWidth = w * 0.4;
 	const qreal slotWidth = sideWidth / static_cast<qreal>(count);
 	const qreal barWidth = slotWidth - m_spacing;
 
-	if (barWidth <= 0)
-		return;
+	if (barWidth <= 0) return;
 
 	const qreal sideOffset = rightSide ? w * 0.6 : 0;
 	const qreal maxBarHeight = h * 0.4;
@@ -86,12 +81,11 @@ void VisualizerBars::drawSide(QPainter* painter, bool rightSide) {
 		const qreal value = std::clamp(m_displayValues[valueIndex], 0.0, 1.0);
 		const qreal barHeight = value * maxBarHeight;
 
-		if (barHeight <= 0)
-			continue;
+		if (barHeight <= 0) continue;
 
 		const qreal x = static_cast<qreal>(i) * slotWidth + sideOffset;
 		const qreal y = h - barHeight;
-		const qreal r = std::min({ m_rounding, barWidth / 2.0, barHeight });
+		const qreal r = std::min({m_rounding, barWidth / 2.0, barHeight});
 
 		QPainterPath path;
 		path.moveTo(x, h);
@@ -141,8 +135,7 @@ QColor VisualizerBars::primaryColor() const {
 }
 
 void VisualizerBars::setPrimaryColor(const QColor& color) {
-	if (m_primaryColor == color)
-		return;
+	if (m_primaryColor == color) return;
 	m_primaryColor = color;
 	emit primaryColorChanged();
 	update();
@@ -153,8 +146,7 @@ QColor VisualizerBars::secondaryColor() const {
 }
 
 void VisualizerBars::setSecondaryColor(const QColor& color) {
-	if (m_secondaryColor == color)
-		return;
+	if (m_secondaryColor == color) return;
 	m_secondaryColor = color;
 	emit secondaryColorChanged();
 	update();
@@ -165,8 +157,7 @@ qreal VisualizerBars::rounding() const {
 }
 
 void VisualizerBars::setRounding(qreal rounding) {
-	if (qFuzzyCompare(m_rounding, rounding))
-		return;
+	if (qFuzzyCompare(m_rounding, rounding)) return;
 	m_rounding = rounding;
 	emit roundingChanged();
 	update();
@@ -177,8 +168,7 @@ qreal VisualizerBars::spacing() const {
 }
 
 void VisualizerBars::setSpacing(qreal spacing) {
-	if (qFuzzyCompare(m_spacing, spacing))
-		return;
+	if (qFuzzyCompare(m_spacing, spacing)) return;
 	m_spacing = spacing;
 	emit spacingChanged();
 	update();
@@ -189,8 +179,7 @@ int VisualizerBars::animationDuration() const {
 }
 
 void VisualizerBars::setAnimationDuration(int duration) {
-	if (m_animationDuration == duration)
-		return;
+	if (m_animationDuration == duration) return;
 	m_animationDuration = duration;
 	emit animationDurationChanged();
 }

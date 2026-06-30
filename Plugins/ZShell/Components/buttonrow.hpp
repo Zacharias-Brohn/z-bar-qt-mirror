@@ -5,33 +5,34 @@
 namespace ZShell::components {
 
 class ButtonRow : public QQuickItem {
-Q_OBJECT
-QML_ELEMENT
+	Q_OBJECT
+	QML_ELEMENT
 
-Q_PROPERTY(qreal spacing READ spacing WRITE setSpacing NOTIFY spacingChanged)
+	Q_PROPERTY(qreal spacing READ spacing WRITE setSpacing NOTIFY spacingChanged)
 
-public:
-explicit ButtonRow(QQuickItem* parent = nullptr);
+	public:
+	explicit ButtonRow(QQuickItem* parent = nullptr);
 
-[[nodiscard]] qreal spacing() const;
-void setSpacing(qreal spacing);
+	[[nodiscard]] qreal spacing() const;
+	void setSpacing(qreal spacing);
 
-signals:
-void spacingChanged();
+	signals:
+	void spacingChanged();
 
-protected:
-void itemChange(QQuickItem::ItemChange change, const QQuickItem::ItemChangeData& data) override;
-void updatePolish() override;
+	protected:
+	void itemChange(
+		QQuickItem::ItemChange change,
+		const QQuickItem::ItemChangeData& data) override;
+	void updatePolish() override;
 
-private slots:
-void invalidate();
+	private slots:
+	void invalidate();
 
-private:
-void relayout();
-static qreal getMorphExpansion(const QQuickItem* item);
+	void relayout();
+	static qreal getMorphExpansion(const QQuickItem* item);
 
-bool m_dirty;
-qreal m_spacing;
+	bool m_dirty;
+	qreal m_spacing;
 };
 
 } // namespace ZShell::components

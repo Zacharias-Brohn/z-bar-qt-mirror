@@ -7,17 +7,20 @@
 namespace ZShell {
 
 class Requests : public QObject {
-Q_OBJECT
-QML_ELEMENT
-QML_SINGLETON
+	Q_OBJECT
+	QML_ELEMENT
+	QML_SINGLETON
 
-public:
-explicit Requests(QObject* parent = nullptr);
+	public:
+	explicit Requests(QObject* parent = nullptr);
 
-Q_INVOKABLE void get(const QUrl& url, QJSValue callback, QJSValue onError = QJSValue()) const;
+	Q_INVOKABLE void get(
+		const QUrl& url,
+		QJSValue callback,
+		QJSValue onError = QJSValue()) const;
 
-private:
-QNetworkAccessManager* m_manager;
+	private:
+	QNetworkAccessManager* m_manager;
 };
 
 } // namespace ZShell

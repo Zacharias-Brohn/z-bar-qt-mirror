@@ -8,75 +8,80 @@
 namespace ZShell {
 
 class Toast : public QObject {
-Q_OBJECT
-QML_ELEMENT
-QML_UNCREATABLE("Toast instances can only be retrieved from a Toaster")
+	Q_OBJECT
+	QML_ELEMENT
+	QML_UNCREATABLE("Toast instances can only be retrieved from a Toaster")
 
-Q_PROPERTY(bool closed READ closed NOTIFY closedChanged)
-Q_PROPERTY(QString title READ title CONSTANT)
-Q_PROPERTY(QString message READ message CONSTANT)
-Q_PROPERTY(QString icon READ icon CONSTANT)
-Q_PROPERTY(int timeout READ timeout CONSTANT)
-Q_PROPERTY(Type type READ type CONSTANT)
+	Q_PROPERTY(bool closed READ closed NOTIFY closedChanged)
+	Q_PROPERTY(QString title READ title CONSTANT)
+	Q_PROPERTY(QString message READ message CONSTANT)
+	Q_PROPERTY(QString icon READ icon CONSTANT)
+	Q_PROPERTY(int timeout READ timeout CONSTANT)
+	Q_PROPERTY(Type type READ type CONSTANT)
 
-public:
-enum class Type {
-	Info = 0,
-	Success,
-	Warning,
-	Error
-};
-Q_ENUM(Type)
+	public:
+	enum class Type { Info = 0, Success, Warning, Error };
+	Q_ENUM(Type)
 
-explicit Toast(const QString& title, const QString& message, const QString& icon, Type type, int timeout,
-               QObject* parent = nullptr);
+	explicit Toast(
+		const QString& title,
+		const QString& message,
+		const QString& icon,
+		Type type,
+		int timeout,
+		QObject* parent = nullptr);
 
-[[nodiscard]] bool closed() const;
-[[nodiscard]] QString title() const;
-[[nodiscard]] QString message() const;
-[[nodiscard]] QString icon() const;
-[[nodiscard]] int timeout() const;
-[[nodiscard]] Type type() const;
+	[[nodiscard]] bool closed() const;
+	[[nodiscard]] QString title() const;
+	[[nodiscard]] QString message() const;
+	[[nodiscard]] QString icon() const;
+	[[nodiscard]] int timeout() const;
+	[[nodiscard]] Type type() const;
 
-Q_INVOKABLE void close();
-Q_INVOKABLE void lock(QObject* sender);
-Q_INVOKABLE void unlock(QObject* sender);
+	Q_INVOKABLE void close();
+	Q_INVOKABLE void lock(QObject* sender);
+	Q_INVOKABLE void unlock(QObject* sender);
 
-signals:
-void closedChanged();
-void finishedClose();
+	signals:
+	void closedChanged();
+	void finishedClose();
 
-private:
-QSet<QObject*> m_locks;
+	private:
+	QSet<QObject*> m_locks;
 
-bool m_closed;
-QString m_title;
-QString m_message;
-QString m_icon;
-Type m_type;
-int m_timeout;
+	bool m_closed;
+	QString m_title;
+	QString m_message;
+	QString m_icon;
+	Type m_type;
+	int m_timeout;
 };
 
 class Toaster : public QObject {
-Q_OBJECT
-QML_ELEMENT
-QML_SINGLETON
+	Q_OBJECT
+	QML_ELEMENT
+	QML_SINGLETON
 
-Q_PROPERTY(QQmlListProperty<ZShell::Toast> toasts READ toasts NOTIFY toastsChanged)
+	Q_PROPERTY(
+		QQmlListProperty<ZShell::Toast> toasts READ toasts NOTIFY toastsChanged)
 
-public:
-explicit Toaster(QObject* parent = nullptr);
+	public:
+	explicit Toaster(QObject* parent = nullptr);
 
-[[nodiscard]] QQmlListProperty<Toast> toasts();
+	[[nodiscard]] QQmlListProperty<Toast> toasts();
 
-Q_INVOKABLE void toast(const QString& title, const QString& message, const QString& icon = QString(),
-                       ZShell::Toast::Type type = Toast::Type::Info, int timeout = 5000);
+	Q_INVOKABLE void toast(
+		const QString& title,
+		const QString& message,
+		const QString& icon = QString(),
+		ZShell::Toast::Type type = Toast::Type::Info,
+		int timeout = 5000);
 
-signals:
-void toastsChanged();
+	signals:
+	void toastsChanged();
 
-private:
-QList<Toast*> m_toasts;
+	private:
+	QList<Toast*> m_toasts;
 };
 
 } // namespace ZShell

@@ -7,41 +7,41 @@
 namespace ZShell::services {
 
 class AudioProcessor : public QObject {
-Q_OBJECT
+	Q_OBJECT
 
-public:
-explicit AudioProcessor(QObject* parent = nullptr);
-~AudioProcessor() override;
+	public:
+	explicit AudioProcessor(QObject* parent = nullptr);
+	~AudioProcessor() override;
 
-void init();
+	void init();
 
-void start();
-void stop();
+	void start();
+	void stop();
 
-protected:
-virtual void process() = 0;
+	protected:
+	virtual void process() = 0;
 
-private:
-QTimer* m_timer;
+	private:
+	QTimer* m_timer;
 };
 
 class AudioProvider : public Service {
-Q_OBJECT
+	Q_OBJECT
 
-public:
-explicit AudioProvider(QObject* parent = nullptr);
-~AudioProvider() override;
+	public:
+	explicit AudioProvider(QObject* parent = nullptr);
+	~AudioProvider() override;
 
-protected:
-AudioProcessor* m_processor;
+	protected:
+	AudioProcessor* m_processor;
 
-void init();
+	void init();
 
-private:
-QThread* m_thread;
+	private:
+	QThread* m_thread;
 
-void start() override;
-void stop() override;
+	void start() override;
+	void stop() override;
 };
 
 } // namespace ZShell::services

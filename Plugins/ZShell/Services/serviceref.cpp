@@ -5,8 +5,7 @@
 namespace ZShell::services {
 
 ServiceRef::ServiceRef(Service* service, QObject* parent)
-	: QObject(parent)
-	, m_service(service) {
+	: QObject(parent), m_service(service) {
 	if (m_service) {
 		m_service->ref(this);
 	}

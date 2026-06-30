@@ -1,24 +1,26 @@
 #include "blobmaterial.hpp"
 
+#include <math.h>
+
 #include <cstring>
 
-static_assert(sizeof(decltype(BlobRectData::excludeMask)) == sizeof(float),
-              "BlobMaterial packs excludeMask into a float slot via memcpy");
+static_assert(
+	sizeof(decltype(BlobRectData::excludeMask)) == sizeof(float),
+	"BlobMaterial packs excludeMask into a float slot via memcpy");
 
 QSGMaterialType* BlobMaterial::type() const {
 	static QSGMaterialType s_type;
 	return &s_type;
 }
 
-QSGMaterialShader* BlobMaterial::createShader(QSGRendererInterface::RenderMode) const {
+QSGMaterialShader* BlobMaterial::createShader(
+	QSGRendererInterface::RenderMode) const {
 	return new BlobMaterialShader;
 }
 
 int BlobMaterial::compare(const QSGMaterial* other) const {
-	if (this < other)
-		return -1;
-	if (this > other)
-		return 1;
+	if (this < other) return -1;
+	if (this > other) return 1;
 	return 0;
 }
 
@@ -27,7 +29,8 @@ BlobMaterialShader::BlobMaterialShader() {
 	setShaderFileName(FragmentStage, QStringLiteral(":/shaders/blob.frag.qsb"));
 }
 
-bool BlobMaterialShader::updateUniformData(RenderState& state, QSGMaterial* newMaterial, QSGMaterial* oldMaterial) {
+bool BlobMaterialShader::updateUniformData(
+	RenderState& state, QSGMaterial* newMaterial, QSGMaterial* oldMaterial) {
 	Q_UNUSED(oldMaterial);
 	auto* mat = static_cast<BlobMaterial*>(newMaterial);
 	QByteArray* buf = state.uniformData();
@@ -59,10 +62,10 @@ bool BlobMaterialShader::updateUniformData(RenderState& state, QSGMaterial* newM
 
 	// Color as vec4 (offset 96, 16 bytes)
 	const float color[4] = {
-		static_cast<float>(mat->m_color.redF()),
-		static_cast<float>(mat->m_color.greenF()),
-		static_cast<float>(mat->m_color.blueF()),
-		static_cast<float>(mat->m_color.alphaF()),
+		mat->m_color.redF(),
+		mat->m_color.greenF(),
+		mat->m_color.blueF(),
+		mat->m_color.alphaF(),
 	};
 	memcpy(buf->data() + 96, color, 16);
 
@@ -86,11 +89,11 @@ bool BlobMaterialShader::updateUniformData(RenderState& state, QSGMaterial* newM
 		const auto& r = mat->m_rects[i];
 		const int base = 160 + i * 80;
 		// Pack excludeMask into props.x via bit-cast (read in shader with floatBitsToInt)
-		float maskAsFloat;
+		float maskAsFloat = NAN;
 		memcpy(&maskAsFloat, &r.excludeMask, sizeof(float));
-		const float d0[4] = { r.cx, r.cy, r.hw, r.hh };
-		const float d1[4] = { maskAsFloat, r.offsetX, r.offsetY, r.minEig };
-		const float d3[4] = { r.screenHalfX, r.screenHalfY, 0.0f, 0.0f };
+		const float d0[4] = {r.cx, r.cy, r.hw, r.hh};
+		const float d1[4] = {maskAsFloat, r.offsetX, r.offsetY, r.minEig};
+		const float d3[4] = {r.screenHalfX, r.screenHalfY, 0.0f, 0.0f};
 		memcpy(buf->data() + base, d0, 16);
 		memcpy(buf->data() + base + 16, d1, 16);
 		memcpy(buf->data() + base + 32, r.invDeform, 16);

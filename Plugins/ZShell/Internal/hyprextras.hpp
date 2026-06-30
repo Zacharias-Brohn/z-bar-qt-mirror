@@ -15,51 +15,56 @@ namespace ZShell::internal::hypr {
 class HyprDevices;
 
 class HyprExtras : public QObject {
-Q_OBJECT
-QML_ELEMENT
-        Q_MOC_INCLUDE("hyprdevices.hpp")
+	Q_OBJECT
+	QML_ELEMENT
+	Q_MOC_INCLUDE("hyprdevices.hpp")
 
-Q_PROPERTY(QVariantMap options READ options NOTIFY optionsChanged)
-Q_PROPERTY(ZShell::internal::hypr::HyprDevices* devices READ devices CONSTANT)
+	Q_PROPERTY(QVariantMap options READ options NOTIFY optionsChanged)
+	Q_PROPERTY(
+		ZShell::internal::hypr::HyprDevices* devices READ devices CONSTANT)
 
-public:
-explicit HyprExtras(QObject* parent = nullptr);
+	public:
+	explicit HyprExtras(QObject* parent = nullptr);
 
-[[nodiscard]] QVariantMap options() const;
-[[nodiscard]] HyprDevices* devices() const;
+	[[nodiscard]] QVariantMap options() const;
+	[[nodiscard]] HyprDevices* devices() const;
 
-Q_INVOKABLE void message(const QString& message);
-Q_INVOKABLE void batchMessage(const QStringList& messages);
-Q_INVOKABLE void applyOptions(const QVariantHash& options);
+	Q_INVOKABLE void message(const QString& message);
+	Q_INVOKABLE void batchMessage(const QStringList& messages);
+	Q_INVOKABLE void applyOptions(const QVariantHash& options);
 
-Q_INVOKABLE void refreshOptions();
-Q_INVOKABLE void refreshDevices();
+	Q_INVOKABLE void refreshOptions();
+	Q_INVOKABLE void refreshDevices();
 
-signals:
-void optionsChanged();
+	signals:
+	void optionsChanged();
 
-private:
-using SocketPtr = QSharedPointer<QLocalSocket>;
+	private:
+	using SocketPtr = QSharedPointer<QLocalSocket>;
 
-QString m_requestSocket;
-QString m_eventSocket;
-QLocalSocket* m_socket;
-bool m_socketValid;
+	QString m_requestSocket;
+	QString m_eventSocket;
+	QLocalSocket* m_socket;
+	bool m_socketValid;
 
-QVariantMap m_options;
-HyprDevices* const m_devices;
+	QVariantMap m_options;
+	HyprDevices* const m_devices;
 
-SocketPtr m_optionsRefresh;
-SocketPtr m_devicesRefresh;
-quint64 m_optionsRefreshGeneration = 0;
+	SocketPtr m_optionsRefresh;
+	SocketPtr m_devicesRefresh;
+	quint64 m_optionsRefreshGeneration = 0;
 
-void socketError(QLocalSocket::LocalSocketError error) const;
-void socketStateChanged(QLocalSocket::LocalSocketState state);
-void readEvent();
-void handleEvent(const QString& event);
+	void socketError(QLocalSocket::LocalSocketError error) const;
+	void socketStateChanged(QLocalSocket::LocalSocketState state);
+	void readEvent();
+	void handleEvent(const QString& event);
 
-SocketPtr makeRequestJson(const QString& request, const std::function<void(bool, QJsonDocument)>& callback);
-SocketPtr makeRequest(const QString& request, const std::function<void(bool, QByteArray)>& callback);
+	SocketPtr makeRequestJson(
+		const QString& request,
+		const std::function<void(bool, QJsonDocument)>& callback);
+	SocketPtr makeRequest(
+		const QString& request,
+		const std::function<void(bool, QByteArray)>& callback);
 };
 
 } // namespace ZShell::internal::hypr
