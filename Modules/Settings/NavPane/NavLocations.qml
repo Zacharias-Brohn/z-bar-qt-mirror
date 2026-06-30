@@ -173,7 +173,7 @@ VerticalFadeFlickable {
 
 					MaterialIcon {
 						color: DynamicColors.palette.m3primary
-						font.pointSize: Appearance.font.size.small
+						font.pointSize: Appearance.font.size.large
 						text: group.modelData.icon
 					}
 
@@ -188,7 +188,7 @@ VerticalFadeFlickable {
 
 				ColumnLayout {
 					Layout.fillWidth: true
-					spacing: 0
+					spacing: Appearance.spacing.extraSmall / 2
 
 					Repeater {
 						model: group.modelData.entries
@@ -202,25 +202,23 @@ VerticalFadeFlickable {
 							required property var modelData
 
 							Layout.fillWidth: true
-							bottomLeftRadius: isLast ? Appearance.rounding.large : 0
-							bottomRightRadius: isLast ? Appearance.rounding.large : 0
+							bottomLeftRadius: layer.pressed ? Appearance.rounding.medium : isLast ? Appearance.rounding.large : Appearance.rounding.extraSmall
+							bottomRightRadius: layer.pressed ? Appearance.rounding.medium : isLast ? Appearance.rounding.large : Appearance.rounding.extraSmall
 							color: DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHigh, 2)
 							implicitHeight: {
 								const h = resultLayout.implicitHeight + resultLayout.anchors.margins * 2;
 								return h % 2 === 0 ? h : h + 1;
 							}
-							topLeftRadius: isFirst ? Appearance.rounding.large : 0
-							topRightRadius: isFirst ? Appearance.rounding.large : 0
+							topLeftRadius: layer.pressed ? Appearance.rounding.medium : isFirst ? Appearance.rounding.large : Appearance.rounding.extraSmall
+							topRightRadius: layer.pressed ? Appearance.rounding.medium : isFirst ? Appearance.rounding.large : Appearance.rounding.extraSmall
 
-							CustomRect {
-								anchors.bottom: parent.bottom
-								anchors.left: parent.left
-								anchors.leftMargin: Appearance.padding.large
-								anchors.right: parent.right
-								anchors.rightMargin: Appearance.padding.large
-								color: Qt.alpha(DynamicColors.palette.m3outlineVariant, 0.5)
-								implicitHeight: 1
-								visible: !result.isLast
+							RadiusBehavior on bottomLeftRadius {
+							}
+							RadiusBehavior on bottomRightRadius {
+							}
+							RadiusBehavior on topLeftRadius {
+							}
+							RadiusBehavior on topRightRadius {
 							}
 
 							ColumnLayout {
@@ -266,8 +264,8 @@ VerticalFadeFlickable {
 							}
 
 							StateLayer {
-								anchors.fill: parent
-								radius: 0
+								id: layer
+
 								z: 1
 
 								onClicked: {
