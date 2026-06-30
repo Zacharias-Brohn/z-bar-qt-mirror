@@ -8,32 +8,32 @@
 namespace ZShell::services {
 
 class Memory : public TickingService {
-Q_OBJECT
-QML_ELEMENT
-QML_SINGLETON
+	Q_OBJECT
+	QML_ELEMENT
+	QML_SINGLETON
 
-Q_PROPERTY(qreal used READ used NOTIFY changed)
-Q_PROPERTY(qreal total READ total NOTIFY changed)
-Q_PROPERTY(qreal percentage READ percentage NOTIFY changed)
+	Q_PROPERTY(qreal used READ used NOTIFY changed)
+	Q_PROPERTY(qreal total READ total NOTIFY changed)
+	Q_PROPERTY(qreal percentage READ percentage NOTIFY changed)
 
-public:
-explicit Memory(QObject* parent = nullptr);
+	public:
+	explicit Memory(QObject* parent = nullptr);
 
-[[nodiscard]] qreal used() const;
-[[nodiscard]] qreal total() const;
-[[nodiscard]] qreal percentage() const;
+	[[nodiscard]] qreal used() const;
+	[[nodiscard]] qreal total() const;
+	[[nodiscard]] qreal percentage() const;
 
-signals:
-void changed();
+	signals:
+	void changed();
 
-protected:
-void tick() override;
+	protected:
+	void tick() override;
 
-private:
-qreal m_used = 0.0;
-qreal m_total = 1.0;
-quint64 m_lastUsed = 0;
-quint64 m_lastTotal = 0;
+	private:
+	qreal m_used = 0.0;
+	qreal m_total = 1.0;
+	quint64 m_lastUsed = 0;
+	quint64 m_lastTotal = 0;
 };
 
 } // namespace ZShell::services

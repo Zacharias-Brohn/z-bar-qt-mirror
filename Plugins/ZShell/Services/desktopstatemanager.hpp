@@ -7,18 +7,18 @@
 namespace ZShell::services {
 
 class DesktopStateManager : public QObject {
-Q_OBJECT
-QML_ELEMENT
-QML_SINGLETON
+	Q_OBJECT
+	QML_ELEMENT
+	QML_SINGLETON
 
-public:
-explicit DesktopStateManager(QObject *parent = nullptr);
+	public:
+	explicit DesktopStateManager(QObject* parent = nullptr);
 
-Q_INVOKABLE void saveLayout(const QVariantMap& layout);
-Q_INVOKABLE QVariantMap getLayout();
+	Q_INVOKABLE void saveLayout(const QVariantMap& layout);
+	Q_INVOKABLE QVariantMap getLayout();
 
-private:
-[[nodiscard]] QString getConfigFilePath() const;
+	private:
+	[[nodiscard]] QString getConfigFilePath() const;
 };
 
 } // namespace ZShell::services

@@ -3,11 +3,10 @@
 namespace ZShell::components {
 
 ButtonRow::ButtonRow(QQuickItem* parent)
-	: QQuickItem(parent)
-	, m_dirty(false)
-	, m_spacing(0.0) {
+	: QQuickItem(parent), m_dirty(false), m_spacing(0.0) {
 	setFlag(QQuickItem::ItemHasContents, true);
-	QObject::connect(this, &ButtonRow::widthChanged, this, &ButtonRow::invalidate);
+	QObject::connect(
+		this, &ButtonRow::widthChanged, this, &ButtonRow::invalidate);
 }
 
 qreal ButtonRow::spacing() const {
@@ -15,8 +14,7 @@ qreal ButtonRow::spacing() const {
 }
 
 void ButtonRow::setSpacing(qreal spacing) {
-	if (qFuzzyCompare(m_spacing + 1.0, spacing + 1.0))
-		return;
+	if (qFuzzyCompare(m_spacing + 1.0, spacing + 1.0)) return;
 
 	m_spacing = spacing;
 	emit spacingChanged();
@@ -24,18 +22,33 @@ void ButtonRow::setSpacing(qreal spacing) {
 	invalidate();
 }
 
-void ButtonRow::itemChange(QQuickItem::ItemChange change, const QQuickItem::ItemChangeData& data) {
+void ButtonRow::itemChange(
+	QQuickItem::ItemChange change, const QQuickItem::ItemChangeData& data) {
 	if (change == QQuickItem::ItemChildAddedChange) {
 		auto* const child = data.item;
-		QObject::connect(child, &QQuickItem::implicitWidthChanged, this, &ButtonRow::invalidate);
-		QObject::connect(child, &QQuickItem::implicitHeightChanged, this, &ButtonRow::invalidate);
-		QObject::connect(child, &QQuickItem::visibleChanged, this, &ButtonRow::invalidate);
+		QObject::connect(
+			child,
+			&QQuickItem::implicitWidthChanged,
+			this,
+			&ButtonRow::invalidate);
+		QObject::connect(
+			child,
+			&QQuickItem::implicitHeightChanged,
+			this,
+			&ButtonRow::invalidate);
+		QObject::connect(
+			child, &QQuickItem::visibleChanged, this, &ButtonRow::invalidate);
 
 		const auto* childMeta = child->metaObject();
-		const auto morphSignalIdx = childMeta->indexOfSignal("shapeMorphExpansionChanged()");
+		const auto morphSignalIdx =
+			childMeta->indexOfSignal("shapeMorphExpansionChanged()");
 		if (morphSignalIdx != -1)
-			QObject::connect(child, childMeta->method(morphSignalIdx), this,
-			                 metaObject()->method(metaObject()->indexOfSlot("invalidate()")));
+			QObject::connect(
+				child,
+				childMeta->method(morphSignalIdx),
+				this,
+				metaObject()->method(
+					metaObject()->indexOfSlot("invalidate()")));
 
 		invalidate();
 	} else if (change == QQuickItem::ItemChildRemovedChange) {
@@ -77,8 +90,7 @@ void ButtonRow::relayout() {
 		maxHeight = qMax(maxHeight, child->implicitHeight());
 
 		const auto prop = child->property("fillWidth");
-		if (!prop.isValid())
-			continue;
+		if (!prop.isValid()) continue;
 
 		if (prop.toBool()) {
 			fillWidthCount++;
@@ -88,15 +100,17 @@ void ButtonRow::relayout() {
 		}
 	}
 
-	if (fillWidthCount == 0)
-		fillWidthCount = 1; // Avoid divide by 0
+	if (fillWidthCount == 0) fillWidthCount = 1; // Avoid divide by 0
 
-	const auto widthPerItem = (width() - totalSpacing - reservedWidth) / static_cast<qreal>(fillWidthCount);
+	const auto widthPerItem = (width() - totalSpacing - reservedWidth) /
+							  static_cast<qreal>(fillWidthCount);
 
 	QList<qreal> baseWidths;
 	baseWidths.reserve(nChildren);
 	for (auto* const child : validChildren)
-		baseWidths.append(child->property("fillWidth").toBool() ? widthPerItem : child->implicitWidth());
+		baseWidths.append(
+			child->property("fillWidth").toBool() ? widthPerItem
+												  : child->implicitWidth());
 
 	qreal accX = 0;
 	for (int i = 0; i < nChildren; ++i) {
@@ -108,12 +122,12 @@ void ButtonRow::relayout() {
 		// clang-format on
 
 		// Items at edges push by full amount, items in middle push by half
-		if (i > 1)
-			prevExtraWidth /= 2;
-		if (i < nChildren - 2)
-			nextExtraWidth /= 2;
+		if (i > 1) prevExtraWidth /= 2;
+		if (i < nChildren - 2) nextExtraWidth /= 2;
 
-		child->setWidth(baseWidths[i] + getMorphExpansion(child) - prevExtraWidth - nextExtraWidth);
+		child->setWidth(
+			baseWidths[i] + getMorphExpansion(child) - prevExtraWidth -
+			nextExtraWidth);
 		child->setHeight(maxHeight);
 
 		child->setX(accX);

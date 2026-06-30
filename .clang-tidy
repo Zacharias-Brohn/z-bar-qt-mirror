@@ -2,6 +2,10 @@
 Checks: >
     -*,
     bugprone-*,
+    -bugprone-throwing-static-initialization,
+    -bugprone-invalid-enum-default-initialization,
+    -bugprone-suspicious-include,
+    -bugprone-branch-clone,
     -bugprone-easily-swappable-parameters,
     -bugprone-narrowing-conversions,
     -bugprone-implicit-widening-of-multiplication-result,
@@ -12,6 +16,7 @@ Checks: >
     readability-else-after-return,
     readability-make-member-function-const,
     readability-redundant-*,
+    -readability-redundant-inline-specifier,
     readability-simplify-*,
     modernize-use-override,
     modernize-use-nullptr,

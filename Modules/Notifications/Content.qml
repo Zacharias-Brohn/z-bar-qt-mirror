@@ -1,11 +1,12 @@
 pragma ComponentBehavior: Bound
 
-import qs.Components
-import qs.Config
-import qs.Daemons
 import Quickshell
 import Quickshell.Widgets
 import QtQuick
+import qs.Components
+import qs.Config
+import qs.Daemons
+import qs.Helpers
 
 Item {
 	id: root
@@ -72,7 +73,15 @@ Item {
 				}
 			}
 			model: ScriptModel {
-				values: NotifServer.popups.filter(n => !n.closed)
+				values: {
+					const popups = NotifServer.popups.filter(n => !n.closed);
+
+					if (!Config.notifs.showInFullscreen) {
+						if (Hypr.monitorFor(root.panels.screen).activeWorkspace?.toplevels.values.some(t => t.lastIpcObject.fullscreen > 1) ?? false)
+							return [];
+					}
+					return popups;
+				}
 			}
 			move: Transition {
 				Anim {

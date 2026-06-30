@@ -7,7 +7,7 @@ ShapePath {
 	id: root
 
 	readonly property bool flatten: wrapper.height < rounding * 2
-	readonly property real rounding: Config.barConfig.rounding
+	readonly property real rounding: Config.bar.rounding
 	readonly property real roundingY: flatten ? wrapper.height / 2 : rounding
 	required property var sidebar
 	required property Wrapper wrapper

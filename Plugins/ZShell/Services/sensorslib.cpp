@@ -14,7 +14,7 @@ namespace ZShell::services::sensorslib {
 
 namespace {
 
-std::atomic<bool> g_initOk{ false };
+std::atomic<bool> g_initOk{false};
 std::once_flag g_initFlag;
 
 void doInit() {
@@ -25,14 +25,16 @@ void doInit() {
 	}
 	g_initOk.store(true, std::memory_order_release);
 	std::atexit([] {
-				if (g_initOk.load(std::memory_order_acquire)) {
-					sensors_cleanup();
-				}
-			});
+		if (g_initOk.load(std::memory_order_acquire)) {
+			sensors_cleanup();
+		}
+	});
 }
 
-[[nodiscard]] std::optional<double> readTempInput(const sensors_chip_name* chip, const sensors_feature* feat) {
-	const sensors_subfeature* sf = sensors_get_subfeature(chip, feat, SENSORS_SUBFEATURE_TEMP_INPUT);
+[[nodiscard]] std::optional<double> readTempInput(
+	const sensors_chip_name* chip, const sensors_feature* feat) {
+	const sensors_subfeature* sf =
+		sensors_get_subfeature(chip, feat, SENSORS_SUBFEATURE_TEMP_INPUT);
 	if (!sf) {
 		return std::nullopt;
 	}
@@ -43,7 +45,8 @@ void doInit() {
 	return value;
 }
 
-[[nodiscard]] QByteArray featureLabel(const sensors_chip_name* chip, const sensors_feature* feat) {
+[[nodiscard]] QByteArray featureLabel(
+	const sensors_chip_name* chip, const sensors_feature* feat) {
 	char* raw = sensors_get_label(chip, feat);
 	if (!raw) {
 		return {};
@@ -59,7 +62,8 @@ bool labelEquals(const QByteArray& label, const char* literal) {
 
 bool labelStartsWith(const QByteArray& label, const char* prefix) {
 	const auto n = std::strlen(prefix);
-	return static_cast<size_t>(label.size()) >= n && std::memcmp(label.constData(), prefix, n) == 0;
+	return static_cast<size_t>(label.size()) >= n &&
+		   std::memcmp(label.constData(), prefix, n) == 0;
 }
 
 } // namespace
@@ -74,13 +78,15 @@ std::optional<double> cpuPackageTemp() {
 		return std::nullopt;
 	}
 
-	std::optional<double> primary; // Package id N / Tdie
+	std::optional<double> primary;	// Package id N / Tdie
 	std::optional<double> fallback; // Tctl
 
 	int chipNr = 0;
-	while (const sensors_chip_name* chip = sensors_get_detected_chips(nullptr, &chipNr)) {
+	while (const sensors_chip_name* chip =
+			   sensors_get_detected_chips(nullptr, &chipNr)) {
 		int featNr = 0;
-		while (const sensors_feature* feat = sensors_get_features(chip, &featNr)) {
+		while (const sensors_feature* feat =
+				   sensors_get_features(chip, &featNr)) {
 			if (feat->type != SENSORS_FEATURE_TEMP) {
 				continue;
 			}
@@ -89,7 +95,8 @@ std::optional<double> cpuPackageTemp() {
 				continue;
 			}
 
-			if (labelStartsWith(label, "Package id ") || labelEquals(label, "Tdie")) {
+			if (labelStartsWith(label, "Package id ") ||
+				labelEquals(label, "Tdie")) {
 				if (auto v = readTempInput(chip, feat)) {
 					primary = v;
 				}
@@ -116,13 +123,15 @@ std::optional<double> gpuPciAverageTemp() {
 	int countFallback = 0;
 
 	int chipNr = 0;
-	while (const sensors_chip_name* chip = sensors_get_detected_chips(nullptr, &chipNr)) {
+	while (const sensors_chip_name* chip =
+			   sensors_get_detected_chips(nullptr, &chipNr)) {
 		if (chip->bus.type != SENSORS_BUS_TYPE_PCI) {
 			continue;
 		}
 
 		int featNr = 0;
-		while (const sensors_feature* feat = sensors_get_features(chip, &featNr)) {
+		while (const sensors_feature* feat =
+				   sensors_get_features(chip, &featNr)) {
 			if (feat->type != SENSORS_FEATURE_TEMP) {
 				continue;
 			}
@@ -131,10 +140,14 @@ std::optional<double> gpuPciAverageTemp() {
 				continue;
 			}
 
-			const bool tempIndexed = labelStartsWith(label, "temp") && label.size() > 4 &&
-			                         std::isdigit(static_cast<unsigned char>(label[4]));
-			const bool isPrimary = tempIndexed || labelEquals(label, "GPU core") || labelEquals(label, "edge");
-			const bool isFallback = labelEquals(label, "junction") || labelEquals(label, "mem");
+			const bool tempIndexed =
+				labelStartsWith(label, "temp") && label.size() > 4 &&
+				std::isdigit(static_cast<unsigned char>(label[4]));
+			const bool isPrimary = tempIndexed ||
+								   labelEquals(label, "GPU core") ||
+								   labelEquals(label, "edge");
+			const bool isFallback = labelEquals(label, "junction") ||
+									labelEquals(label, "mem");
 
 			if (!isPrimary && !isFallback) {
 				continue;

@@ -7,9 +7,7 @@
 
 namespace ZShell::services {
 
-AudioProcessor::AudioProcessor(QObject* parent)
-	: QObject(parent) {
-}
+AudioProcessor::AudioProcessor(QObject* parent) : QObject(parent) {}
 
 AudioProcessor::~AudioProcessor() {
 	stop();
@@ -17,12 +15,17 @@ AudioProcessor::~AudioProcessor() {
 
 void AudioProcessor::init() {
 	m_timer = new QTimer(this);
-	m_timer->setInterval(static_cast<int>(ac::CHUNK_SIZE * 1000.0 / ac::SAMPLE_RATE));
+	m_timer->setInterval(
+		static_cast<int>(ac::CHUNK_SIZE * 1000.0 / ac::SAMPLE_RATE));
 	connect(m_timer, &QTimer::timeout, this, &AudioProcessor::process);
 }
 
 void AudioProcessor::start() {
-	QMetaObject::invokeMethod(&AudioCollector::instance(), &AudioCollector::ref, Qt::QueuedConnection, this);
+	QMetaObject::invokeMethod(
+		&AudioCollector::instance(),
+		&AudioCollector::ref,
+		Qt::QueuedConnection,
+		this);
 	if (m_timer) {
 		m_timer->start();
 	}
@@ -32,14 +35,15 @@ void AudioProcessor::stop() {
 	if (m_timer) {
 		m_timer->stop();
 	}
-	QMetaObject::invokeMethod(&AudioCollector::instance(), &AudioCollector::unref, Qt::QueuedConnection, this);
+	QMetaObject::invokeMethod(
+		&AudioCollector::instance(),
+		&AudioCollector::unref,
+		Qt::QueuedConnection,
+		this);
 }
 
 AudioProvider::AudioProvider(QObject* parent)
-	: Service(parent)
-	, m_processor(nullptr)
-	, m_thread(nullptr) {
-}
+	: Service(parent), m_processor(nullptr), m_thread(nullptr) {}
 
 AudioProvider::~AudioProvider() {
 	if (m_thread) {
@@ -50,7 +54,8 @@ AudioProvider::~AudioProvider() {
 
 void AudioProvider::init() {
 	if (!m_processor) {
-		qWarning() << "AudioProvider::init: attempted to init with no processor set";
+		qWarning()
+			<< "AudioProvider::init: attempted to init with no processor set";
 		return;
 	}
 
@@ -58,7 +63,8 @@ void AudioProvider::init() {
 	m_processor->moveToThread(m_thread);
 
 	connect(m_thread, &QThread::started, m_processor, &AudioProcessor::init);
-	connect(m_thread, &QThread::finished, m_processor, &AudioProcessor::deleteLater);
+	connect(
+		m_thread, &QThread::finished, m_processor, &AudioProcessor::deleteLater);
 	connect(m_thread, &QThread::finished, m_thread, &QThread::deleteLater);
 
 	m_thread->start();

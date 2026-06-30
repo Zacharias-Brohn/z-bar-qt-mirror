@@ -19,7 +19,7 @@ Searcher {
 	Variants {
 		id: variants
 
-		model: Config.launcher.actions.filter(a => (a.enabled ?? true))
+		model: Config.launcher.actions.filter(a => (a.enabled ?? true) && (Config.launcher.enableDangerousActions || !(a.dangerous ?? false)))
 
 		Action {
 		}

@@ -22,7 +22,7 @@ PathView {
 		let outerMargins = 0;
 		if ((visibilities.utilities || visibilities.sidebar) && panels.utilities.implicitWidth > outerMargins)
 			outerMargins = panels.utilities.implicitWidth;
-		const maxWidth = screen.width - Config.barConfig.rounding * 4 - (barMargins + outerMargins) * 2;
+		const maxWidth = screen.width - Config.bar.rounding * 4 - (barMargins + outerMargins) * 2;
 
 		if (maxWidth <= 0)
 			return 0;
@@ -37,7 +37,7 @@ PathView {
 		return visible;
 	}
 	required property var panels
-	required property CustomTextField search
+	required property SearchBar search
 	required property var visibilities
 
 	cacheItemCount: 4

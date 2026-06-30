@@ -184,11 +184,11 @@ Item {
 	Item {
 		id: settingsWrapper
 
-		anchors.horizontalCenter: parent.horizontalCenter
-		anchors.top: parent.top
 		clip: true
-		implicitHeight: settings.implicitHeight * (1 - settings.offsetScale)
+		implicitHeight: settings.implicitHeight
 		implicitWidth: settings.implicitWidth
+		x: (root.width - settings.implicitWidth) / 2
+		y: (settings.implicitHeight + (root.height - root.bar.implicitHeight - settings.implicitHeight) / 2) * (1 - settings.offsetScale) - settings.implicitHeight - 5
 
 		Settings.Wrapper {
 			id: settings

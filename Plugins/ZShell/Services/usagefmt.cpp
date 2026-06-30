@@ -16,18 +16,18 @@ namespace ZShell::services::usagefmt {
 
 FormatResult UsageFmt::formatKib(qreal kib, qreal total) const {
 	if (!finitePositive(kib) || !finitePositive(total)) {
-		return { 0.0, 0.0, "KiB" };
+		return {0.0, 0.0, "KiB"};
 	}
 	if (total >= kGib) {
-		return { kib / kGib, total / kGib, "TiB" };
+		return {kib / kGib, total / kGib, "TiB"};
 	}
 	if (total >= kMib) {
-		return { kib / kMib, total / kMib, "GiB" };
+		return {kib / kMib, total / kMib, "GiB"};
 	}
 	if (total >= kKib) {
-		return { kib / kKib, total / kKib, "MiB" };
+		return {kib / kKib, total / kKib, "MiB"};
 	}
-	return { kib, total, "KiB" };
+	return {kib, total, "KiB"};
 }
 
 } // namespace ZShell::services::usagefmt

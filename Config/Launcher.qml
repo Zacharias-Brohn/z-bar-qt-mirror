@@ -84,6 +84,11 @@ JsonObject {
 			dangerous: false
 		},
 	]
+	property int dragThreshold: 50
+	property bool enableDangerousActions: false
+	property bool enabled: true
+	property list<string> favoriteApps: []
+	property list<string> hiddenApps: []
 	property int maxAppsShown: 10
 	property int maxWallpapers: 7
 	property Sizes sizes: Sizes {

@@ -10,43 +10,52 @@
 namespace ZShell::services {
 
 TickingService::TickingService(QObject* parent)
-	: Service(parent)
-	, m_timer(new QTimer(this)) {
+	: Service(parent), m_timer(new QTimer(this)) {
 	m_timer->setSingleShot(false);
-	QObject::connect(m_timer, &QTimer::timeout, this, [this] {
-			tick();
-		});
+	QObject::connect(m_timer, &QTimer::timeout, this, [this] { tick(); });
 
-	QString configPath = QDir::homePath() + QStringLiteral("/.config/zshell/config.json");
+	QString configPath =
+		QDir::homePath() + QStringLiteral("/.config/zshell/config.json");
 
 	auto reloadConfig = [this, configPath]() {
-				    QFile file(configPath);
-				    if (file.open(QIODevice::ReadOnly)) {
-					    QJsonDocument doc = QJsonDocument::fromJson(file.readAll());
-					    if (!doc.isNull()) {
-						    QJsonObject dashboard = doc.object().value("dashboard").toObject();
-						    if (dashboard.contains("resourceUpdateInterval")) {
-							    applyInterval(dashboard.value("resourceUpdateInterval").toInt(1000));
-						    }
-					    }
-				    }
-			    };
+		QFile file(configPath);
+		if (!file.open(QIODevice::ReadOnly)) {
+			return;
+		}
+		QJsonDocument doc = QJsonDocument::fromJson(file.readAll());
+		if (doc.isNull()) {
+			return;
+		}
+		QJsonObject dashboard = doc.object().value("dashboard").toObject();
+		if (dashboard.contains("resourceUpdateInterval")) {
+			applyInterval(
+				dashboard.value("resourceUpdateInterval").toInt(1000));
+		}
+	};
 
 	reloadConfig();
 
 	static auto* watcher = new QFileSystemWatcher();
 	if (!watcher->files().contains(configPath)) {
-		QObject::connect(watcher, &QFileSystemWatcher::fileChanged, this, [this, configPath]() {
+		QObject::connect(
+			watcher,
+			&QFileSystemWatcher::fileChanged,
+			this,
+			[this, configPath]() {
 				QTimer::singleShot(100, this, [this, configPath]() {
 					QFile file(configPath);
-					if (file.exists()) {
-						QJsonDocument doc = QJsonDocument::fromJson(file.readAll());
-						if (!doc.isNull()) {
-							QJsonObject dashboard = doc.object().value("dashboard").toObject();
-							if (dashboard.contains("resourceUpdateInterval")) {
-								applyInterval(dashboard.value("resourceUpdateInterval").toInt(1000));
-							}
-						}
+					if (!file.exists()) {
+						return;
+					}
+					QJsonDocument doc = QJsonDocument::fromJson(file.readAll());
+					if (doc.isNull()) {
+						return;
+					}
+					QJsonObject dashboard =
+						doc.object().value("dashboard").toObject();
+					if (dashboard.contains("resourceUpdateInterval")) {
+						applyInterval(dashboard.value("resourceUpdateInterval")
+										  .toInt(1000));
 					}
 				});
 			});

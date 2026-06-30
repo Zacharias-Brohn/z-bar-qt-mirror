@@ -15,19 +15,20 @@ struct FormatResult {
 	Q_PROPERTY(qreal total MEMBER total CONSTANT)
 	Q_PROPERTY(QString unit MEMBER unit CONSTANT)
 
-public:
+	public:
 	qreal value;
 	qreal total;
 	QString unit;
 };
 
 class UsageFmt : public QObject {
-Q_OBJECT
-QML_ELEMENT
-QML_SINGLETON
+	Q_OBJECT
+	QML_ELEMENT
+	QML_SINGLETON
 
-public:
-Q_INVOKABLE [[nodiscard]] FormatResult formatKib(qreal kib, qreal total) const;
+	public:
+	Q_INVOKABLE [[nodiscard]] FormatResult formatKib(
+		qreal kib, qreal total) const;
 };
 
 } // namespace ZShell::services::usagefmt

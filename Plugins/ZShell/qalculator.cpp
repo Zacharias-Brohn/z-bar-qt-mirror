@@ -4,10 +4,9 @@
 
 namespace ZShell {
 
-Qalculator::Qalculator(QObject* parent)
-	: QObject(parent) {
+Qalculator::Qalculator(QObject* parent) : QObject(parent) {
 	if (!CALCULATOR) {
-		new Calculator();
+		calculator = new Calculator();
 		CALCULATOR->loadExchangeRates();
 		CALCULATOR->loadGlobalDefinitions();
 		CALCULATOR->loadLocalDefinitions();
@@ -24,7 +23,11 @@ QString Qalculator::eval(const QString& expr, bool printExpr) const {
 
 	std::string parsed;
 	std::string result = CALCULATOR->calculateAndPrint(
-		CALCULATOR->unlocalizeExpression(expr.toStdString(), eo.parse_options), 100, eo, po, &parsed);
+		CALCULATOR->unlocalizeExpression(expr.toStdString(), eo.parse_options),
+		100,
+		eo,
+		po,
+		&parsed);
 
 	std::string error;
 	while (CALCULATOR->message()) {

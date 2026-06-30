@@ -8,8 +8,32 @@ import qs.Helpers
 Item {
 	id: root
 
+	readonly property bool shouldBeActive: Config.bar.tray.showPower
+
+	Layout.preferredHeight: shouldBeActive ? implicitHeight : 0
+	Layout.preferredWidth: shouldBeActive ? implicitWidth : 0
 	implicitHeight: Battery.isLaptop ? batteryIconLoader.item.implicitHeight : upowerIconLoader.item.implicitHeight
 	implicitWidth: Battery.isLaptop ? batteryIconLoader.item.implicitWidth : upowerIconLoader.item.implicitWidth
+	opacity: shouldBeActive ? 1 : 0
+	scale: shouldBeActive ? 1 : 0
+	visible: opacity > 0
+
+	Behavior on Layout.preferredHeight {
+		Anim {
+		}
+	}
+	Behavior on Layout.preferredWidth {
+		Anim {
+		}
+	}
+	Behavior on opacity {
+		Anim {
+		}
+	}
+	Behavior on scale {
+		Anim {
+		}
+	}
 
 	Loader {
 		id: batteryIconLoader

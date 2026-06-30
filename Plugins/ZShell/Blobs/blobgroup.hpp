@@ -9,53 +9,58 @@ class BlobShape;
 class BlobInvertedRect;
 
 class BlobGroup : public QObject {
-Q_OBJECT
-QML_ELEMENT
-Q_PROPERTY(qreal smoothing READ smoothing WRITE setSmoothing NOTIFY smoothingChanged)
-Q_PROPERTY(QColor color READ color WRITE setColor NOTIFY colorChanged)
+	Q_OBJECT
+	QML_ELEMENT
+	Q_PROPERTY(
+		qreal smoothing READ smoothing WRITE setSmoothing NOTIFY
+			smoothingChanged)
+	Q_PROPERTY(QColor color READ color WRITE setColor NOTIFY colorChanged)
+	Q_PROPERTY(
+		bool cornerFill READ cornerFill WRITE setCornerFill NOTIFY
+			cornerFillChanged)
 
-public:
-explicit BlobGroup(QObject* parent = nullptr);
-~BlobGroup() override;
+	public:
+	explicit BlobGroup(QObject* parent = nullptr);
+	~BlobGroup() override;
 
-[[nodiscard]] qreal smoothing() const {
-	return m_smoothing;
-}
+	[[nodiscard]] qreal smoothing() const { return m_smoothing; }
 
-void setSmoothing(qreal s);
+	void setSmoothing(qreal s);
 
-[[nodiscard]] QColor color() const {
-	return m_color;
-}
+	[[nodiscard]] QColor color() const { return m_color; }
 
-void setColor(const QColor& c);
+	void setColor(const QColor& c);
 
-void addShape(BlobShape* shape);
-void removeShape(BlobShape* shape);
+	[[nodiscard]] bool cornerFill() const { return m_cornerFill; }
 
-void setInvertedRect(BlobInvertedRect* rect);
-void clearInvertedRect(BlobInvertedRect* rect);
+	void setCornerFill(bool e);
 
-[[nodiscard]] const QList<BlobShape*>& shapes() const {
-	return m_shapes;
-}
+	void addShape(BlobShape* shape);
+	void removeShape(BlobShape* shape);
 
-[[nodiscard]] BlobInvertedRect* invertedRect() const {
-	return m_invertedRect;
-}
+	void setInvertedRect(BlobInvertedRect* rect);
+	void clearInvertedRect(BlobInvertedRect* rect);
 
-void markDirty();
-void markShapeDirty(BlobShape* source);
-void ensurePhysicsUpdated();
+	[[nodiscard]] const QList<BlobShape*>& shapes() const { return m_shapes; }
 
-signals:
-void smoothingChanged();
-void colorChanged();
+	[[nodiscard]] BlobInvertedRect* invertedRect() const {
+		return m_invertedRect;
+	}
 
-private:
-qreal m_smoothing = 32.0;
-QColor m_color{ 0x44, 0x88, 0xff };
-QList<BlobShape*> m_shapes;
-BlobInvertedRect* m_invertedRect = nullptr;
-bool m_physicsUpdated = false;
+	void markDirty();
+	void markShapeDirty(BlobShape* source);
+	void ensurePhysicsUpdated();
+
+	signals:
+	void smoothingChanged();
+	void colorChanged();
+	void cornerFillChanged();
+
+	private:
+	qreal m_smoothing = 32.0;
+	QColor m_color{0x44, 0x88, 0xff};
+	bool m_cornerFill = true;
+	QList<BlobShape*> m_shapes;
+	BlobInvertedRect* m_invertedRect = nullptr;
+	bool m_physicsUpdated = false;
 };

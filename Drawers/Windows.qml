@@ -18,9 +18,9 @@ CustomWindow {
 	id: root
 
 	readonly property alias bar: bar
-	readonly property real borderLayoutThickness: hasFullscreen ? 0 : Config.barConfig.border
-	readonly property real borderRounding: Config.barConfig.rounding * (1 - fsTransitionProg)
-	readonly property real borderThickness: Config.barConfig.border * (1 - fsTransitionProg)
+	readonly property real borderLayoutThickness: hasFullscreen ? 0 : Config.bar.border
+	readonly property real borderRounding: Config.bar.rounding * (1 - fsTransitionProg)
+	readonly property real borderThickness: Config.bar.border * (1 - fsTransitionProg)
 	readonly property int dragMaskPadding: {
 		if (focusGrab.active)
 			return 0;
@@ -44,7 +44,7 @@ CustomWindow {
 	readonly property bool hasFullscreenOnNormalWs: monitor?.activeWorkspace?.toplevels.values.some(t => t.lastIpcObject.fullscreen > 1) ?? false
 	readonly property bool hasSpecialWorkspace: (monitor?.lastIpcObject.specialWorkspace?.name.length ?? 0) > 0
 	readonly property alias interactionWrapper: interactions
-	readonly property alias menuRegion: menuPopoutRegion
+	readonly property alias menuRegion: regions.menuPopoutRegion
 	readonly property HyprlandMonitor monitor: Hypr.monitorFor(screen)
 	property var root: Quickshell.shellDir
 	readonly property real sdfBorderOffset: 2 * fsTransitionProg
@@ -56,7 +56,7 @@ CustomWindow {
 	WlrLayershell.layer: (fsTransitionProg > 0 && Config.general.showOverFullscreen) || (hasSpecialWorkspace && hasFullscreenOnNormalWs) ? WlrLayer.Overlay : WlrLayer.Top
 	color: "transparent"
 	contentItem.focus: true
-	mask: visibilities.isDrawing ? null : (hasFullscreen ? emptyRegion : region)
+	mask: visibilities.isDrawing ? null : (hasFullscreen ? emptyRegion : regions)
 	name: "Bar"
 
 	Behavior on fsTransitionProg {
@@ -69,7 +69,7 @@ CustomWindow {
 	}
 
 	contentItem.Keys.onEscapePressed: {
-		if (Config.barConfig.autoHide)
+		if (Config.bar.autoHide)
 			visibilities.bar = false;
 		visibilities.launcher = false;
 		visibilities.sidebar = false;
@@ -94,29 +94,27 @@ CustomWindow {
 	}
 
 	Region {
-		id: menuPopoutRegion
-
-		intersection: Intersection.Subtract
-	}
-
-	Region {
 		id: emptyRegion
 
 		height: panels.notifications.height
 		width: panels.notifications.width
 		x: panels.notifications.x + root.borderThickness
 		y: panels.notifications.y + bar.implicitHeight
+
+		Region {
+			height: panels.osd.height
+			width: panels.osdWrapper.width * (1 - panels.osd.offsetScale) + root.borderThickness
+			x: root.width - width
+			y: panels.osdWrapper.y + bar.implicitHeight
+		}
 	}
 
-	Region {
-		id: region
+	Regions {
+		id: regions
 
-		height: root.height - bar.implicitHeight - root.borderThickness - root.dragMaskPadding * 2
-		intersection: Intersection.Xor
-		regions: [...popoutRegions.instances, menuPopoutRegion]
-		width: root.width - root.borderThickness * 2 - root.dragMaskPadding * 2
-		x: root.borderThickness + root.dragMaskPadding
-		y: bar.implicitHeight + root.dragMaskPadding
+		bar: bar
+		panels: panels
+		win: root
 	}
 
 	anchors {
@@ -124,22 +122,6 @@ CustomWindow {
 		left: true
 		right: true
 		top: true
-	}
-
-	Variants {
-		id: popoutRegions
-
-		model: panels.children
-
-		Region {
-			required property Item modelData
-
-			height: modelData.height
-			intersection: Intersection.Subtract
-			width: modelData.width
-			x: modelData.x + root.borderThickness
-			y: modelData.y + bar.implicitHeight
-		}
 	}
 
 	HyprlandFocusGrab {
@@ -190,8 +172,8 @@ CustomWindow {
 	Binding {
 		property: "bar"
 		target: visibilities
-		value: visibilities.sidebar || visibilities.dashboard || visibilities.osd || (!Config.barConfig.hideWhenNotif && visibilities.notif) || visibilities.resources || visibilities.settings || bar.isHovered
-		when: Config.barConfig.autoHide
+		value: visibilities.sidebar || visibilities.dashboard || visibilities.osd || (!Config.bar.hideWhenNotif && visibilities.notif) || visibilities.resources || visibilities.settings || bar.isHovered
+		when: Config.bar.autoHide
 	}
 
 	Item {
@@ -211,7 +193,7 @@ CustomWindow {
 			id: blobGroup
 
 			color: root.surfaceColor
-			smoothing: Config.barConfig.smoothing
+			smoothing: Config.bar.smoothing
 		}
 
 		BlobInvertedRect {
@@ -323,15 +305,13 @@ CustomWindow {
 		PanelBg {
 			id: settingsBg
 
-			property real extraHeight: 0.2
+			property real extraHeight: 0
 
 			deformAmount: 0.03
 			implicitHeight: panels.settings.height * (1 + extraHeight)
 			implicitWidth: panels.settings.width
-			panel: panels.settings
-			radius: Appearance.rounding.large
-			topLeftRadius: Appearance.rounding.large + Appearance.padding.smaller
-			topRightRadius: Appearance.rounding.large + Appearance.padding.smaller
+			panel: panels.settingsWrapper
+			radius: Appearance.rounding.large + Appearance.padding.normal
 			x: panels.settingsWrapper.x + panels.settings.x + root.borderThickness
 			y: panels.settingsWrapper.y + panels.settings.y + bar.implicitHeight - panels.settings.height * extraHeight
 		}
@@ -441,7 +421,7 @@ CustomWindow {
 			resources.transform: Matrix4x4 {
 				matrix: resourcesBg.deformMatrix
 			}
-			settings.transform: Matrix4x4 {
+			settingsWrapper.transform: Matrix4x4 {
 				matrix: settingsBg.deformMatrix
 			}
 			sidebar.transform: Matrix4x4 {

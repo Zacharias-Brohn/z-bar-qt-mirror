@@ -6,7 +6,13 @@
 
 namespace ZShell {
 
-Toast::Toast(const QString& title, const QString& message, const QString& icon, Type type, int timeout, QObject* parent)
+Toast::Toast(
+	const QString& title,
+	const QString& message,
+	const QString& icon,
+	Type type,
+	int timeout,
+	QObject* parent)
 	: QObject(parent)
 	, m_closed(false)
 	, m_title(title)
@@ -94,22 +100,25 @@ void Toast::unlock(QObject* sender) {
 	}
 }
 
-Toaster::Toaster(QObject* parent)
-	: QObject(parent) {
-}
+Toaster::Toaster(QObject* parent) : QObject(parent) {}
 
 QQmlListProperty<Toast> Toaster::toasts() {
 	return QQmlListProperty<Toast>(this, &m_toasts);
 }
 
-void Toaster::toast(const QString& title, const QString& message, const QString& icon, Toast::Type type, int timeout) {
+void Toaster::toast(
+	const QString& title,
+	const QString& message,
+	const QString& icon,
+	Toast::Type type,
+	int timeout) {
 	auto* toast = new Toast(title, message, icon, type, timeout, this);
 	QObject::connect(toast, &Toast::finishedClose, this, [toast, this]() {
-			if (m_toasts.removeOne(toast)) {
-				emit toastsChanged();
-				toast->deleteLater();
-			}
-		});
+		if (m_toasts.removeOne(toast)) {
+			emit toastsChanged();
+			toast->deleteLater();
+		}
+	});
 	m_toasts.push_front(toast);
 	emit toastsChanged();
 }

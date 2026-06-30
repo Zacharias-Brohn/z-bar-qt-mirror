@@ -13,7 +13,6 @@ Item {
 	readonly property bool shouldBeActive: visibilities.settings
 	required property PersistentProperties visibilities
 
-	anchors.topMargin: (-implicitHeight - 5) * offsetScale
 	implicitHeight: content.implicitHeight
 	implicitWidth: content.implicitWidth
 	opacity: 1 - offsetScale
@@ -37,8 +36,11 @@ Item {
 			anchors.horizontalCenter: parent.horizontalCenter
 
 			sourceComponent: Content {
-				screen: root.screen
-				visibilities: root.visibilities
+				sState.animatingContainer: content.opacity < 1
+				sState.currentPageIdx: ["wallpaper"][0]
+				sState.screen: root.screen
+
+				onClose: console.log("shouldclose")
 			}
 		}
 	}

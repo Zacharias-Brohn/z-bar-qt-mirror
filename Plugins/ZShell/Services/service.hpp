@@ -6,19 +6,19 @@
 namespace ZShell::services {
 
 class Service : public QObject {
-Q_OBJECT
+	Q_OBJECT
 
-public:
-explicit Service(QObject* parent = nullptr);
+	public:
+	explicit Service(QObject* parent = nullptr);
 
-void ref(QObject* sender);
-void unref(QObject* sender);
+	void ref(QObject* sender);
+	void unref(QObject* sender);
 
-private:
-QSet<QObject*> m_refs;
+	private:
+	QSet<QObject*> m_refs;
 
-virtual void start() = 0;
-virtual void stop() = 0;
+	virtual void start() = 0;
+	virtual void stop() = 0;
 };
 
 } // namespace ZShell::services

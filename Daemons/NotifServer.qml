@@ -25,7 +25,7 @@ Singleton {
 	property alias server: server
 
 	function shouldThrottle(appName: string): bool {
-		if (props.dnd)
+		if (props.dnd || [...Visibilities.screens.values()].some(v => v.sidebar))
 			return false;
 
 		const key = (appName || "unknown").trim().toLowerCase();
@@ -48,11 +48,6 @@ Singleton {
 	onListChanged: {
 		if (loaded) {
 			saveTimer.restart();
-		}
-		if (root.list.length > 0) {
-			HasNotifications.hasNotifications = true;
-		} else {
-			HasNotifications.hasNotifications = false;
 		}
 	}
 

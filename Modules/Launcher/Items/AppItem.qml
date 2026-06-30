@@ -65,5 +65,20 @@ Item {
 				width: root.width - icon.width - Appearance.rounding.normal * 2
 			}
 		}
+
+		Loader {
+			id: favoriteIcon
+
+			active: root.modelData && Strings.testRegexList(Config.launcher.favoriteApps, root.modelData.id)
+			anchors.right: parent.right
+			anchors.verticalCenter: parent.verticalCenter
+			asynchronous: true
+
+			sourceComponent: MaterialIcon {
+				color: DynamicColors.palette.m3primary
+				fill: 1
+				text: "favorite"
+			}
+		}
 	}
 }

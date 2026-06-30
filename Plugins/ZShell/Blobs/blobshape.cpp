@@ -18,7 +18,8 @@ static float deformPadding(const QMatrix4x4& dm, float hw, float hh) {
 	return std::max(extraX, extraY);
 }
 
-static float cpuSdBox(float px, float py, float cx, float cy, float hw, float hh) {
+static float cpuSdBox(
+	float px, float py, float cx, float cy, float hw, float hh) {
 	const float dx = std::abs(px - cx) - hw;
 	const float dy = std::abs(py - cy) - hh;
 	const float mdx = std::max(dx, 0.0f);
@@ -31,58 +32,61 @@ static float cpuSmoothstep(float edge0, float edge1, float x) {
 	return t * t * (3.0f - 2.0f * t);
 }
 
-BlobShape::BlobShape(QQuickItem* parent)
-	: QQuickItem(parent) {
+static float cornerFillFactor(float sd, float smoothFactor) {
+	const float outside = cpuSmoothstep(0.0f, smoothFactor, sd);
+	const float inside = cpuSmoothstep(0.0f, -smoothFactor, sd);
+	return std::max(outside, inside);
+}
+
+BlobShape::BlobShape(QQuickItem* parent) : QQuickItem(parent) {
 	setFlag(ItemHasContents);
 }
 
 void BlobShape::setGroup(BlobGroup* g) {
-	if (m_group == g)
-		return;
-	if (m_group && isComponentComplete())
-		unregisterFromGroup();
+	if (m_group == g) return;
+	if (m_group && isComponentComplete()) unregisterFromGroup();
 	m_group = g;
-	if (m_group && isComponentComplete())
-		registerWithGroup();
+	if (m_group && isComponentComplete()) registerWithGroup();
 	emit groupChanged();
-	if (m_group)
-		m_group->markDirty();
+	if (m_group) m_group->markDirty();
 }
 
 void BlobShape::setRadius(qreal r) {
-	if (qFuzzyCompare(m_radius, r))
-		return;
+	if (qFuzzyCompare(m_radius, r)) return;
 	m_radius = r;
 	emit radiusChanged();
-	if (m_group)
-		m_group->markDirty();
+	if (m_group) m_group->markDirty();
 }
 
 void BlobShape::componentComplete() {
 	QQuickItem::componentComplete();
-	if (m_group)
-		registerWithGroup();
+	if (m_group) registerWithGroup();
 }
 
-void BlobShape::geometryChange(const QRectF& newGeometry, const QRectF& oldGeometry) {
+void BlobShape::geometryChange(
+	const QRectF& newGeometry, const QRectF& oldGeometry) {
 	QQuickItem::geometryChange(newGeometry, oldGeometry);
 	updateCenteredDeformMatrix();
 	if (m_group) {
 		m_pendingDx += static_cast<float>(newGeometry.x() - oldGeometry.x());
 		m_pendingDy += static_cast<float>(newGeometry.y() - oldGeometry.y());
-		m_pendingDw += static_cast<float>(newGeometry.width() - oldGeometry.width());
-		m_pendingDh += static_cast<float>(newGeometry.height() - oldGeometry.height());
+		m_pendingDw +=
+			static_cast<float>(newGeometry.width() - oldGeometry.width());
+		m_pendingDh +=
+			static_cast<float>(newGeometry.height() - oldGeometry.height());
 
-		const float deformMag = std::abs(m_deformMatrix(0, 0) - 1.0f) + std::abs(m_deformMatrix(0, 1)) +
-		                        std::abs(m_deformMatrix(1, 0)) + std::abs(m_deformMatrix(1, 1) - 1.0f);
+		const float deformMag = std::abs(m_deformMatrix(0, 0) - 1.0f) +
+								std::abs(m_deformMatrix(0, 1)) +
+								std::abs(m_deformMatrix(1, 0)) +
+								std::abs(m_deformMatrix(1, 1) - 1.0f);
 		const float syncThreshold = deformMag > 0.001f ? 0.05f : 0.5f;
 
-		if (std::abs(m_pendingDx) > syncThreshold || std::abs(m_pendingDy) > syncThreshold ||
-		    std::abs(m_pendingDw) > syncThreshold || std::abs(m_pendingDh) > syncThreshold) {
+		if (std::abs(m_pendingDx) > syncThreshold ||
+			std::abs(m_pendingDy) > syncThreshold ||
+			std::abs(m_pendingDw) > syncThreshold ||
+			std::abs(m_pendingDh) > syncThreshold) {
 			m_pendingDx = 0;
 			m_pendingDy = 0;
-			m_pendingDw = 0;
-			m_pendingDh = 0;
 			m_group->markShapeDirty(this);
 		}
 	}
@@ -111,18 +115,15 @@ void BlobShape::cornerRadii(float out[4]) const {
 }
 
 void BlobShape::registerWithGroup() {
-	if (m_group)
-		m_group->addShape(this);
+	if (m_group) m_group->addShape(this);
 }
 
 void BlobShape::unregisterFromGroup() {
-	if (m_group)
-		m_group->removeShape(this);
+	if (m_group) m_group->removeShape(this);
 }
 
 void BlobShape::updatePolish() {
-	if (!m_group)
-		return;
+	if (!m_group) return;
 
 	m_group->ensurePhysicsUpdated();
 
@@ -144,27 +145,30 @@ void BlobShape::updatePolish() {
 		m_cachedPaddedY = static_cast<float>(scenePos.y()) - totalPad;
 		m_cachedPaddedW = static_cast<float>(width()) + 2.0f * totalPad;
 		m_cachedPaddedH = static_cast<float>(height()) + 2.0f * totalPad;
-		m_localPaddedRect = QRectF(static_cast<double>(-totalPad), static_cast<double>(-totalPad),
-		                           width() + 2.0 * static_cast<double>(totalPad), height() + 2.0 * static_cast<double>(totalPad));
+		m_localPaddedRect = QRectF(
+			static_cast<double>(-totalPad),
+			static_cast<double>(-totalPad),
+			width() + 2.0 * static_cast<double>(totalPad),
+			height() + 2.0 * static_cast<double>(totalPad));
 	}
 
 	m_cachedRects.clear();
 	m_cachedMyIndex = -2;
-	const QRectF myPadded(static_cast<double>(m_cachedPaddedX), static_cast<double>(m_cachedPaddedY),
-	                      static_cast<double>(m_cachedPaddedW), static_cast<double>(m_cachedPaddedH));
+	const QRectF myPadded(
+		static_cast<double>(m_cachedPaddedX),
+		static_cast<double>(m_cachedPaddedY),
+		static_cast<double>(m_cachedPaddedW),
+		static_cast<double>(m_cachedPaddedH));
 
 	QVector<BlobShape*> rectShapes;
 	rectShapes.reserve(m_group->shapes().size());
 
 	for (BlobShape* other : m_group->shapes()) {
-		if (other->isInvertedRect())
-			continue;
+		if (other->isInvertedRect()) continue;
 
-		if (other->width() <= 0 || other->height() <= 0)
-			continue;
+		if (other->width() <= 0 || other->height() <= 0) continue;
 
-		if (isExcluded(other))
-			continue;
+		if (isExcluded(other)) continue;
 
 		const QPointF otherScene = other->mapToScene(QPointF(0, 0));
 
@@ -174,10 +178,13 @@ void BlobShape::updatePolish() {
 		} else {
 			const float otherHW = static_cast<float>(other->width()) * 0.5f;
 			const float otherHH = static_cast<float>(other->height()) * 0.5f;
-			const float otherPad = pad + deformPadding(other->m_deformMatrix, otherHW, otherHH);
-			const QRectF otherPadded(otherScene.x() - static_cast<double>(otherPad),
-			                         otherScene.y() - static_cast<double>(otherPad), other->width() + 2.0 * static_cast<double>(otherPad),
-			                         other->height() + 2.0 * static_cast<double>(otherPad));
+			const float otherPad =
+				pad + deformPadding(other->m_deformMatrix, otherHW, otherHH);
+			const QRectF otherPadded(
+				otherScene.x() - static_cast<double>(otherPad),
+				otherScene.y() - static_cast<double>(otherPad),
+				other->width() + 2.0 * static_cast<double>(otherPad),
+				other->height() + 2.0 * static_cast<double>(otherPad));
 			include = myPadded.intersects(otherPadded);
 		}
 
@@ -217,19 +224,16 @@ void BlobShape::updatePolish() {
 		}
 	}
 
-	if (isInvertedRect())
-		m_cachedMyIndex = -1;
+	if (isInvertedRect()) m_cachedMyIndex = -1;
 
 	const auto cachedCount = m_cachedRects.size();
 	for (qsizetype i = 0; i < cachedCount; ++i) {
 		int mask = 0;
 		BlobShape* si = rectShapes[i];
 		for (qsizetype j = 0; j < cachedCount; ++j) {
-			if (j == i)
-				continue;
+			if (j == i) continue;
 			BlobShape* sj = rectShapes[j];
-			if (si->isExcluded(sj) || sj->isExcluded(si))
-				mask |= (1 << j);
+			if (si->isExcluded(sj) || sj->isExcluded(si)) mask |= (1 << j);
 		}
 		m_cachedRects[i].excludeMask = mask;
 	}
@@ -242,15 +246,25 @@ void BlobShape::updatePolish() {
 	auto* inv = m_group->invertedRect();
 	if (inv) {
 		const QPointF invScene = inv->mapToScene(QPointF(0, 0));
-		const float outerCX = static_cast<float>(invScene.x() + inv->width() / 2.0);
-		const float outerCY = static_cast<float>(invScene.y() + inv->height() / 2.0);
+		const float outerCX =
+			static_cast<float>(invScene.x() + inv->width() / 2.0);
+		const float outerCY =
+			static_cast<float>(invScene.y() + inv->height() / 2.0);
 		const float outerHW = static_cast<float>(inv->width() / 2.0);
 		const float outerHH = static_cast<float>(inv->height() / 2.0);
 
-		const float innerCX = outerCX + static_cast<float>((inv->borderLeft() - inv->borderRight()) / 2.0);
-		const float innerCY = outerCY + static_cast<float>((inv->borderTop() - inv->borderBottom()) / 2.0);
-		const float innerHW = outerHW - static_cast<float>((inv->borderLeft() + inv->borderRight()) / 2.0);
-		const float innerHH = outerHH - static_cast<float>((inv->borderTop() + inv->borderBottom()) / 2.0);
+		const float innerCX =
+			outerCX +
+			static_cast<float>((inv->borderLeft() - inv->borderRight()) / 2.0);
+		const float innerCY =
+			outerCY +
+			static_cast<float>((inv->borderTop() - inv->borderBottom()) / 2.0);
+		const float innerHW =
+			outerHW -
+			static_cast<float>((inv->borderLeft() + inv->borderRight()) / 2.0);
+		const float innerHH =
+			outerHH -
+			static_cast<float>((inv->borderTop() + inv->borderBottom()) / 2.0);
 
 		bool nearBorder = isInvertedRect();
 		if (!nearBorder) {
@@ -259,8 +273,10 @@ void BlobShape::updatePolish() {
 			const float myCY = m_cachedPaddedY + m_cachedPaddedH * 0.5f;
 			const float myHW = m_cachedPaddedW * 0.5f;
 			const float myHH = m_cachedPaddedH * 0.5f;
-			nearBorder = (myCX - myHW < innerCX - innerHW + margin) || (myCX + myHW > innerCX + innerHW - margin) ||
-			             (myCY - myHH < innerCY - innerHH + margin) || (myCY + myHH > innerCY + innerHH - margin);
+			nearBorder = (myCX - myHW < innerCX - innerHW + margin) ||
+						 (myCX + myHW > innerCX + innerHW - margin) ||
+						 (myCY - myHH < innerCY - innerHH + margin) ||
+						 (myCY + myHH > innerCY + innerHH - margin);
 		}
 
 		if (nearBorder) {
@@ -281,10 +297,12 @@ void BlobShape::updatePolish() {
 
 	const float smoothFactor = pad;
 	constexpr float minR = 2.0f;
+	const bool cornerFill = m_group->cornerFill();
 	const auto rectCount = m_cachedRects.size();
 	for (qsizetype i = 0; i < rectCount; ++i) {
 		auto& ri = m_cachedRects[i];
 		const int riExcludeMask = ri.excludeMask;
+		BlobShape* const si = rectShapes[i];
 		float fTr = 1.0f, fBr = 1.0f, fBl = 1.0f, fTl = 1.0f;
 
 		const float cTrX = ri.cx + ri.hw, cTrY = ri.cy - ri.hh;
@@ -292,27 +310,51 @@ void BlobShape::updatePolish() {
 		const float cBlX = ri.cx - ri.hw, cBlY = ri.cy + ri.hh;
 		const float cTlX = ri.cx - ri.hw, cTlY = ri.cy - ri.hh;
 
-		for (qsizetype j = 0; j < rectCount; ++j) {
-			if (j == i)
-				continue;
-			if (riExcludeMask & (1 << j))
-				continue;
+		for (qsizetype j = 0; cornerFill && j < rectCount; ++j) {
+			if (j == i) continue;
+			if (riExcludeMask & (1 << j)) continue;
+			BlobShape* const sj = rectShapes[j];
+			if (si->isCornerExcluded(sj) || sj->isCornerExcluded(si)) continue;
 			const auto& rj = m_cachedRects[j];
-			fTr = std::min(fTr, cpuSmoothstep(0.0f, smoothFactor, cpuSdBox(cTrX, cTrY, rj.cx, rj.cy, rj.hw, rj.hh)));
-			fBr = std::min(fBr, cpuSmoothstep(0.0f, smoothFactor, cpuSdBox(cBrX, cBrY, rj.cx, rj.cy, rj.hw, rj.hh)));
-			fBl = std::min(fBl, cpuSmoothstep(0.0f, smoothFactor, cpuSdBox(cBlX, cBlY, rj.cx, rj.cy, rj.hw, rj.hh)));
-			fTl = std::min(fTl, cpuSmoothstep(0.0f, smoothFactor, cpuSdBox(cTlX, cTlY, rj.cx, rj.cy, rj.hw, rj.hh)));
+			const float sdTr = cpuSdBox(cTrX, cTrY, rj.cx, rj.cy, rj.hw, rj.hh);
+			const float sdBr = cpuSdBox(cBrX, cBrY, rj.cx, rj.cy, rj.hw, rj.hh);
+			const float sdBl = cpuSdBox(cBlX, cBlY, rj.cx, rj.cy, rj.hw, rj.hh);
+			const float sdTl = cpuSdBox(cTlX, cTlY, rj.cx, rj.cy, rj.hw, rj.hh);
+			fTr = std::min(fTr, cornerFillFactor(sdTr, smoothFactor));
+			fBr = std::min(fBr, cornerFillFactor(sdBr, smoothFactor));
+			fBl = std::min(fBl, cornerFillFactor(sdBl, smoothFactor));
+			fTl = std::min(fTl, cornerFillFactor(sdTl, smoothFactor));
 		}
 
-		if (m_cachedHasInverted) {
+		if (cornerFill && m_cachedHasInverted) {
 			const float icx = m_cachedInvertedInner[0];
 			const float icy = m_cachedInvertedInner[1];
 			const float ihw = m_cachedInvertedInner[2];
 			const float ihh = m_cachedInvertedInner[3];
-			fTr = std::min(fTr, cpuSmoothstep(0.0f, smoothFactor, -cpuSdBox(cTrX, cTrY, icx, icy, ihw, ihh)));
-			fBr = std::min(fBr, cpuSmoothstep(0.0f, smoothFactor, -cpuSdBox(cBrX, cBrY, icx, icy, ihw, ihh)));
-			fBl = std::min(fBl, cpuSmoothstep(0.0f, smoothFactor, -cpuSdBox(cBlX, cBlY, icx, icy, ihw, ihh)));
-			fTl = std::min(fTl, cpuSmoothstep(0.0f, smoothFactor, -cpuSdBox(cTlX, cTlY, icx, icy, ihw, ihh)));
+			fTr = std::min(
+				fTr,
+				cpuSmoothstep(
+					0.0f,
+					smoothFactor,
+					-cpuSdBox(cTrX, cTrY, icx, icy, ihw, ihh)));
+			fBr = std::min(
+				fBr,
+				cpuSmoothstep(
+					0.0f,
+					smoothFactor,
+					-cpuSdBox(cBrX, cBrY, icx, icy, ihw, ihh)));
+			fBl = std::min(
+				fBl,
+				cpuSmoothstep(
+					0.0f,
+					smoothFactor,
+					-cpuSdBox(cBlX, cBlY, icx, icy, ihw, ihh)));
+			fTl = std::min(
+				fTl,
+				cpuSmoothstep(
+					0.0f,
+					smoothFactor,
+					-cpuSdBox(cTlX, cTlY, icx, icy, ihw, ihh)));
 		}
 
 		ri.radius[0] = std::max(ri.radius[0] * fTr, minR);
@@ -332,7 +374,8 @@ QSGNode* BlobShape::updatePaintNode(QSGNode* oldNode, UpdatePaintNodeData*) {
 	if (!node) {
 		node = new QSGGeometryNode;
 
-		auto* geometry = new QSGGeometry(QSGGeometry::defaultAttributes_TexturedPoint2D(), 4);
+		auto* geometry =
+			new QSGGeometry(QSGGeometry::defaultAttributes_TexturedPoint2D(), 4);
 		geometry->setDrawingMode(QSGGeometry::DrawTriangleStrip);
 		node->setGeometry(geometry);
 		node->setFlag(QSGNode::OwnsGeometry);
@@ -368,10 +411,17 @@ QSGNode* BlobShape::updatePaintNode(QSGNode* oldNode, UpdatePaintNodeData*) {
 	material->m_color = m_group->color();
 	material->m_hasInverted = m_cachedHasInverted ? 1 : 0;
 	material->m_invertedRadius = m_cachedInvertedRadius;
-	memcpy(material->m_invertedOuter, m_cachedInvertedOuter, sizeof(m_cachedInvertedOuter));
-	memcpy(material->m_invertedInner, m_cachedInvertedInner, sizeof(m_cachedInvertedInner));
+	memcpy(
+		material->m_invertedOuter,
+		m_cachedInvertedOuter,
+		sizeof(m_cachedInvertedOuter));
+	memcpy(
+		material->m_invertedInner,
+		m_cachedInvertedInner,
+		sizeof(m_cachedInvertedInner));
 
-	const int count = static_cast<int>(qMin(m_cachedRects.size(), qsizetype(16)));
+	const int count =
+		static_cast<int>(qMin(m_cachedRects.size(), qsizetype(16)));
 	material->m_rectCount = count;
 	for (int i = 0; i < count; ++i)
 		material->m_rects[i] = m_cachedRects[i];

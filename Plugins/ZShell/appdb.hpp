@@ -4,103 +4,119 @@
 #include <qobject.h>
 #include <qqmlintegration.h>
 #include <qqmllist.h>
+#include <qregularexpression.h>
 #include <qtimer.h>
 
 namespace ZShell {
 
 class AppEntry : public QObject {
-Q_OBJECT
-QML_ELEMENT
-        QML_UNCREATABLE("AppEntry instances can only be retrieved from an AppDb")
+	Q_OBJECT
+	QML_ELEMENT
+	QML_UNCREATABLE("AppEntry instances can only be retrieved from an AppDb")
 
-// The actual DesktopEntry, but we don't have access to the type so it's a QObject
-Q_PROPERTY(QObject* entry READ entry CONSTANT)
+	// The actual DesktopEntry, but we don't have access to the type so it's a QObject
+	Q_PROPERTY(QObject* entry READ entry CONSTANT)
 
-Q_PROPERTY(quint32 frequency READ frequency NOTIFY frequencyChanged)
-Q_PROPERTY(QString id READ id CONSTANT)
-Q_PROPERTY(QString name READ name NOTIFY nameChanged)
-Q_PROPERTY(QString comment READ comment NOTIFY commentChanged)
-Q_PROPERTY(QString execString READ execString NOTIFY execStringChanged)
-Q_PROPERTY(QString startupClass READ startupClass NOTIFY startupClassChanged)
-Q_PROPERTY(QString genericName READ genericName NOTIFY genericNameChanged)
-Q_PROPERTY(QString categories READ categories NOTIFY categoriesChanged)
-Q_PROPERTY(QString keywords READ keywords NOTIFY keywordsChanged)
+	Q_PROPERTY(quint32 frequency READ frequency NOTIFY frequencyChanged)
+	Q_PROPERTY(QString id READ id CONSTANT)
+	Q_PROPERTY(QString name READ name NOTIFY nameChanged)
+	Q_PROPERTY(QString comment READ comment NOTIFY commentChanged)
+	Q_PROPERTY(QString execString READ execString NOTIFY execStringChanged)
+	Q_PROPERTY(QString startupClass READ startupClass NOTIFY startupClassChanged)
+	Q_PROPERTY(QString genericName READ genericName NOTIFY genericNameChanged)
+	Q_PROPERTY(QString categories READ categories NOTIFY categoriesChanged)
+	Q_PROPERTY(QString keywords READ keywords NOTIFY keywordsChanged)
 
-public:
-explicit AppEntry(QObject* entry, quint32 frequency, QObject* parent = nullptr);
+	public:
+	explicit AppEntry(
+		QObject* entry, quint32 frequency, QObject* parent = nullptr);
 
-[[nodiscard]] QObject* entry() const;
+	[[nodiscard]] QObject* entry() const;
 
-[[nodiscard]] quint32 frequency() const;
-void setFrequency(quint32 frequency);
-void incrementFrequency();
+	[[nodiscard]] quint32 frequency() const;
+	void setFrequency(quint32 frequency);
+	void incrementFrequency();
 
-[[nodiscard]] QString id() const;
-[[nodiscard]] QString name() const;
-[[nodiscard]] QString comment() const;
-[[nodiscard]] QString execString() const;
-[[nodiscard]] QString startupClass() const;
-[[nodiscard]] QString genericName() const;
-[[nodiscard]] QString categories() const;
-[[nodiscard]] QString keywords() const;
+	[[nodiscard]] QString id() const;
+	[[nodiscard]] QString name() const;
+	[[nodiscard]] QString comment() const;
+	[[nodiscard]] QString execString() const;
+	[[nodiscard]] QString startupClass() const;
+	[[nodiscard]] QString genericName() const;
+	[[nodiscard]] QString categories() const;
+	[[nodiscard]] QString keywords() const;
 
-signals:
-void frequencyChanged();
-void nameChanged();
-void commentChanged();
-void execStringChanged();
-void startupClassChanged();
-void genericNameChanged();
-void categoriesChanged();
-void keywordsChanged();
+	signals:
+	void frequencyChanged();
+	void nameChanged();
+	void commentChanged();
+	void execStringChanged();
+	void startupClassChanged();
+	void genericNameChanged();
+	void categoriesChanged();
+	void keywordsChanged();
 
-private:
-QObject* m_entry;
-quint32 m_frequency;
+	private:
+	QObject* m_entry;
+	quint32 m_frequency;
 };
 
 class AppDb : public QObject {
-Q_OBJECT
-QML_ELEMENT
+	Q_OBJECT
+	QML_ELEMENT
 
-Q_PROPERTY(QString uuid READ uuid CONSTANT)
-Q_PROPERTY(QString path READ path WRITE setPath NOTIFY pathChanged REQUIRED)
-Q_PROPERTY(QObjectList entries READ entries WRITE setEntries NOTIFY entriesChanged REQUIRED)
-Q_PROPERTY(QQmlListProperty<ZShell::AppEntry> apps READ apps NOTIFY appsChanged)
+	Q_PROPERTY(QString uuid READ uuid CONSTANT)
+	Q_PROPERTY(QString path READ path WRITE setPath NOTIFY pathChanged REQUIRED)
+	Q_PROPERTY(
+		QObjectList entries READ entries WRITE setEntries NOTIFY entriesChanged
+			REQUIRED)
+	Q_PROPERTY(
+		QStringList favoriteApps READ favoriteApps WRITE setFavoriteApps NOTIFY
+			favoriteAppsChanged REQUIRED)
+	Q_PROPERTY(
+		QQmlListProperty<ZShell::AppEntry> apps READ apps NOTIFY appsChanged)
 
-public:
-explicit AppDb(QObject* parent = nullptr);
+	public:
+	explicit AppDb(QObject* parent = nullptr);
 
-[[nodiscard]] QString uuid() const;
+	[[nodiscard]] QString uuid() const;
 
-[[nodiscard]] QString path() const;
-void setPath(const QString& path);
+	[[nodiscard]] QString path() const;
+	void setPath(const QString& path);
 
-[[nodiscard]] QObjectList entries() const;
-void setEntries(const QObjectList& entries);
+	[[nodiscard]] QObjectList entries() const;
+	void setEntries(const QObjectList& entries);
 
-[[nodiscard]] QQmlListProperty<AppEntry> apps();
+	[[nodiscard]] QStringList favoriteApps() const;
+	void setFavoriteApps(const QStringList& favApps);
 
-Q_INVOKABLE void incrementFrequency(const QString& id);
+	[[nodiscard]] QQmlListProperty<AppEntry> apps();
 
-signals:
-void pathChanged();
-void entriesChanged();
-void appsChanged();
+	Q_INVOKABLE void incrementFrequency(const QString& id);
 
-private:
-QTimer* m_timer;
+	signals:
+	void pathChanged();
+	void entriesChanged();
+	void favoriteAppsChanged();
+	void appsChanged();
 
-const QString m_uuid;
-QString m_path;
-QObjectList m_entries;
-QHash<QString, AppEntry*> m_apps;
-mutable QList<AppEntry*> m_sortedApps;
+	private:
+	QTimer* m_timer;
 
-QList<AppEntry*>& getSortedApps() const;
-quint32 getFrequency(const QString& id) const;
-void updateAppFrequencies();
-void updateApps();
+	const QString m_uuid;
+	QString m_path;
+	QObjectList m_entries;
+	QStringList m_favoriteApps;
+	QList<QRegularExpression> m_favoriteAppsRegex;
+	QHash<QString, AppEntry*> m_apps;
+	mutable QList<AppEntry*> m_sortedApps;
+
+	QString regexifyString(const QString& original) const;
+	QList<AppEntry*>& getSortedApps() const;
+	bool isFavorite(const AppEntry* app) const;
+	quint32 getFrequency(const QString& id) const;
+	void updateAppFrequencies();
+	void updateApps();
 };
 
 } // namespace ZShell

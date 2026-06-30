@@ -2,7 +2,6 @@
 
 #include "audiocollector.hpp"
 #include "audioprovider.hpp"
-#include <algorithm>
 #include <cava/cavacore.h>
 #include <cstddef>
 #include <qdebug.h>
@@ -14,8 +13,7 @@ CavaProcessor::CavaProcessor(QObject* parent)
 	, m_plan(nullptr)
 	, m_in(new double[ac::CHUNK_SIZE])
 	, m_out(nullptr)
-	, m_bars(0) {
-};
+	, m_bars(0) {};
 
 CavaProcessor::~CavaProcessor() {
 	cleanup();
@@ -27,7 +25,8 @@ void CavaProcessor::process() {
 		return;
 	}
 
-	const int count = static_cast<int>(AudioCollector::instance().readChunk(m_in));
+	const int count =
+		static_cast<int>(AudioCollector::instance().readChunk(m_in));
 
 	// Process in data via cava
 	cava_execute(m_in, count, m_out, m_plan);
@@ -35,7 +34,7 @@ void CavaProcessor::process() {
 	// Apply monstercat filter
 	QVector<double> values(m_bars);
 
-	for(int i = 0; i < m_bars; ++i) {
+	for (int i = 0; i < m_bars; ++i) {
 		values[i] = m_out[i];
 	}
 
@@ -63,7 +62,8 @@ void CavaProcessor::process() {
 
 void CavaProcessor::setBars(int bars) {
 	if (bars < 0) {
-		qWarning() << "CavaProcessor::setBars: bars must be greater than 0. Setting to 0.";
+		qWarning() << "CavaProcessor::setBars: bars must be greater than 0. "
+					  "Setting to 0.";
 		bars = 0;
 	}
 
@@ -100,13 +100,15 @@ void CavaProcessor::initCava() {
 }
 
 CavaProvider::CavaProvider(QObject* parent)
-	: AudioProvider(parent)
-	, m_bars(0)
-	, m_values(m_bars, 0.0) {
+	: AudioProvider(parent), m_bars(0), m_values(m_bars, 0.0) {
 	m_processor = new CavaProcessor();
 	init();
 
-	connect(static_cast<CavaProcessor*>(m_processor), &CavaProcessor::valuesChanged, this, &CavaProvider::updateValues);
+	connect(
+		static_cast<CavaProcessor*>(m_processor),
+		&CavaProcessor::valuesChanged,
+		this,
+		&CavaProvider::updateValues);
 }
 
 int CavaProvider::bars() const {
@@ -115,7 +117,8 @@ int CavaProvider::bars() const {
 
 void CavaProvider::setBars(int bars) {
 	if (bars < 0) {
-		qWarning() << "CavaProvider::setBars: bars must be greater than 0. Setting to 0.";
+		qWarning() << "CavaProvider::setBars: bars must be greater than 0. "
+					  "Setting to 0.";
 		bars = 0;
 	}
 
@@ -129,7 +132,10 @@ void CavaProvider::setBars(int bars) {
 	emit valuesChanged();
 
 	QMetaObject::invokeMethod(
-		static_cast<CavaProcessor*>(m_processor), &CavaProcessor::setBars, Qt::QueuedConnection, bars);
+		static_cast<CavaProcessor*>(m_processor),
+		&CavaProcessor::setBars,
+		Qt::QueuedConnection,
+		bars);
 }
 
 QVector<double> CavaProvider::values() const {

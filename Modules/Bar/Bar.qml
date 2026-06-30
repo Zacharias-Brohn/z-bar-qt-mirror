@@ -56,15 +56,15 @@ RowLayout {
 		const item = ch.item;
 		const itemWidth = item.implicitWidth;
 
-		if (id === "audio" && Config.barConfig.popouts.audio) {
+		if (id === "audio" && Config.bar.popouts.audio) {
 			popouts.currentName = "audio";
 			popouts.currentCenter = Qt.binding(() => item.mapToItem(root, itemWidth / 2, 0).x);
 			popouts.hasCurrent = true;
-		} else if (id === "network" && Config.barConfig.popouts.network) {
+		} else if (id === "network" && Config.bar.popouts.network) {
 			popouts.currentName = "network";
 			popouts.currentCenter = Qt.binding(() => item.mapToItem(root, itemWidth / 2, 0).x);
 			popouts.hasCurrent = true;
-		} else if (id === "upower" && Config.barConfig.popouts.upower) {
+		} else if (id === "upower" && Config.bar.popouts.upower) {
 			popouts.currentName = "upower";
 			popouts.currentCenter = Qt.binding(() => item.mapToItem(root, itemWidth / 2, 0).x);
 			popouts.hasCurrent = true;
@@ -80,8 +80,8 @@ RowLayout {
 	Repeater {
 		id: repeater
 
-		// model: Config.barConfig.entries.filted(n => n.index > 50).sort(n => n.index)
-		model: Config.barConfig.entries
+		// model: Config.bar.entries.filted(n => n.index > 50).sort(n => n.index)
+		model: Config.bar.entries
 
 		DelegateChooser {
 			role: "id"

@@ -10,8 +10,7 @@ BeatProcessor::BeatProcessor(QObject* parent)
 	: AudioProcessor(parent)
 	, m_tempo(new_aubio_tempo("default", 1024, ac::CHUNK_SIZE, ac::SAMPLE_RATE))
 	, m_in(new_fvec(ac::CHUNK_SIZE))
-	, m_out(new_fvec(2)) {
-};
+	, m_out(new_fvec(2)) {};
 
 BeatProcessor::~BeatProcessor() {
 	if (m_tempo) {
@@ -36,13 +35,15 @@ void BeatProcessor::process() {
 	}
 }
 
-BeatTracker::BeatTracker(QObject* parent)
-	: AudioProvider(parent)
-	, m_bpm(120) {
+BeatTracker::BeatTracker(QObject* parent) : AudioProvider(parent), m_bpm(120) {
 	m_processor = new BeatProcessor();
 	init();
 
-	connect(static_cast<BeatProcessor*>(m_processor), &BeatProcessor::beat, this, &BeatTracker::updateBpm);
+	connect(
+		static_cast<BeatProcessor*>(m_processor),
+		&BeatProcessor::beat,
+		this,
+		&BeatTracker::updateBpm);
 }
 
 smpl_t BeatTracker::bpm() const {

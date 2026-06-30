@@ -63,6 +63,7 @@ ButtonBase {
 			id: label
 
 			Layout.alignment: Qt.AlignVCenter
+			Layout.topMargin: -1
 			color: root.onColor
 			font: root.font
 		}

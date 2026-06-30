@@ -8,8 +8,7 @@
 
 namespace ZShell::services {
 
-Cpu::Cpu(QObject* parent)
-	: TickingService(parent) {
+Cpu::Cpu(QObject* parent) : TickingService(parent) {
 	readNameOnce();
 }
 
@@ -41,7 +40,8 @@ void Cpu::readNameOnce() {
 	const QByteArray data = f.readAll();
 	f.close();
 
-	static const QRegularExpression re(QStringLiteral("model name\\s*:\\s*(.+)"));
+	static const QRegularExpression re(
+		QStringLiteral("model name\\s*:\\s*(.+)"));
 	const auto match = re.match(QString::fromLatin1(data));
 	if (!match.hasMatch()) {
 		return;
@@ -64,8 +64,9 @@ void Cpu::refreshPercentage() {
 	const QByteArray data = f.readAll();
 	f.close();
 
-	static const QRegularExpression re(
-		QStringLiteral("^cpu\\s+(\\d+)\\s+(\\d+)\\s+(\\d+)\\s+(\\d+)\\s+(\\d+)\\s+(\\d+)\\s+(\\d+)"));
+	static const QRegularExpression re(QStringLiteral(
+		"^cpu\\s+(\\d+)\\s+(\\d+)\\s+(\\d+)\\s+(\\d+)\\s+(\\d+)"
+		"\\s+(\\d+)\\s+(\\d+)"));
 	const auto match = re.match(QString::fromLatin1(data));
 	if (!match.hasMatch()) {
 		return;
@@ -83,7 +84,10 @@ void Cpu::refreshPercentage() {
 
 	const quint64 totalDiff = total > m_lastTotal ? total - m_lastTotal : 0;
 	const quint64 idleDiff = idle > m_lastIdle ? idle - m_lastIdle : 0;
-	const qreal newPerc = totalDiff > 0 ? 1.0 - static_cast<qreal>(idleDiff) / static_cast<qreal>(totalDiff) : 0.0;
+	const qreal newPerc =
+		totalDiff > 0
+			? 1.0 - static_cast<qreal>(idleDiff) / static_cast<qreal>(totalDiff)
+			: 0.0;
 
 	m_lastTotal = total;
 	m_lastIdle = idle;
@@ -105,7 +109,8 @@ void Cpu::refreshTemperature() {
 
 QString Cpu::cleanName(QString s) {
 	static const QRegularExpression noise(
-		QStringLiteral("\\(R\\)|\\(TM\\)|CPU|\\d+(?:th|nd|rd|st) Gen |Core |Processor"),
+		QStringLiteral(
+			"\\(R\\)|\\(TM\\)|CPU|\\d+(?:th|nd|rd|st) Gen |Core |Processor"),
 		QRegularExpression::CaseInsensitiveOption);
 	static const QRegularExpression spaces(QStringLiteral("\\s+"));
 
