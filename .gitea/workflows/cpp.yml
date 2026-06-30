@@ -16,7 +16,9 @@ jobs:
                   fetch-depth: 0
 
             - name: Configure
-              run: cmake -B build -G Ninja -DENABLE_MODULES=plugin -DCMAKE_BUILD_TYPE=Release
+              run: cmake -B build -G Ninja -DENABLE_MODULES=plugin \
+                -DCMAKE_BUILD_TYPE=Release \
+                -DCMAKE_CXX_FLAGS="-I/usr/include/qt6/QtCanvasPainter"
 
             - name: Build
               run: ninja -C build
@@ -26,4 +28,4 @@ jobs:
               run: |
                   set -o pipefail
                   run-clang-tidy -p build -j $(nproc) -header-filter="Plugins/.*" 2>&1 | \
-                    grep -v 'Suppressed\|non-user\|non-system\|unknown argument.*mno-direct'
+                    grep -v 'Suppressed\|non-user\|non-system\|unknown argument.*mno-direct\|Found compiler error'
