@@ -76,4 +76,4 @@ class HyprDevices : public QObject {
 	QList<HyprKeyboard*> m_keyboards;
 };
 
-} 
+} // namespace ZShell::internal::hypr

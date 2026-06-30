@@ -15,8 +15,8 @@ constexpr qint32 TAIL_DEGREES_OFFSET = -20;
 constexpr qint32 EXTRA_DEGREES_PER_CYCLE = 250;
 constexpr qint32 CONSTANT_ROTATION_DEGREES = 1520;
 
-constexpr std::array<qint32, TOTAL_CYCLES> DELAY_TO_EXPAND_IN_MS = 
-    {0, 1350, 2700, 4050};
+constexpr std::array<qint32, TOTAL_CYCLES> DELAY_TO_EXPAND_IN_MS = {
+	0, 1350, 2700, 4050};
 constexpr std::array<qint32, TOTAL_CYCLES> DELAY_TO_COLLAPSE_IN_MS = {
 	667, 2017, 3367, 4717};
 

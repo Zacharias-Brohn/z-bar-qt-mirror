@@ -14,7 +14,8 @@ int DesktopModel::rowCount(const QModelIndex& parent) const {
 }
 
 QVariant DesktopModel::data(const QModelIndex& index, int role) const {
-	if (!index.isValid() || index.row() >= static_cast<int>(m_items.size())) return QVariant();
+	if (!index.isValid() || index.row() >= static_cast<int>(m_items.size()))
+		return QVariant();
 
 	const DesktopItem& item = m_items[index.row()];
 	switch (role) {
@@ -243,7 +244,9 @@ void DesktopModel::massMove(
 	}
 
 	emit dataChanged(
-		index(0, 0), index(static_cast<int>(m_items.size()) - 1, 0), {GridXRole, GridYRole});
+		index(0, 0),
+		index(static_cast<int>(m_items.size()) - 1, 0),
+		{GridXRole, GridYRole});
 	saveCurrentLayout();
 }
 
