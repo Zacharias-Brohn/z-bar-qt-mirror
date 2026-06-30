@@ -28,6 +28,8 @@ class ButtonRow : public QQuickItem {
 	private slots:
 	void invalidate();
 
+	// NOLINTNEXTLINE(readability-redundant-access-specifiers)
+	private:
 	void relayout();
 	static qreal getMorphExpansion(const QQuickItem* item);
 
