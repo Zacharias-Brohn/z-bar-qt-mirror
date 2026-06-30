@@ -55,11 +55,11 @@ class BlobShape : public QQuickItem {
 
 	virtual bool isExcluded(const BlobShape*) const { return false; }
 
-virtual bool isCornerExcluded(const BlobShape* /*other*/) const {
-	return false;
-}
+	virtual bool isCornerExcluded(const BlobShape* /*other*/) const {
+		return false;
+	}
 
-virtual void cornerRadii(float out[4]) const;
+	virtual void cornerRadii(float out[4]) const;
 
 	virtual void updatePhysics() {}
 
@@ -67,25 +67,25 @@ virtual void cornerRadii(float out[4]) const;
 	virtual void unregisterFromGroup();
 	void updateCenteredDeformMatrix();
 
-BlobGroup* m_group = nullptr;
-qreal m_radius = 0;
-QMatrix4x4 m_deformMatrix;     // identity by default
-QMatrix4x4 m_centeredDeformMatrix;
+	BlobGroup* m_group = nullptr;
+	qreal m_radius = 0;
+	QMatrix4x4 m_deformMatrix; // identity by default
+	QMatrix4x4 m_centeredDeformMatrix;
 
-// Cached data from updatePolish
-float m_cachedPaddedX = 0;
-float m_cachedPaddedY = 0;
-float m_cachedPaddedW = 0;
-float m_cachedPaddedH = 0;
-float m_pendingDw = 0;
-float m_pendingDh = 0;
-QRectF m_localPaddedRect;
-QVector<BlobRectData> m_cachedRects;
-int m_cachedMyIndex = -2;
-float m_pendingDx = 0;
-float m_pendingDy = 0;
-bool m_cachedHasInverted = false;
-float m_cachedInvertedRadius = 0;
-float m_cachedInvertedOuter[4] = {};
-float m_cachedInvertedInner[4] = {};
+	// Cached data from updatePolish
+	float m_cachedPaddedX = 0;
+	float m_cachedPaddedY = 0;
+	float m_cachedPaddedW = 0;
+	float m_cachedPaddedH = 0;
+	float m_pendingDw = 0;
+	float m_pendingDh = 0;
+	QRectF m_localPaddedRect;
+	QVector<BlobRectData> m_cachedRects;
+	int m_cachedMyIndex = -2;
+	float m_pendingDx = 0;
+	float m_pendingDy = 0;
+	bool m_cachedHasInverted = false;
+	float m_cachedInvertedRadius = 0;
+	float m_cachedInvertedOuter[4] = {};
+	float m_cachedInvertedInner[4] = {};
 };

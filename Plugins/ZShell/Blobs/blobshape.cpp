@@ -38,8 +38,7 @@ static float cornerFillFactor(float sd, float smoothFactor) {
 	return std::max(outside, inside);
 }
 
-BlobShape::BlobShape(QQuickItem* parent)
-	: QQuickItem(parent) {
+BlobShape::BlobShape(QQuickItem* parent) : QQuickItem(parent) {
 	setFlag(ItemHasContents);
 }
 
@@ -312,13 +311,10 @@ void BlobShape::updatePolish() {
 		const float cTlX = ri.cx - ri.hw, cTlY = ri.cy - ri.hh;
 
 		for (qsizetype j = 0; cornerFill && j < rectCount; ++j) {
-			if (j == i)
-				continue;
-			if (riExcludeMask & (1 << j))
-				continue;
+			if (j == i) continue;
+			if (riExcludeMask & (1 << j)) continue;
 			BlobShape* const sj = rectShapes[j];
-			if (si->isCornerExcluded(sj) || sj->isCornerExcluded(si))
-				continue;
+			if (si->isCornerExcluded(sj) || sj->isCornerExcluded(si)) continue;
 			const auto& rj = m_cachedRects[j];
 			const float sdTr = cpuSdBox(cTrX, cTrY, rj.cx, rj.cy, rj.hw, rj.hh);
 			const float sdBr = cpuSdBox(cBrX, cBrY, rj.cx, rj.cy, rj.hw, rj.hh);

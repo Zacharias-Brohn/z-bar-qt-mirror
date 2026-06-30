@@ -26,8 +26,7 @@ void BlobGroup::setColor(const QColor& c) {
 }
 
 void BlobGroup::setCornerFill(bool e) {
-	if (m_cornerFill == e)
-		return;
+	if (m_cornerFill == e) return;
 	m_cornerFill = e;
 	emit cornerFillChanged();
 	markDirty();

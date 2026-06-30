@@ -32,11 +32,9 @@ void BlobRect::updatePolish() {
 				QMetaObject::invokeMethod(
 					this,
 					[this]() {
-					if (m_group)
-						m_group->markDirty();
-				},
-					Qt::QueuedConnection
-					);
+						if (m_group) m_group->markDirty();
+					},
+					Qt::QueuedConnection);
 			}
 		} else {
 			QMetaObject::invokeMethod(
@@ -184,8 +182,7 @@ bool BlobRect::isExcluded(const BlobShape* other) const {
 
 bool BlobRect::isCornerExcluded(const BlobShape* other) const {
 	for (const auto& ptr : m_excludeCorners) {
-		if (ptr == other)
-			return true;
+		if (ptr == other) return true;
 	}
 	return false;
 }
@@ -203,8 +200,15 @@ QQmlListProperty<BlobRect> BlobRect::exclude() {
 }
 
 QQmlListProperty<BlobRect> BlobRect::excludeCorners() {
-	return QQmlListProperty<BlobRect>(this, nullptr, &excludeCornersAppend, &excludeCornersCount, &excludeCornersAt,
-	                                  &excludeCornersClear, &excludeCornersReplace, &excludeCornersRemoveLast);
+	return QQmlListProperty<BlobRect>(
+		this,
+		nullptr,
+		&excludeCornersAppend,
+		&excludeCornersCount,
+		&excludeCornersAt,
+		&excludeCornersClear,
+		&excludeCornersReplace,
+		&excludeCornersRemoveLast);
 }
 
 void BlobRect::excludeAppend(QQmlListProperty<BlobRect>* prop, BlobRect* rect) {
@@ -249,11 +253,11 @@ void BlobRect::excludeRemoveLast(QQmlListProperty<BlobRect>* prop) {
 	emit self->excludeChanged();
 }
 
-void BlobRect::excludeCornersAppend(QQmlListProperty<BlobRect>* prop, BlobRect* rect) {
+void BlobRect::excludeCornersAppend(
+	QQmlListProperty<BlobRect>* prop, BlobRect* rect) {
 	auto* self = static_cast<BlobRect*>(prop->object);
 	self->m_excludeCorners.append(rect);
-	if (self->m_group)
-		self->m_group->markDirty();
+	if (self->m_group) self->m_group->markDirty();
 	emit self->excludeCornersChanged();
 }
 
@@ -262,36 +266,33 @@ qsizetype BlobRect::excludeCornersCount(QQmlListProperty<BlobRect>* prop) {
 	return self->m_excludeCorners.size();
 }
 
-BlobRect* BlobRect::excludeCornersAt(QQmlListProperty<BlobRect>* prop, qsizetype index) {
+BlobRect* BlobRect::excludeCornersAt(
+	QQmlListProperty<BlobRect>* prop, qsizetype index) {
 	auto* self = static_cast<BlobRect*>(prop->object);
 	return self->m_excludeCorners.at(index);
 }
 
 void BlobRect::excludeCornersClear(QQmlListProperty<BlobRect>* prop) {
 	auto* self = static_cast<BlobRect*>(prop->object);
-	if (self->m_excludeCorners.isEmpty())
-		return;
+	if (self->m_excludeCorners.isEmpty()) return;
 	self->m_excludeCorners.clear();
-	if (self->m_group)
-		self->m_group->markDirty();
+	if (self->m_group) self->m_group->markDirty();
 	emit self->excludeCornersChanged();
 }
 
-void BlobRect::excludeCornersReplace(QQmlListProperty<BlobRect>* prop, qsizetype index, BlobRect* rect) {
+void BlobRect::excludeCornersReplace(
+	QQmlListProperty<BlobRect>* prop, qsizetype index, BlobRect* rect) {
 	auto* self = static_cast<BlobRect*>(prop->object);
 	self->m_excludeCorners[index] = rect;
-	if (self->m_group)
-		self->m_group->markDirty();
+	if (self->m_group) self->m_group->markDirty();
 	emit self->excludeCornersChanged();
 }
 
 void BlobRect::excludeCornersRemoveLast(QQmlListProperty<BlobRect>* prop) {
 	auto* self = static_cast<BlobRect*>(prop->object);
-	if (self->m_excludeCorners.isEmpty())
-		return;
+	if (self->m_excludeCorners.isEmpty()) return;
 	self->m_excludeCorners.removeLast();
-	if (self->m_group)
-		self->m_group->markDirty();
+	if (self->m_group) self->m_group->markDirty();
 	emit self->excludeCornersChanged();
 }
 
@@ -319,11 +320,9 @@ void BlobRect::checkAtRest(float speed) {
 			QMetaObject::invokeMethod(
 				this,
 				[this]() {
-				if (m_group)
-					m_group->markDirty();
-			},
-				Qt::QueuedConnection
-				);
+					if (m_group) m_group->markDirty();
+				},
+				Qt::QueuedConnection);
 		}
 	}
 }

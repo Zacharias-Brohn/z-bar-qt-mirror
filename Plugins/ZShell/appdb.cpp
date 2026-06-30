@@ -10,23 +10,28 @@ Q_LOGGING_CATEGORY(lcAppDb, "ZShell.appdb", QtInfoMsg)
 namespace ZShell {
 
 AppEntry::AppEntry(QObject* entry, unsigned int frequency, QObject* parent)
-	: QObject(parent)
-	, m_entry(entry)
-	, m_frequency(frequency) {
+	: QObject(parent), m_entry(entry), m_frequency(frequency) {
 	const auto mo = m_entry->metaObject();
 	const auto tmo = &AppEntry::staticMetaObject;
 
 	for (const auto& prop :
-	     { "name", "comment", "execString", "startupClass", "genericName", "categories", "keywords" }) {
+		 {"name",
+		  "comment",
+		  "execString",
+		  "startupClass",
+		  "genericName",
+		  "categories",
+		  "keywords"}) {
 		const auto metaProp = mo->property(mo->indexOfProperty(prop));
 		const auto thisMetaProp = tmo->property(tmo->indexOfProperty(prop));
-		QObject::connect(m_entry, metaProp.notifySignal(), this, thisMetaProp.notifySignal());
+		QObject::connect(
+			m_entry, metaProp.notifySignal(), this, thisMetaProp.notifySignal());
 	}
 
 	QObject::connect(m_entry, &QObject::destroyed, this, [this]() {
-			m_entry = nullptr;
-			deleteLater();
-		});
+		m_entry = nullptr;
+		deleteLater();
+	});
 }
 
 QObject* AppEntry::entry() const {
@@ -118,7 +123,9 @@ AppDb::AppDb(QObject* parent)
 	db.open();
 
 	QSqlQuery query(db);
-	query.exec("CREATE TABLE IF NOT EXISTS frequencies (id TEXT PRIMARY KEY, frequency INTEGER)");
+	query.exec(
+		"CREATE TABLE IF NOT EXISTS frequencies (id TEXT PRIMARY KEY, "
+		"frequency INTEGER)");
 }
 
 QString AppDb::uuid() const {
@@ -145,7 +152,9 @@ void AppDb::setPath(const QString& path) {
 	db.open();
 
 	QSqlQuery query(db);
-	query.exec("CREATE TABLE IF NOT EXISTS frequencies (id TEXT PRIMARY KEY, frequency INTEGER)");
+	query.exec(
+		"CREATE TABLE IF NOT EXISTS frequencies (id TEXT PRIMARY KEY, "
+		"frequency INTEGER)");
 
 	updateAppFrequencies();
 }
@@ -183,7 +192,9 @@ void AppDb::setFavoriteApps(const QStringList& favApps) {
 		if (re.isValid()) {
 			m_favoriteAppsRegex << re;
 		} else {
-			qCWarning(lcAppDb) << "setFavoriteApps: regular expression is not valid:" << re.pattern();
+			qCWarning(lcAppDb)
+				<< "setFavoriteApps: regular expression is not valid:"
+				<< re.pattern();
 		}
 	}
 
@@ -191,8 +202,7 @@ void AppDb::setFavoriteApps(const QStringList& favApps) {
 }
 
 QString AppDb::regexifyString(const QString& original) const {
-	if (original.startsWith('^') && original.endsWith('$'))
-		return original;
+	if (original.startsWith('^') && original.endsWith('$')) return original;
 
 	const QString escaped = QRegularExpression::escape(original);
 	return QStringLiteral("^%1$").arg(escaped);
@@ -206,9 +216,10 @@ void AppDb::incrementFrequency(const QString& id) {
 	auto db = QSqlDatabase::database(m_uuid);
 	QSqlQuery query(db);
 
-	query.prepare("INSERT INTO frequencies (id, frequency) "
-	              "VALUES (:id, 1) "
-	              "ON CONFLICT (id) DO UPDATE SET frequency = frequency + 1");
+	query.prepare(
+		"INSERT INTO frequencies (id, frequency) "
+		"VALUES (:id, 1) "
+		"ON CONFLICT (id) DO UPDATE SET frequency = frequency + 1");
 	query.bindValue(":id", id);
 	query.exec();
 
@@ -221,7 +232,8 @@ void AppDb::incrementFrequency(const QString& id) {
 			emit appsChanged();
 		}
 	} else {
-		qCWarning(lcAppDb) << "incrementFrequency: could not find app with id" << id;
+		qCWarning(lcAppDb) << "incrementFrequency: could not find app with id"
+						   << id;
 	}
 }
 
@@ -232,15 +244,16 @@ QList<AppEntry*>& AppDb::getSortedApps() const {
 	QSet<QString> favSet;
 	favSet.reserve(m_sortedApps.size());
 	for (const auto* app : std::as_const(m_sortedApps)) {
-		if (isFavorite(app))
-			favSet.insert(app->id());
+		if (isFavorite(app)) favSet.insert(app->id());
 	}
 
-	std::sort(m_sortedApps.begin(), m_sortedApps.end(), [&favSet](AppEntry* a, AppEntry* b) {
+	std::sort(
+		m_sortedApps.begin(),
+		m_sortedApps.end(),
+		[&favSet](AppEntry* a, AppEntry* b) {
 			const bool aIsFav = favSet.contains(a->id());
 			const bool bIsFav = favSet.contains(b->id());
-			if (aIsFav != bIsFav)
-				return aIsFav;
+			if (aIsFav != bIsFav) return aIsFav;
 			if (a->frequency() != b->frequency())
 				return a->frequency() > b->frequency();
 			return a->name().localeAwareCompare(b->name()) < 0;
@@ -293,10 +306,10 @@ void AppDb::updateApps() {
 			dirty = true;
 			auto* const newEntry = new AppEntry(entry, getFrequency(id), this);
 			QObject::connect(newEntry, &QObject::destroyed, this, [id, this]() {
-					if (m_apps.remove(id)) {
-						emit appsChanged();
-					}
-				});
+				if (m_apps.remove(id)) {
+					emit appsChanged();
+				}
+			});
 			m_apps.insert(id, newEntry);
 		}
 	}

@@ -12,18 +12,18 @@ class ZUtils : public QObject {
 	QML_ELEMENT
 	QML_SINGLETON
 
-Q_PROPERTY(QString version READ version CONSTANT)
-Q_PROPERTY(QString qtVersion READ qtVersion CONSTANT)
+	Q_PROPERTY(QString version READ version CONSTANT)
+	Q_PROPERTY(QString qtVersion READ qtVersion CONSTANT)
 
-public:
-// clang-format off
-Q_INVOKABLE void saveItem(QQuickItem* target, const QUrl& path);
-Q_INVOKABLE void saveItem(QQuickItem* target, const QUrl& path, const QRect& rect);
-Q_INVOKABLE void saveItem(QQuickItem* target, const QUrl& path, QJSValue onSaved);
-Q_INVOKABLE void saveItem(QQuickItem* target, const QUrl& path, QJSValue onSaved, QJSValue onFailed);
-Q_INVOKABLE void saveItem(QQuickItem* target, const QUrl& path, const QRect& rect, QJSValue onSaved);
-Q_INVOKABLE void saveItem(QQuickItem* target, const QUrl& path, const QRect& rect, QJSValue onSaved, QJSValue onFailed);
-// clang-format on
+	public:
+	// clang-format off
+	Q_INVOKABLE void saveItem(QQuickItem* target, const QUrl& path);
+	Q_INVOKABLE void saveItem(QQuickItem* target, const QUrl& path, const QRect& rect);
+	Q_INVOKABLE void saveItem(QQuickItem* target, const QUrl& path, QJSValue onSaved);
+	Q_INVOKABLE void saveItem(QQuickItem* target, const QUrl& path, QJSValue onSaved, QJSValue onFailed);
+	Q_INVOKABLE void saveItem(QQuickItem* target, const QUrl& path, const QRect& rect, QJSValue onSaved);
+	Q_INVOKABLE void saveItem(QQuickItem* target, const QUrl& path, const QRect& rect, QJSValue onSaved, QJSValue onFailed);
+	// clang-format on
 
 	Q_INVOKABLE static bool copyFile(
 		const QUrl& source, const QUrl& target, bool overwrite = true);
