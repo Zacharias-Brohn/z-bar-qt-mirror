@@ -26,7 +26,7 @@ jobs:
             - name: clang-tidy
               continue-on-error: true
               run: |
+                  sed -i 's/-mno-direct-extern-access //g' build/compile_commands.json
                   set -o pipefail
-                  run-clang-tidy -p build -j $(nproc) -header-filter="Plugins/.*" \
-                    -extra-arg=-Wno-unknown-argument 2>&1 | \
-                    grep -v 'Suppressed\|non-user\|non-system\|Found compiler error'
+                  run-clang-tidy -p build -j $(nproc) -header-filter="Plugins/.*" 2>&1 | \
+                    grep -v 'Suppressed\|non-user\|non-system\|unknown argument.*mno-direct\|Found compiler error'
