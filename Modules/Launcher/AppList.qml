@@ -10,7 +10,7 @@ import qs.Config
 CustomListView {
 	id: root
 
-	required property CustomTextField search
+	required property SearchBar search
 	required property PersistentProperties visibilities
 
 	highlightFollowsCurrentItem: false

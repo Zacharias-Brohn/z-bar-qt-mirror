@@ -68,7 +68,7 @@ CustomClippingRect {
 					}
 				}
 
-				CustomTextField {
+				TextFieldBase {
 					id: startHourField
 
 					function setConfigText(setting: string): string {
@@ -84,7 +84,6 @@ CustomClippingRect {
 					anchors.verticalCenter: parent.verticalCenter
 					clip: true
 					color: focus ? DynamicColors.palette.m3primaryContainer : DynamicColors.palette.m3onSurface
-					cursorHeight: height - Appearance.padding.normal * 2
 					font.family: "Roboto"
 					font.letterSpacing: -0.25
 					font.pixelSize: 56
@@ -188,7 +187,7 @@ CustomClippingRect {
 					}
 				}
 
-				CustomTextField {
+				TextFieldBase {
 					id: startMinuteField
 
 					function setConfigText(setting: string): string {
@@ -204,7 +203,6 @@ CustomClippingRect {
 					anchors.verticalCenter: parent.verticalCenter
 					clip: true
 					color: focus ? DynamicColors.palette.m3primaryContainer : DynamicColors.palette.m3onSurface
-					cursorHeight: height - Appearance.padding.normal * 2
 					font.family: "Roboto"
 					font.letterSpacing: -0.25
 					font.pixelSize: 56
@@ -307,7 +305,7 @@ CustomClippingRect {
 					}
 				}
 
-				CustomTextField {
+				TextFieldBase {
 					id: endHourField
 
 					function setConfigText(setting: string): string {
@@ -323,7 +321,6 @@ CustomClippingRect {
 					anchors.verticalCenter: parent.verticalCenter
 					clip: true
 					color: focus ? DynamicColors.palette.m3primaryContainer : DynamicColors.palette.m3onSurface
-					cursorHeight: height - Appearance.padding.normal * 2
 					font.family: "Roboto"
 					font.letterSpacing: -0.25
 					font.pixelSize: 56
@@ -427,7 +424,7 @@ CustomClippingRect {
 					}
 				}
 
-				CustomTextField {
+				TextFieldBase {
 					id: endMinuteField
 
 					function setConfigText(setting: string): string {
@@ -443,7 +440,6 @@ CustomClippingRect {
 					anchors.verticalCenter: parent.verticalCenter
 					clip: true
 					color: focus ? DynamicColors.palette.m3primaryContainer : DynamicColors.palette.m3onSurface
-					cursorHeight: height - Appearance.padding.normal * 2
 					font.family: "Roboto"
 					font.letterSpacing: -0.25
 					font.pixelSize: 56

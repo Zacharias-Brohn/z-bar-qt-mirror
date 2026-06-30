@@ -16,6 +16,10 @@ VerticalFadeFlickable {
 	fadeAmount: 0.1
 	topMargin: Appearance.padding.large
 
+	TapHandler {
+		onTapped: root.focus = true
+	}
+
 	ColumnLayout {
 		id: content
 

@@ -54,7 +54,7 @@ PageBase {
 				CustomText {
 					Layout.alignment: Qt.AlignHCenter
 					color: DynamicColors.palette.m3onSurfaceVariant
-					font: Appearance.font.body.medium
+					font.pointSize: Appearance.font.size.medium
 					text: ZUtils.version ? `v${ZUtils.version}` : "…"
 				}
 			}

@@ -25,6 +25,8 @@ ColumnLayout {
 		implicitWidth: header.implicitWidth
 		z: 1
 
+		onClicked: focus = true
+
 		RowLayout {
 			id: header
 
@@ -66,5 +68,9 @@ ColumnLayout {
 		contentItem.children: [root.contentChild]
 		fadeAmount: 0.1
 		topMargin: Appearance.padding.large
+
+		TapHandler {
+			onTapped: flickable.focus = true
+		}
 	}
 }

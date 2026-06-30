@@ -37,7 +37,7 @@ PathView {
 		return visible;
 	}
 	required property var panels
-	required property CustomTextField search
+	required property SearchBar search
 	required property var visibilities
 
 	cacheItemCount: 4

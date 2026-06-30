@@ -27,6 +27,10 @@ CustomClippingRect {
 		}
 	}
 
+	TapHandler {
+		onTapped: root.focus = true
+	}
+
 	BlobGroup {
 		id: blobGroup
 

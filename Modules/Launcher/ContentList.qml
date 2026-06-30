@@ -17,7 +17,7 @@ Item {
 	required property int padding
 	required property var panels
 	required property int rounding
-	required property CustomTextField search
+	required property SearchBar search
 	readonly property bool showWallpapers: search.text.startsWith(`${Config.launcher.actionPrefix}wallpaper `)
 	required property PersistentProperties visibilities
 

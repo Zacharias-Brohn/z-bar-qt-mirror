@@ -30,8 +30,9 @@ MouseArea {
 	signal itemSelected(item: MenuItem)
 
 	anchors.fill: parent
-	cursorShape: undefined
+	cursorShape: expanded ? Qt.ArrowCursor : undefined
 	enabled: expanded
+	hoverEnabled: expanded
 	layer.enabled: opacity < 1
 	opacity: expanded ? 1 : 0
 	parent: {

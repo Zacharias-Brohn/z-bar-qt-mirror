@@ -85,7 +85,7 @@ ConnectedRect {
 				anchors.fill: parent
 				cursorShape: popup.open ? Qt.ArrowCursor : undefined
 				enabled: popup.open
-				hoverEnabled: true
+				hoverEnabled: popup.open
 				parent: {
 					if (root.keepPopupAsChild)
 						return triggerArea;
@@ -94,8 +94,6 @@ ConnectedRect {
 					const contentWin = win as Windows; // If inside the drawer content window, put it inside the interaction wrapper so hover works
 					return contentWin ? contentWin.interactionWrapper : (win as QsWindow).contentItem;
 				}
-				preventStealing: true
-				propagateComposedEvents: false
 				z: popup.animDriver > 0 ? 1 : 0
 
 				onClicked: popup.open = false
