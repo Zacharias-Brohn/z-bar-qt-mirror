@@ -2,7 +2,6 @@
 Checks: >
     -*,
     bugprone-*,
-    -readability-redundant-inline-specifier,
     -bugprone-throwing-static-initialization,
     -bugprone-invalid-enum-default-initialization,
     -bugprone-suspicious-include,
@@ -17,6 +16,7 @@ Checks: >
     readability-else-after-return,
     readability-make-member-function-const,
     readability-redundant-*,
+    -readability-redundant-inline-specifier,
     readability-simplify-*,
     modernize-use-override,
     modernize-use-nullptr,
