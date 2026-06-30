@@ -22,7 +22,6 @@ jobs:
               run: ninja -C build
 
             - name: clang-tidy
-              continue-on-error: true
               run: |
                   sed -i 's/-mno-direct-extern-access //g' build/compile_commands.json
                   set -o pipefail

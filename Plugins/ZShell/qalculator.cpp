@@ -5,6 +5,7 @@
 namespace ZShell {
 
 Qalculator::Qalculator(QObject* parent) : QObject(parent) {
+    int x;
 	if (!CALCULATOR) {
 		new Calculator();
 		CALCULATOR->loadExchangeRates();
