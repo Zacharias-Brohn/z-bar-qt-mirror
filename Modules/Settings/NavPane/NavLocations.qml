@@ -10,9 +10,6 @@ import qs.Modules.Settings
 VerticalFadeFlickable {
 	id: root
 
-	// Results grouped by their top-level page, so the list can show one heading
-	// per page with the matching settings joined underneath it (like the
-	// Android settings search). Each group: { page, entries: [...] }.
 	readonly property var groups: {
 		const out = [];
 		const byPage = ({});
@@ -154,12 +151,6 @@ VerticalFadeFlickable {
 		ListView {
 			id: resultList
 
-			// Grouped results: the model is one entry per top-level page, and
-			// each delegate renders that page's heading plus the matching
-			// settings joined into a single rounded card (first/last rounded,
-			// middles square, thin dividers between them), like the Android
-			// settings search. A ScriptModel diffs the groups so only changed
-			// ones animate. Scrolling is delegated to the outer flickable.
 			Layout.fillWidth: true
 			cacheBuffer: 10000
 			implicitHeight: contentHeight
@@ -175,7 +166,6 @@ VerticalFadeFlickable {
 				spacing: Appearance.spacing.small
 				width: resultList.width
 
-				// Group heading: the top-level page name, shown once.
 				RowLayout {
 					Layout.fillWidth: true
 					Layout.leftMargin: Appearance.padding.small
@@ -196,7 +186,6 @@ VerticalFadeFlickable {
 					}
 				}
 
-				// The matching settings, joined into one card.
 				ColumnLayout {
 					Layout.fillWidth: true
 					spacing: 0
@@ -220,9 +209,6 @@ VerticalFadeFlickable {
 								const h = resultLayout.implicitHeight + resultLayout.anchors.margins * 2;
 								return h % 2 === 0 ? h : h + 1;
 							}
-							// Joined card: round only the outer corners so the
-							// rows read as one block (square where they meet),
-							// matching the page tabs' corner radius.
 							topLeftRadius: isFirst ? Appearance.rounding.large : 0
 							topRightRadius: isFirst ? Appearance.rounding.large : 0
 
@@ -242,11 +228,9 @@ VerticalFadeFlickable {
 
 								anchors.fill: parent
 								anchors.margins: Appearance.padding.large
-								// Leave room on the right for the toggle switch.
 								anchors.rightMargin: result.modelData.togglePath ? toggle.width + Appearance.padding.large * 2 : Appearance.padding.large
 								spacing: Appearance.spacing.small / 2
 
-								// Location line: deepest icon + "Section > sub", faint.
 								CustomText {
 									Layout.fillWidth: true
 									color: DynamicColors.palette.m3onSurfaceVariant
@@ -261,7 +245,6 @@ VerticalFadeFlickable {
 									visible: text.length > 0
 								}
 
-								// The setting itself, most prominent.
 								CustomText {
 									Layout.fillWidth: true
 									color: DynamicColors.palette.m3onSurface
@@ -271,7 +254,6 @@ VerticalFadeFlickable {
 									textFormat: Text.StyledText
 								}
 
-								// Optional description, faintest and smallest.
 								CustomText {
 									Layout.fillWidth: true
 									color: DynamicColors.palette.m3outline
@@ -312,15 +294,7 @@ VerticalFadeFlickable {
 					}
 				}
 			}
-
-			// The list's implicitHeight tracks contentHeight; while items animate
-			// their position the reported height fluctuates, which left gaps in
-			// the surrounding layout on fast typing. So additions, removals and
-			// reordering are all instant - no transitions - keeping the height
-			// correct at every frame.
 			model: ScriptModel {
-				// Match groups by their page so content updates in place rather
-				// than rebuilding the delegate when ranking shifts the order.
 				objectProp: "pageIdx"
 				values: root.groups
 			}
