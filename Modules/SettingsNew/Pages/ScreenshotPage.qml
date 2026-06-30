@@ -17,8 +17,13 @@ PageBase {
 	ColumnLayout {
 		anchors.horizontalCenter: parent.horizontalCenter
 		anchors.top: parent.top
-		spacing: Appearance.spacing.large
+		spacing: Appearance.spacing.extraSmall / 2
 		width: root.cappedWidth
+
+		SectionHeader {
+			first: true
+			text: qsTr("Effects")
+		}
 
 		ToggleRow {
 			checked: Config.screenshot.enable_pp
@@ -29,7 +34,6 @@ PageBase {
 		}
 
 		SelectRow {
-			Layout.topMargin: Appearance.spacing.extraSmall / 2 - parent.spacing
 			active: Config.screenshot.mode === "manual" ? menuItems[0] : menuItems[1]
 			enabled: Config.screenshot.enable_pp
 			last: true
@@ -55,6 +59,10 @@ PageBase {
 			}
 		}
 
+		SectionHeader {
+			text: qsTr("Rounded corners")
+		}
+
 		ToggleRow {
 			checked: Config.screenshot.rounding
 			enabled: Config.screenshot.enable_pp && Config.screenshot.mode === "manual"
@@ -65,7 +73,6 @@ PageBase {
 		}
 
 		SpinRow {
-			Layout.topMargin: Appearance.spacing.extraSmall / 2 - parent.spacing
 			enabled: Config.screenshot.enable_pp && Config.screenshot.mode === "manual" && Config.screenshot.rounding
 			from: 0
 			last: true
@@ -80,6 +87,10 @@ PageBase {
 			}
 		}
 
+		SectionHeader {
+			text: qsTr("Shadow")
+		}
+
 		ToggleRow {
 			checked: Config.screenshot.shadow
 			enabled: Config.screenshot.enable_pp && Config.screenshot.mode === "manual"
@@ -90,7 +101,6 @@ PageBase {
 		}
 
 		SpinRow {
-			Layout.topMargin: Appearance.spacing.extraSmall / 2 - parent.spacing
 			enabled: Config.screenshot.enable_pp && Config.screenshot.mode === "manual" && Config.screenshot.shadow
 			from: 0
 			stepSize: 1
@@ -105,7 +115,6 @@ PageBase {
 		}
 
 		SpinRow {
-			Layout.topMargin: Appearance.spacing.extraSmall / 2 - parent.spacing
 			enabled: Config.screenshot.enable_pp && Config.screenshot.mode === "manual" && Config.screenshot.shadow
 			from: -100
 			stepSize: 10
@@ -120,7 +129,6 @@ PageBase {
 		}
 
 		SpinRow {
-			Layout.topMargin: Appearance.spacing.extraSmall / 2 - parent.spacing
 			enabled: Config.screenshot.enable_pp && Config.screenshot.mode === "manual" && Config.screenshot.shadow
 			from: -100
 			last: true

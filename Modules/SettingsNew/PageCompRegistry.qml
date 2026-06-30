@@ -22,7 +22,7 @@ QtObject {
 			// Wallpaper & style
 			StackPage {
 				Component {
-					Wallpaper {
+					WallpaperPage {
 					}
 				}
 
@@ -36,7 +36,7 @@ QtObject {
 			// Screenshot
 			StackPage {
 				Component {
-					Screenshot {
+					ScreenshotPage {
 					}
 				}
 			}
