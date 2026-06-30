@@ -56,6 +56,7 @@ static QString luaEscapeString(const QString& s) {
 
 static QString luaValue(const QVariant& v);
 
+// NOLINTNEXTLINE(misc-no-recursion)
 static QString luaArray(const QVariantList& list) {
 	QStringList parts;
 	parts.reserve(list.size());
@@ -80,6 +81,7 @@ static QString luaArray(const QStringList& list) {
 		   QLatin1String(" }");
 }
 
+// NOLINTNEXTLINE(misc-no-recursion)
 static QString luaMapFromHash(const QVariantHash& hash) {
 	QStringList parts;
 	parts.reserve(hash.size());
@@ -93,6 +95,7 @@ static QString luaMapFromHash(const QVariantHash& hash) {
 		   QLatin1String(" }");
 }
 
+// NOLINTNEXTLINE(misc-no-recursion)
 static QString luaMap(const QVariantMap& map) {
 	QStringList parts;
 	parts.reserve(map.size());
@@ -106,6 +109,7 @@ static QString luaMap(const QVariantMap& map) {
 		   QLatin1String(" }");
 }
 
+// NOLINTNEXTLINE(misc-no-recursion)
 static QString luaValue(const QVariant& v) {
 	if (!v.isValid() || v.isNull()) {
 		return QLatin1String("nil");
@@ -242,6 +246,7 @@ static QVariant parseGetOptionValue(const QJsonObject& obj) {
 	return {};
 }
 
+// NOLINTNEXTLINE(misc-no-recursion)
 static void insertNestedValue(
 	QVariantMap& root, const QStringList& path, const QVariant& value) {
 	if (path.isEmpty()) {
