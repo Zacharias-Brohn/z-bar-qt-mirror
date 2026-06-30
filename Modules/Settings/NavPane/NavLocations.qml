@@ -2,6 +2,7 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
+import Quickshell
 import qs.Components
 import qs.Config
 import qs.Modules.Settings
@@ -9,7 +10,36 @@ import qs.Modules.Settings
 VerticalFadeFlickable {
 	id: root
 
+	// Results grouped by their top-level page, so the list can show one heading
+	// per page with the matching settings joined underneath it (like the
+	// Android settings search). Each group: { page, entries: [...] }.
+	readonly property var groups: {
+		const out = [];
+		const byPage = ({});
+		for (const e of results) {
+			const key = e.pageIdx;
+			if (byPage[key] === undefined) {
+				byPage[key] = {
+					"pageIdx": e.pageIdx,
+					"page": e.crumbLabels[0],
+					"icon": e.crumbIcons[0],
+					"entries": []
+				};
+				out.push(byPage[key]);
+			}
+			byPage[key].entries.push(e);
+		}
+		return out;
+	}
+	readonly property var results: {
+		if (!searching)
+			return [];
+		const all = SettingsSearcher.query(search);
+		return all;
+	}
 	required property SettingsState sState
+	readonly property string search: sState.searchText
+	readonly property bool searching: search.length > 0
 
 	bottomMargin: Appearance.padding.large
 	contentHeight: content.implicitHeight
@@ -30,14 +60,14 @@ VerticalFadeFlickable {
 		Repeater {
 			id: list
 
-			model: PageRegistry.pages
+			model: root.searching ? [] : PageRegistry.pages
 
 			CustomRect {
 				id: item
 
 				required property int index
-				readonly property bool isCategoryEnd: index === list.model.length - 1 || PageRegistry.pages[index + 1].category !== modelData.category
-				readonly property bool isCategoryStart: index === 0 || PageRegistry.pages[index - 1].category !== modelData.category
+				readonly property bool isCategoryEnd: index === list.model.length - 1 || PageRegistry.pages[index + 1]?.category !== modelData.category
+				readonly property bool isCategoryStart: index === 0 || PageRegistry.pages[index - 1]?.category !== modelData.category
 				readonly property bool isCurrentPage: index === root.sState.currentPageIdx
 				required property var modelData
 
@@ -119,6 +149,191 @@ VerticalFadeFlickable {
 					}
 				}
 			}
+		}
+
+		ListView {
+			id: resultList
+
+			// Grouped results: the model is one entry per top-level page, and
+			// each delegate renders that page's heading plus the matching
+			// settings joined into a single rounded card (first/last rounded,
+			// middles square, thin dividers between them), like the Android
+			// settings search. A ScriptModel diffs the groups so only changed
+			// ones animate. Scrolling is delegated to the outer flickable.
+			Layout.fillWidth: true
+			cacheBuffer: 10000
+			implicitHeight: contentHeight
+			interactive: false
+			spacing: Appearance.padding.large
+
+			delegate: ColumnLayout {
+				id: group
+
+				required property int index
+				required property var modelData
+
+				spacing: Appearance.spacing.small
+				width: resultList.width
+
+				// Group heading: the top-level page name, shown once.
+				RowLayout {
+					Layout.fillWidth: true
+					Layout.leftMargin: Appearance.padding.small
+					spacing: Appearance.spacing.small
+
+					MaterialIcon {
+						color: DynamicColors.palette.m3primary
+						font.pointSize: Appearance.font.size.small
+						text: group.modelData.icon
+					}
+
+					CustomText {
+						Layout.fillWidth: true
+						color: DynamicColors.palette.m3primary
+						elide: Text.ElideRight
+						font.pointSize: Appearance.font.size.large
+						text: group.modelData.page
+					}
+				}
+
+				// The matching settings, joined into one card.
+				ColumnLayout {
+					Layout.fillWidth: true
+					spacing: 0
+
+					Repeater {
+						model: group.modelData.entries
+
+						CustomRect {
+							id: result
+
+							required property int index
+							readonly property bool isFirst: index === 0
+							readonly property bool isLast: index === group.modelData.entries.length - 1
+							required property var modelData
+
+							Layout.fillWidth: true
+							bottomLeftRadius: isLast ? Appearance.rounding.large : 0
+							bottomRightRadius: isLast ? Appearance.rounding.large : 0
+							color: DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHigh, 2)
+							implicitHeight: {
+								const h = resultLayout.implicitHeight + resultLayout.anchors.margins * 2;
+								return h % 2 === 0 ? h : h + 1;
+							}
+							// Joined card: round only the outer corners so the
+							// rows read as one block (square where they meet),
+							// matching the page tabs' corner radius.
+							topLeftRadius: isFirst ? Appearance.rounding.large : 0
+							topRightRadius: isFirst ? Appearance.rounding.large : 0
+
+							CustomRect {
+								anchors.bottom: parent.bottom
+								anchors.left: parent.left
+								anchors.leftMargin: Appearance.padding.large
+								anchors.right: parent.right
+								anchors.rightMargin: Appearance.padding.large
+								color: Qt.alpha(DynamicColors.palette.m3outlineVariant, 0.5)
+								implicitHeight: 1
+								visible: !result.isLast
+							}
+
+							ColumnLayout {
+								id: resultLayout
+
+								anchors.fill: parent
+								anchors.margins: Appearance.padding.large
+								// Leave room on the right for the toggle switch.
+								anchors.rightMargin: result.modelData.togglePath ? toggle.width + Appearance.padding.large * 2 : Appearance.padding.large
+								spacing: Appearance.spacing.small / 2
+
+								// Location line: deepest icon + "Section > sub", faint.
+								CustomText {
+									Layout.fillWidth: true
+									color: DynamicColors.palette.m3onSurfaceVariant
+									elide: Text.ElideRight
+									font.pointSize: Appearance.font.size.small
+									text: {
+										const labels = result.modelData.crumbLabels.slice(1);
+										const section = result.modelData.section;
+										const parts = section && section !== labels[labels.length - 1] ? labels.concat(section) : labels;
+										return parts.join("  \u203a  ");
+									}
+									visible: text.length > 0
+								}
+
+								// The setting itself, most prominent.
+								CustomText {
+									Layout.fillWidth: true
+									color: DynamicColors.palette.m3onSurface
+									elide: Text.ElideRight
+									font.pointSize: Appearance.font.size.medium
+									text: SettingsSearcher.highlight(result.modelData.title, root.search, DynamicColors.palette.m3primary)
+									textFormat: Text.StyledText
+								}
+
+								// Optional description, faintest and smallest.
+								CustomText {
+									Layout.fillWidth: true
+									color: DynamicColors.palette.m3outline
+									elide: Text.ElideRight
+									font.pointSize: Appearance.font.size.small
+									text: SettingsSearcher.highlight(result.modelData.subtext, root.search, DynamicColors.palette.m3primary)
+									textFormat: Text.StyledText
+									visible: result.modelData.subtext.length > 0
+								}
+							}
+
+							StateLayer {
+								anchors.fill: parent
+								radius: 0
+								z: 1
+
+								onClicked: {
+									root.sState.jumpToSetting(result.modelData.pageIdx, result.modelData.subPath, result.modelData.anchor);
+								}
+							}
+
+							CustomSwitch {
+								id: toggle
+
+								anchors.right: parent.right
+								anchors.rightMargin: Appearance.padding.large
+								anchors.verticalCenter: parent.verticalCenter
+								cLayer: 3
+								checked: result.modelData.toggleValue
+								scale: 0.85
+								transformOrigin: Item.Right
+								visible: result.modelData.togglePath
+								z: 2
+
+								onToggled: result.modelData.setToggle(checked)
+							}
+						}
+					}
+				}
+			}
+
+			// The list's implicitHeight tracks contentHeight; while items animate
+			// their position the reported height fluctuates, which left gaps in
+			// the surrounding layout on fast typing. So additions, removals and
+			// reordering are all instant - no transitions - keeping the height
+			// correct at every frame.
+			model: ScriptModel {
+				// Match groups by their page so content updates in place rather
+				// than rebuilding the delegate when ranking shifts the order.
+				objectProp: "pageIdx"
+				values: root.groups
+			}
+		}
+
+		CustomText {
+			Layout.fillWidth: true
+			Layout.topMargin: Appearance.padding.large
+			color: DynamicColors.palette.m3onSurfaceVariant
+			font.pointSize: Appearance.font.size.medium
+			horizontalAlignment: Text.AlignHCenter
+			text: qsTr("No matching settings")
+			visible: root.searching && root.results.length === 0
 		}
 	}
 

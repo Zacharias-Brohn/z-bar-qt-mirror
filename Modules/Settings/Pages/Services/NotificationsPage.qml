@@ -25,6 +25,7 @@ PageBase {
 		ToggleRow {
 			checked: Config.notifs.showInFullscreen
 			first: true
+			settingAnchor: "notif-show-in-fullscreen"
 			subtext: qsTr("Whether notifications appear over fullscreen apps")
 			text: qsTr("Show in fullscreen")
 
@@ -33,6 +34,7 @@ PageBase {
 
 		ToggleRow {
 			checked: Config.notifs.expire
+			settingAnchor: "notif-expire-automatically"
 			subtext: qsTr("Dismiss notifications after their timeout")
 			text: qsTr("Expire automatically")
 
@@ -41,6 +43,7 @@ PageBase {
 
 		ToggleRow {
 			checked: Config.notifs.openExpanded
+			settingAnchor: "notif-open-expanded"
 			subtext: qsTr("Show notifications expanded by default")
 			text: qsTr("Open expanded")
 
@@ -49,6 +52,7 @@ PageBase {
 
 		SpinRow {
 			from: 1000
+			settingAnchor: "notif-default-timeout"
 			stepSize: 500
 			subtext: qsTr("Time before a notification dismisses (ms)")
 			text: qsTr("Default timeout")
@@ -61,6 +65,7 @@ PageBase {
 		SpinRow {
 			from: 1
 			last: true
+			settingAnchor: "notif-group-preview-count"
 			stepSize: 1
 			subtext: qsTr("Notifications shown per group before collapsing")
 			text: qsTr("Group preview count")
@@ -78,6 +83,7 @@ PageBase {
 		SpinRow {
 			first: true
 			from: 1
+			settingAnchor: "notif-visible-toasts"
 			stepSize: 1
 			subtext: qsTr("Maximum number of toasts shown at once")
 			text: qsTr("Visible toasts")
@@ -89,6 +95,7 @@ PageBase {
 
 		ToggleRow {
 			checked: Config.utilities.toasts.chargingChanged
+			settingAnchor: "notif-charging-changes"
 			text: qsTr("Charging changes")
 
 			onToggled: Config.utilities.toasts.chargingChanged = checked
@@ -96,6 +103,7 @@ PageBase {
 
 		ToggleRow {
 			checked: Config.utilities.toasts.gameModeChanged
+			settingAnchor: "notif-game-mode-changes"
 			text: qsTr("Game mode changes")
 
 			onToggled: Config.utilities.toasts.gameModeChanged = checked
@@ -110,6 +118,7 @@ PageBase {
 
 		ToggleRow {
 			checked: Config.utilities.toasts.audioOutputChanged
+			settingAnchor: "notif-audio-output-changes"
 			text: qsTr("Audio output changes")
 
 			onToggled: Config.utilities.toasts.audioOutputChanged = checked
@@ -118,6 +127,7 @@ PageBase {
 		ToggleRow {
 			checked: Config.utilities.toasts.audioInputChanged
 			last: true
+			settingAnchor: "notif-audio-input-changes"
 			text: qsTr("Audio input changes")
 
 			onToggled: Config.utilities.toasts.audioInputChanged = checked

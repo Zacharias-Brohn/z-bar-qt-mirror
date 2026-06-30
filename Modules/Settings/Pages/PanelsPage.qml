@@ -16,6 +16,7 @@ PageBase {
 		NavRow {
 			first: true
 			icon: "dock_to_bottom"
+			settingAnchor: "panels-bar"
 			status: !Config.bar.autoHide ? qsTr("Always visible") : qsTr("Reveal on hover")
 			text: qsTr("Bar")
 
@@ -24,6 +25,7 @@ PageBase {
 
 		NavRow {
 			icon: "dashboard"
+			settingAnchor: "panels-dashboard"
 			status: Config.dashboard.enabled ? qsTr("Enabled") : qsTr("Disabled")
 			text: qsTr("Dashboard")
 
@@ -32,6 +34,7 @@ PageBase {
 
 		NavRow {
 			icon: "insert_chart"
+			settingAnchor: "panels-resources"
 			status: Config.dashboard.performance.enabled ? qsTr("Enabled") : qsTr("Disabled")
 			text: qsTr("Resources")
 
@@ -40,6 +43,7 @@ PageBase {
 
 		NavRow {
 			icon: "apps"
+			settingAnchor: "panels-launcher"
 			status: Config.launcher.enabled ? qsTr("Enabled") : qsTr("Disabled")
 			text: qsTr("Launcher")
 
@@ -49,6 +53,7 @@ PageBase {
 		NavRow {
 			icon: "dock_to_right"
 			last: true
+			settingAnchor: "panels-sidebar"
 			status: Config.sidebar.enabled ? qsTr("Enabled") : qsTr("Disabled")
 			text: qsTr("Sidebar")
 

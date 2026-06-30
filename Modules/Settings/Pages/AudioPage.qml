@@ -25,6 +25,7 @@ PageBase {
 			first: true
 			icon: Icons.getVolumeIcon(Audio.volume, Audio.muted)
 			label: qsTr("Output")
+			settingAnchor: "audio-output"
 			value: Audio.volume
 			valueLabel: Math.round(value * 100) + "%"
 
@@ -55,6 +56,7 @@ PageBase {
 			first: true
 			icon: Icons.getMicVolumeIcon(Audio.sourceVolume, Audio.sourceMuted)
 			label: qsTr("Input")
+			settingAnchor: "audio-input"
 			value: Audio.sourceVolume
 			valueLabel: Math.round(value * 100) + "%"
 

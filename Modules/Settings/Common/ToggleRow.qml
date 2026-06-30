@@ -9,7 +9,12 @@ CustomSwitch {
 	readonly property alias bg: bg
 	property alias first: bg.first
 	property alias last: bg.last
+	property string settingAnchor
 	property string subtext
+
+	function flashHighlight(): void {
+		bg.flashHighlight();
+	}
 
 	Layout.fillWidth: true
 	cLayer: 2

@@ -50,6 +50,7 @@ PageBase {
 			first: true
 			last: true
 			menuItems: root.clockFormats
+			settingAnchor: "bar-clock-format"
 			subtext: qsTr("Change how time is displayed in the widget")
 			text: qsTr("Time format")
 

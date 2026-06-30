@@ -28,6 +28,7 @@ PageBase {
 		ToggleRow {
 			checked: Config.screenshot.enable_pp
 			first: true
+			settingAnchor: "screenshot-enable"
 			text: qsTr("Enable effects")
 
 			onToggled: Config.screenshot.enable_pp = checked
@@ -37,6 +38,7 @@ PageBase {
 			active: Config.screenshot.mode === "manual" ? menuItems[0] : menuItems[1]
 			enabled: Config.screenshot.enable_pp
 			last: true
+			settingAnchor: "screenshot-mode"
 			subtext: qsTr("Automatic or manual effect values")
 			text: qsTr("Effects mode")
 
@@ -67,6 +69,7 @@ PageBase {
 			checked: Config.screenshot.rounding
 			enabled: Config.screenshot.enable_pp && Config.screenshot.mode === "manual"
 			first: true
+			settingAnchor: "screenshot-enable-rounded-corners"
 			text: qsTr("Enable rounded corners")
 
 			onToggled: Config.screenshot.rounding = checked
@@ -76,6 +79,7 @@ PageBase {
 			enabled: Config.screenshot.enable_pp && Config.screenshot.mode === "manual" && Config.screenshot.rounding
 			from: 0
 			last: true
+			settingAnchor: "screenshot-corner-radius"
 			stepSize: 1
 			text: qsTr("Corner radius")
 			to: 50
@@ -95,6 +99,7 @@ PageBase {
 			checked: Config.screenshot.shadow
 			enabled: Config.screenshot.enable_pp && Config.screenshot.mode === "manual"
 			first: true
+			settingAnchor: "screenshot-enable-shadow"
 			text: qsTr("Enable shadow")
 
 			onToggled: Config.screenshot.shadow = checked
@@ -103,6 +108,7 @@ PageBase {
 		SpinRow {
 			enabled: Config.screenshot.enable_pp && Config.screenshot.mode === "manual" && Config.screenshot.shadow
 			from: 0
+			settingAnchor: "screenshot-shadow-blur-amount"
 			stepSize: 1
 			text: qsTr("Shadow blur amount")
 			to: 100
@@ -117,6 +123,7 @@ PageBase {
 		SpinRow {
 			enabled: Config.screenshot.enable_pp && Config.screenshot.mode === "manual" && Config.screenshot.shadow
 			from: -100
+			settingAnchor: "screenshot-shadow-horizontal-offset"
 			stepSize: 10
 			text: qsTr("Shadow horizontal offset")
 			to: 100
@@ -132,6 +139,7 @@ PageBase {
 			enabled: Config.screenshot.enable_pp && Config.screenshot.mode === "manual" && Config.screenshot.shadow
 			from: -100
 			last: true
+			settingAnchor: "screenshot-shadow-vertical-offset"
 			stepSize: 10
 			text: qsTr("Shadow vertical offset")
 			to: 100

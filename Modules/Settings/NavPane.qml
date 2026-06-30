@@ -34,6 +34,12 @@ ColumnLayout {
 			target: root.sState
 			value: searchField.text.length > 0
 		}
+
+		Binding {
+			property: "searchText"
+			target: root.sState
+			value: searchField.text
+		}
 	}
 
 	NavLocations {

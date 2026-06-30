@@ -28,6 +28,7 @@ PageBase {
 			checked: Config.dashboard.enabled
 			first: true
 			last: true
+			settingAnchor: "dashboard-enabled"
 			text: qsTr("Enabled")
 
 			onToggled: Config.dashboard.enabled = checked

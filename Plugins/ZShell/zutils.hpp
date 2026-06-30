@@ -32,6 +32,8 @@ class ZUtils : public QObject {
 
 	Q_INVOKABLE static qreal clamp(qreal value, qreal min, qreal max);
 
+	Q_INVOKABLE static QString settingsIndex();
+
 	[[nodiscard]] QString version() const;
 	[[nodiscard]] QString qtVersion() const;
 };
