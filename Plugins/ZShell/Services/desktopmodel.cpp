@@ -6,25 +6,31 @@
 
 namespace ZShell::services {
 
-DesktopModel::DesktopModel(QObject *parent) : QAbstractListModel(parent) {
-}
+DesktopModel::DesktopModel(QObject* parent) : QAbstractListModel(parent) {}
 
-int DesktopModel::rowCount(const QModelIndex &parent) const {
+int DesktopModel::rowCount(const QModelIndex& parent) const {
 	if (parent.isValid()) return 0;
-	return m_items.count();
+	return static_cast<int>(m_items.size());
 }
 
-QVariant DesktopModel::data(const QModelIndex &index, int role) const {
-	if (!index.isValid() || index.row() >= m_items.size()) return QVariant();
+QVariant DesktopModel::data(const QModelIndex& index, int role) const {
+	if (!index.isValid() || index.row() >= static_cast<int>(m_items.size()))
+		return QVariant();
 
-	const DesktopItem &item = m_items[index.row()];
+	const DesktopItem& item = m_items[index.row()];
 	switch (role) {
-	case FileNameRole: return item.fileName;
-	case FilePathRole: return item.filePath;
-	case IsDirRole: return item.isDir;
-	case GridXRole: return item.gridX;
-	case GridYRole: return item.gridY;
-	default: return QVariant();
+	case FileNameRole:
+		return item.fileName;
+	case FilePathRole:
+		return item.filePath;
+	case IsDirRole:
+		return item.isDir;
+	case GridXRole:
+		return item.gridX;
+	case GridYRole:
+		return item.gridY;
+	default:
+		return QVariant();
 	}
 }
 
@@ -38,8 +44,8 @@ QHash<int, QByteArray> DesktopModel::roleNames() const {
 	return roles;
 }
 
-QPoint DesktopModel::getEmptySpot(const QSet<QString> &occupied) const {
-	for (int x = 0; ; ++x) {
+QPoint DesktopModel::getEmptySpot(const QSet<QString>& occupied) const {
+	for (int x = 0;; ++x) {
 		for (int y = 0; y < m_rows; ++y) {
 			QString key = QString::number(x) + "," + QString::number(y);
 			if (!occupied.contains(key)) {
@@ -49,7 +55,7 @@ QPoint DesktopModel::getEmptySpot(const QSet<QString> &occupied) const {
 	}
 }
 
-void DesktopModel::loadDirectory(const QString &path) {
+void DesktopModel::loadDirectory(const QString& path) {
 	m_watchedPath = path;
 
 	if (!m_watcher.directories().isEmpty())
@@ -57,9 +63,12 @@ void DesktopModel::loadDirectory(const QString &path) {
 
 	m_watcher.addPath(path);
 
-	connect(&m_watcher, &QFileSystemWatcher::directoryChanged,
-	        this, &DesktopModel::onDirectoryChanged,
-	        Qt::UniqueConnection);
+	connect(
+		&m_watcher,
+		&QFileSystemWatcher::directoryChanged,
+		this,
+		&DesktopModel::onDirectoryChanged,
+		Qt::UniqueConnection);
 
 	beginResetModel();
 	m_items.clear();
@@ -72,14 +81,16 @@ void DesktopModel::loadDirectory(const QString &path) {
 	QVariantMap savedLayout = sm.getLayout();
 
 	QSet<QString> occupied;
-	for (const QFileInfo &fileInfo : list) {
+	for (const QFileInfo& fileInfo : list) {
 		if (savedLayout.contains(fileInfo.fileName())) {
 			QVariantMap pos = savedLayout[fileInfo.fileName()].toMap();
-			occupied.insert(QString::number(pos["x"].toInt()) + "," + QString::number(pos["y"].toInt()));
+			occupied.insert(
+				QString::number(pos["x"].toInt()) + "," +
+				QString::number(pos["y"].toInt()));
 		}
 	}
 
-	for (const QFileInfo &fileInfo : list) {
+	for (const QFileInfo& fileInfo : list) {
 		DesktopItem item;
 		item.fileName = fileInfo.fileName();
 		item.filePath = fileInfo.absoluteFilePath();
@@ -93,7 +104,9 @@ void DesktopModel::loadDirectory(const QString &path) {
 			QPoint spot = getEmptySpot(occupied);
 			item.gridX = spot.x();
 			item.gridY = spot.y();
-			occupied.insert(QString::number(item.gridX) + "," + QString::number(item.gridY));
+			occupied.insert(
+				QString::number(item.gridX) + "," +
+				QString::number(item.gridY));
 		}
 		m_items.append(item);
 	}
@@ -105,7 +118,7 @@ void DesktopModel::onDirectoryChanged() {
 }
 
 void DesktopModel::moveIcon(int index, int newX, int newY) {
-	if (index < 0 || index >= m_items.size()) return;
+	if (index < 0 || index >= static_cast<int>(m_items.size())) return;
 
 	m_items[index].gridX = newX;
 	m_items[index].gridY = newY;
@@ -129,7 +142,13 @@ void DesktopModel::saveCurrentLayout() {
 	sm.saveLayout(layout);
 }
 
-void DesktopModel::massMove(const QVariantList& selectedPathsList, const QString& leaderPath, int targetX, int targetY, int maxCol, int maxRow) {
+void DesktopModel::massMove(
+	const QVariantList& selectedPathsList,
+	const QString& leaderPath,
+	int targetX,
+	int targetY,
+	int maxCol,
+	int maxRow) {
 	QStringList selectedPaths;
 	for (const QVariant& v : selectedPathsList) {
 		selectedPaths << v.toString();
@@ -151,12 +170,13 @@ void DesktopModel::massMove(const QVariantList& selectedPathsList, const QString
 
 	if (deltaX == 0 && deltaY == 0) return;
 
-	if (selectedPaths.size() == 1 && targetX >= 0 && targetX <= maxCol && targetY >= 0 && targetY <= maxRow) {
+	if (selectedPaths.size() == 1 && targetX >= 0 && targetX <= maxCol &&
+		targetY >= 0 && targetY <= maxRow) {
 		QString movingPath = selectedPaths.first();
 		int movingIndex = -1;
 		int targetIndex = -1;
 
-		for (int i = 0; i < m_items.size(); ++i) {
+		for (int i = 0; i < static_cast<int>(m_items.size()); ++i) {
 			if (m_items[i].filePath == movingPath) {
 				movingIndex = i;
 			} else if (m_items[i].gridX == targetX && m_items[i].gridY == targetY) {
@@ -170,7 +190,10 @@ void DesktopModel::massMove(const QVariantList& selectedPathsList, const QString
 			m_items[movingIndex].gridX = targetX;
 			m_items[movingIndex].gridY = targetY;
 
-			emit dataChanged(index(0, 0), index(m_items.size() - 1, 0), {GridXRole, GridYRole});
+			emit dataChanged(
+				index(0, 0),
+				index(static_cast<int>(m_items.size()) - 1, 0),
+				{GridXRole, GridYRole});
 			saveCurrentLayout();
 			return;
 		}
@@ -179,11 +202,13 @@ void DesktopModel::massMove(const QVariantList& selectedPathsList, const QString
 	QList<DesktopItem*> movingItems;
 	QSet<QString> occupied;
 
-	for (int i = 0; i < m_items.size(); ++i) {
+	for (int i = 0; i < static_cast<int>(m_items.size()); ++i) {
 		if (selectedPaths.contains(m_items[i].filePath)) {
 			movingItems.append(&m_items[i]);
 		} else {
-			occupied.insert(QString::number(m_items[i].gridX) + "," + QString::number(m_items[i].gridY));
+			occupied.insert(
+				QString::number(m_items[i].gridX) + "," +
+				QString::number(m_items[i].gridY));
 		}
 	}
 
@@ -191,8 +216,10 @@ void DesktopModel::massMove(const QVariantList& selectedPathsList, const QString
 		int newX = item->gridX + deltaX;
 		int newY = item->gridY + deltaY;
 
-		bool outOfBounds = newX < 0 || newX > maxCol || newY < 0 || newY > maxRow;
-		bool collision = occupied.contains(QString::number(newX) + "," + QString::number(newY));
+		bool outOfBounds = newX < 0 || newX > maxCol || newY < 0 ||
+						   newY > maxRow;
+		bool collision = occupied.contains(
+			QString::number(newX) + "," + QString::number(newY));
 
 		if (outOfBounds || collision) {
 			bool found = false;
@@ -208,15 +235,19 @@ void DesktopModel::massMove(const QVariantList& selectedPathsList, const QString
 				}
 			}
 		} else {
-			occupied.insert(QString::number(newX) + "," + QString::number(newY));
+			occupied.insert(
+				QString::number(newX) + "," + QString::number(newY));
 		}
 
 		item->gridX = newX;
 		item->gridY = newY;
 	}
 
-	emit dataChanged(index(0, 0), index(m_items.size() - 1, 0), {GridXRole, GridYRole});
+	emit dataChanged(
+		index(0, 0),
+		index(static_cast<int>(m_items.size()) - 1, 0),
+		{GridXRole, GridYRole});
 	saveCurrentLayout();
 }
 
-};
+}; // namespace ZShell::services

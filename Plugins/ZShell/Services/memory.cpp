@@ -5,9 +5,7 @@
 
 namespace ZShell::services {
 
-Memory::Memory(QObject* parent)
-	: TickingService(parent) {
-}
+Memory::Memory(QObject* parent) : TickingService(parent) {}
 
 qreal Memory::used() const {
 	return m_used;
@@ -29,8 +27,10 @@ void Memory::tick() {
 	const QByteArray data = f.readAll();
 	f.close();
 
-	static const QRegularExpression reTotal(QStringLiteral("MemTotal: *(\\d+)"));
-	static const QRegularExpression reAvail(QStringLiteral("MemAvailable: *(\\d+)"));
+	static const QRegularExpression reTotal(
+		QStringLiteral("MemTotal: *(\\d+)"));
+	static const QRegularExpression reAvail(
+		QStringLiteral("MemAvailable: *(\\d+)"));
 	const QString text = QString::fromLatin1(data);
 
 	const auto totalMatch = reTotal.match(text);

@@ -6,8 +6,7 @@
 
 namespace ZShell::internal {
 
-ArcGauge::ArcGauge(QQuickItem* parent)
-	: QQuickPaintedItem(parent) {
+ArcGauge::ArcGauge(QQuickItem* parent) : QQuickPaintedItem(parent) {
 	setAntialiasing(true);
 }
 
@@ -36,7 +35,8 @@ void ArcGauge::paint(QPainter* painter) {
 
 	// Draw value arc
 	if (m_percentage > 0.0) {
-		const int valueSweep16 = qRound(static_cast<qreal>(sweepAngle16) * m_percentage);
+		const int valueSweep16 =
+			qRound(static_cast<qreal>(sweepAngle16) * m_percentage);
 		QPen valuePen(m_accentColor, m_lineWidth);
 		valuePen.setCapStyle(Qt::RoundCap);
 		painter->setPen(valuePen);
@@ -49,8 +49,7 @@ qreal ArcGauge::percentage() const {
 }
 
 void ArcGauge::setPercentage(qreal percentage) {
-	if (qFuzzyCompare(m_percentage, percentage))
-		return;
+	if (qFuzzyCompare(m_percentage, percentage)) return;
 	m_percentage = percentage;
 	emit percentageChanged();
 	update();
@@ -61,8 +60,7 @@ QColor ArcGauge::accentColor() const {
 }
 
 void ArcGauge::setAccentColor(const QColor& color) {
-	if (m_accentColor == color)
-		return;
+	if (m_accentColor == color) return;
 	m_accentColor = color;
 	emit accentColorChanged();
 	update();
@@ -73,8 +71,7 @@ QColor ArcGauge::trackColor() const {
 }
 
 void ArcGauge::setTrackColor(const QColor& color) {
-	if (m_trackColor == color)
-		return;
+	if (m_trackColor == color) return;
 	m_trackColor = color;
 	emit trackColorChanged();
 	update();
@@ -85,8 +82,7 @@ qreal ArcGauge::startAngle() const {
 }
 
 void ArcGauge::setStartAngle(qreal angle) {
-	if (qFuzzyCompare(m_startAngle, angle))
-		return;
+	if (qFuzzyCompare(m_startAngle, angle)) return;
 	m_startAngle = angle;
 	emit startAngleChanged();
 	update();
@@ -97,8 +93,7 @@ qreal ArcGauge::sweepAngle() const {
 }
 
 void ArcGauge::setSweepAngle(qreal angle) {
-	if (qFuzzyCompare(m_sweepAngle, angle))
-		return;
+	if (qFuzzyCompare(m_sweepAngle, angle)) return;
 	m_sweepAngle = angle;
 	emit sweepAngleChanged();
 	update();
@@ -109,8 +104,7 @@ qreal ArcGauge::lineWidth() const {
 }
 
 void ArcGauge::setLineWidth(qreal width) {
-	if (qFuzzyCompare(m_lineWidth, width))
-		return;
+	if (qFuzzyCompare(m_lineWidth, width)) return;
 	m_lineWidth = width;
 	emit lineWidthChanged();
 	update();

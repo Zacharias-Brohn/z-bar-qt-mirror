@@ -5,12 +5,12 @@
 namespace {
 
 constexpr int TOTAL_DURATION_IN_MS = 1800;
-constexpr std::array DURATION_TO_MOVE_SEGMENT_ENDS = { 533, 567, 850, 750 };
-constexpr std::array DELAY_TO_MOVE_SEGMENT_ENDS = { 1267, 1000, 333, 0 };
+constexpr std::array DURATION_TO_MOVE_SEGMENT_ENDS = {533, 567, 850, 750};
+constexpr std::array DELAY_TO_MOVE_SEGMENT_ENDS = {1267, 1000, 333, 0};
 
 QEasingCurve curve(const QPointF& c1, const QPointF& c2) {
 	QEasingCurve curve(QEasingCurve::BezierSpline);
-	curve.addCubicBezierSegment(c1, c2, { 1.0, 1.0 });
+	curve.addCubicBezierSegment(c1, c2, {1.0, 1.0});
 	return curve;
 }
 
@@ -24,11 +24,7 @@ qreal getFractionInRange(qreal playtime, int start, int duration) {
 namespace ZShell::controls {
 
 LinearIndicatorSegment::LinearIndicatorSegment(int gap, QObject* parent)
-	: QObject(parent)
-	, m_startFraction(0)
-	, m_endFraction(0)
-	, m_gapSize(gap) {
-}
+	: QObject(parent), m_startFraction(0), m_endFraction(0), m_gapSize(gap) {}
 
 qreal LinearIndicatorSegment::startFraction() const {
 	return m_startFraction;
@@ -45,24 +41,28 @@ int LinearIndicatorSegment::gapSize() const {
 LinearIndicatorManager::LinearIndicatorManager(QObject* parent)
 	: QObject(parent)
 	, m_interpolators({
-		curve({ 0.2, 0.0 }, { 0.8, 1.0 }),
-		curve({ 0.4, 0.0 }, { 1.0, 1.0 }),
-		curve({ 0.0, 0.0 }, { 0.65, 1.0 }),
-		curve({ 0.1, 0.0 }, { 0.45, 1.0 }),
-	})
+		  curve({0.2, 0.0}, {0.8, 1.0}),
+		  curve({0.4, 0.0}, {1.0, 1.0}),
+		  curve({0.0, 0.0}, {0.65, 1.0}),
+		  curve({0.1, 0.0}, {0.45, 1.0}),
+	  })
 	, m_progress(0)
 	, m_completeEndProgress(0)
 	, m_gap(4)
 	, m_activeIndicators({
-		new LinearIndicatorSegment(m_gap, this),
-		new LinearIndicatorSegment(m_gap, this),
-	}) {
+		  new LinearIndicatorSegment(m_gap, this),
+		  new LinearIndicatorSegment(m_gap, this),
+	  }) {
 	for (auto el : m_activeIndicators)
-		QObject::connect(this, &LinearIndicatorManager::updated, el, &LinearIndicatorSegment::updated);
+		QObject::connect(
+			this,
+			&LinearIndicatorManager::updated,
+			el,
+			&LinearIndicatorSegment::updated);
 }
 
 QList<LinearIndicatorSegment*> LinearIndicatorManager::activeIndicators() const {
-	return { m_activeIndicators.cbegin(), m_activeIndicators.cend() };
+	return {m_activeIndicators.cbegin(), m_activeIndicators.cend()};
 }
 
 qreal LinearIndicatorManager::progress() const {
@@ -98,12 +98,19 @@ void LinearIndicatorManager::update(qreal progress) {
 		const auto di = i * 2;
 		auto* const indicator = m_activeIndicators[i];
 
-		auto fraction = getFractionInRange(playtime, DELAY_TO_MOVE_SEGMENT_ENDS[di], DURATION_TO_MOVE_SEGMENT_ENDS[di]);
-		indicator->m_startFraction = std::clamp(m_interpolators[di].valueForProgress(fraction), 0.0, 1.0);
+		auto fraction = getFractionInRange(
+			playtime,
+			DELAY_TO_MOVE_SEGMENT_ENDS[di],
+			DURATION_TO_MOVE_SEGMENT_ENDS[di]);
+		indicator->m_startFraction =
+			std::clamp(m_interpolators[di].valueForProgress(fraction), 0.0, 1.0);
 
-		fraction =
-			getFractionInRange(playtime, DELAY_TO_MOVE_SEGMENT_ENDS[di + 1], DURATION_TO_MOVE_SEGMENT_ENDS[di + 1]);
-		indicator->m_endFraction = std::clamp(m_interpolators[di + 1].valueForProgress(fraction), 0.0, 1.0);
+		fraction = getFractionInRange(
+			playtime,
+			DELAY_TO_MOVE_SEGMENT_ENDS[di + 1],
+			DURATION_TO_MOVE_SEGMENT_ENDS[di + 1]);
+		indicator->m_endFraction = std::clamp(
+			m_interpolators[di + 1].valueForProgress(fraction), 0.0, 1.0);
 	}
 
 	m_progress = progress;

@@ -14,27 +14,29 @@ LidWatcher::LidWatcher(QObject* parent) : QObject(parent) {
 	auto bus = QDBusConnection::systemBus();
 	if (!bus.isConnected()) {
 		qCWarning(lcLidWatcher)
-		        << "Failed to connect to system bus:" << bus.lastError().message();
+			<< "Failed to connect to system bus:" << bus.lastError().message();
 		return;
 	}
 
-	bool ok = bus.connect("org.freedesktop.login1",
-	                      "/org/freedesktop/login1",
-	                      "org.freedesktop.login1.Manager",
-	                      "PrepareForSleep",
-	                      this,
-	                      SLOT(handlePrepareForSleep(bool)));
+	bool ok = bus.connect(
+		"org.freedesktop.login1",
+		"/org/freedesktop/login1",
+		"org.freedesktop.login1.Manager",
+		"PrepareForSleep",
+		this,
+		SLOT(handlePrepareForSleep(bool)));
 
 	if (!ok) {
 		qCWarning(lcLidWatcher)
-		        << "Failed to connect to PrepareForSleep signal:"
-		        << bus.lastError().message();
+			<< "Failed to connect to PrepareForSleep signal:"
+			<< bus.lastError().message();
 	}
 
-	QDBusInterface login1("org.freedesktop.login1",
-	                      "/org/freedesktop/login1",
-	                      "org.freedesktop.login1.Manager",
-	                      bus);
+	QDBusInterface login1(
+		"org.freedesktop.login1",
+		"/org/freedesktop/login1",
+		"org.freedesktop.login1.Manager",
+		bus);
 	const QDBusReply<QDBusObjectPath> reply = login1.call("GetSession", "auto");
 	if (!reply.isValid()) {
 		qCWarning(lcLidWatcher) << "Failed to get session path";
@@ -42,28 +44,30 @@ LidWatcher::LidWatcher(QObject* parent) : QObject(parent) {
 	}
 	const auto sessionPath = reply.value().path();
 
-	ok = bus.connect("org.freedesktop.login1",
-	                 sessionPath,
-	                 "org.freedesktop.login1.Session",
-	                 "Lock",
-	                 this,
-	                 SLOT(handleLockRequested()));
+	ok = bus.connect(
+		"org.freedesktop.login1",
+		sessionPath,
+		"org.freedesktop.login1.Session",
+		"Lock",
+		this,
+		SLOT(handleLockRequested()));
 
 	if (!ok) {
 		qCWarning(lcLidWatcher)
-		        << "Failed to connect to Lock signal:" << bus.lastError().message();
+			<< "Failed to connect to Lock signal:" << bus.lastError().message();
 	}
 
-	ok = bus.connect("org.freedesktop.login1",
-	                 sessionPath,
-	                 "org.freedesktop.login1.Session",
-	                 "Unlock",
-	                 this,
-	                 SLOT(handleUnlockRequested()));
+	ok = bus.connect(
+		"org.freedesktop.login1",
+		sessionPath,
+		"org.freedesktop.login1.Session",
+		"Unlock",
+		this,
+		SLOT(handleUnlockRequested()));
 
 	if (!ok) {
 		qCWarning(lcLidWatcher) << "Failed to connect to Unlock signal:"
-		                        << bus.lastError().message();
+								<< bus.lastError().message();
 	}
 }
 

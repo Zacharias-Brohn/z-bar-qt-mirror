@@ -4,19 +4,15 @@
 
 namespace ZShell::internal {
 
-CircularBuffer::CircularBuffer(QObject* parent)
-	: QObject(parent) {
-}
+CircularBuffer::CircularBuffer(QObject* parent) : QObject(parent) {}
 
 int CircularBuffer::capacity() const {
 	return m_capacity;
 }
 
 void CircularBuffer::setCapacity(int capacity) {
-	if (capacity < 0)
-		capacity = 0;
-	if (m_capacity == capacity)
-		return;
+	if (capacity < 0) capacity = 0;
+	if (m_capacity == capacity) return;
 
 	const auto old = values();
 
@@ -52,8 +48,7 @@ QList<qreal> CircularBuffer::values() const {
 }
 
 qreal CircularBuffer::maximum() const {
-	if (m_count == 0)
-		return 0.0;
+	if (m_count == 0) return 0.0;
 
 	qreal maxVal = at(0);
 	for (int i = 1; i < m_count; ++i)
@@ -62,8 +57,7 @@ qreal CircularBuffer::maximum() const {
 }
 
 void CircularBuffer::push(qreal value) {
-	if (m_capacity <= 0)
-		return;
+	if (m_capacity <= 0) return;
 
 	m_data[m_head] = value;
 	m_head = (m_head + 1) % m_capacity;
@@ -75,8 +69,7 @@ void CircularBuffer::push(qreal value) {
 }
 
 void CircularBuffer::clear() {
-	if (m_count == 0)
-		return;
+	if (m_count == 0) return;
 
 	m_head = 0;
 	m_count = 0;
@@ -85,10 +78,10 @@ void CircularBuffer::clear() {
 }
 
 qreal CircularBuffer::at(int index) const {
-	if (index < 0 || index >= m_count)
-		return 0.0;
+	if (index < 0 || index >= m_count) return 0.0;
 
-	const int actualIndex = (m_head - m_count + index + m_capacity) % m_capacity;
+	const int actualIndex =
+		(m_head - m_count + index + m_capacity) % m_capacity;
 	return m_data[actualIndex];
 }
 

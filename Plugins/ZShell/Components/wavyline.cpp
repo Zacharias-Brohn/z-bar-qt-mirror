@@ -194,7 +194,8 @@ void WavyLine::paintLinear(QPainter* painter) {
 	bool first = true;
 
 	for (int x = m_lineWidth / 2; x <= drawEnd; ++x) {
-		const auto theta = m_frequency * 2 * M_PI * (x + m_startX) / len + phase;
+		const auto theta =
+			m_frequency * 2 * M_PI * (x + m_startX) / len + phase;
 		const auto waveY = centerY + amplitude * qSin(theta);
 		if (first) {
 			path.moveTo(x, waveY);
@@ -215,7 +216,10 @@ void WavyLine::paintArc(QPainter* painter) {
 	const auto amplitude = m_lineWidth * m_amplitudeMultiplier;
 	const auto cx = width() / 2.0;
 	const auto cy = height() / 2.0;
-	const auto radius = m_radius > 0 ? m_radius : (qMin(width(), height()) - m_lineWidth - 2 * amplitude) / 2.0;
+	const auto radius =
+		m_radius > 0
+			? m_radius
+			: (qMin(width(), height()) - m_lineWidth - 2 * amplitude) / 2.0;
 
 	if (radius <= 0) {
 		return;

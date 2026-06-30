@@ -7,15 +7,16 @@
 #include <QtConcurrent>
 #include <QSGImageNode>
 #include <QQuickWindow>
-#include <set>
 
 namespace ZShell::internal {
 
-WallpaperImage::WallpaperImage(QQuickItem *parent)
-	: QQuickItem(parent)
-{
+WallpaperImage::WallpaperImage(QQuickItem* parent) : QQuickItem(parent) {
 	setFlag(ItemHasContents, true);
-	connect(&m_imageWatcher, &QFutureWatcher<QImage>::finished, this, &WallpaperImage::handleImageLoaded);
+	connect(
+		&m_imageWatcher,
+		&QFutureWatcher<QImage>::finished,
+		this,
+		&WallpaperImage::handleImageLoaded);
 }
 
 WallpaperImage::~WallpaperImage() {
@@ -23,14 +24,13 @@ WallpaperImage::~WallpaperImage() {
 }
 
 void WallpaperImage::setStatus(const Status s) {
-	if (m_status == s)
-		return;
+	if (m_status == s) return;
 
 	m_status = s;
 	emit statusChanged();
 }
 
-void WallpaperImage::setSource(const QUrl &source) {
+void WallpaperImage::setSource(const QUrl& source) {
 	if (m_source == source) return;
 	m_source = source;
 	emit sourceChanged();
@@ -39,7 +39,7 @@ void WallpaperImage::setSource(const QUrl &source) {
 	loadImage();
 }
 
-void WallpaperImage::setScreenResolution(const QSize &screenResolution) {
+void WallpaperImage::setScreenResolution(const QSize& screenResolution) {
 	if (m_screenResolution == screenResolution) return;
 	m_screenResolution = screenResolution;
 	emit screenResolutionChanged();
@@ -86,11 +86,16 @@ void WallpaperImage::setCropHeight(qreal h) {
 QString WallpaperImage::getCacheFilePath() const {
 	if (m_source.isEmpty() || m_screenResolution.isEmpty()) return QString();
 
-	QString cachePath = QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation) + "/zshell/imagecache";
+	QString cachePath =
+		QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation) +
+		"/zshell/imagecache";
 	QDir().mkpath(cachePath);
 
-	QString id = m_source.toString() + "_" + QString::number(m_screenResolution.width()) + "x" + QString::number(m_screenResolution.height());
-	QByteArray hash = QCryptographicHash::hash(id.toUtf8(), QCryptographicHash::Md5).toHex();
+	QString id = m_source.toString() + "_" +
+				 QString::number(m_screenResolution.width()) + "x" +
+				 QString::number(m_screenResolution.height());
+	QByteArray hash =
+		QCryptographicHash::hash(id.toUtf8(), QCryptographicHash::Md5).toHex();
 
 	return cachePath + "/" + hash + ".png";
 }
@@ -102,7 +107,8 @@ void WallpaperImage::loadImage() {
 	}
 
 	QString cacheFile = getCacheFilePath();
-	QString sourceFile = m_source.isLocalFile() ? m_source.toLocalFile() : m_source.toString();
+	QString sourceFile = m_source.isLocalFile() ? m_source.toLocalFile()
+												: m_source.toString();
 
 	if (sourceFile.startsWith("qrc:/")) {
 		sourceFile = sourceFile.mid(3);
@@ -110,8 +116,10 @@ void WallpaperImage::loadImage() {
 
 	QSize targetRes = m_screenResolution;
 
-	QFuture<QImage> future = QtConcurrent::run([sourceFile, cacheFile, targetRes]() -> QImage {
-			if (!targetRes.isEmpty() && !cacheFile.isEmpty() && QFileInfo::exists(cacheFile)) {
+	QFuture<QImage> future =
+		QtConcurrent::run([sourceFile, cacheFile, targetRes]() -> QImage {
+			if (!targetRes.isEmpty() && !cacheFile.isEmpty() &&
+				QFileInfo::exists(cacheFile)) {
 				QImage cached(cacheFile);
 				if (!cached.isNull()) return cached;
 			}
@@ -123,8 +131,12 @@ void WallpaperImage::loadImage() {
 				return original;
 			}
 
-			if (original.width() > targetRes.width() || original.height() > targetRes.height()) {
-				QImage scaled = original.scaled(targetRes, Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation);
+			if (original.width() > targetRes.width() ||
+				original.height() > targetRes.height()) {
+				QImage scaled = original.scaled(
+					targetRes,
+					Qt::KeepAspectRatioByExpanding,
+					Qt::SmoothTransformation);
 				if (!cacheFile.isEmpty()) scaled.save(cacheFile, "PNG");
 				return scaled;
 			}
@@ -145,8 +157,9 @@ void WallpaperImage::handleImageLoaded() {
 	update();
 }
 
-QSGNode *WallpaperImage::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *) {
-	auto *node = static_cast<QSGImageNode *>(oldNode);
+QSGNode* WallpaperImage::updatePaintNode(
+	QSGNode* oldNode, UpdatePaintNodeData*) {
+	auto* node = static_cast<QSGImageNode*>(oldNode);
 
 	if (m_image.isNull()) {
 		delete node;
@@ -159,7 +172,8 @@ QSGNode *WallpaperImage::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *
 
 	if (m_textureDirty) {
 		if (m_texture) delete m_texture;
-		m_texture = window()->createTextureFromImage(m_image, QQuickWindow::TextureHasAlphaChannel);
+		m_texture = window()->createTextureFromImage(
+			m_image, QQuickWindow::TextureHasAlphaChannel);
 		m_textureDirty = false;
 	}
 
@@ -175,8 +189,7 @@ QSGNode *WallpaperImage::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *
 			m_cropX * m_texture->textureSize().width(),
 			m_cropY * m_texture->textureSize().height(),
 			cW * m_texture->textureSize().width(),
-			cH * m_texture->textureSize().height()
-			);
+			cH * m_texture->textureSize().height());
 
 		QRectF bounds = boundingRect();
 		if (bounds.isEmpty() || reqRect.isEmpty()) return node;
@@ -202,25 +215,23 @@ QSGNode *WallpaperImage::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *
 			sourceRect.x() / m_texture->textureSize().width(),
 			sourceRect.y() / m_texture->textureSize().height(),
 			sourceRect.width() / m_texture->textureSize().width(),
-			sourceRect.height() / m_texture->textureSize().height()
-			);
+			sourceRect.height() / m_texture->textureSize().height());
 
 		bool changed = false;
 
-		auto updateIfChanged = [&](qreal &dst, qreal value) {
-					       if (!qFuzzyCompare(dst, value)) {
-						       dst = value;
-						       changed = true;
-					       }
-				       };
+		auto updateIfChanged = [&](qreal& dst, qreal value) {
+			if (!qFuzzyCompare(dst, value)) {
+				dst = value;
+				changed = true;
+			}
+		};
 
 		updateIfChanged(m_actualCropX, normalizedActual.x());
 		updateIfChanged(m_actualCropY, normalizedActual.y());
 		updateIfChanged(m_actualCropWidth, normalizedActual.width());
 		updateIfChanged(m_actualCropHeight, normalizedActual.height());
 
-		if (changed)
-			emit actualCropChanged();
+		if (changed) emit actualCropChanged();
 
 		node->setSourceRect(sourceRect);
 	}

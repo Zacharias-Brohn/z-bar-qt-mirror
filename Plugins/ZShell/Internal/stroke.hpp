@@ -11,9 +11,9 @@ struct Stroke {
 	QVector<QPointF> points;
 	QCanvasPath path;
 	QColor color;
-	float width;
+	qreal width;
 	int groupId = -1;
 	bool isSinglePoint = false;
 };
 
-};
+}; // namespace ZShell::internal

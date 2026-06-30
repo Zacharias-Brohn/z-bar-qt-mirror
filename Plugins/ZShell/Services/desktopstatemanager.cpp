@@ -9,11 +9,12 @@
 
 namespace ZShell::services {
 
-DesktopStateManager::DesktopStateManager(QObject *parent) : QObject(parent) {
-}
+DesktopStateManager::DesktopStateManager(QObject* parent) : QObject(parent) {}
 
 QString DesktopStateManager::getConfigFilePath() const {
-	QString configDir = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + "/zshell";
+	QString configDir =
+		QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) +
+		"/zshell";
 	QDir dir(configDir);
 	if (!dir.exists()) {
 		dir.mkpath(".");
@@ -30,7 +31,8 @@ void DesktopStateManager::saveLayout(const QVariantMap& layout) {
 		file.write(doc.toJson(QJsonDocument::Indented));
 		file.close();
 	} else {
-		qWarning() << "zshell: Cannot save desktop layout to" << getConfigFilePath();
+		qWarning() << "zshell: Cannot save desktop layout to"
+				   << getConfigFilePath();
 	}
 }
 

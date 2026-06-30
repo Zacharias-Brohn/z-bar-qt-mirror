@@ -8,12 +8,20 @@ on:
 jobs:
     build:
         runs-on: alpine
+        container:
+            image: node:26-alpine
         env:
             IMAGE: git.aramjonghu.nl/aramjonghu/zshell-ci:latest
 
         steps:
             - name: Checkout
               uses: actions/checkout@v4
+
+            - name: Install Docker CLI
+              run: apk add --no-cache docker-cli
+
+            - name: Login to registry
+              run: echo "${{ secrets.REGISTRY_TOKEN }}" | docker login git.aramjonghu.nl --username aramjonghu --password-stdin
 
             - name: Build image
               run: docker build -t "$IMAGE" -f ci/Dockerfile .

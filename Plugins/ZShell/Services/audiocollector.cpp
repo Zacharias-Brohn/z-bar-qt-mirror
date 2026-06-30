@@ -23,20 +23,33 @@ PipeWireWorker::PipeWireWorker(std::stop_token token, AudioCollector* collector)
 
 	m_loop = pw_main_loop_new(nullptr);
 	if (!m_loop) {
-		qWarning() << "PipeWireWorker::init: failed to create PipeWire main loop";
+		qWarning()
+			<< "PipeWireWorker::init: failed to create PipeWire main loop";
 		pw_deinit();
 		return;
 	}
 
-	timespec timeout = { 0, 10 * SPA_NSEC_PER_MSEC };
-	m_timer = pw_loop_add_timer(pw_main_loop_get_loop(m_loop), handleTimeout, this);
-	pw_loop_update_timer(pw_main_loop_get_loop(m_loop), m_timer, &timeout, &timeout, false);
+	timespec timeout = {0, 10 * SPA_NSEC_PER_MSEC};
+	m_timer =
+		pw_loop_add_timer(pw_main_loop_get_loop(m_loop), handleTimeout, this);
+	pw_loop_update_timer(
+		pw_main_loop_get_loop(m_loop), m_timer, &timeout, &timeout, false);
 
 	auto props = pw_properties_new(
-		PW_KEY_MEDIA_TYPE, "Audio", PW_KEY_MEDIA_CATEGORY, "Capture", PW_KEY_MEDIA_ROLE, "Music", nullptr);
+		PW_KEY_MEDIA_TYPE,
+		"Audio",
+		PW_KEY_MEDIA_CATEGORY,
+		"Capture",
+		PW_KEY_MEDIA_ROLE,
+		"Music",
+		nullptr);
 	pw_properties_set(props, PW_KEY_STREAM_CAPTURE_SINK, "true");
 	pw_properties_setf(
-		props, PW_KEY_NODE_LATENCY, "%u/%u", nextPowerOf2(512 * ac::SAMPLE_RATE / 48000), ac::SAMPLE_RATE);
+		props,
+		PW_KEY_NODE_LATENCY,
+		"%u/%u",
+		nextPowerOf2(512 * ac::SAMPLE_RATE / 48000),
+		ac::SAMPLE_RATE);
 	pw_properties_set(props, PW_KEY_NODE_PASSIVE, "true");
 	pw_properties_set(props, PW_KEY_NODE_VIRTUAL, "true");
 	pw_properties_set(props, PW_KEY_STREAM_DONT_REMIX, "false");
@@ -55,21 +68,28 @@ PipeWireWorker::PipeWireWorker(std::stop_token token, AudioCollector* collector)
 	params[0] = spa_format_audio_raw_build(&b, SPA_PARAM_EnumFormat, &info);
 
 	pw_stream_events events{};
-	events.state_changed = [](void* data, pw_stream_state, pw_stream_state state, const char*) {
-				       auto* self = static_cast<PipeWireWorker*>(data);
-				       self->streamStateChanged(state);
-			       };
+	events.state_changed =
+		[](void* data, pw_stream_state, pw_stream_state state, const char*) {
+			auto* self = static_cast<PipeWireWorker*>(data);
+			self->streamStateChanged(state);
+		};
 	events.process = [](void* data) {
-				 auto* self = static_cast<PipeWireWorker*>(data);
-				 self->processStream();
-			 };
+		auto* self = static_cast<PipeWireWorker*>(data);
+		self->processStream();
+	};
 
-	m_stream = pw_stream_new_simple(pw_main_loop_get_loop(m_loop), "ZShell-shell", props, &events, this);
+	m_stream = pw_stream_new_simple(
+		pw_main_loop_get_loop(m_loop), "ZShell-shell", props, &events, this);
 
-	const int success = pw_stream_connect(m_stream, PW_DIRECTION_INPUT, PW_ID_ANY,
-	                                      static_cast<pw_stream_flags>(
-						      PW_STREAM_FLAG_AUTOCONNECT | PW_STREAM_FLAG_MAP_BUFFERS | PW_STREAM_FLAG_RT_PROCESS),
-	                                      params, 1);
+	const int success = pw_stream_connect(
+		m_stream,
+		PW_DIRECTION_INPUT,
+		PW_ID_ANY,
+		static_cast<pw_stream_flags>(
+			PW_STREAM_FLAG_AUTOCONNECT | PW_STREAM_FLAG_MAP_BUFFERS |
+			PW_STREAM_FLAG_RT_PROCESS),
+		params,
+		1);
 	if (success < 0) {
 		qWarning() << "PipeWireWorker::init: failed to connect stream";
 		pw_stream_destroy(m_stream);
@@ -98,8 +118,13 @@ void PipeWireWorker::handleTimeout(void* data, uint64_t expirations) {
 			self->m_collector->clearBuffer();
 		} else {
 			self->m_idle = true;
-			timespec timeout = { 0, 500 * SPA_NSEC_PER_MSEC };
-			pw_loop_update_timer(pw_main_loop_get_loop(self->m_loop), self->m_timer, &timeout, &timeout, false);
+			timespec timeout = {0, 500 * SPA_NSEC_PER_MSEC};
+			pw_loop_update_timer(
+				pw_main_loop_get_loop(self->m_loop),
+				self->m_timer,
+				&timeout,
+				&timeout,
+				false);
 		}
 	}
 }
@@ -108,12 +133,14 @@ void PipeWireWorker::streamStateChanged(pw_stream_state state) {
 	m_idle = false;
 	switch (state) {
 	case PW_STREAM_STATE_PAUSED: {
-		timespec timeout = { 0, 10 * SPA_NSEC_PER_MSEC };
-		pw_loop_update_timer(pw_main_loop_get_loop(m_loop), m_timer, &timeout, &timeout, false);
+		timespec timeout = {0, 10 * SPA_NSEC_PER_MSEC};
+		pw_loop_update_timer(
+			pw_main_loop_get_loop(m_loop), m_timer, &timeout, &timeout, false);
 		break;
 	}
 	case PW_STREAM_STATE_STREAMING:
-		pw_loop_update_timer(pw_main_loop_get_loop(m_loop), m_timer, nullptr, nullptr, false);
+		pw_loop_update_timer(
+			pw_main_loop_get_loop(m_loop), m_timer, nullptr, nullptr, false);
 		break;
 	case PW_STREAM_STATE_ERROR:
 		pw_main_loop_quit(m_loop);
@@ -171,7 +198,8 @@ void AudioCollector::clearBuffer() {
 	auto* writeBuffer = m_writeBuffer.load(std::memory_order_relaxed);
 	std::fill(writeBuffer->begin(), writeBuffer->end(), 0.0f);
 
-	auto* oldRead = m_readBuffer.exchange(writeBuffer, std::memory_order_acq_rel);
+	auto* oldRead =
+		m_readBuffer.exchange(writeBuffer, std::memory_order_acq_rel);
 	m_writeBuffer.store(oldRead, std::memory_order_release);
 }
 
@@ -181,11 +209,13 @@ void AudioCollector::loadChunk(const qint16* samples, quint32 count) {
 	}
 
 	auto* writeBuffer = m_writeBuffer.load(std::memory_order_relaxed);
-	std::transform(samples, samples + count, writeBuffer->begin(), [](qint16 sample) {
+	std::transform(
+		samples, samples + count, writeBuffer->begin(), [](qint16 sample) {
 			return sample / 32768.0f;
 		});
 
-	auto* oldRead = m_readBuffer.exchange(writeBuffer, std::memory_order_acq_rel);
+	auto* oldRead =
+		m_readBuffer.exchange(writeBuffer, std::memory_order_acq_rel);
 	m_writeBuffer.store(oldRead, std::memory_order_release);
 }
 
@@ -206,9 +236,11 @@ quint32 AudioCollector::readChunk(double* out, quint32 count) {
 	}
 
 	auto* readBuffer = m_readBuffer.load(std::memory_order_acquire);
-	std::transform(readBuffer->begin(), readBuffer->begin() + count, out, [](float sample) {
-			return static_cast<double>(sample);
-		});
+	std::transform(
+		readBuffer->begin(),
+		readBuffer->begin() + count,
+		out,
+		[](float sample) { return static_cast<double>(sample); });
 
 	return count;
 }
@@ -218,10 +250,10 @@ AudioCollector::AudioCollector(QObject* parent)
 	, m_buffer1(ac::CHUNK_SIZE)
 	, m_buffer2(ac::CHUNK_SIZE)
 	, m_readBuffer(&m_buffer1)
-	, m_writeBuffer(&m_buffer2) {
-}
+	, m_writeBuffer(&m_buffer2) {}
 
 AudioCollector::~AudioCollector() {
+	// NOLINTNEXTLINE(clang-analyzer-optin.cplusplus.VirtualCall)
 	stop();
 }
 
@@ -232,9 +264,8 @@ void AudioCollector::start() {
 
 	clearBuffer();
 
-	m_thread = std::jthread([this](std::stop_token token) {
-			PipeWireWorker worker(token, this);
-		});
+	m_thread = std::jthread(
+		[this](std::stop_token token) { PipeWireWorker worker(token, this); });
 }
 
 void AudioCollector::stop() {

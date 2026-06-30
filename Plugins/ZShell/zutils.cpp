@@ -27,15 +27,22 @@ void ZUtils::saveItem(QQuickItem* target, const QUrl& path, QJSValue onSaved) {
 	this->saveItem(target, path, QRect(), onSaved, QJSValue());
 }
 
-void ZUtils::saveItem(QQuickItem* target, const QUrl& path, QJSValue onSaved, QJSValue onFailed) {
+void ZUtils::saveItem(
+	QQuickItem* target, const QUrl& path, QJSValue onSaved, QJSValue onFailed) {
 	this->saveItem(target, path, QRect(), onSaved, onFailed);
 }
 
-void ZUtils::saveItem(QQuickItem* target, const QUrl& path, const QRect& rect, QJSValue onSaved) {
+void ZUtils::saveItem(
+	QQuickItem* target, const QUrl& path, const QRect& rect, QJSValue onSaved) {
 	this->saveItem(target, path, rect, onSaved, QJSValue());
 }
 
-void ZUtils::saveItem(QQuickItem* target, const QUrl& path, const QRect& rect, QJSValue onSaved, QJSValue onFailed) {
+void ZUtils::saveItem(
+	QQuickItem* target,
+	const QUrl& path,
+	const QRect& rect,
+	QJSValue onSaved,
+	QJSValue onFailed) {
 	if (!target) {
 		qCWarning(lcZUtils) << "saveItem: a target is required";
 		return;
@@ -47,21 +54,30 @@ void ZUtils::saveItem(QQuickItem* target, const QUrl& path, const QRect& rect, Q
 	}
 
 	if (!target->window()) {
-		qCWarning(lcZUtils) << "saveItem: unable to save target" << target << "without a window";
+		qCWarning(lcZUtils) << "saveItem: unable to save target" << target
+							<< "without a window";
 		return;
 	}
 
 	auto scaledRect = rect;
 	const qreal scale = target->window()->devicePixelRatio();
 	if (rect.isValid() && !qFuzzyCompare(scale + 1.0, 2.0)) {
-		scaledRect =
-			QRectF(rect.left() * scale, rect.top() * scale, rect.width() * scale, rect.height() * scale).toRect();
+		scaledRect = QRectF(
+						 rect.left() * scale,
+						 rect.top() * scale,
+						 rect.width() * scale,
+						 rect.height() * scale)
+						 .toRect();
 	}
 
-	const QSharedPointer<const QQuickItemGrabResult> grabResult = target->grabToImage();
+	const QSharedPointer<const QQuickItemGrabResult> grabResult =
+		target->grabToImage();
 
-	QObject::connect(grabResult.data(), &QQuickItemGrabResult::ready, this,
-	                 [grabResult, scaledRect, path, onSaved, onFailed, this]() {
+	QObject::connect(
+		grabResult.data(),
+		&QQuickItemGrabResult::ready,
+		this,
+		[grabResult, scaledRect, path, onSaved, onFailed, this]() {
 			const auto future = QtConcurrent::run([=]() {
 				QImage image = grabResult->image();
 
@@ -77,44 +93,52 @@ void ZUtils::saveItem(QQuickItem* target, const QUrl& path, const QRect& rect, Q
 			auto* watcher = new QFutureWatcher<bool>(this);
 			auto* engine = qmlEngine(this);
 
-			QObject::connect(watcher, &QFutureWatcher<bool>::finished, this, [=]() {
-				if (watcher->result()) {
-					if (onSaved.isCallable()) {
-						QJSValueList args = { QJSValue(path.toLocalFile()) };
-						if (engine) {
-							args << engine->toScriptValue(QVariant::fromValue(path));
+			QObject::connect(
+				watcher, &QFutureWatcher<bool>::finished, this, [=]() {
+					if (watcher->result()) {
+						if (onSaved.isCallable()) {
+							QJSValueList args = {QJSValue(path.toLocalFile())};
+							if (engine) {
+								args << engine->toScriptValue(
+									QVariant::fromValue(path));
+							}
+							onSaved.call(args);
 						}
-						onSaved.call(args);
-					}
-				} else {
-					qCWarning(lcZUtils) << "saveItem: failed to save" << path;
-					if (onFailed.isCallable()) {
-						if (engine) {
-							onFailed.call({ engine->toScriptValue(QVariant::fromValue(path)) });
-						} else {
-							onFailed.call();
+					} else {
+						qCWarning(lcZUtils)
+							<< "saveItem: failed to save" << path;
+						if (onFailed.isCallable()) {
+							if (engine) {
+								onFailed.call({engine->toScriptValue(
+									QVariant::fromValue(path))});
+							} else {
+								onFailed.call();
+							}
 						}
 					}
-				}
-				watcher->deleteLater();
-			});
+					watcher->deleteLater();
+				});
 			watcher->setFuture(future);
 		});
 }
 
 bool ZUtils::copyFile(const QUrl& source, const QUrl& target, bool overwrite) {
 	if (!source.isLocalFile()) {
-		qCWarning(lcZUtils) << "copyFile: source" << source << "is not a local file";
+		qCWarning(lcZUtils)
+			<< "copyFile: source" << source << "is not a local file";
 		return false;
 	}
 	if (!target.isLocalFile()) {
-		qCWarning(lcZUtils) << "copyFile: target" << target << "is not a local file";
+		qCWarning(lcZUtils)
+			<< "copyFile: target" << target << "is not a local file";
 		return false;
 	}
 
 	if (overwrite && QFile::exists(target.toLocalFile())) {
 		if (!QFile::remove(target.toLocalFile())) {
-			qCWarning(lcZUtils) << "copyFile: overwrite was specified but failed to remove" << target.toLocalFile();
+			qCWarning(lcZUtils)
+				<< "copyFile: overwrite was specified but failed to remove"
+				<< target.toLocalFile();
 			return false;
 		}
 	}
@@ -124,7 +148,8 @@ bool ZUtils::copyFile(const QUrl& source, const QUrl& target, bool overwrite) {
 
 bool ZUtils::deleteFile(const QUrl& path) {
 	if (!path.isLocalFile()) {
-		qCWarning(lcZUtils) << "deleteFile: path" << path << "is not a local file";
+		qCWarning(lcZUtils)
+			<< "deleteFile: path" << path << "is not a local file";
 		return false;
 	}
 
@@ -133,7 +158,8 @@ bool ZUtils::deleteFile(const QUrl& path) {
 
 QString ZUtils::toLocalFile(const QUrl& url) {
 	if (!url.isLocalFile()) {
-		qCWarning(lcZUtils) << "toLocalFile: given url is not a local file" << url;
+		qCWarning(lcZUtils)
+			<< "toLocalFile: given url is not a local file" << url;
 		return QString();
 	}
 

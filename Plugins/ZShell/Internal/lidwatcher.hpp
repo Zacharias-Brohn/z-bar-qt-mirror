@@ -6,22 +6,22 @@
 namespace ZShell::internal {
 
 class LidWatcher : public QObject {
-Q_OBJECT
-QML_ELEMENT
+	Q_OBJECT
+	QML_ELEMENT
 
-public:
-explicit LidWatcher(QObject* parent = nullptr);
+	public:
+	explicit LidWatcher(QObject* parent = nullptr);
 
-signals:
-void aboutToSleep();
-void resumed();
-void lockRequested();
-void unlockRequested();
+	signals:
+	void aboutToSleep();
+	void resumed();
+	void lockRequested();
+	void unlockRequested();
 
-private slots:
-void handlePrepareForSleep(bool sleep);
-void handleLockRequested();
-void handleUnlockRequested();
+	private slots:
+	void handlePrepareForSleep(bool sleep);
+	void handleLockRequested();
+	void handleUnlockRequested();
 };
 
 } // namespace ZShell::internal

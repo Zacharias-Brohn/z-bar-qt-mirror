@@ -5,9 +5,7 @@
 
 namespace ZShell::services {
 
-Service::Service(QObject* parent)
-	: QObject(parent) {
-}
+Service::Service(QObject* parent) : QObject(parent) {}
 
 void Service::ref(QObject* sender) {
 	if (m_refs.isEmpty()) {

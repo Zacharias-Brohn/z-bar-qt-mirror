@@ -13,68 +13,67 @@ namespace ZShell::internal {
 class StrokeCanvasRenderer;
 
 class StrokeCanvasItem : public QCanvasPainterItem {
-Q_OBJECT
+	Q_OBJECT
 
-QML_NAMED_ELEMENT(StrokeCanvas)
+	QML_NAMED_ELEMENT(StrokeCanvas)
 
-Q_PROPERTY(QColor penColor READ penColor WRITE setPenColor NOTIFY penColorChanged)
-Q_PROPERTY(bool hoverVisible READ hoverVisible WRITE setHoverVisible NOTIFY hoverVisibleChanged)
-Q_PROPERTY(QPointF hoverPoint READ hoverPoint WRITE setHoverPoint NOTIFY hoverPointChanged)
-Q_PROPERTY(qreal penWidth READ penWidth WRITE setPenWidth NOTIFY penWidthChanged)
+	Q_PROPERTY(
+		QColor penColor READ penColor WRITE setPenColor NOTIFY penColorChanged)
+	Q_PROPERTY(
+		bool hoverVisible READ hoverVisible WRITE setHoverVisible NOTIFY
+			hoverVisibleChanged)
+	Q_PROPERTY(
+		QPointF hoverPoint READ hoverPoint WRITE setHoverPoint NOTIFY
+			hoverPointChanged)
+	Q_PROPERTY(
+		qreal penWidth READ penWidth WRITE setPenWidth NOTIFY penWidthChanged)
 
-public:
-explicit StrokeCanvasItem(QQuickItem *parent = nullptr);
+	public:
+	explicit StrokeCanvasItem(QQuickItem* parent = nullptr);
 
-[[nodiscard]] bool hoverVisible() const {
-	return m_hoverVisible;
-}
-[[nodiscard]] QPointF hoverPoint() const {
-	return m_hoverPoint;
-}
+	[[nodiscard]] bool hoverVisible() const { return m_hoverVisible; }
+	[[nodiscard]] QPointF hoverPoint() const { return m_hoverPoint; }
 
-void setHoverVisible(bool visible);
-void setHoverPoint(const QPointF &point);
+	void setHoverVisible(bool visible);
+	void setHoverPoint(const QPointF& point);
 
-Q_INVOKABLE void showHover(qreal x, qreal y);
-Q_INVOKABLE void hideHover();
+	Q_INVOKABLE void showHover(qreal x, qreal y);
+	Q_INVOKABLE void hideHover();
 
-[[nodiscard]] QColor penColor() const {
-	return m_penColor;
-}
-[[nodiscard]] float penWidth() const {
-	return m_penWidth;
-}
+	[[nodiscard]] QColor penColor() const { return m_penColor; }
+	[[nodiscard]] qreal penWidth() const { return m_penWidth; }
 
-void setPenColor(const QColor &color);
-void setPenWidth(float width);
+	void setPenColor(const QColor& color);
+	void setPenWidth(qreal width);
 
-Q_INVOKABLE void clear();
+	Q_INVOKABLE void clear();
 
-Q_INVOKABLE void beginStroke(qreal x, qreal y);
-Q_INVOKABLE void appendPoint(qreal x, qreal y);
-Q_INVOKABLE void endStroke();
+	Q_INVOKABLE void beginStroke(qreal x, qreal y);
+	Q_INVOKABLE void appendPoint(qreal x, qreal y);
+	Q_INVOKABLE void endStroke();
 
-signals:
-void penColorChanged();
-void penWidthChanged();
-void hoverVisibleChanged();
-void hoverPointChanged();
+	signals:
+	void penColorChanged();
+	void penWidthChanged();
+	void hoverVisibleChanged();
+	void hoverPointChanged();
 
-protected:
-[[nodiscard]] QCanvasPainterItemRenderer *createItemRenderer() const override;
+	protected:
+	[[nodiscard]] QCanvasPainterItemRenderer* createItemRenderer()
+		const override;
 
-private:
-friend class StrokeCanvasRenderer;
+	private:
+	friend class StrokeCanvasRenderer;
 
-bool m_hoverVisible = false;
-QPointF m_hoverPoint;
-QColor m_penColor = Qt::white;
-float m_penWidth = 4.f;
-bool m_isDrawing = false;
+	bool m_hoverVisible = false;
+	QPointF m_hoverPoint;
+	QColor m_penColor = Qt::white;
+	qreal m_penWidth = 4.0;
+	bool m_isDrawing = false;
 
-int m_nextGroupId = 0;
-QVector<Stroke> m_strokes;
-Stroke m_currentStroke;
+	int m_nextGroupId = 0;
+	QVector<Stroke> m_strokes;
+	Stroke m_currentStroke;
 };
 
-};
+}; // namespace ZShell::internal
