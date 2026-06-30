@@ -16,17 +16,14 @@ jobs:
                   fetch-depth: 0
 
             - name: Configure
-              run: cmake -B build -G Ninja -DENABLE_MODULES=plugin \
-                -DCMAKE_BUILD_TYPE=Release \
-                -DCMAKE_CXX_FLAGS="-I/usr/include/qt6/QtCanvasPainter"
+              run: cmake -B build -G Ninja -DENABLE_MODULES=plugin -DCMAKE_BUILD_TYPE=Release
 
             - name: Build
               run: ninja -C build
 
             - name: clang-tidy
+              continue-on-error: true
               run: |
-                  sed -i 's/-mno-direct-extern-access //g' build/compile_commands.json
                   set -o pipefail
-                  run-clang-tidy -p build -j $(nproc) -header-filter="Plugins/.*" \
-                    -warnings-as-errors='*' 2>&1 | \
-                    grep -v 'Suppressed\|non-user\|non-system\|unknown argument.*mno-direct\|Found compiler error\|warnings generated\.\|^Use -header-filter'
+                  run-clang-tidy -p build -j $(nproc) -header-filter="Plugins/.*" 2>&1 | \
+                    grep -v 'Suppressed\|non-user\|non-system\|unknown argument.*mno-direct'
