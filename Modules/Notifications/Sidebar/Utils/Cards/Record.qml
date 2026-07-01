@@ -133,7 +133,7 @@ CustomRect {
 					ParallelAnimation {
 						Anim {
 							duration: Appearance.anim.durations.small
-							easing: Appearance.anim.curves.standardAccel
+							easing.bezierCurve: Appearance.anim.curves.standardAccel
 							property: "scale"
 							target: listOrControls
 							to: 0.7
@@ -141,7 +141,7 @@ CustomRect {
 
 						Anim {
 							duration: Appearance.anim.durations.small
-							easing: Appearance.anim.curves.standardAccel
+							easing.bezierCurve: Appearance.anim.curves.standardAccel
 							property: "opacity"
 							target: listOrControls
 							to: 0
@@ -166,7 +166,7 @@ CustomRect {
 					ParallelAnimation {
 						Anim {
 							duration: Appearance.anim.durations.small
-							easing: Appearance.anim.curves.standardDecel
+							easing.bezierCurve: Appearance.anim.curves.standardDecel
 							property: "scale"
 							target: listOrControls
 							to: 1
@@ -174,7 +174,7 @@ CustomRect {
 
 						Anim {
 							duration: Appearance.anim.durations.small
-							easing: Appearance.anim.curves.standardDecel
+							easing.bezierCurve: Appearance.anim.curves.standardDecel
 							property: "opacity"
 							target: listOrControls
 							to: 1
@@ -217,14 +217,14 @@ CustomRect {
 
 					Anim {
 						duration: Appearance.anim.durations.large
-						easing: Appearance.anim.curves.emphasizedAccel
+						easing.bezierCurve: Appearance.anim.curves.emphasizedAccel
 						from: 1
 						to: 0
 					}
 
 					Anim {
 						duration: Appearance.anim.durations.extraLarge
-						easing: Appearance.anim.curves.emphasizedDecel
+						easing.bezierCurve: Appearance.anim.curves.emphasizedDecel
 						from: 0
 						to: 1
 					}
