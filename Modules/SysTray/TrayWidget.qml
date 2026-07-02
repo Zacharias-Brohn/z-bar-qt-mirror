@@ -61,12 +61,12 @@ RowLayout {
 		}
 
 		let trayPos = mapToItem(sysTray, localX, localY);
-		if (sysTray.contains(Qt.point(trayPos.x, trayPos.y))) {
+		if (Config.bar.tray.showOnHover && sysTray.contains(Qt.point(trayPos.x, trayPos.y))) {
 			let trayRowPos = sysTray.mapToItem(sysRow, trayPos.x, trayPos.y);
 			let child = sysRow.childAt(trayRowPos.x, trayRowPos.y);
-			if (child && child.hasOwnProperty("popoutId")) {
+			if (child && child.hasOwnProperty("ind")) {
 				return {
-					id: child.popoutId,
+					id: `traymenu${child.ind}`,
 					item: child
 				};
 			}

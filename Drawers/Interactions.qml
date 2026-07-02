@@ -170,7 +170,7 @@ Item {
 					root.panels.osd.hovered = false;
 				}
 
-				if (!root.popouts.currentName.startsWith("traymenu")) {
+				if (!root.popouts.currentName.startsWith("traymenu") || Config.bar.tray.showOnHover) {
 					root.popouts.hasCurrent = false;
 				}
 

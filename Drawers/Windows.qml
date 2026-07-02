@@ -127,7 +127,7 @@ CustomWindow {
 	HyprlandFocusGrab {
 		id: focusGrab
 
-		active: visibilities.dock || visibilities.resources || visibilities.launcher || visibilities.sidebar || visibilities.dashboard || visibilities.settings || visibilities.clipboard || (panels.popouts.hasCurrent && panels.popouts.currentName.startsWith("traymenu"))
+		active: visibilities.dock || visibilities.resources || visibilities.launcher || visibilities.sidebar || visibilities.dashboard || visibilities.settings || visibilities.clipboard || (panels.popouts.hasCurrent && panels.popouts.currentName.startsWith("traymenu") && !Config.bar.tray.showOnHover)
 		windows: [root]
 
 		onCleared: {

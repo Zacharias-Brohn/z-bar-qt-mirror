@@ -19,7 +19,6 @@ PageBase {
 		SpinRow {
 			first: true
 			from: 12
-			last: true
 			settingAnchor: "bar-tray-iconsize"
 			stepSize: 1
 			text: qsTr("Icon size")
@@ -27,6 +26,25 @@ PageBase {
 			value: Config.bar.tray.trayIconSize
 
 			onMoved: value => Config.bar.tray.trayIconSize = value
+		}
+
+		ToggleRow {
+			checked: Config.bar.tray.showOnHover
+			settingAnchor: "bar-tray-show-popout-on-hover"
+			subtext: Config.bar.tray.showOnHover ? qsTr("Will show context menu on hover") : qsTr("Will show context menu on right-click")
+			text: qsTr("Show popout on hover")
+
+			onToggled: Config.bar.tray.showOnHover = checked
+		}
+
+		ToggleRow {
+			checked: Config.bar.tray.recolorIcons
+			last: true
+			settingAnchor: "bar-tray-recolor-icons"
+			subtext: qsTr("Recolors icons to fit current scheme")
+			text: qsTr("Recolor icons")
+
+			onToggled: Config.bar.tray.recolorIcons = checked
 		}
 	}
 }
