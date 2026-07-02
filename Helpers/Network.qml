@@ -7,28 +7,25 @@ import QtQuick
 Singleton {
 	id: root
 
-	readonly property list<NetworkDevice> devices: Networking.devices.values
-	readonly property list<Network> networks: {
-		const list = []
-		for (const d of wifiDevices)
-			list.push(...d.networks.values)
-		return list;
-	}
-	property bool scanning: false
-	readonly property list<WifiDevice> wifiDevices: devices.filter(d => wifiDevice(d))
-	readonly property bool wifiEnabled: Networking.wifiEnabled
 	property bool active: false
-
-	onActiveChanged: {
-		for (const d of wifiDevices)
-			d.scannerEnabled = active;
-	}
+	readonly property list<NetworkDevice> devices: Networking.devices.values
+	readonly property list<Network> knownNetworks: networks.filter(n => n.known)
 
 	// Original code
 
 	readonly property list<NetworkDevice> netDevice: Networking.devices.values
 	readonly property string networkName: getNetworkName()
+	readonly property list<Network> networks: {
+		const list = [];
+		for (const d of wifiDevices)
+			list.push(...d.networks.values);
+		return list;
+	}
 	readonly property list<string> nicNames: networkInterfaceCardNames()
+	property bool scanning: false
+	readonly property list<Network> unknownNetworks: networks.filter(n => !n.known)
+	readonly property list<WifiDevice> wifiDevices: devices.filter(d => wifiDevice(d))
+	readonly property bool wifiEnabled: Networking.wifiEnabled
 
 	// Useless will prob remove
 	function getConnectedDevices() {
@@ -52,6 +49,12 @@ Singleton {
 		return "Failed network name";
 	}
 
+	//
+
+	function isSecure(security): bool {
+		return (security === WifiSecurityType.WpaPsk || security === WifiSecurityType.Wpa2Psk || security === WifiSecurityType.Sae);
+	}
+
 	// Searches wired/wireless devices and sets them in a list
 	function networkInterfaceCardNames() {
 		let nicList = [];
@@ -61,11 +64,6 @@ Singleton {
 		}
 
 		return nicList;
-	}
-	//
-
-	function isSecure(security): bool {
-		return (security === WifiSecurityType.WpaPsk || security === WifiSecurityType.Wpa2Psk || security === WifiSecurityType.Sae);
 	}
 
 	function setScan(value: bool): void {
@@ -80,5 +78,10 @@ Singleton {
 
 	function wifiDevice(dev): bool {
 		return dev.type === DeviceType.Wifi;
+	}
+
+	onActiveChanged: {
+		for (const d of wifiDevices)
+			d.scannerEnabled = active;
 	}
 }
