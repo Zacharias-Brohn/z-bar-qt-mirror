@@ -69,7 +69,7 @@ CustomClippingRect {
 		Repeater {
 			model: ScriptModel {
 				values: [...Network.knownNetworks].sort((a, b) => {
-					return a.signalStrength - b.signalStrength;
+					return b.signalStrength - a.signalStrength;
 				})
 			}
 
@@ -162,7 +162,7 @@ CustomClippingRect {
 
 			model: ScriptModel {
 				values: [...Network.unknownNetworks].sort((a, b) => {
-					return a.signalStrength - b.signalStrength;
+					return b.signalStrength - a.signalStrength;
 				})
 			}
 
