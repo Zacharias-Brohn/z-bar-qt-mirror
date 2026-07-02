@@ -3,12 +3,9 @@ pragma ComponentBehavior: Bound
 import Quickshell
 import QtQuick
 import QtQuick.Layouts
-import qs.Components
 import qs.Modules
 import qs.Config
-import qs.Helpers
 import qs.Modules.SysTray
-import qs.Modules.SysTray.Widgets
 import qs.Modules.Network
 import qs.Modules.Updates
 
@@ -26,7 +23,7 @@ RowLayout {
 		const ch = childAt(x, height / 2) as WrappedLoader;
 
 		if (!ch || ch?.id === "spacer") {
-			if (!popouts.currentName.startsWith("traymenu"))
+			if (!popouts.currentName.startsWith("traymenu") || Config.bar.tray.showOnHover)
 				popouts.hasCurrent = false;
 			return;
 		}
