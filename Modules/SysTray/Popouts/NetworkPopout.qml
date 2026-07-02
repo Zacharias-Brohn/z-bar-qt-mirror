@@ -33,7 +33,7 @@ CustomClippingRect {
 			Layout.preferredHeight: visible ? implicitHeight : 0
 			Layout.rightMargin: Appearance.padding.extraSmall
 			font.pointSize: Appearance.font.size.large
-			text: qsTr("Network")
+			text: qsTr("Wifi")
 		}
 
 		Toggle {
@@ -58,11 +58,12 @@ CustomClippingRect {
 
 		anchors.bottom: parent.bottom
 		anchors.left: parent.left
-		anchors.margins: Appearance.padding.large
+		anchors.margins: Appearance.padding.normal
 		anchors.right: parent.right
 		anchors.top: networkPopContent.bottom
 
 		CustomText {
+			Layout.leftMargin: Appearance.padding.normal
 			text: qsTr("Known networks")
 		}
 
@@ -73,88 +74,19 @@ CustomClippingRect {
 				})
 			}
 
-			RowLayout {
-				id: knownNetworkItem
-
-				required property var modelData
-
-				Layout.fillWidth: true
-				Layout.preferredHeight: visible ? implicitHeight : 0
-				Layout.rightMargin: Appearance.padding.extraSmall
-				opacity: 0
-				scale: 0.7
-				spacing: Appearance.spacing.small
-
-				Behavior on opacity {
-					Anim {
-						type: Anim.DefaultEffects
-					}
-				}
-				Behavior on scale {
-					Anim {
-					}
-				}
-
-				Component.onCompleted: {
-					opacity = 1;
-					scale = 1;
-				}
-
-				MaterialIcon {
-					color: knownNetworkItem.modelData.active ? DynamicColors.palette.m3primary : DynamicColors.palette.m3onSurfaceVariant
-					text: Icons.getNetworkIcon(knownNetworkItem.modelData.signalStrength * 100, Network.isSecure(knownNetworkItem.modelData.security))
-				}
-
-				CustomText {
-					Layout.fillWidth: true
-					Layout.leftMargin: Appearance.spacing.extraSmall
-					Layout.rightMargin: Appearance.spacing.extraSmall
-					color: knownNetworkItem.modelData.active ? DynamicColors.palette.m3primary : DynamicColors.palette.m3onSurface
-					elide: Text.ElideRight
-					text: knownNetworkItem.modelData.name
-				}
-
-				CustomRect {
-					color: Qt.alpha(DynamicColors.palette.m3primary, knownNetworkItem.modelData.active ? 1 : 0)
-					implicitHeight: knownWirelessConnectIcon.implicitHeight + Appearance.padding.extraSmall
-					implicitWidth: implicitHeight
-					radius: Appearance.rounding.full
-
-					// CircularIndicator {
-					//     anchors.fill: parent
-					//     running: knownNetworkItem.loading
-					// }
-
-					StateLayer {
-						color: knownNetworkItem.modelData.active ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3onSurface
-
-						onClicked: {}
-					}
-
-					MaterialIcon {
-						id: knownWirelessConnectIcon
-
-						anchors.centerIn: parent
-						animate: true
-						color: knownNetworkItem.modelData.active ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3onSurface
-						text: knownNetworkItem.modelData.active ? "link_off" : "link"
-
-						// opacity: knownNetworkItem.loading ? 0 : 1
-
-						Behavior on opacity {
-							Anim {
-								type: Anim.DefaultEffects
-							}
-						}
-					}
-				}
+			NetworkItem {
 			}
 		}
 
 		Item {
 			id: spacer
 
-			Layout.preferredHeight: networkRepeater.count > 0 ? Appearance.spacing.normal : 0
+			Layout.preferredHeight: networkRepeater.count > 0 ? Appearance.spacing.extraSmall : 0
+		}
+
+		CustomText {
+			Layout.leftMargin: Appearance.padding.normal
+			text: qsTr("Networks")
 		}
 
 		Repeater {
@@ -166,85 +98,79 @@ CustomClippingRect {
 				})
 			}
 
-			RowLayout {
-				id: networkItem
-
-				required property var modelData
-
-				Layout.fillWidth: true
-				Layout.preferredHeight: visible ? implicitHeight : 0
-				Layout.rightMargin: Appearance.padding.extraSmall
-				opacity: 0
-				scale: 0.7
-				spacing: Appearance.spacing.small
-
-				Behavior on opacity {
-					Anim {
-						type: Anim.DefaultEffects
-					}
-				}
-				Behavior on scale {
-					Anim {
-					}
-				}
-
-				Component.onCompleted: {
-					opacity = 1;
-					scale = 1;
-				}
-
-				MaterialIcon {
-					color: networkItem.modelData.active ? DynamicColors.palette.m3primary : DynamicColors.palette.m3onSurfaceVariant
-					text: Icons.getNetworkIcon(networkItem.modelData.signalStrength * 100, Network.isSecure(networkItem.modelData.security))
-				}
-
-				CustomText {
-					Layout.fillWidth: true
-					Layout.leftMargin: Appearance.spacing.extraSmall
-					Layout.rightMargin: Appearance.spacing.extraSmall
-					color: networkItem.modelData.active ? DynamicColors.palette.m3primary : DynamicColors.palette.m3onSurface
-					elide: Text.ElideRight
-					text: networkItem.modelData.name
-				}
-
-				CustomRect {
-					color: Qt.alpha(DynamicColors.palette.m3primary, networkItem.modelData.active ? 1 : 0)
-					implicitHeight: wirelessConnectIcon.implicitHeight + Appearance.padding.extraSmall
-					implicitWidth: implicitHeight
-					radius: Appearance.rounding.full
-
-					// CircularIndicator {
-					//     anchors.fill: parent
-					//     running: networkItem.loading
-					// }
-
-					StateLayer {
-						color: networkItem.modelData.active ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3onSurface
-
-						onClicked: {}
-					}
-
-					MaterialIcon {
-						id: wirelessConnectIcon
-
-						anchors.centerIn: parent
-						animate: true
-						color: networkItem.modelData.active ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3onSurface
-						text: networkItem.modelData.active ? "link_off" : "link"
-
-						// opacity: networkItem.loading ? 0 : 1
-
-						Behavior on opacity {
-							Anim {
-								type: Anim.DefaultEffects
-							}
-						}
-					}
-				}
+			NetworkItem {
 			}
 		}
 	}
 
+	component NetworkItem: CustomRect {
+		id: knownNetworkItem
+
+		required property var modelData
+
+		Layout.fillWidth: true
+		Layout.preferredHeight: visible ? knownNetworkRow.implicitHeight + Appearance.padding.smaller * 2 : 0
+		Layout.rightMargin: Appearance.padding.extraSmall
+		radius: Appearance.rounding.small
+
+		RowLayout {
+			id: knownNetworkRow
+
+			anchors.fill: parent
+			anchors.leftMargin: Appearance.padding.larger
+			anchors.rightMargin: Appearance.padding.normal
+			opacity: 0
+			scale: 0.7
+			spacing: Appearance.spacing.small
+
+			Behavior on opacity {
+				Anim {
+					type: Anim.DefaultEffects
+				}
+			}
+			Behavior on scale {
+				Anim {
+				}
+			}
+
+			Component.onCompleted: {
+				opacity = 1;
+				scale = 1;
+			}
+
+			MaterialIcon {
+				color: knownNetworkItem.modelData.active ? DynamicColors.palette.m3primary : DynamicColors.palette.m3onSurfaceVariant
+				text: Icons.getNetworkIcon(knownNetworkItem.modelData.signalStrength * 100, Network.isSecure(knownNetworkItem.modelData.security))
+			}
+
+			CustomText {
+				Layout.fillWidth: true
+				Layout.leftMargin: Appearance.spacing.extraSmall
+				Layout.rightMargin: Appearance.spacing.extraSmall
+				color: knownNetworkItem.modelData.active ? DynamicColors.palette.m3primary : DynamicColors.palette.m3onSurface
+				elide: Text.ElideRight
+				text: knownNetworkItem.modelData.name
+			}
+
+			CustomRect {
+				color: Qt.alpha(DynamicColors.palette.m3primary, knownNetworkItem.modelData.active ? 1 : 0)
+				implicitHeight: knownWirelessConnectIcon.implicitHeight + Appearance.padding.extraSmall
+				implicitWidth: implicitHeight
+				radius: Appearance.rounding.full
+
+				// CircularIndicator {
+				//     anchors.fill: parent
+				//     running: knownNetworkItem.loading
+				// }
+			}
+		}
+
+		StateLayer {
+			color: knownNetworkItem.modelData.active ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3onSurface
+
+			onClicked: {}
+		}
+	}
 	component Toggle: RowLayout {
 		property alias checked: toggle.checked
 		required property string label
