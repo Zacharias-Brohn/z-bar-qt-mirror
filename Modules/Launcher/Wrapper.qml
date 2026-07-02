@@ -15,7 +15,7 @@ Item {
 		if (visibilities.resources && panels.resourcesWrapper.x + panels.resourcesWrapper.width > root.x)
 			max -= panels.resources.nonAnimHeight;
 		if (panels.popouts.hasCurrent)
-			if (panels.popouts.current.x + panels.popouts.current.width > root.x && panels.popouts.current.x < root.x + root.width)
+			if (panels.popouts.current?.x + panels.popouts.current?.width > root.x && panels.popouts.current?.x < root.x + root.width)
 				max -= panels.popouts.nonAnimHeight;
 		return max;
 	}

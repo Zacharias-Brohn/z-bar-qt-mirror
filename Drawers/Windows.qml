@@ -1,6 +1,7 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
+import QtQuick.Controls
 import QtQuick.Effects
 import Quickshell
 import Quickshell.Io
@@ -127,7 +128,7 @@ CustomWindow {
 	HyprlandFocusGrab {
 		id: focusGrab
 
-		active: visibilities.dock || visibilities.resources || visibilities.launcher || visibilities.sidebar || visibilities.dashboard || visibilities.settings || visibilities.clipboard || (panels.popouts.hasCurrent && panels.popouts.currentName.startsWith("traymenu") && !Config.bar.tray.showOnHover)
+		active: visibilities.dock || visibilities.resources || visibilities.launcher || visibilities.sidebar || visibilities.dashboard || visibilities.settings || visibilities.clipboard || (panels.popouts.hasCurrent && panels.popouts.currentName.startsWith("traymenu") && (!Config.bar.tray.showOnHover || (panels.popouts.current as StackView)?.depth > 1))
 		windows: [root]
 
 		onCleared: {
