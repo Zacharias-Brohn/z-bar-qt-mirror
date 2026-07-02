@@ -45,7 +45,8 @@ Item {
 	CustomRect {
 		anchors.fill: parent
 		anchors.margins: 3
-		color: icon.layer.enabled && root.current ? DynamicColors.palette.m3primary : "transparent"
+		color: icon.layer.enabled && enabled && root.current ? DynamicColors.palette.m3primary : "transparent"
+		enabled: !Config.bar.tray.showOnHover
 		radius: Appearance.rounding.full
 
 		StateLayer {
@@ -57,7 +58,7 @@ Item {
 				if (mouse.button === Qt.LeftButton) {
 					root.item.activate();
 					console.log(icon.source + "\n" + root.item.id);
-				} else if (mouse.button === Qt.RightButton && Config.bar.popouts.tray) {
+				} else if (mouse.button === Qt.RightButton && Config.bar.popouts.tray && !Config.bar.tray.showOnHover) {
 					root.popouts.currentName = `traymenu${root.ind}`;
 					root.popouts.currentCenter = Qt.binding(() => root.mapToItem(root.loader, root.implicitWidth / 2, 0).x);
 					root.popouts.hasCurrent = true;
@@ -76,9 +77,9 @@ Item {
 
 		anchors.centerIn: parent
 		antialiasing: true
-		color: root.current ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3onSurface
+		color: root.current && !Config.bar.tray.showOnHover ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3onSurface
 		implicitSize: Config.bar.tray.trayIconSize * root.dpr
-		layer.enabled: Config.general.color.smart || Config.general.color.scheduleDark
+		layer.enabled: Config.bar.tray.recolorIcons
 		scale: 1 / root.dpr
 		source: root.resolveIcon(root.item.id, root.item.icon)
 	}

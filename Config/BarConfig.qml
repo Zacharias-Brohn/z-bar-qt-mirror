@@ -68,10 +68,12 @@ JsonObject {
 		property bool upower: true
 	}
 	component Tray: JsonObject {
+		property bool recolorIcons: false
 		property bool showAudio: true
 		property bool showBluetooth: false
 		property bool showMicrophone: true
 		property bool showNetwork: false
+		property bool showOnHover: false
 		property bool showPower: true
 		property bool showWifi: false
 		property int trayIconSize: 24

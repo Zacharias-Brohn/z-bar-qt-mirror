@@ -30,18 +30,6 @@ RowLayout {
 			}
 		}
 
-		// CustomRect {
-		// 	Layout.fillWidth: true
-		// 	color: DynamicColors.tPalette.m3surfaceContainer
-		// 	implicitHeight: resources.implicitHeight
-		// 	radius: Appearance.rounding.small
-		//
-		// 	Resources {
-		// 		id: resources
-		//
-		// 	}
-		// }
-
 		CustomClippingRect {
 			Layout.fillHeight: true
 			Layout.fillWidth: true

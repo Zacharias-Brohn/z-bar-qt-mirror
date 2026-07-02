@@ -47,7 +47,7 @@ RowLayout {
 				return;
 			}
 
-			if (!popouts.currentName.startsWith("traymenu"))
+			if (!popouts.currentName.startsWith("traymenu") || Config.bar.tray.showOnHover)
 				popouts.hasCurrent = false;
 		}
 
@@ -56,19 +56,7 @@ RowLayout {
 		const item = ch.item;
 		const itemWidth = item.implicitWidth;
 
-		if (id === "audio" && Config.bar.popouts.audio) {
-			popouts.currentName = "audio";
-			popouts.currentCenter = Qt.binding(() => item.mapToItem(root, itemWidth / 2, 0).x);
-			popouts.hasCurrent = true;
-		} else if (id === "network" && Config.bar.popouts.network) {
-			popouts.currentName = "network";
-			popouts.currentCenter = Qt.binding(() => item.mapToItem(root, itemWidth / 2, 0).x);
-			popouts.hasCurrent = true;
-		} else if (id === "upower" && Config.bar.popouts.upower) {
-			popouts.currentName = "upower";
-			popouts.currentCenter = Qt.binding(() => item.mapToItem(root, itemWidth / 2, 0).x);
-			popouts.hasCurrent = true;
-		} else if (id === "updates") {
+		if (id === "updates") {
 			popouts.currentName = "updates";
 			popouts.currentCenter = Qt.binding(() => item.mapToItem(root, itemWidth / 2, 0).x);
 			popouts.hasCurrent = true;
@@ -80,7 +68,6 @@ RowLayout {
 	Repeater {
 		id: repeater
 
-		// model: Config.bar.entries.filted(n => n.index > 50).sort(n => n.index)
 		model: Config.bar.entries
 
 		DelegateChooser {
