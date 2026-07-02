@@ -1,8 +1,8 @@
 import Quickshell
 import Quickshell.Services.Polkit
 import Quickshell.Wayland
-import Quickshell.Hyprland
 import Quickshell.Widgets
+import ZShell.Components
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
@@ -243,17 +243,16 @@ Scope {
 					Layout.preferredWidth: contentRow.implicitWidth
 					spacing: 8
 
-					CustomButton {
+					IconTextButton {
 						id: detailsButton
 
 						Layout.alignment: Qt.AlignLeft
-						Layout.preferredHeight: 40
-						Layout.preferredWidth: 92
-						bgColor: DynamicColors.palette.m3surfaceContainer
-						enabled: true
-						radius: Appearance.rounding.full
+						icon: "info"
+						inactiveColor: DynamicColors.palette.m3surfaceContainer
+						inactiveOnColor: DynamicColors.palette.m3onSurface
+						isRound: true
+						shapeMorph: true
 						text: "Details"
-						textColor: DynamicColors.palette.m3onSurface
 
 						onClicked: {
 							panelWindow.detailsOpen = !panelWindow.detailsOpen;
@@ -266,41 +265,50 @@ Scope {
 						Layout.fillWidth: true
 					}
 
-					CustomButton {
-						id: okButton
-
+					ButtonRow {
 						Layout.alignment: Qt.AlignRight
-						Layout.preferredHeight: 40
-						Layout.preferredWidth: 76
-						bgColor: DynamicColors.palette.m3primary
-						enabled: passInput.text.length > 0 || !!polkitAgent.flow?.isResponseRequired
-						radius: Appearance.rounding.full
-						text: "OK"
-						textColor: DynamicColors.palette.m3onPrimary
+						spacing: Appearance.spacing.normal
 
-						onClicked: {
-							polkitAgent.flow.submit(passInput.text);
-							passInput.text = "";
-							passInput.forceActiveFocus();
+						IconTextButton {
+							id: okButton
+
+							enabled: passInput.text.length > 0 || !!polkitAgent.flow?.isResponseRequired
+							horizontalPadding: Appearance.padding.large
+							icon: "check"
+							inactiveColor: DynamicColors.palette.m3primary
+							inactiveOnColor: DynamicColors.palette.m3onPrimary
+							isRound: true
+							isToggle: false
+							shapeMorph: true
+							shapeMorphExpansion: pressed ? 12 : 0
+							text: "OK"
+
+							onClicked: {
+								polkitAgent.flow.submit(passInput.text);
+								passInput.text = "";
+								passInput.forceActiveFocus();
+							}
 						}
-					}
 
-					CustomButton {
-						id: cancelButton
+						IconTextButton {
+							id: cancelButton
 
-						Layout.alignment: Qt.AlignRight
-						Layout.preferredHeight: 40
-						Layout.preferredWidth: 76
-						bgColor: DynamicColors.palette.m3surfaceContainer
-						enabled: passInput.text.length > 0 || !!polkitAgent.flow?.isResponseRequired
-						radius: Appearance.rounding.full
-						text: "Cancel"
-						textColor: DynamicColors.palette.m3onSurface
+							enabled: passInput.text.length > 0 || !!polkitAgent.flow?.isResponseRequired
+							horizontalPadding: Appearance.padding.large
+							icon: "close"
+							inactiveColor: DynamicColors.palette.m3surfaceContainer
+							inactiveOnColor: DynamicColors.palette.m3onSurface
+							isRound: true
+							isToggle: false
+							shapeMorph: true
+							shapeMorphExpansion: pressed ? 12 : 0
+							text: "Cancel"
 
-						onClicked: {
-							root.shouldShow = false;
-							polkitAgent.flow.cancelAuthenticationRequest();
-							passInput.text = "";
+							onClicked: {
+								root.shouldShow = false;
+								polkitAgent.flow.cancelAuthenticationRequest();
+								passInput.text = "";
+							}
 						}
 					}
 				}
