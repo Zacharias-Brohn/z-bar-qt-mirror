@@ -12,8 +12,12 @@ Singleton {
 	readonly property list<Network> knownNetworks: networks.filter(n => n.known)
 	readonly property list<Network> networks: {
 		const list = [];
-		for (const d of wifiDevices)
-			list.push(...d.networks.values);
+		for (const d of wifiDevices) {
+			for (const n of d.networks.values) {
+				if (!list.includes(n))
+					list.push(n);
+			}
+		}
 		return list;
 	}
 	property bool scanning: false
