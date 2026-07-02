@@ -39,13 +39,14 @@ PageBase {
 			onToggled: Config.bar.tray.showMicrophone = checked
 		}
 
+		ToggleRow {
+			checked: Config.bar.tray.showNetwork
+			text: qsTr("Network")
+
+			onToggled: Config.bar.tray.showNetwork = checked
+		}
+
 		//////// FOR LATER:
-		// ToggleRow {
-		// 	checked: Config.bar.tray.showNetwork
-		// 	text: qsTr("Network")
-		//
-		// 	onToggled: Config.bar.tray.showNetwork = checked
-		// }
 		//
 		// ToggleRow {
 		// 	checked: Config.bar.tray.showWifi
@@ -93,6 +94,16 @@ PageBase {
 			text: qsTr("Power popout on hover")
 
 			onToggled: Config.bar.popouts.upower = checked
+		}
+
+		ToggleRow {
+			checked: Config.bar.popouts.network
+			last: true
+			settingAnchor: "bar-status-network-popout"
+			subtext: qsTr("Show a details popout when hovering the network icon")
+			text: qsTr("Network popout on hover")
+
+			onToggled: Config.bar.popouts.network = checked
 		}
 	}
 }

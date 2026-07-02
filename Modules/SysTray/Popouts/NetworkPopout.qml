@@ -18,6 +18,9 @@ CustomClippingRect {
 	implicitWidth: 500 + 8 * 2
 	radius: (20 - Appearance.padding.small) * Appearance.rounding.scale
 
+	Component.onCompleted: Network.active = true
+	Component.onDestruction: Network.active = false
+
 	ColumnLayout {
 		id: networkPopContent
 
@@ -59,9 +62,104 @@ CustomClippingRect {
 		anchors.right: parent.right
 		anchors.top: networkPopContent.bottom
 
+		CustomText {
+			text: qsTr("Known networks")
+		}
+
 		Repeater {
 			model: ScriptModel {
-				values: [...Network.networks]
+				values: [...Network.networks].filter(n => n.known)
+			}
+
+			RowLayout {
+				id: knownNetworkItem
+
+				required property var modelData
+
+				Layout.fillWidth: true
+				Layout.preferredHeight: visible ? implicitHeight : 0
+				Layout.rightMargin: Appearance.padding.extraSmall
+				opacity: 0
+				scale: 0.7
+				spacing: Appearance.spacing.small
+
+				Behavior on opacity {
+					Anim {
+						type: Anim.DefaultEffects
+					}
+				}
+				Behavior on scale {
+					Anim {
+					}
+				}
+
+				Component.onCompleted: {
+					opacity = 1;
+					scale = 1;
+				}
+
+				MaterialIcon {
+					color: knownNetworkItem.modelData.active ? DynamicColors.palette.m3primary : DynamicColors.palette.m3onSurfaceVariant
+					text: Icons.getNetworkIcon(knownNetworkItem.modelData.signalStrength * 100, Network.isSecure(knownNetworkItem.modelData.security))
+				}
+
+				CustomText {
+					Layout.fillWidth: true
+					Layout.leftMargin: Appearance.spacing.extraSmall
+					Layout.rightMargin: Appearance.spacing.extraSmall
+					color: knownNetworkItem.modelData.active ? DynamicColors.palette.m3primary : DynamicColors.palette.m3onSurface
+					elide: Text.ElideRight
+					text: knownNetworkItem.modelData.name
+				}
+
+				CustomRect {
+					color: Qt.alpha(DynamicColors.palette.m3primary, knownNetworkItem.modelData.active ? 1 : 0)
+					implicitHeight: knownWirelessConnectIcon.implicitHeight + Appearance.padding.extraSmall
+					implicitWidth: implicitHeight
+					radius: Appearance.rounding.full
+
+					// CircularIndicator {
+					//     anchors.fill: parent
+					//     running: knownNetworkItem.loading
+					// }
+
+					StateLayer {
+						color: knownNetworkItem.modelData.active ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3onSurface
+
+						onClicked: {}
+					}
+
+					MaterialIcon {
+						id: knownWirelessConnectIcon
+
+						anchors.centerIn: parent
+						animate: true
+						color: knownNetworkItem.modelData.active ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3onSurface
+						text: knownNetworkItem.modelData.active ? "link_off" : "link"
+
+						// opacity: knownNetworkItem.loading ? 0 : 1
+
+						Behavior on opacity {
+							Anim {
+								type: Anim.DefaultEffects
+							}
+						}
+					}
+				}
+			}
+		}
+
+		Item {
+			id: spacer
+
+			Layout.preferredHeight: networkRepeater.count > 0 ? Appearance.spacing.normal : 0
+		}
+
+		Repeater {
+			id: networkRepeater
+
+			model: ScriptModel {
+				values: [...Network.networks].filter(n => !n.known)
 			}
 
 			RowLayout {
@@ -119,9 +217,7 @@ CustomClippingRect {
 					StateLayer {
 						color: networkItem.modelData.active ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3onSurface
 
-						onClicked: {
-							console.log(Network.devices[1].scannerEnabled, Network.devices[2].scannerEnabled, Network.devices[3].scannerEnabled, Network.devices[4].scannerEnabled);
-						}
+						onClicked: {}
 					}
 
 					MaterialIcon {
@@ -141,59 +237,6 @@ CustomClippingRect {
 						}
 					}
 				}
-			}
-		}
-
-		CustomRect {
-			Layout.fillWidth: true
-			Layout.preferredHeight: visible ? implicitHeight : 0
-			Layout.topMargin: visible ? Appearance.spacing.small : 0
-			color: DynamicColors.palette.m3primaryContainer
-			implicitHeight: rescanBtn.implicitHeight + Appearance.padding.small
-			radius: Appearance.rounding.full
-
-			StateLayer {
-				color: DynamicColors.palette.m3onPrimaryContainer
-				enabled: !Network.scanning
-
-				onClicked: Network.rescanWifi()
-			}
-
-			RowLayout {
-				id: rescanBtn
-
-				anchors.centerIn: parent
-				opacity: Network.scanning ? 0 : 1
-				spacing: Appearance.spacing.small
-
-				Behavior on opacity {
-					Anim {
-						type: Anim.DefaultEffects
-					}
-				}
-
-				MaterialIcon {
-					id: scanIcon
-
-					Layout.topMargin: Math.round(fontInfo.pointSize * 0.0575)
-					animate: true
-					color: DynamicColors.palette.m3onPrimaryContainer
-					text: "wifi_find"
-				}
-
-				CustomText {
-					Layout.topMargin: -Math.round(scanIcon.fontInfo.pointSize * 0.0575)
-					color: DynamicColors.palette.m3onPrimaryContainer
-					text: qsTr("Rescan networks")
-				}
-			}
-
-			CircularIndicator {
-				anchors.centerIn: parent
-				bgColor: "transparent"
-				implicitSize: parent.implicitHeight - Appearance.padding.large
-				running: Network.scanning
-				strokeWidth: Appearance.padding.extraSmall / 2
 			}
 		}
 	}
