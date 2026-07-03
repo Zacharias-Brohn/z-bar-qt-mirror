@@ -3,8 +3,10 @@
 #include "sensorslib.hpp"
 
 #include <cmath>
+#include <qcontainerfwd.h>
 #include <qdir.h>
 #include <qfile.h>
+#include <qobject.h>
 #include <qregularexpression.h>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -241,6 +243,45 @@ void Gpu::detectNameOnce() {
 	m_nameProc->start(
 		QStringLiteral("sh"),
 		{QStringLiteral("-c"), QString::fromLatin1(kNameDetectScript)});
+}
+
+void Gpu::readGenericMemory() {
+	const QStringList paths = QDir(QStringLiteral("/sys/class/drm"))
+								  .entryList(
+									  QStringList() << QStringLiteral("card*"),
+									  QDir::Dirs | QDir::NoDotAndDotDot);
+
+	qreal totalMem = 0.0;
+	qreal usedMem = 0.0;
+	for (const QString& card : paths) {
+		QFile total(
+			QStringLiteral("/sys/class/drm/%1/device/mem_info_vram_total")
+				.arg(card));
+		if (!total.open(QIODevice::ReadOnly | QIODevice::Text)) {
+			continue;
+		}
+		bool ok = false;
+		const qreal v = total.readAll().trimmed().toDouble(&ok);
+		total.close();
+		if (ok) {
+			totalMem += v;
+		}
+
+		QFile used(QStringLiteral("/sys/class/drm/%1/device/mem_info_vram_used")
+					   .arg(card));
+		if (!used.open(QIODevice::ReadOnly | QIODevice::Text)) {
+			continue;
+		}
+		bool ok1 = false;
+		const qreal v1 = used.readAll().trimmed().toDouble(&ok1);
+		used.close();
+		if (ok1) {
+			usedMem += v1;
+		}
+	}
+
+	setMemoryTotal(totalMem);
+	setMemoryUsed(usedMem);
 }
 
 void Gpu::readGenericUsage() {

@@ -12,11 +12,11 @@ CustomRect {
 	Layout.fillWidth: true
 	color: DynamicColors.tPalette.m3surfaceContainer
 	implicitHeight: layout.implicitHeight + Appearance.padding.large * 2
-	implicitWidth: layout.implicitWidth + Appearance.padding.extraLargeIncreased * 2
+	implicitWidth: layout.implicitWidth + Appearance.padding.extraLargeIncreased
 	radius: Appearance.rounding.medium
 
 	ServiceRef {
-		service: Memory
+		service: Gpu
 	}
 
 	ColumnLayout {
@@ -36,18 +36,20 @@ CustomRect {
 			}
 
 			CustomText {
-				text: qsTr("Memory")
+				text: qsTr("Video memory")
 			}
 		}
 
 		CircularProgress {
+			id: circularIndicator
+
 			Layout.alignment: Qt.AlignHCenter
 			Layout.topMargin: Appearance.spacing.large
 			fgColor: root.accent
 			implicitSize: usageColumn.implicitHeight + thickness + Appearance.padding.largeIncreased * 2
 			startAngle: -225
 			sweepAngle: 270
-			value: Memory.percentage
+			value: Gpu.memoryUsed / Gpu.memoryTotal
 
 			Behavior on clampedVal {
 				Anim {
@@ -65,7 +67,7 @@ CustomRect {
 					Layout.alignment: Qt.AlignHCenter
 					color: root.accent
 					font.pointSize: Appearance.font.size.large
-					text: Math.round(Memory.percentage * 100) + "%"
+					text: Math.round(circularIndicator.value * 100) + "%"
 				}
 
 				CustomText {
@@ -79,7 +81,7 @@ CustomRect {
 		CustomText {
 			Layout.alignment: Qt.AlignHCenter
 			text: {
-				const fmt = UsageFmt.formatKib(Memory.used, Memory.total);
+				const fmt = UsageFmt.formatKib(Gpu.memoryUsed, Gpu.memoryTotal);
 				return `${fmt.value.toFixed(1)} / ${Math.floor(fmt.total)} ${fmt.unit}`;
 			}
 		}

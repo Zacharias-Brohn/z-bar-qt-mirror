@@ -62,6 +62,7 @@ class Gpu : public TickingService {
 	void readGenericUsage();
 	void startNvidiaUsage();
 	void readGpuTemperature();
+	void readGenericMemory();
 
 	void setUserType(Type value);
 	void setAutoType(Type value);

@@ -74,7 +74,7 @@ Item {
 
 			RowLayout {
 				spacing: Appearance.spacing.normal
-				visible: storageCard.active || networkCard.active || memoryCard.active
+				visible: storageCard.active || memoryCard.active || vramCard.active || networkCard1.active
 
 				WrappedLoader {
 					id: storageCard
@@ -95,13 +95,30 @@ Item {
 				}
 
 				WrappedLoader {
-					id: networkCard
+					id: vramCard
 
-					active: Config.dashboard.performance.showNetwork
+					active: Config.dashboard.performance.showVram
+
+					sourceComponent: VramCard {
+					}
+				}
+
+				WrappedLoader {
+					id: networkCard1
+
+					active: Config.dashboard.performance.showNetwork && !vramCard.active
 
 					sourceComponent: NetworkCard {
-						wrapper: root.wrapper
 					}
+				}
+			}
+
+			WrappedLoader {
+				id: networkCard2
+
+				active: Config.dashboard.performance.showNetwork && vramCard.active
+
+				sourceComponent: NetworkCard {
 				}
 			}
 		}

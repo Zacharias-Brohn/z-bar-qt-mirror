@@ -1,15 +1,12 @@
 import QtQuick
 import QtQuick.Layouts
 import ZShell.Internal
-import qs.Modules.Resources
 import qs.Helpers
 import qs.Components
 import qs.Config
 
 CustomRect {
 	id: root
-
-	required property Wrapper wrapper
 
 	color: DynamicColors.tPalette.m3surfaceContainer
 	implicitHeight: 220

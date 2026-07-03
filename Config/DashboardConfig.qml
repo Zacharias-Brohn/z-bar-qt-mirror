@@ -17,6 +17,7 @@ JsonObject {
 		property bool showMemory: true
 		property bool showNetwork: true
 		property bool showStorage: true
+		property bool showVram: true
 	}
 	component Sizes: JsonObject {
 		readonly property int dateTimeWidth: 110

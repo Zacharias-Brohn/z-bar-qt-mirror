@@ -9,31 +9,25 @@ import qs.Config
 Singleton {
 	id: root
 
-	// Private properties
 	property real _downloadSpeed: 0
 	property real _downloadTotal: 0
 
-	// Initial readings for calculating totals
 	property real _initialRxBytes: 0
 	property real _initialTxBytes: 0
 	property bool _initialized: false
 
-	// Previous readings for calculating speed
 	property real _prevRxBytes: 0
 	property real _prevTimestamp: 0
 	property real _prevTxBytes: 0
 	property real _uploadSpeed: 0
 	property real _uploadTotal: 0
 
-	// History buffers for sparkline
 	readonly property CircularBuffer downloadBuffer: _downloadBuffer
 
-	// Current speeds in bytes per second
 	readonly property real downloadSpeed: _downloadSpeed
 
-	// Total bytes transferred since tracking started
 	readonly property real downloadTotal: _downloadTotal
-	readonly property int historyLength: 30
+	readonly property int historyLength: Config.dashboard.performance.showVram ? 70 : 30
 	property int refCount: 0
 	readonly property CircularBuffer uploadBuffer: _uploadBuffer
 	readonly property real uploadSpeed: _uploadSpeed

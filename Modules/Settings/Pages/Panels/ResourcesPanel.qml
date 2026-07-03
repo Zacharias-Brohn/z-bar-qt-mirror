@@ -57,6 +57,14 @@ PageBase {
 		}
 
 		ToggleRow {
+			checked: Config.dashboard.performance.showVram
+			settingAnchor: "resources-vram"
+			text: qsTr("Video memory")
+
+			onToggled: Config.dashboard.performance.showVram = checked
+		}
+
+		ToggleRow {
 			checked: Config.dashboard.performance.showCpu
 			settingAnchor: "resources-cpu"
 			text: qsTr("CPU")
