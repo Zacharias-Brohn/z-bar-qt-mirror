@@ -106,7 +106,7 @@ StackView {
 						property int iconWidth: icon.active ? icon.width + Appearance.spacing.normal + icon.anchors.rightMargin : 0
 
 						implicitHeight: root.itemHeight
-						implicitWidth: label.width + label.anchors.leftMargin * 2 + iconWidth
+						implicitWidth: label.width + label.anchors.leftMargin * 2 + iconWidth + (expand.item?.width ?? 0)
 
 						StateLayer {
 							enabled: item.modelData.enabled
