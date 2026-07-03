@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 import Quickshell
 import Quickshell.Widgets
 import QtQuick
+import QtQuick.Layouts
 import QtQuick.Controls
 import QtQuick.Effects
 import qs.Components
@@ -12,14 +13,13 @@ import qs.Config
 StackView {
 	id: root
 
-	property int biggestWidth: 0
 	readonly property int itemHeight: 30
 	readonly property int panelRadius: ((itemHeight / 2) + Appearance.padding.small) * Appearance.rounding.scale
 	required property PopoutState popouts
 	property int rootWidth: 0
 	required property QsMenuHandle trayItem
 
-	implicitHeight: currentItem.implicitHeight
+	implicitHeight: currentItem.isSubMenu ? currentItem.implicitHeight : currentItem.implicitHeight - currentItem.spacing
 	implicitWidth: currentItem.implicitWidth
 
 	initialItem: SubMenu {
@@ -46,7 +46,7 @@ StackView {
 			duration: 0
 		}
 	}
-	component SubMenu: Column {
+	component SubMenu: ColumnLayout {
 		id: menu
 
 		required property QsMenuHandle handle
@@ -54,9 +54,8 @@ StackView {
 		property bool shown
 
 		opacity: shown ? 1 : 0
-		padding: 0
 		scale: shown ? 1 : 0.8
-		spacing: 4
+		spacing: Appearance.spacing.extraSmall
 
 		Behavior on opacity {
 			Anim {
@@ -87,22 +86,27 @@ StackView {
 				required property int index
 				required property QsMenuEntry modelData
 
+				Layout.fillWidth: true
+				Layout.leftMargin: modelData.isSeparator ? Appearance.padding.normal : 0
+				Layout.rightMargin: modelData.isSeparator ? Appearance.padding.normal : 0
 				color: modelData.isSeparator ? DynamicColors.palette.m3outlineVariant : "transparent"
-				implicitHeight: modelData.isSeparator ? 1 : children.implicitHeight
-				implicitWidth: root.biggestWidth
+				implicitHeight: modelData.isSeparator ? (visible ? 1 : 0) : childrenLoader.item.implicitHeight
+				implicitWidth: childrenLoader.item?.implicitWidth ?? 0
 				radius: Appearance.rounding.full
 				visible: index !== (menuOpener.children.values.length - 1) ? true : (modelData.isSeparator ? false : true)
 
 				Loader {
-					id: children
+					id: childrenLoader
 
 					active: !item.modelData.isSeparator
-					anchors.left: parent.left
-					anchors.right: parent.right
+					anchors.fill: parent
 					asynchronous: true
 
 					sourceComponent: Item {
+						property int iconWidth: icon.active ? icon.width + Appearance.spacing.normal + icon.anchors.rightMargin : 0
+
 						implicitHeight: root.itemHeight
+						implicitWidth: label.width + label.anchors.leftMargin * 2 + iconWidth
 
 						StateLayer {
 							enabled: item.modelData.enabled
@@ -111,8 +115,6 @@ StackView {
 							onClicked: {
 								const entry = item.modelData;
 								if (entry.hasChildren) {
-									root.rootWidth = root.biggestWidth;
-									root.biggestWidth = 0;
 									root.push(subMenuComp.createObject(null, {
 										handle: entry,
 										isSubMenu: true
@@ -161,23 +163,7 @@ StackView {
 							anchors.leftMargin: 10
 							anchors.verticalCenter: parent.verticalCenter
 							color: item.modelData.enabled ? DynamicColors.palette.m3onSurface : DynamicColors.palette.m3outline
-							text: labelMetrics.elidedText
-						}
-
-						TextMetrics {
-							id: labelMetrics
-
-							font.family: label.font.family
-							font.pointSize: label.font.pointSize
 							text: item.modelData.text
-
-							Component.onCompleted: {
-								var biggestWidth = root.biggestWidth;
-								var currentWidth = labelMetrics.width + (item.modelData.icon ?? "" ? 30 : 0) + (item.modelData.hasChildren ? 30 : 0) + 20;
-								if (currentWidth > biggestWidth) {
-									root.biggestWidth = currentWidth;
-								}
-							}
 						}
 
 						Loader {
@@ -201,17 +187,17 @@ StackView {
 		Loader {
 			id: loader
 
+			Layout.fillWidth: true
+			Layout.maximumHeight: active ? implicitHeight : 0
 			active: menu.isSubMenu
 			asynchronous: true
 
 			sourceComponent: Item {
 				implicitHeight: 30
-				implicitWidth: back.implicitWidth
 
 				Item {
-					anchors.bottom: parent.bottom
+					anchors.fill: parent
 					implicitHeight: 30
-					implicitWidth: root.biggestWidth
 
 					CustomRect {
 						anchors.fill: parent
@@ -224,7 +210,6 @@ StackView {
 
 							onClicked: {
 								root.pop();
-								root.biggestWidth = root.rootWidth;
 							}
 						}
 					}
