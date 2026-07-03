@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 BINARY="../Greeter/scripts/start-zshell-greeter"
-CONFIG="../Greeter/scripts/zshell-hyprland.conf"
+CONFIG="../Greeter/scripts/zshell-hyprland.lua"
 GREETD_CONFIG="../Greeter/scripts/greeter-config.toml"
 WALLPAPER="$HOME/.local/state/zshell/lockscreen_bg.png"
 
