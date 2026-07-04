@@ -196,7 +196,7 @@ Item {
 			if (!root.visibilities.bar && Config.bar.autoHide && y < root.bar.implicitHeight)
 				root.bar.isHovered = true;
 
-			if (root.panels.sidebar.width === 0) {
+			if (root.panels.sidebar.offsetScale === 1) {
 				const showOsd = root.inRightPanel(root.panels.osdWrapper, x, y);
 
 				if (showOsd) {
@@ -204,7 +204,7 @@ Item {
 					root.panels.osd.hovered = true;
 				}
 			} else {
-				const outOfSidebar = x < root.width - root.panels.sidebar.width;
+				const outOfSidebar = x < root.width - root.panels.sidebar.width * (1 - root.panels.sidebar.offsetScale);
 				const showOsd = outOfSidebar && root.inRightPanel(root.panels.osdWrapper, x, y);
 
 				if (!root.osdShortcutActive) {
